@@ -70,26 +70,25 @@
     background: var(--paper);
   }
 
-  .tb-strip {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 40px;
-    border-bottom: 1px solid var(--steel-32);
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--steel);
-  }
-  .tb-strip .blink::after {
-    content: '▌';
-    color: var(--signal);
-    animation: hs-blink 1.1s steps(1) infinite;
-    margin-left: 2px;
+  .tb-main {
+    padding: 56px 40px 48px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 48px;
+    align-items: start;
   }
 
-  .tb-main { padding: 56px 40px 40px; }
+  .tb-photo {
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    padding: 8px;
+    align-self: start;
+  }
+  .tb-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 
   h1 {
     font-size: clamp(34px, 6vw, 64px);
@@ -117,21 +116,6 @@
   .tb-lede + .tb-lede { margin-top: 14px; }
   .tb-lede strong { font-weight: 600; }
 
-  .tb-meta {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-top: 1px solid var(--ink);
-  }
-  .tb-meta div {
-    padding: 12px 16px 14px;
-    border-right: 1px solid var(--steel-32);
-  }
-  .tb-meta div:first-child { padding-left: 40px; }
-  .tb-meta div:last-child { border-right: none; }
-  .tb-meta .k { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: .16em; color: var(--steel); text-transform: uppercase; margin-bottom: 3px; }
-  .tb-meta .v { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .04em; }
-  .tb-meta .v .dot { color: var(--signal); }
-
   /* ---------- sections ---------- */
   section { padding: 56px 40px; border-bottom: 1px solid var(--steel-32); position: relative; }
   section:last-of-type { border-bottom: none; }
@@ -154,8 +138,6 @@
     font-weight: 600;
     letter-spacing: .01em;
   }
-  .sec-note { margin-left: auto; }
-
   .rule {
     height: 1px;
     background: var(--ink);
@@ -166,7 +148,7 @@
   /* stats */
   .stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1px;
     background: var(--steel-32);
     border: 1px solid var(--steel-32);
@@ -195,16 +177,6 @@
     align-items: baseline;
     gap: 8px 16px;
     padding: 20px 24px 0;
-  }
-  .case-id {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--paper);
-    background: var(--ink);
-    padding: 3px 8px;
-    letter-spacing: .1em;
-    align-self: center;
   }
   .case h3 { font-size: 20px; font-weight: 600; line-height: 1.25; flex: 1 1 300px; }
   .case-client {
@@ -314,16 +286,15 @@
   }
 
   /* ---------- motion ---------- */
-  @keyframes hs-blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
   @keyframes hs-fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   @keyframes hs-drawx { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  .tb-main > * { opacity: 0; animation: hs-fadein .6s ease forwards; }
-  .tb-main > *:nth-child(1) { animation-delay: .05s; }
-  .tb-main > *:nth-child(2) { animation-delay: .15s; }
-  .tb-main > *:nth-child(3) { animation-delay: .25s; }
-  .tb-main > *:nth-child(4) { animation-delay: .32s; }
-  .tb-main > *:nth-child(5) { animation-delay: .4s; }
+  .tb-text > *, .tb-photo { opacity: 0; animation: hs-fadein .6s ease forwards; }
+  .tb-text > *:nth-child(1) { animation-delay: .05s; }
+  .tb-text > *:nth-child(2) { animation-delay: .15s; }
+  .tb-text > *:nth-child(3) { animation-delay: .25s; }
+  .tb-text > *:nth-child(4) { animation-delay: .32s; }
+  .tb-photo { animation-delay: .2s; }
 
   .reveal { opacity: 0; transform: translateY(10px); transition: opacity .55s ease, transform .55s ease; }
   .reveal.on { opacity: 1; transform: none; }
@@ -331,24 +302,20 @@
   .rule.reveal.on { transform: scaleX(1); }
 
   @media (prefers-reduced-motion: reduce) {
-    .tb-main > *, .reveal, .rule.reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+    .tb-text > *, .tb-photo, .reveal, .rule.reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
   }
 
   /* ---------- responsive ---------- */
   @media (max-width: 760px) {
     .sheet { margin: 0; border-left: none; border-right: none; }
-    .tb-strip, .tb-main, section, footer { padding-left: 20px; padding-right: 20px; }
-    .tb-main { padding-top: 40px; padding-bottom: 32px; }
+    .tb-main, section, footer { padding-left: 20px; padding-right: 20px; }
+    .tb-main { padding-top: 40px; padding-bottom: 32px; grid-template-columns: 1fr; gap: 32px; }
+    .tb-photo { max-width: 300px; }
     section { padding-top: 40px; padding-bottom: 40px; }
-    .tb-meta { grid-template-columns: 1fr 1fr; }
-    .tb-meta div { border-bottom: 1px solid var(--steel-32); padding-left: 20px !important; }
-    .tb-meta div:nth-last-child(-n+2) { border-bottom: none; }
     .stats { grid-template-columns: 1fr; }
     .case-body { grid-template-columns: 1fr; }
     .case-cell:nth-child(odd) { border-right: none; }
     .price-grid { grid-template-columns: 1fr; }
-    .sec-note { display: none; }
-    .tb-strip span:nth-child(2) { display: none; }
   }
 </style>
 </head>
@@ -358,24 +325,16 @@
 
   <!-- ======== TITLE BLOCK ======== -->
   <header class="titleblock">
-    <div class="tb-strip">
-      <span>RESEARCH / SHEET 01 OF 01 / REV. A</span>
-      <span>ГЛУБИННЫЕ ИНТЕРВЬЮ · B2B ИТ</span>
-      <span class="blink">KM-001</span>
-    </div>
-
     <div class="tb-main">
-      <h1>Константин<br>Морошин</h1>
-      <p class="tb-role">Глубинные исследования в <em>B2B ИТ</em></p>
-      <p class="tb-lede">Работаю на проектах агентств, консалтинга и продуктовых студий: беру исследовательскую часть под свою ответственность — от постановки вопроса и гипотез до защиты выводов перед вашим заказчиком. Целиком или отдельными ролями.</p>
-      <p class="tb-lede"><strong>Во всех четырёх кейсах ниже исследование изменило решение заказчика:</strong> не вкладываться в направление, идти к другому покупателю, продавать другим аргументом.</p>
-    </div>
-
-    <div class="tb-meta">
-      <div><span class="k">Проект</span><span class="v">KM-001</span></div>
-      <div><span class="k">Дисциплина</span><span class="v">CUST. RESEARCH</span></div>
-      <div><span class="k">Метод</span><span class="v">ГЛУБИННОЕ ИНТЕРВЬЮ</span></div>
-      <div><span class="k">Статус</span><span class="v"><span class="dot">●</span> ОТКРЫТ К ПРОЕКТАМ</span></div>
+      <div class="tb-text">
+        <h1>Константин<br>Морошин</h1>
+        <p class="tb-role">Глубинные исследования в <em>B2B ИТ</em></p>
+        <p class="tb-lede">Работаю на проектах агентств, консалтинга и продуктовых студий: беру исследовательскую часть под свою ответственность — от постановки вопроса и гипотез до защиты выводов перед вашим заказчиком. Целиком или отдельными ролями.</p>
+        <p class="tb-lede"><strong>Во всех четырёх кейсах ниже исследование изменило решение заказчика:</strong> не вкладываться в направление, идти к другому покупателю, продавать другим аргументом.</p>
+      </div>
+      <figure class="tb-photo">
+        <img src="konstantin_moroshin.jpg" alt="Константин Морошин" width="645" height="589">
+      </figure>
     </div>
   </header>
 
@@ -384,7 +343,6 @@
     <div class="sec-head reveal">
       <span class="sec-num">01</span>
       <h2>Про меня</h2>
-      <span class="tag sec-note">150+ ИНТЕРВЬЮ · 4 ДОМЕНА</span>
     </div>
     <div class="rule reveal"></div>
 
@@ -395,7 +353,6 @@
     <div class="stats reveal">
       <div class="stat"><div class="n">150<sup>+</sup></div><div class="l">Глубинных интервью</div></div>
       <div class="stat"><div class="n">10<sup>+</sup></div><div class="l">Лет продаж ИТ в энтерпрайзе</div></div>
-      <div class="stat"><div class="n">4</div><div class="l">Домена: ритейл · ИБ · облака · SaaS</div></div>
     </div>
   </section>
 
@@ -404,14 +361,12 @@
     <div class="sec-head reveal">
       <span class="sec-num">02</span>
       <h2>Кейсы</h2>
-      <span class="tag sec-note">4 ПРОЕКТА · КАЖДЫЙ ИЗМЕНИЛ РЕШЕНИЕ</span>
     </div>
     <div class="rule reveal"></div>
 
     <!-- CASE 1 -->
     <article class="case reveal">
       <div class="case-head">
-        <span class="case-id">К-01</span>
         <h3>Как кэптивной ИТ-компании выйти на внешний рынок</h3>
       </div>
       <div class="case-client tag">Федеральный ритейлер · проект команды Aterra Consulting</div>
@@ -439,7 +394,6 @@
     <!-- CASE 2 -->
     <article class="case reveal">
       <div class="case-head">
-        <span class="case-id">К-02</span>
         <h3>Как на самом деле покупают сервисный SOC</h3>
       </div>
       <div class="case-client tag">Дочерняя ИБ-компания телеком-холдинга · проект команды агентства</div>
@@ -467,7 +421,6 @@
     <!-- CASE 3 -->
     <article class="case reveal">
       <div class="case-head">
-        <span class="case-id">К-03</span>
         <h3>На чём строить продажи платформы из двенадцати сервисов</h3>
       </div>
       <div class="case-client tag">Дочерняя ИБ-компания телеком-холдинга · проект команды агентства</div>
@@ -495,7 +448,6 @@
     <!-- CASE 4 -->
     <article class="case reveal">
       <div class="case-head">
-        <span class="case-id">К-04</span>
         <h3>Кому на самом деле нужен продукт</h3>
       </div>
       <div class="case-client tag">Система контроля доступа, дочерняя ИБ-компания телеком-холдинга · проект команды агентства</div>
@@ -525,15 +477,14 @@
     <div class="sec-head reveal">
       <span class="sec-num">03</span>
       <h2>Что на выходе</h2>
-      <span class="tag sec-note">АРТЕФАКТЫ ПРОЕКТА</span>
     </div>
     <div class="rule reveal"></div>
 
     <ul class="out-list">
-      <li class="reveal"><span class="idx">A-01</span><span>Карта гипотез: источник каждой, статус после поля, цитаты</span></li>
-      <li class="reveal"><span class="idx">A-02</span><span>Карта сегментов: логика покупки и роли в закупочном комитете</span></li>
-      <li class="reveal"><span class="idx">A-03</span><span>Сводный отчёт с выводами и рекомендациями, доведёнными до формулировок, с которыми можно идти в разработку</span></li>
-      <li class="reveal"><span class="idx">A-04</span><span>Презентация и защита результатов перед заказчиком</span></li>
+      <li class="reveal"><span class="idx">01</span><span>Карта гипотез: источник каждой, статус после поля, цитаты</span></li>
+      <li class="reveal"><span class="idx">02</span><span>Карта сегментов: логика покупки и роли в закупочном комитете</span></li>
+      <li class="reveal"><span class="idx">03</span><span>Сводный отчёт с выводами и рекомендациями, доведёнными до формулировок, с которыми можно идти в разработку</span></li>
+      <li class="reveal"><span class="idx">04</span><span>Презентация и защита результатов перед заказчиком</span></li>
     </ul>
   </section>
 
@@ -542,7 +493,6 @@
     <div class="sec-head reveal">
       <span class="sec-num">04</span>
       <h2>Форматы и вилка</h2>
-      <span class="tag sec-note">БЛОК ЦЕЛИКОМ ИЛИ РОЛИ</span>
     </div>
     <div class="rule reveal"></div>
 
@@ -570,7 +520,6 @@
     <div class="sec-head reveal">
       <span class="sec-num">05</span>
       <h2>Как работаю</h2>
-      <span class="tag sec-note">ПРИНЦИПЫ</span>
     </div>
     <div class="rule reveal"></div>
 
@@ -588,7 +537,6 @@
     <div class="sec-head reveal">
       <span class="sec-num">06</span>
       <h2>Контакты</h2>
-      <span class="tag sec-note">ОТВЕЧАЮ В ТЕЧЕНИЕ ДНЯ</span>
     </div>
     <div class="rule reveal"></div>
 
@@ -602,7 +550,7 @@
 
   <footer>
     <span>КОНСТАНТИН МОРОШИН — ГЛУБИННЫЕ ИССЛЕДОВАНИЯ В B2B ИТ</span>
-    <span>SHEET KM-001 / REV. A / 2026</span>
+    <span>2026</span>
   </footer>
 
 </div>
