@@ -59,7 +59,8 @@ export default function Signals({ t, state }) {
           <span className="text-marigold">{t.signals.hits(s.primary.hits, s.primary.of)}</span>
         </p>
 
-        <div className="-ml-2 mt-4 h-[168px]">
+        <p className="eyebrow mt-4 text-faint">{t.signals.window}</p>
+        <div className="-ml-2 mt-1 h-[168px]">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={s.series} margin={{ top: 6, right: 6, bottom: 0, left: 0 }}>
               <XAxis

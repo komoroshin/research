@@ -66,7 +66,7 @@ export const CONTENT = {
       },
       savedNote: {
         w1: 'Day 6 of 56 · base period, day 6 of 14.',
-        w4: 'Day 26 of 56 · lactose challenge, day 2 of 3.',
+        w4: 'Day 24 of 56 · lactose challenge, day 2 of 3.',
         w8: 'Day 54 of 56 · all challenges resolved.',
       },
       again: 'Record again',
@@ -104,13 +104,14 @@ export const CONTENT = {
       hits: (a, b) => `${a} of ${b} exposures`,
       arrow: '→',
       explainPrimary:
-        'On days with wheat, the symptom score rose the following evening in seven of nine cases. On days without it, the score stayed under the reaction line. The gap between eating and the rise was around five hours.',
+        'On the nine days wheat appears, the evening score crossed the reaction line seven times. On the five days without it, the score stayed under the line every time. The rise came about five hours after the meal — the same evening.',
       disclaimerTitle: 'What this is',
       disclaimer:
         'A pattern found in your own records, not a diagnosis. It rests on nine exposures across fourteen days and can change as you log more.',
       counterTitle: 'No association found',
       counterBody: (g, a, b) =>
         `${g} appears on eight days with one raised evening after it (${a} of ${b}). Not enough to call a pattern — and worth showing, because a product that finds a problem everywhere is not reading anything.`,
+      window: 'last 14 days',
       legend: { load: 'symptom load', exposure: 'wheat eaten', line: 'reaction line' },
       axisDay: 'day',
       emptyTitle: 'Signals open after the base period',
@@ -125,7 +126,7 @@ export const CONTENT = {
       upTo: (amount, unit, food) => `Up to ${amount} ${unit === 'ml' ? 'ml' : 'g'} ${food}`,
       altAmount: (amount, unit, food) => `or ${amount} ${unit === 'ml' ? 'ml' : 'g'} ${food}`,
       reactionAt: (amount, unit, food) => `reaction at ${amount} ${unit === 'ml' ? 'ml' : 'g'} ${food}`,
-      repeat: 'Logging gaps during this challenge. Repeat when convenient.',
+      repeat: 'Three evenings missing during this challenge — 51 logged of 54 days. Repeat when convenient.',
       baselineTitle: 'Symptom load, self-rated',
       baselineNote: 'Same 0–10 scale you record each evening.',
       weekLabel: (n) => `week ${n}`,
@@ -247,7 +248,7 @@ export const CONTENT = {
       },
       savedNote: {
         w1: 'День 6 из 56 · базовый период, день 6 из 14.',
-        w4: 'День 26 из 56 · челлендж лактозы, день 2 из 3.',
+        w4: 'День 24 из 56 · челлендж лактозы, день 2 из 3.',
         w8: 'День 54 из 56 · все челленджи закрыты.',
       },
       again: 'Записать заново',
@@ -283,13 +284,14 @@ export const CONTENT = {
       hits: (a, b) => `${a} из ${b} эпизодов`,
       arrow: '→',
       explainPrimary:
-        'В дни с пшеницей оценка симптомов поднималась следующим вечером в семи случаях из девяти. В дни без неё оценка оставалась ниже линии реакции. Промежуток между едой и подъёмом — около пяти часов.',
+        'В девять дней, когда пшеница есть, вечерняя оценка пересекла линию реакции семь раз. В пять дней без неё оценка ни разу не поднялась выше линии. Подъём наступал примерно через пять часов после еды — в тот же вечер.',
       disclaimerTitle: 'Что это',
       disclaimer:
         'Закономерность в ваших собственных записях, а не диагноз. Она опирается на девять эпизодов за четырнадцать дней и может измениться с новыми данными.',
       counterTitle: 'Связи не обнаружено',
       counterBody: (g, a, b) =>
         `${g} встречается в восьми днях, и лишь один вечер после него был выше линии (${a} из ${b}). Для закономерности мало — и это стоит показывать: продукт, который находит проблему везде, ничего не читает.`,
+      window: 'последние 14 дней',
       legend: { load: 'оценка симптомов', exposure: 'была пшеница', line: 'линия реакции' },
       axisDay: 'день',
       emptyTitle: 'Связи откроются после базового периода',
@@ -303,7 +305,7 @@ export const CONTENT = {
       upTo: (amount, unit, food) => `До ${amount} ${unit === 'ml' ? 'мл' : 'г'} ${food}`,
       altAmount: (amount, unit, food) => `или ${amount} ${unit === 'ml' ? 'мл' : 'г'} ${food}`,
       reactionAt: (amount, unit, food) => `реакция на ${amount} ${unit === 'ml' ? 'мл' : 'г'} ${food}`,
-      repeat: 'В этом челлендже были пропуски в записях. Стоит повторить, когда будет удобно.',
+      repeat: 'Три вечера в этом челлендже не записаны — 51 из 54 дней. Стоит повторить, когда будет удобно.',
       baselineTitle: 'Оценка симптомов, самооценка',
       baselineNote: 'Та же шкала 0–10, что вы отмечаете каждый вечер.',
       weekLabel: (n) => `неделя ${n}`,

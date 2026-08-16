@@ -148,6 +148,12 @@ function ThresholdAxis({ amount, failAt, unitLabel }) {
 function DoctorSummary({ t, state, lang, onClose }) {
   const d = t.map.doc
   const rows = state.queue.filter((q) => q.status === 'done')
+  // The amount printed on the document must come from the same row the map
+  // renders, never from a literal typed into the table.
+  const amountFor = (id) => {
+    const r = state.map.rows.find((x) => x.id === id)
+    return r && r.status === 'threshold' ? ` — ${r.amount} ${r.unit}` : ''
+  }
   return (
     <div className="absolute inset-0 z-30 flex flex-col bg-black/60 backdrop-blur-sm">
       <div className="flex items-center justify-between px-5 py-3">
@@ -192,7 +198,7 @@ function DoctorSummary({ t, state, lang, onClose }) {
                 <td className="py-1.5 pr-2 text-ink/60">{r.days}</td>
                 <td className="py-1.5">
                   {t.outcomes[r.outcome]}
-                  {r.outcome === 'threshold' && <> — 125 ml</>}
+                  {amountFor(r.id)}
                 </td>
               </tr>
             ))}

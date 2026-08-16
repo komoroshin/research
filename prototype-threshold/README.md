@@ -33,6 +33,44 @@ browsers block ES modules from the file system; serve the folder instead
 
 ---
 
+## Checking the scenario
+
+```bash
+npm run check
+```
+
+The demo's credibility rests on the numbers agreeing with each other, and that
+is the first thing an audience tests. `check-data.mjs` asserts the links that
+break most easily when the scenario is edited:
+
+- every group has the same outcome in the protocol queue (screen 2) and on the
+  tolerance map (screen 4);
+- the chart on screen 3 draws **exactly** as many exposure marks as the copy
+  claims, and exactly as many of them above the reaction line — so "7 of 9
+  exposures" can be counted off the picture;
+- no day without an exposure sits above the reaction line;
+- the group named in the primary signal is "reacts" on the map, and the
+  counter-example group is "tolerated";
+- the tolerated amount on the map is a real rung of the dose ladder, and the
+  reaction amount is the ladder's top rung;
+- the current protocol day really is day *n* of the challenge's printed range;
+- evenings logged never exceed days elapsed;
+- symptom load only falls, and stays on the 0–10 scale;
+- every group and outcome code has words in both languages.
+
+Run it after any edit to `src/data.js` or `src/content.js`. It exits non-zero on
+failure, so it can sit in a build step.
+
+### Why the challenge dates look uneven
+
+Rest days follow the rule the screen states: three after a challenge with no
+reaction, six after one with a reaction, because the record has to come back
+under the reaction line before the next group opens. Hence sorbitol 8–10 →
+fructans 14–16 (three days), fructans reacted → lactose 23–25 (six days),
+lactose crossed its threshold → GOS 32–34 (six days), GOS clean → fructose
+38–40 (three days). At week 8 the person is on day 54 with 51 evenings logged;
+the three missing evenings are the ones that left fructose undetermined.
+
 ## Presenter mode
 
 A control bar floats above the phone on desktop, outside the frame:
