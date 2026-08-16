@@ -1,0 +1,241 @@
+/* ---------------------------------------------------------------------------
+   Threshold landing — smoke test.
+
+   Same register as the product and the deck: paper ground, ink text, one
+   restrained accent, mono for structural elements. Nothing decorative: this
+   page has to measure belief in the product, so anything that could carry the
+   click on its own — badges, logos, stock photography, urgency — is absent by
+   design, not by omission.
+
+   No web fonts: the page must load fast on a phone over cellular.
+--------------------------------------------------------------------------- */
+
+:root {
+  --paper: #EEF0EC;
+  --paper-2: #E5E8E3;
+  --ink: #0B1F24;
+  --ink-2: #3D5257;
+  --ink-3: #6E8288;
+  --rule: #C7CEC9;
+  --accent: #C8871F;
+  --accent-soft: #F2E6CE;
+
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { width: 100%; max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3 { color: var(--ink); font-weight: 600; margin: 0; letter-spacing: -0.015em; }
+
+/* --- hero ---------------------------------------------------------------- */
+
+.hero { padding: 56px 0 72px; border-bottom: 1px solid var(--rule); }
+
+.wordmark {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 48px;
+}
+
+h1 {
+  font-size: 44px;
+  line-height: 1.08;
+  max-width: 15ch;
+}
+
+.lead {
+  font-size: 21px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  margin: 24px 0 0;
+  max-width: 40ch;
+}
+
+/* --- buttons ------------------------------------------------------------- */
+
+.btn {
+  display: inline-block;
+  margin-top: 32px;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 17px 30px;
+  border: 2px solid var(--ink);
+  transition: background 140ms ease, color 140ms ease;
+}
+.btn:hover, .btn:focus-visible { background: transparent; color: var(--ink); }
+.btn--lg { font-size: 17px; padding: 21px 36px; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* --- sections ------------------------------------------------------------ */
+
+.band { padding: 72px 0; border-bottom: 1px solid var(--rule); }
+.band--paper2 { background: var(--paper-2); }
+
+h2 {
+  font-size: 30px;
+  line-height: 1.15;
+  max-width: 22ch;
+  margin-bottom: 28px;
+  position: relative;
+  padding-top: 22px;
+}
+/* The one identity carry-over: a single accent hairline per section. */
+h2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 64px; height: 2px;
+  background: var(--accent);
+}
+
+.prose p { margin: 0 0 20px; max-width: 46ch; }
+.prose p:last-child { margin-bottom: 0; }
+
+/* --- steps --------------------------------------------------------------- */
+
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+.steps li { padding: 26px 0; border-top: 1px solid var(--rule); }
+.steps li:first-child { border-top: none; padding-top: 0; }
+
+.step-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--ink-3);
+  margin: 0 0 8px;
+}
+.steps h3 { font-size: 21px; margin-bottom: 10px; }
+.steps h3 span { font-weight: 400; color: var(--ink-3); font-size: 17px; }
+.steps p { margin: 0; max-width: 46ch; }
+
+/* Step three is the product. It is the only block on the page that is filled. */
+.step--key {
+  background: var(--accent-soft);
+  border-top: 2px solid var(--accent) !important;
+  padding: 26px 24px;
+  margin: 0 -24px;
+}
+.step--key .step-num { color: var(--accent); }
+
+/* --- differences --------------------------------------------------------- */
+
+.diffs { list-style: none; margin: 0; padding: 0; }
+.diffs li {
+  padding: 22px 0 22px 26px;
+  border-top: 1px solid var(--rule);
+  max-width: 48ch;
+  position: relative;
+}
+.diffs li:first-child { border-top: none; }
+.diffs li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 33px;
+  width: 12px; height: 2px;
+  background: var(--accent);
+}
+.diffs strong { color: var(--ink); }
+
+/* --- boundaries ---------------------------------------------------------- */
+
+.band--bounds { background: var(--paper); }
+.band--bounds .wrap { border-left: 2px solid var(--ink); padding-left: 26px; }
+@media (max-width: 767px) { .band--bounds .wrap { padding-left: 22px; } }
+
+/* --- price --------------------------------------------------------------- */
+
+#price { padding: 88px 0; }
+.price-value {
+  font-family: var(--mono);
+  font-size: 46px;
+  line-height: 1.1;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.price-value span {
+  font-family: var(--sans);
+  font-size: 20px;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+.price-note { margin: 18px 0 0; max-width: 44ch; }
+.preorder {
+  margin: 28px 0 0;
+  font-size: 16px;
+  color: var(--ink-3);
+  max-width: 46ch;
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+}
+
+/* --- faq ----------------------------------------------------------------- */
+
+.faq { margin: 0; }
+.faq dt {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 19px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+.faq dt:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+.faq dd { margin: 10px 0 0; max-width: 48ch; }
+
+/* --- final --------------------------------------------------------------- */
+
+.band--final { padding: 88px 0; border-bottom: none; }
+.final-line { font-size: 30px; line-height: 1.2; color: var(--ink); font-weight: 600; margin: 0; }
+.final-sub { font-size: 21px; margin: 8px 0 0; }
+
+.foot {
+  background: var(--ink);
+  color: #93A8A8;
+  padding: 28px 0;
+  font-size: 14px;
+}
+.foot p { margin: 0; }
+
+/* --- wider screens ------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  body { font-size: 19px; }
+  .wrap { padding: 0 40px; }
+  .hero { padding: 72px 0 96px; }
+  h1 { font-size: 64px; }
+  .lead { font-size: 24px; }
+  h2 { font-size: 38px; }
+  .band { padding: 88px 0; }
+  .price-value { font-size: 62px; }
+  .final-line { font-size: 40px; }
+  .step--key { margin: 0; padding: 30px 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
