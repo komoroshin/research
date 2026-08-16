@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threshold</title>
+<link rel="stylesheet" href="deck.css">
+</head>
+<body>
+  <div class="stage"></div>
+  <div class="overlay"></div>
+
+  <script src="deck.js"></script>
+  <!-- Real text goes in content.js. Without it the deck falls back to the
+       example file and marks itself as such. -->
+  <script src="content.js" onerror="window.__example = true"></script>
+  <script>
+    if (!window.DECK) {
+      window.__example = true
+      const s = document.createElement('script')
+      s.src = 'content.example.js'
+      s.onload = start
+      document.head.appendChild(s)
+    } else {
+      start()
+    }
+
+    function start() {
+      boot(window.DECK)
+      if (window.__example) {
+        document.querySelectorAll('.canvas .slide').forEach((slide) => {
+          const b = document.createElement('div')
+          b.className = 'badge'
+          b.textContent = 'example content'
+          slide.appendChild(b)
+        })
+      }
+    }
+  </script>
+</body>
+</html>
