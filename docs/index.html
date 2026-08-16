@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Threshold — размещённые сборки</title>
+<style>
+  :root { --paper:#EEF0EC; --ink:#0B1F24; --ink-2:#3D5257; --ink-3:#6E8288; --accent:#C8871F; --rule:#C7CEC9;
+          --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink-2);
+         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+         font-size:17px; line-height:1.55; }
+  .wrap { max-width:640px; margin:0 auto; padding:64px 24px 80px; }
+  .wordmark { font-family:var(--mono); font-size:12px; letter-spacing:0.32em;
+              text-transform:uppercase; color:var(--ink); margin:0 0 40px; }
+  h1 { font-size:30px; line-height:1.15; color:var(--ink); margin:0 0 8px; letter-spacing:-0.015em; }
+  .sub { margin:0 0 40px; color:var(--ink-3); }
+  a.item { display:block; text-decoration:none; color:inherit;
+           border-top:1px solid var(--rule); padding:24px 0; }
+  a.item:first-of-type { border-top:2px solid var(--accent); }
+  a.item:hover h2 { color:var(--accent); }
+  h2 { font-size:21px; color:var(--ink); margin:0 0 6px; }
+  p { margin:0; }
+  .path { font-family:var(--mono); font-size:13px; color:var(--ink-3); margin-top:8px; }
+  footer { border-top:1px solid var(--rule); margin-top:40px; padding-top:20px;
+           font-size:14px; color:var(--ink-3); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="wordmark">Threshold</p>
+    <h1>Размещённые сборки</h1>
+    <p class="sub">Страница служебная и закрыта от индексации.</p>
+
+    <a class="item" href="app/">
+      <h2>Прототип приложения</h2>
+      <p>Четыре экрана протокола плюс экран красных флагов. Панель докладчика открывается клавишей H, переключатель недель 1 / 4 / 8 меняет состояние протокола.</p>
+      <p class="path">app/</p>
+    </a>
+
+    <a class="item" href="landing/">
+      <h2>Лендинг для смоук-теста</h2>
+      <p>Вариант назначается случайно и запоминается. Принудительно: <code>?v=a</code> — программа за $179, <code>?v=b</code> — подписка $29 в месяц.</p>
+      <p class="path">landing/</p>
+    </a>
+
+    <footer>
+      Демонстрационные материалы. Данные в прототипе вымышленные; продукт ничего не диагностирует и не лечит.
+    </footer>
+  </div>
+</body>
+</html>
