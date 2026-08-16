@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Threshold — режим докладчика</title>
+<link rel="stylesheet" href="deck.css">
+<style>
+  /* The presenter window never mirrors the deck's own styling: it is a
+     control surface, dark so it does not glow in a lit room, and it is the
+     only place notes exist. */
+  html, body { background: #0B1F24; color: #EFE9DC; height: auto; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 22px 26px 26px;
+  }
+  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+  .where {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #93A8A8;
+  }
+  .timer {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 34px; letter-spacing: 0.02em; color: #EFE9DC;
+  }
+  .timer button {
+    margin-left: 12px; background: none; border: 1px solid rgba(255,255,255,0.2);
+    color: #93A8A8; font: inherit; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 4px 9px; cursor: pointer; border-radius: 2px;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 380px; gap: 26px; margin-top: 18px; }
+  h2 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #5D7278; font-weight: 500; margin: 0 0 10px;
+  }
+  .notes {
+    font-size: 20px; line-height: 1.5; white-space: pre-wrap;
+    border-top: 2px solid #C8871F; padding-top: 16px; min-height: 240px;
+  }
+  .thumb {
+    width: 380px; height: 214px; overflow: hidden; position: relative;
+    border: 1px solid rgba(255,255,255,0.12); background: #EEF0EC;
+  }
+  .thumb .canvas { display: block !important; transform: scale(0.19792); transform-origin: top left; position: absolute; top: 0; left: 0; }
+  .thumb .slide { display: flex !important; opacity: 1 !important; animation: none !important; }
+  .thumb .num, .thumb .badge { display: none; }
+  .controls { display: flex; gap: 8px; margin-top: 14px; }
+  .controls button {
+    flex: 1; background: none; border: 1px solid rgba(255,255,255,0.2); color: #EFE9DC;
+    font: inherit; font-size: 13px; padding: 9px 0; cursor: pointer; border-radius: 2px;
+  }
+  .controls button:hover { background: rgba(255,255,255,0.06); }
+  .appx { margin-top: 22px; }
+  .appx ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .appx button {
+    width: 100%; text-align: left; background: none; border: none; color: #EFE9DC;
+    font: inherit; font-size: 14px; padding: 7px 9px; cursor: pointer; border-radius: 2px;
+    display: flex; gap: 12px;
+  }
+  .appx button:hover { background: rgba(255,255,255,0.07); }
+  .appx li::before { display: none; }   /* deck.css list marker must not leak here */
+  .appx li { padding-left: 0; }
+  .appx b {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #C8871F; font-weight: 500; min-width: 26px;
+  }
+  .hint { margin-top: 20px; font-size: 12px; color: #5D7278; line-height: 1.7; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="where" id="where">—</span>
+    <span class="timer"><span id="clock">00:00</span><button id="reset">сброс</button></span>
+  </div>
+
+  <div class="grid">
+    <section>
+      <h2>Проговорить</h2>
+      <div class="notes" id="notes"></div>
+    </section>
+    <section>
+      <h2>Следующий слайд</h2>
+      <div class="thumb" id="thumb"></div>
+      <div class="controls">
+        <button id="prev">← назад</button>
+        <button id="next">вперёд →</button>
+      </div>
+      <div class="appx">
+        <h2>Приложение</h2>
+        <ul id="appendix"></ul>
+      </div>
+    </section>
+  </div>
+
+  <p class="hint">
+    Заметки видны только в этом окне. Управление слайдами работает и здесь, и в окне показа.
+  </p>
+
+  <script src="deck.js"></script>
+  <script src="content.js" onerror="window.__example = true"></script>
+  <script>
+    if (!window.DECK) {
+      const s = document.createElement('script')
+      s.src = 'content.example.js'
+      s.onload = start
+      document.head.appendChild(s)
+    } else { start() }
+
+    function start() {
+      const deck = Deck.parse(window.DECK)
+      const total = deck.main.length
+      const elNotes = document.getElementById('notes')
+      const elWhere = document.getElementById('where')
+      const elThumb = document.getElementById('thumb')
+
+      function label(slide) {
+        return slide.kind === 'appendix' ? `Приложение ${slide.num}` : `Слайд ${slide.num} из ${total}`
+      }
+
+      function render(i) {
+        const slide = deck.all[i]
+        if (!slide) return
+        elWhere.textContent = label(slide)
+        elNotes.textContent = slide.notes || '—'
+        elThumb.innerHTML = ''
+        const nextSlide = deck.all[i + 1]
+        if (nextSlide && !(slide.kind === 'main' && i + 1 >= total)) {
+          elThumb.appendChild(Deck.renderSlide(nextSlide, i + 1, total))
+        }
+      }
+
+      // The deck and this window talk through localStorage, polled from both
+      // sides: under file:// cross-window access throws, storage does not.
+      const CH = 'threshold-deck'
+      let at = 0
+      const readState = () => {
+        try {
+          const raw = localStorage.getItem(CH + '-state')
+          return raw ? JSON.parse(raw).i : 0
+        } catch (e) { return 0 }
+      }
+      const tick = () => {
+        const i = readState()
+        if (i !== at) { at = i; render(i) }
+      }
+      at = readState()
+      render(at)
+      setInterval(tick, 180)
+
+      const goto = (i) => {
+        if (i < 0) return
+        at = i
+        render(i)
+        try { localStorage.setItem(CH + '-cmd', JSON.stringify({ i, seq: Date.now() })) } catch (e) { /* ignore */ }
+      }
+      const drive = (delta) => goto(at + delta)
+      document.getElementById('next').onclick = () => drive(1)
+      document.getElementById('prev').onclick = () => drive(-1)
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); drive(1) }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); drive(-1) }
+      })
+
+      const appx = document.getElementById('appendix')
+      deck.appendix.forEach((s, n) => {
+        const li = document.createElement('li')
+        const b = document.createElement('button')
+        const head = s.blocks.find((x) => x.type === 'h1')
+        b.innerHTML = `<b>${total + n + 1}</b><span>${head ? head.text : 'Приложение ' + s.num}</span>`
+        b.onclick = () => goto(total + n)
+        li.appendChild(b)
+        appx.appendChild(li)
+      })
+
+      // Timer runs from the moment this window opens.
+      let t0 = Date.now()
+      const clock = document.getElementById('clock')
+      document.getElementById('reset').onclick = () => { t0 = Date.now() }
+      setInterval(() => {
+        const s = Math.floor((Date.now() - t0) / 1000)
+        clock.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+      }, 1000)
+    }
+  </script>
+</body>
+</html>
