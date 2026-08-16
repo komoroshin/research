@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root { color-scheme: dark; }
+  html, body, #root { height: 100%; }
+  body {
+    margin: 0;
+    background: #17191B;
+    color: #EFE9DC;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Visible keyboard focus everywhere. */
+  :focus-visible {
+    outline: 2px solid #E9A93C;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* The signature device: one marigold hairline per screen, always meaning
+     "the line you are working on". */
+  .rule-threshold {
+    background: linear-gradient(90deg, rgba(233,169,60,0) 0%, #E9A93C 12%, #E9A93C 88%, rgba(233,169,60,0) 100%);
+  }
+  .eyebrow {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 10px;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .wave { display: flex; align-items: center; gap: 3px; height: 34px; }
+  .wave i {
+    display: block;
+    width: 3px;
+    border-radius: 2px;
+    background: #E9A93C;
+    transform-origin: center;
+    animation: wave 1000ms ease-in-out infinite;
+  }
+  .paper-grain {
+    background-image: radial-gradient(rgba(11,31,36,0.055) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.28); opacity: 0.55; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
