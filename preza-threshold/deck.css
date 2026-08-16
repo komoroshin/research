@@ -225,6 +225,12 @@ li::before {
   white-space: nowrap;
 }
 .levels td:nth-child(2) { color: var(--ink); font-weight: 600; width: 26%; }
+.levels tr.cols-2 td:nth-child(2) {
+  color: var(--ink-2);
+  font-weight: 400;
+  width: auto;
+  padding-right: 0;
+}
 .levels tr:last-child td {
   border-bottom: none;
   background: var(--accent-soft);

@@ -123,9 +123,15 @@ const Deck = (() => {
 
     const body = document.createElement('div')
     body.className = 'body'
-    if (slide.layout === 'phases') body.appendChild(phasesDiagram())
-    if (slide.layout === 'tranches') renderTranches(body, rest)
-    else renderBlocks(body, rest, slide.layout)
+    if (slide.layout === 'phases') {
+      const list = rest.find((b) => b.type === 'list')
+      body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
+      renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
+    } else if (slide.layout === 'tranches') {
+      renderTranches(body, rest)
+    } else {
+      renderBlocks(body, rest, slide.layout)
+    }
     el.appendChild(body)
 
     const num = document.createElement('div')
@@ -191,6 +197,7 @@ const Deck = (() => {
         const tb = document.createElement('tbody')
         for (const row of b.rows) {
           const tr = document.createElement('tr')
+          if (row.length === 2) tr.className = 'cols-2'
           for (const cell of row) {
             const td = document.createElement('td')
             td.innerHTML = inline(cell)
@@ -229,13 +236,33 @@ const Deck = (() => {
     renderBlocks(host, after, 'tranches')
   }
 
-  // Slide 4: four phases, drawn in code. Phase three is the product — it is
-  // the only one that repeats, and the only one drawn in the accent colour.
-  function phasesDiagram() {
+  // Slide 4: the four phases, drawn in code from the slide's own bullets.
+  // Phase three is the product — it is the only one that repeats, and the only
+  // one drawn in the accent colour.
+  function parsePhase(item) {
+    const m = /^\*\*(.+?)\*\*\s*[—–-]?\s*(.*)$/.exec(item.trim())
+    return m ? { name: m[1], sub: m[2] } : { name: item.trim(), sub: '' }
+  }
+
+  function wrap(text, max) {
+    const words = text.split(' ')
+    const lines = ['']
+    for (const w of words) {
+      const line = lines[lines.length - 1]
+      if (!line) lines[lines.length - 1] = w
+      else if ((line + ' ' + w).length <= max) lines[lines.length - 1] = line + ' ' + w
+      else lines.push(w)
+    }
+    return lines
+  }
+
+  function phasesDiagram(phases) {
     const NS = 'http://www.w3.org/2000/svg'
+    const W = 1656
+    const H = 250
     const svg = document.createElementNS(NS, 'svg')
     svg.setAttribute('class', 'diagram')
-    svg.setAttribute('viewBox', '0 0 1656 320')
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
     svg.setAttribute('role', 'img')
 
     const add = (name, attrs, cls) => {
@@ -245,59 +272,63 @@ const Deck = (() => {
       svg.appendChild(n)
       return n
     }
-    const label = (x, y, text, cls) => {
+    const label = (x, y, text, cls, anchor) => {
       const t = document.createElementNS(NS, 'text')
       t.setAttribute('x', x)
       t.setAttribute('y', y)
       if (cls) t.setAttribute('class', cls)
+      if (anchor) t.setAttribute('text-anchor', anchor)
       t.textContent = text
       svg.appendChild(t)
       return t
     }
 
-    const y = 132
-    const h = 56
-    const phases = [
-      { x: 0, w: 250, name: 'Базовый период', sub: '14 дней' },
-      { x: 274, w: 250, name: 'Элиминация', sub: '2 недели' },
-      { x: 548, w: 720, name: 'Реинтродукция', sub: 'повторяющиеся тесты', on: true },
-      { x: 1292, w: 364, name: 'Применение', sub: 'карта переносимости' },
-    ]
+    // Phase three carries the product, so it gets the width as well as the ink.
+    const weights = [1, 1, 2.15, 1.15]
+    const gap = 44
+    const usable = W - gap * (phases.length - 1)
+    const sum = weights.slice(0, phases.length).reduce((a, b) => a + b, 0)
+    let x = 0
+    const yBox = 58
+    const hBox = 54
+    const key = 2
 
-    phases.forEach((p) => {
-      if (p.on) {
-        add('rect', { x: p.x, y: y - 34, width: p.w, height: h + 68, fill: 'var(--accent-soft)' })
-        // Repeating tests with rest gaps between them.
-        const tests = 5
-        const gap = 28
-        const tw = (p.w - gap * (tests - 1) - 32) / tests
-        for (let i = 0; i < tests; i++) {
-          const x = p.x + 16 + i * (tw + gap)
-          add('rect', { x, y, width: tw, height: h, fill: 'var(--accent)' })
-          label(x + tw / 2, y + h + 34, String(i + 1), 'on').setAttribute('text-anchor', 'middle')
-          if (i < tests - 1) {
+    phases.forEach((p, i) => {
+      const w = (usable * (weights[i] || 1)) / sum
+      label(x, 34, p.name, 'big')
+
+      if (i === key) {
+        add('rect', { x: x - 10, y: yBox - 14, width: w + 20, height: hBox + 28, fill: 'var(--accent-soft)' })
+        const tests = 4
+        const tw = (w - gap * 0.7 * (tests - 1)) / tests
+        for (let k = 0; k < tests; k++) {
+          const bx = x + k * (tw + gap * 0.7)
+          add('rect', { x: bx, y: yBox, width: tw, height: hBox, fill: 'var(--accent)' })
+          if (k < tests - 1) {
             add('line', {
-              x1: x + tw + 4, y1: y + h / 2, x2: x + tw + gap - 4, y2: y + h / 2,
-              stroke: 'var(--ink-2)', 'stroke-width': 3, 'stroke-dasharray': '3 6',
-              'stroke-linecap': 'round',
+              x1: bx + tw + 5, y1: yBox + hBox / 2, x2: bx + tw + gap * 0.7 - 5, y2: yBox + hBox / 2,
+              stroke: 'var(--ink-2)', 'stroke-width': 3, 'stroke-dasharray': '3 7', 'stroke-linecap': 'round',
             })
           }
         }
-        label(p.x + 16, y - 56, p.name, 'big')
-        label(p.x + p.w - 16, y - 56, p.sub).setAttribute('text-anchor', 'end')
-        label(p.x + p.w / 2, y + h + 76, '· перерыв между тестами ·').setAttribute('text-anchor', 'middle')
       } else {
-        add('rect', { x: p.x, y, width: p.w, height: h, fill: 'none', stroke: 'var(--ink-3)', 'stroke-width': 2 })
-        label(p.x, y - 56, p.name, 'big')
-        label(p.x, y + h + 34, p.sub)
+        add('rect', { x, y: yBox, width: w, height: hBox, fill: 'none', stroke: 'var(--ink-3)', 'stroke-width': 2 })
       }
+
+      // Mono at 26px runs ~17px per character; wrap to what the column holds.
+      const perLine = Math.max(9, Math.floor(w / 17))
+      wrap(p.sub, perLine).forEach((line, n) => label(x, yBox + hBox + 40 + n * 32, line))
+      x += w + gap
     })
 
-    // The spine: phases run left to right, in order.
-    add('line', { x1: 0, y1: y + h + 78, x2: 1656, y2: y + h + 78, stroke: 'var(--rule)', 'stroke-width': 2 })
-    for (const p of phases) {
-      add('line', { x1: p.x, y1: y + h + 70, x2: p.x, y2: y + h + 86, stroke: 'var(--rule)', 'stroke-width': 2 })
-    }
+    // The spine: the phases run left to right, in order.
+    const yAxis = H - 18
+    add('line', { x1: 0, y1: yAxis, x2: W, y2: yAxis, stroke: 'var(--rule)', 'stroke-width': 2 })
+    let tick = 0
+    phases.forEach((p, i) => {
+      add('line', { x1: tick, y1: yAxis - 8, x2: tick, y2: yAxis + 8, stroke: 'var(--rule)', 'stroke-width': 2 })
+      tick += (usable * (weights[i] || 1)) / sum + gap
+    })
     return svg
   }
 
