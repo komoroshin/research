@@ -3,8 +3,9 @@ import { Camera, X, Plus, Check } from 'lucide-react'
 import { Screen, Eyebrow, Card, ThresholdRule, StatusMark, STATUS_COLOR, Stagger } from '../components/bits.jsx'
 import Assistant from '../components/Assistant.jsx'
 import { MEAL, ASSISTANT } from '../data.js'
+import mealPhoto from '../assets/meal.jpg'
 
-// Ничего не снимается и не распознаётся: фотография нарисована кодом, разбор
+// Ничего не снимается и не распознаётся: кадр подготовлен заранее, разбор
 // проигрывается по таймеру. Пошаговое появление — блюдо, затем ингредиенты,
 // затем группы — и есть то, ради чего экран сделан.
 const ANALYZE_MS = 1500
@@ -175,40 +176,19 @@ function groupStatus(state, group) {
   return row ? row.status : 'pending'
 }
 
-// Фотография нарисована кодом: стоковых снимков нет, людей и брендов нет.
+// Кадр подготовлен заранее и лежит в src/assets/meal.jpg. Заменить блюдо —
+// положить другой файл под тем же именем; больше на экране ничего от него не
+// зависит.
 function Plate({ dim }) {
   return (
-    <svg viewBox="0 0 390 240" className={`block w-full ${dim ? 'opacity-70' : ''}`} role="img">
-      <rect width="390" height="240" fill="#16332C" />
-      <g opacity="0.5">
-        <rect x="0" y="150" width="390" height="90" fill="#12292A" />
-      </g>
-      <ellipse cx="195" cy="126" rx="118" ry="86" fill="#E8E2D4" />
-      <ellipse cx="195" cy="126" rx="96" ry="68" fill="#DED7C6" />
-      {/* паста */}
-      <g stroke="#E9A93C" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.95">
-        <path d="M120 118c22-20 60-24 84-8s44 10 62-6" />
-        <path d="M118 134c26-8 50 8 78 6s44-14 66-4" />
-        <path d="M126 150c24 6 48-6 74 0s46 8 62-8" />
-      </g>
-      {/* грибы */}
-      <g fill="#5C4A38">
-        <ellipse cx="158" cy="120" rx="15" ry="9" />
-        <ellipse cx="232" cy="140" rx="13" ry="8" />
-        <ellipse cx="196" cy="104" rx="11" ry="7" />
-      </g>
-      {/* зелень */}
-      <g fill="#74B49B">
-        <circle cx="145" cy="146" r="4" />
-        <circle cx="214" cy="112" r="3.5" />
-        <circle cx="243" cy="124" r="3" />
-        <circle cx="176" cy="158" r="3.5" />
-      </g>
-      {/* соус */}
-      <g fill="#F3EEE2" opacity="0.75">
-        <ellipse cx="185" cy="140" rx="26" ry="12" />
-        <ellipse cx="222" cy="118" rx="16" ry="8" />
-      </g>
-    </svg>
+    <div className="relative aspect-[13/8] w-full overflow-hidden bg-raised">
+      <img
+        src={mealPhoto}
+        alt=""
+        className={`h-full w-full object-cover transition duration-300 ${
+          dim ? 'scale-[1.02] blur-[1px] brightness-75' : ''
+        }`}
+      />
+    </div>
   )
 }

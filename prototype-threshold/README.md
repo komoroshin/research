@@ -106,13 +106,21 @@ All of it is in `src/data.js`, after the weekly states:
 Wording for all of it is in `src/content.js` under `meal`, `ask` and
 `assistant`.
 
-### The plate is drawn, not photographed
+### The photograph
 
-`MealPhoto.jsx` ends with a `Plate` component: an SVG of a bowl of pasta in the
-product's own palette. This environment has no image generation and no access
-to stock libraries, so a real photograph could not be produced or licensed
-here. To swap it for one, drop a JPEG into `public/` and replace the `<Plate/>`
-element with an `<img>` — nothing else on the screen depends on it.
+`src/assets/meal.jpg` — a real plate of creamy mushroom pasta, supplied by the
+team, cropped to 780×480 and saved at ~66 KB so it costs nothing to load. It is
+imported by `MealPhoto.jsx`, so the build fingerprints it and the path keeps
+working from any subfolder.
+
+Before the photo arrived the plate was drawn in SVG; that version is gone.
+To change the dish, drop another file at the same path — the `Plate` component
+is the only thing that reads it, and the ingredient list next to it lives in
+`MEAL` in `src/data.js`, so both have to be edited together to stay honest.
+
+Untouched in the viewfinder state the photo is blurred and dimmed under the
+camera button, sharp after the shot: the difference between "about to shoot"
+and "shot" is carried by the image, not by a caption.
 
 ## Presenter mode
 
