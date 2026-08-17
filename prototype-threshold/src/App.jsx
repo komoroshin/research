@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Mic, Camera, FlaskConical, Activity, Ruler, MessageCircleQuestion, Eye } from 'lucide-react'
+import { Mic, Camera, FlaskConical, Activity, Ruler, MessageCircleQuestion, Eye, ChevronRight } from 'lucide-react'
 import { CONTENT } from './content.js'
-import { WEEKS } from './data.js'
+import { WEEKS, PROTOCOL } from './data.js'
 import Presenter from './components/Presenter.jsx'
 import EveningCheck from './screens/EveningCheck.jsx'
+import Calendar from './screens/Calendar.jsx'
 import MealPhoto from './screens/MealPhoto.jsx'
 import AskThreshold from './screens/AskThreshold.jsx'
 import ChallengeDay from './screens/ChallengeDay.jsx'
@@ -11,7 +12,9 @@ import Signals from './screens/Signals.jsx'
 import ToleranceMap from './screens/ToleranceMap.jsx'
 import RedFlag from './screens/RedFlag.jsx'
 
-// Порядок показа: чек → еда → челлендж → связи → карта → вопрос.
+// Порядок показа: календарь → чек → еда → челлендж → связи → карта → вопрос.
+// В нижней панели календаря нет намеренно: в него ведёт полоса состояния,
+// которая стоит на каждом экране потока, а семь вкладок в ряд не помещаются.
 const SCREENS = ['check', 'meal', 'today', 'signals', 'map', 'ask']
 const NAV_ICON = {
   check: Mic,
@@ -56,6 +59,8 @@ export default function App() {
   const body = useMemo(() => {
     const props = { t, state, lang, key: `${screen}-${week}-${seed}` }
     switch (screen) {
+      case 'calendar':
+        return <Calendar {...props} onOpenMap={() => goto('map')} />
       case 'check':
         return <EveningCheck {...props} onOpenMeal={() => goto('meal')} />
       case 'meal':
@@ -137,11 +142,16 @@ export default function App() {
           } sm:h-[844px] sm:w-[390px] sm:rounded-[46px] sm:border-[9px] sm:border-[#2B3033] sm:shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.06)]`}>
             <div className="flex h-full flex-col">
               <StatusBar />
-              <Header
-                t={t}
-                label={screen === 'redflag' ? t.redFlag.eyebrow : t.phase[state.phase]}
-                onWordmark={() => goto('check')}
-              />
+              <Header t={t} onWordmark={() => goto('check')} />
+              {screen !== 'redflag' && (
+                <StatusStrip
+                  t={t}
+                  state={state}
+                  week={week}
+                  active={screen === 'calendar'}
+                  onOpen={() => goto('calendar')}
+                />
+              )}
               <main className="no-scrollbar flex-1 overflow-y-auto overscroll-contain">{body}</main>
               {screen !== 'redflag' && <Nav t={t} screen={screen} onScreen={goto} />}
             </div>
@@ -181,16 +191,37 @@ function StatusBar() {
   )
 }
 
-function Header({ t, label, onWordmark }) {
+function Header({ t, onWordmark }) {
   return (
-    <header className="flex items-baseline justify-between px-6 pb-3 pt-1">
+    <header className="flex items-baseline justify-between px-6 pb-2 pt-1">
       <button onClick={onWordmark} className="text-left">
         <span className="font-mono text-[13px] uppercase tracking-[0.3em] text-bone">{t.brand}</span>
       </button>
-      <span className="shrink-0 pl-3 text-right font-mono text-[9px] uppercase leading-[1.35] tracking-[0.14em] text-faint">
-        {label}
-      </span>
     </header>
+  )
+}
+
+// Фаза раньше стояла подписью в шапке. Теперь её несёт полоса, и дублировать
+// её в двух соседних строках незачем.
+function StatusStrip({ t, state, week, active, onOpen }) {
+  return (
+    <button
+      onClick={onOpen}
+      className={`mx-6 mb-3 flex items-center gap-2 rounded-lg border px-3 py-2 text-left transition ${
+        active
+          ? 'border-marigold/40 bg-marigold/[0.07]'
+          : 'border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05]'
+      }`}
+    >
+      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-bone">
+        {t.statusStrip.week(week, PROTOCOL.totalDays / 7)}
+      </span>
+      <span className="text-faint">·</span>
+      <span className="flex-1 font-mono text-[10px] uppercase tracking-[0.12em] text-dim">
+        {t.calendar.phases[state.calendar.currentPhase].name}
+      </span>
+      <ChevronRight size={13} strokeWidth={1.8} className={active ? 'text-marigold' : 'text-faint'} />
+    </button>
   )
 }
 

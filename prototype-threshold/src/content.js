@@ -12,7 +12,7 @@ export const CONTENT = {
   en: {
     brand: 'Threshold',
     caseLabel: 'Case',
-    nav: { check: 'Check', meal: 'Meal', today: 'Today', signals: 'Signals', map: 'Map', ask: 'Ask' },
+    nav: { calendar: 'Plan', check: 'Check', meal: 'Meal', today: 'Today', signals: 'Signals', map: 'Map', ask: 'Ask' },
     phase: {
       elimination: 'Base period',
       reintroduction: 'Reintroduction',
@@ -81,6 +81,52 @@ export const CONTENT = {
       again: 'Record again',
     },
 
+
+
+    // -- Экран календаря ---------------------------------------------------
+    calendar: {
+      eyebrow: 'Protocol',
+      title: 'Your eight weeks',
+      phases: {
+        base: {
+          name: 'Baseline',
+          duration: '7 to 10 days',
+          line: 'You change nothing. Eat as usual and log the evenings — this is the point everything later is measured against.',
+        },
+        elimination: {
+          name: 'Elimination',
+          duration: '2 to 6 weeks',
+          line: 'The groups come out together. You wait for the symptoms to settle, and that is what decides when the next phase starts.',
+        },
+        reintro: {
+          name: 'Reintroduction',
+          duration: '4 to 6 weeks',
+          line: 'The groups come back one at a time, in a fixed dose over three days, with rest days between them.',
+        },
+        result: {
+          name: 'Result',
+          duration: '',
+          line: 'You keep the amounts your own tests settled on, and a page your doctor can read.',
+        },
+      },
+      states: { done: 'closed', now: 'now', ahead: 'forecast' },
+      youAreHere: 'You are here',
+      position: (day, total) => `Day ${day} of ${total}`,
+      stepNow: (group, day, of) => `${group} challenge, day ${day} of ${of}`,
+      stepBase: (day, total) => `Baseline, day ${day} of ${total}`,
+      stepDone: 'All groups closed',
+      forecastNote:
+        'Dates ahead are a forecast, not a schedule: each phase ends when the records say so, so these edges move.',
+      exitRule:
+        'If symptoms have not settled in six weeks, the protocol closes here: the record says this diet is probably not the route, and you get a different one rather than a longer diet.',
+      exitRuleLabel: 'Way out',
+      endTitle: 'What you end with',
+      endItems: ['Tolerance map — the amount for each group', 'One page for your doctor'],
+      endCta: 'Open the map',
+    },
+    statusStrip: {
+      week: (n, of) => `Week ${n} of ${of}`,
+    },
 
     // -- Экран 2: журнал питания по фото ---------------------------------
     meal: {
@@ -294,7 +340,7 @@ export const CONTENT = {
   ru: {
     brand: 'Threshold',
     caseLabel: 'Запись',
-    nav: { check: 'Чек', meal: 'Еда', today: 'Сегодня', signals: 'Связи', map: 'Карта', ask: 'Вопрос' },
+    nav: { calendar: 'План', check: 'Чек', meal: 'Еда', today: 'Сегодня', signals: 'Связи', map: 'Карта', ask: 'Вопрос' },
     phase: {
       elimination: 'Базовый период',
       reintroduction: 'Реинтродукция',
@@ -360,6 +406,52 @@ export const CONTENT = {
       again: 'Записать заново',
     },
 
+
+
+    // -- Экран календаря ---------------------------------------------------
+    calendar: {
+      eyebrow: 'Протокол',
+      title: 'Твои восемь недель',
+      phases: {
+        base: {
+          name: 'База',
+          duration: '7–10 дней',
+          line: 'Вы ничего не меняете. Едите как обычно и отмечаете вечера — это та точка, с которой потом всё сравнивается.',
+        },
+        elimination: {
+          name: 'Элиминация',
+          duration: '2–6 недель',
+          line: 'Группы убираются разом. Вы ждёте, пока симптомы утихнут, и именно это решает, когда начнётся следующая фаза.',
+        },
+        reintro: {
+          name: 'Реинтродукция',
+          duration: '4–6 недель',
+          line: 'Группы возвращаются по одной: фиксированная доза три дня подряд и дни отдыха между тестами.',
+        },
+        result: {
+          name: 'Результат',
+          duration: '',
+          line: 'У вас остаются количества, на которых остановились ваши тесты, и страница, которую можно показать врачу.',
+        },
+      },
+      states: { done: 'закрыта', now: 'сейчас', ahead: 'прогноз' },
+      youAreHere: 'Вы здесь',
+      position: (day, total) => `День ${day} из ${total}`,
+      stepNow: (group, day, of) => `Челлендж: ${group.toLowerCase()}, день ${day} из ${of}`,
+      stepBase: (day, total) => `База, день ${day} из ${total}`,
+      stepDone: 'Все группы закрыты',
+      forecastNote:
+        'Даты впереди — прогноз, а не расписание: фаза кончается тогда, когда это скажут записи, поэтому границы сдвигаются.',
+      exitRule:
+        'Если за шесть недель симптомы не утихли, протокол здесь и закрывается: записи говорят, что диета, скорее всего, не тот маршрут, и вы получаете другой маршрут, а не более длинную диету.',
+      exitRuleLabel: 'Выход',
+      endTitle: 'Чем это заканчивается',
+      endItems: ['Карта переносимости — количество по каждой группе', 'Одна страница для врача'],
+      endCta: 'Открыть карту',
+    },
+    statusStrip: {
+      week: (n, of) => `Неделя ${n} из ${of}`,
+    },
 
     // -- Экран 2: журнал питания по фото ---------------------------------
     meal: {

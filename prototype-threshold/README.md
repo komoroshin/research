@@ -71,6 +71,46 @@ lactose crossed its threshold → GOS 32–34 (six days), GOS clean → fructose
 38–40 (three days). At week 8 the person is on day 54 with 51 evenings logged;
 the three missing evenings are the ones that left fructose undetermined.
 
+## The calendar and the status strip
+
+**Screen 1, "Your eight weeks".** Four phases down one rail: baseline, then
+elimination, then reintroduction, then the result. Each carries its duration
+and one line about what happens to the person, not what the app does.
+
+The rail is the argument. Closed phases have a solid rail and a tick; the
+current one is marigold and holds the "you are here" marker with the day and
+the current step; phases ahead have a **dashed rail, no dates and the word
+forecast**. Nothing on this screen promises a date, because the boundary moves
+with the symptoms — the line under the list says so, but the drawing says it
+first.
+
+Under elimination sits the way out: if symptoms have not settled in six weeks,
+the protocol closes there and says this diet is probably not the route. It is
+the strongest line on the screen, so it is next to the phase it belongs to
+rather than in a footer.
+
+**The strip.** One row under the wordmark on every flow screen: "Week 4 of 8 ·
+Reintroduction", tapping it opens the calendar. It is absent on the red-flag
+screen, where the flow is stopped.
+
+Data: `PROTOCOL` in `src/data.js` (phase order, total days, the baseline
+window) plus `calendar.currentPhase` inside each weekly state. Copy is under
+`calendar` and `statusStrip` in `src/content.js`.
+
+### Three decisions this screen forced
+
+1. **The calendar is not in the bottom bar.** Seven tabs do not fit at 390 px,
+   and the spec's own entry point is the strip, which is on every screen. The
+   presenter panel opens it as screen 1.
+2. **The phase label left the header.** The strip carries "Reintroduction", and
+   printing it twice in two adjacent rows was the only visible duplication on
+   the screen. The header is now the wordmark alone.
+3. **Two numbers on the week-1 screen changed.** It used to say "day 6 of 14"
+   and "first challenge opens in 8 days", which pointed at day 14 — while the
+   queue on the same screen had the first challenge on days 8–10. The base
+   period is 7 days and the challenge opens in 2. `npm run check` now asserts
+   that promise lands on the day the queue prints.
+
 ## What the June revision added
 
 Two screens and a new demo order.
@@ -172,15 +212,17 @@ round it inside the product. For a stand visitor who gets stuck, tapping the
 
 ## Demo order
 
-1. **Check** — evening voice check. Answers "will anyone actually fill this in".
-2. **Meal** — a plate photographed and taken apart into groups. The most
+1. **Plan** — where the eight weeks go and what the person ends with. Answers
+   "what am I paying for" before any function is shown.
+2. **Check** — evening voice check. Answers "will anyone actually fill this in".
+3. **Meal** — a plate photographed and taken apart into groups. The most
    frequent moment in the product, several times a day.
-3. **Today** — challenge day with today's amount, the dose ladder and the queue.
+4. **Today** — challenge day with today's amount, the dose ladder and the queue.
    The queue is the point: it is what a diary does not have.
-4. **Signals** — an association read out of the person's own records, with a
+5. **Signals** — an association read out of the person's own records, with a
    counter-example where nothing was found.
-5. **Map** — the tolerance map, the doctor summary, the next protocol.
-6. **Your lines** — one question answered from this person's own thresholds.
+6. **Map** — the tolerance map, the doctor summary, the next protocol.
+7. **Your lines** — one question answered from this person's own thresholds.
    This is the answer to "why keep paying after week eight".
 
 ---

@@ -19,6 +19,22 @@ export const CASE = {
   reactionLine: 4,
 }
 
+// Структура протокола для экрана календаря. Диапазоны — то, что продукт
+// обещает вообще; положение человека внутри них берётся из недельного
+// состояния ниже. Дат прошедших фаз календарь не печатает намеренно: их
+// границы двигаются по симптомам, и печатать их значило бы обещать расписание.
+export const PROTOCOL = {
+  totalDays: 56,
+  // Период, по которому считается «до» в сравнении на карте переносимости.
+  baseline: { fromDay: 1, toDay: 7 },
+  phases: [
+    { id: 'base' },
+    { id: 'elimination', exitRule: true },
+    { id: 'reintro' },
+    { id: 'result' },
+  ],
+}
+
 export const GROUP_IDS = ['sorbitol', 'fructans', 'lactose', 'gos', 'fructose']
 
 // Outcome vocabulary, deliberately non-diagnostic:
@@ -34,7 +50,7 @@ export const WEEKS = {
     protocolDay: 6,
     protocolDayTotal: 56,
     phaseDay: 6,
-    phaseDayTotal: 14,
+    phaseDayTotal: 7,
     check: {
       variant: 'w1',
       streak: 6,
@@ -46,7 +62,7 @@ export const WEEKS = {
       ],
     },
     challenge: null,
-    nextChallengeInDays: 8,
+    nextChallengeInDays: 2,
     queue: [
       { id: 'sorbitol', status: 'queued', order: 1 },
       { id: 'fructans', status: 'queued', order: 2 },
@@ -55,6 +71,7 @@ export const WEEKS = {
       { id: 'fructose', status: 'queued', order: 5 },
     ],
     signals: { enough: false, daysLogged: 6, daysNeeded: 14 },
+    calendar: { currentPhase: 'base' },
     map: {
       rows: GROUP_IDS.map((id) => ({ id, status: 'pending' })),
       baseline: 6.8,
@@ -112,6 +129,7 @@ export const WEEKS = {
       { id: 'gos', status: 'queued', order: 4, days: 'day 32' },
       { id: 'fructose', status: 'queued', order: 5, days: 'day 38' },
     ],
+    calendar: { currentPhase: 'reintro' },
     signals: {
       enough: true,
       primary: {
@@ -181,6 +199,7 @@ export const WEEKS = {
       { id: 'gos', status: 'done', outcome: 'tolerated', order: 4, days: 'day 32–34' },
       { id: 'fructose', status: 'done', outcome: 'undetermined', order: 5, days: 'day 38–40' },
     ],
+    calendar: { currentPhase: 'result' },
     signals: {
       enough: true,
       primary: { group: 'fructans', symptom: 'bloating', lagHours: 5, hits: 7, of: 9 },

@@ -1,7 +1,7 @@
 // Consistency check for the scenario. The demo's credibility rests on the
 // numbers on screen 3 agreeing with the map on screen 4, and on both agreeing
 // with what is actually drawn. Run with: npm run check
-import { WEEKS, CASE, MEAL, ASK } from './src/data.js'
+import { WEEKS, CASE, MEAL, ASK, PROTOCOL } from './src/data.js'
 import { CONTENT } from './src/content.js'
 
 let failed = 0
@@ -148,6 +148,70 @@ for (const [wk, s] of Object.entries(WEEKS)) {
   ok(
     w8.queue.find((q) => q.id === w8.signals.counter.group).outcome === 'tolerated',
     'группа-контрпример закрыта в очереди как «реакции нет»'
+  )
+}
+
+// 7b. Календарь: три проверки из дополнения к ТЗ.
+{
+  const phaseIds = PROTOCOL.phases.map((p) => p.id)
+  for (const [wk, s] of Object.entries(WEEKS)) {
+    const label = `week ${wk}`
+    ok(
+      phaseIds.includes(s.calendar.currentPhase),
+      `${label}: фаза календаря «${s.calendar.currentPhase}» есть в структуре протокола`
+    )
+
+    // 1. День и неделя в календаре совпадают с состоянием очереди.
+    const wkNo = Math.ceil(s.protocolDay / 7)
+    ok(
+      wkNo === Number(wk),
+      `${label}: день ${s.protocolDay} попадает в неделю ${wkNo}, а полоса состояния показывает ${wk}`
+    )
+    if (s.challenge) {
+      const row = s.queue.find((q) => q.id === s.challenge.group)
+      ok(
+        row && row.status === 'testing',
+        `${label}: группа, которую календарь называет текущим шагом, помечена в очереди как тестируемая`
+      )
+      ok(
+        s.calendar.currentPhase === 'reintro',
+        `${label}: идёт челлендж — календарь стоит на реинтродукции`
+      )
+    }
+    if (s.phase === 'complete') {
+      ok(s.calendar.currentPhase === 'result', `${label}: протокол закрыт — календарь стоит на результате`)
+    }
+
+    // 2. Число проверенных групп совпадает у очереди и у карты.
+    const doneInQueue = s.queue.filter((q) => q.status === 'done').length
+    const resolvedOnMap = s.map.rows.filter(
+      (r) => r.status !== 'pending' && r.status !== 'testing'
+    ).length
+    ok(
+      doneInQueue === resolvedOnMap,
+      `${label}: закрытых групп в очереди ${doneInQueue}, на карте ${resolvedOnMap}`
+    )
+  }
+
+  // 3. Базовый период и число «до» на карте — про один и тот же отрезок.
+  const baselineDays = PROTOCOL.baseline.toDay - PROTOCOL.baseline.fromDay + 1
+  ok(
+    baselineDays === WEEKS[1].phaseDayTotal,
+    `базовый период на карте (${baselineDays} дн.) равен базовому периоду на экране челленджа (${WEEKS[1].phaseDayTotal} дн.)`
+  )
+  const baselines = Object.values(WEEKS).map((s) => s.map.baseline)
+  ok(
+    new Set(baselines).size === 1,
+    `число «до» одинаково во всех неделях: ${[...new Set(baselines)].join(', ')}`
+  )
+  const firstChallengeStart = Number(WEEKS[8].queue[0].days.replace('day ', '').split('–')[0])
+  ok(
+    firstChallengeStart > PROTOCOL.baseline.toDay,
+    `первый челлендж (день ${firstChallengeStart}) начинается после базового периода (по день ${PROTOCOL.baseline.toDay})`
+  )
+  ok(
+    WEEKS[1].protocolDay + WEEKS[1].nextChallengeInDays === firstChallengeStart,
+    `обещание «первый челлендж через ${WEEKS[1].nextChallengeInDays} дн.» ведёт на день ${firstChallengeStart}`
   )
 }
 
