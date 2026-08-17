@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Mic, FlaskConical, Activity, Ruler } from 'lucide-react'
+import { Mic, FlaskConical, Activity, Ruler, Eye } from 'lucide-react'
 import { CONTENT } from './content.js'
 import { WEEKS } from './data.js'
 import Presenter from './components/Presenter.jsx'
@@ -99,7 +99,7 @@ export default function App() {
       <div className="relative flex min-h-screen items-center justify-center p-0 sm:p-8">
         <div className="relative">
           {/* Language toggle sits on the frame, not in the product. */}
-          <div className="absolute right-2 top-2 z-20 flex overflow-hidden rounded-full border border-white/10 bg-black/40 backdrop-blur sm:-right-3 sm:-top-3">
+          <div className="absolute bottom-24 right-2 z-20 flex overflow-hidden rounded-full border border-white/10 bg-black/50 backdrop-blur sm:-right-3 sm:-top-3 sm:bottom-auto">
             {['en', 'ru'].map((l) => (
               <button
                 key={l}
@@ -114,7 +114,9 @@ export default function App() {
           </div>
 
           {/* Phone */}
-          <div className="relative h-[100dvh] w-full overflow-hidden bg-ink sm:h-[844px] sm:w-[390px] sm:rounded-[46px] sm:border-[9px] sm:border-[#2B3033] sm:shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.06)]">
+          <div className={`relative h-[100dvh] w-full overflow-hidden bg-ink ${
+            panel ? 'pt-[54px] sm:pt-0' : ''
+          } sm:h-[844px] sm:w-[390px] sm:rounded-[46px] sm:border-[9px] sm:border-[#2B3033] sm:shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.06)]`}>
             <div className="flex h-full flex-col">
               <StatusBar />
               <Header
@@ -130,9 +132,18 @@ export default function App() {
       </div>
 
       {!panel && (
-        <p className="fixed bottom-3 left-1/2 z-30 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/25">
-          {t.presenter.showHint}
-        </p>
+        <>
+          <button
+            onClick={() => setPanel(true)}
+            aria-label={t.presenter.label}
+            className="fixed right-3 top-3 z-30 rounded-full border border-white/15 bg-black/50 p-2 text-white/50 backdrop-blur transition hover:text-white sm:right-4 sm:top-4"
+          >
+            <Eye size={14} strokeWidth={1.7} />
+          </button>
+          <p className="fixed bottom-3 left-1/2 z-30 hidden -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.16em] text-white/25 sm:block">
+            {t.presenter.showHint}
+          </p>
+        </>
       )}
     </div>
   )
