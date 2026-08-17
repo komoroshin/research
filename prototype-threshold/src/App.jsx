@@ -111,7 +111,11 @@ export default function App() {
       />
 
       <div className="relative flex min-h-screen items-center justify-center p-0 sm:p-8">
-        <div className="relative">
+        {/* На телефоне обёртка должна занимать ровно ширину экрана. Без w-full
+            она была шириной по содержимому, и приложение сужалось или
+            расширялось в зависимости от длины слов — по-русски шире, по-английски
+            уже. */}
+        <div className="relative w-full sm:w-auto">
           {/* Language toggle sits on the frame, not in the product. */}
           <div className="absolute bottom-24 right-2 z-20 flex overflow-hidden rounded-full border border-white/10 bg-black/50 backdrop-blur sm:-right-3 sm:-top-3 sm:bottom-auto">
             {['en', 'ru'].map((l) => (
