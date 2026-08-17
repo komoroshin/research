@@ -337,3 +337,76 @@ li::before {
   .slide { display: flex !important; opacity: 1 !important; animation: none !important; position: absolute; }
   .overlay, .badge { display: none !important; }
 }
+
+/* --- управление касанием -------------------------------------------------
+   Клавиатуры на телефоне нет, поэтому показ должен листаться пальцем.
+   Кнопки появляются только там, где нет мыши либо экран узкий: на проекторе
+   и в PDF их нет. */
+
+.deck-controls,
+.deck-picker { display: none; }
+
+@media (hover: none), (max-width: 900px) {
+  .deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(11, 31, 36, 0.82);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+  }
+  .deck-controls button {
+    min-width: 46px;
+    height: 40px;
+    border: none;
+    background: none;
+    color: var(--paper);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 22px;
+    line-height: 1;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .deck-controls button.counter { font-size: 14px; letter-spacing: 0.08em; min-width: 74px; }
+  .deck-controls button:disabled { opacity: 0.28; }
+  .deck-controls button:active { background: rgba(255, 255, 255, 0.14); }
+
+  .deck-picker {
+    position: fixed;
+    left: 50%;
+    bottom: 68px;
+    transform: translateX(-50%);
+    display: none;
+    grid-template-columns: repeat(6, 46px);
+    gap: 6px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(11, 31, 36, 0.94);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    max-width: calc(100vw - 24px);
+  }
+  .deck-picker.show { display: grid; }
+  .deck-picker button {
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--paper);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .deck-picker button.appendix { background: rgba(200, 135, 31, 0.22); color: #F0E2C8; }
+  .deck-picker button.on { background: var(--accent); color: var(--ink); }
+}
+
+@media print {
+  .deck-controls, .deck-picker { display: none !important; }
+}

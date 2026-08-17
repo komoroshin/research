@@ -355,12 +355,15 @@ function boot(source) {
     canvases.forEach((c) => { c.style.transform = `scale(${scale})` })
   }
 
+  let updateControls = () => {}
+
   function show(i) {
     index = Math.max(0, Math.min(canvases.length - 1, i))
     canvases.forEach((c, n) => {
       c.classList.toggle('is-current', n === index)
       c.querySelector('.slide').classList.toggle('is-current', n === index)
     })
+    updateControls()
     sync()
   }
 
@@ -440,6 +443,93 @@ function boot(source) {
         break
     }
   })
+
+  // --- touch: без клавиатуры показ был непроходим ------------------------
+  // Свайп по горизонтали, тап по краям экрана и видимые кнопки. Кнопки
+  // показываются только там, где нет мыши или экран узкий — на проекторе
+  // ничего лишнего.
+  let touchX = null
+  let touchY = null
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return
+    touchX = e.touches[0].clientX
+    touchY = e.touches[0].clientY
+  }, { passive: true })
+
+  document.addEventListener('touchend', (e) => {
+    if (touchX === null) return
+    const t = e.changedTouches[0]
+    const dx = t.clientX - touchX
+    const dy = t.clientY - touchY
+    touchX = null
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      dx < 0 ? next() : prev()
+    }
+  }, { passive: true })
+
+  // Тап по краю: правая треть — вперёд, левая — назад. Середина не реагирует,
+  // чтобы случайное касание не листало.
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.deck-controls') || e.target.closest('.deck-picker')) return
+    // Открытый список закрывается касанием мимо и слайд при этом не листает.
+    const picker = document.querySelector('.deck-picker.show')
+    if (picker) {
+      picker.classList.remove('show')
+      return
+    }
+    const x = e.clientX / window.innerWidth
+    if (x > 0.68) next()
+    else if (x < 0.32) prev()
+  })
+
+  buildControls()
+
+  function buildControls() {
+    const bar = document.createElement('div')
+    bar.className = 'deck-controls'
+
+    const mk = (label, aria, fn) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.textContent = label
+      b.setAttribute('aria-label', aria)
+      b.addEventListener('click', fn)
+      return b
+    }
+
+    const prevBtn = mk('‹', 'Предыдущий слайд', prev)
+    const counter = mk('', 'Список слайдов', () => picker.classList.toggle('show'))
+    counter.className = 'counter'
+    const nextBtn = mk('›', 'Следующий слайд', next)
+
+    bar.append(prevBtn, counter, nextBtn)
+    document.body.appendChild(bar)
+
+    // Список для перехода: на телефоне номер с клавиатуры не набрать.
+    const picker = document.createElement('div')
+    picker.className = 'deck-picker'
+    deck.all.forEach((slide, i) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.textContent = slide.kind === 'appendix' ? `A${slide.num}` : String(slide.num)
+      if (slide.kind === 'appendix') b.className = 'appendix'
+      b.addEventListener('click', () => {
+        show(i)
+        picker.classList.remove('show')
+      })
+      picker.appendChild(b)
+    })
+    document.body.appendChild(picker)
+
+    updateControls = () => {
+      const slide = deck.all[index]
+      counter.textContent = slide.kind === 'appendix' ? `A${slide.num}` : `${slide.num} / ${total}`
+      prevBtn.disabled = index === 0
+      nextBtn.disabled = index >= lastMain && index < total
+      picker.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === index))
+    }
+    updateControls()
+  }
 
   window.addEventListener('hashchange', () => {
     const m = /i=(\d+)/.exec(location.hash)
