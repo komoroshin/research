@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Moon, RotateCcw } from 'lucide-react'
 import { Screen, Eyebrow, Card, ThresholdRule, StatusMark, STATUS_COLOR } from '../components/bits.jsx'
 import Assistant from '../components/Assistant.jsx'
 import { ASSISTANT } from '../data.js'
@@ -6,6 +6,8 @@ import { ASSISTANT } from '../data.js'
 export default function ChallengeDay({ t, state, onOpenMap }) {
   const c = state.challenge
   const maxAmount = c ? Math.max(...c.ladder.map((r) => r.amount)) : 1
+  const conf = c && c.confounder
+  const flagged = conf ? conf.day : null
 
   return (
     <Screen>
@@ -75,14 +77,20 @@ export default function ChallengeDay({ t, state, onOpenMap }) {
                     </div>
                     <span
                       className={`w-[70px] shrink-0 text-right font-mono text-[9px] uppercase leading-tight tracking-[0.08em] ${
-                        r.state === 'done'
+                        flagged === r.day
+                          ? 'text-plum'
+                          : r.state === 'done'
                           ? 'text-celadon'
                           : active
                           ? 'text-marigold'
                           : 'text-faint'
                       }`}
                     >
-                      {r.state === 'done' ? t.today.noReaction : t.today.ladderStates[r.state]}
+                      {flagged === r.day
+                        ? t.today.unreliable
+                        : r.state === 'done'
+                        ? t.today.noReaction
+                        : t.today.ladderStates[r.state]}
                     </span>
                   </div>
                 )
@@ -90,6 +98,30 @@ export default function ChallengeDay({ t, state, onOpenMap }) {
             </div>
           </div>
 
+          {conf && (
+            <div className="mt-4 rounded-xl border border-plum/30 bg-plum/[0.06] px-4 py-4">
+              <div className="flex items-start gap-2.5">
+                <Moon size={15} strokeWidth={1.8} className="mt-[2px] shrink-0 text-plum" />
+                <div className="flex-1">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-plum">
+                    {t.today.confounderTitle}
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-bone/85">
+                    {t.today.confounderBody(conf.sleep.h, conf.sleep.m)}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between border-t border-white/[0.07] pt-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
+                  {t.today.confounderSource}
+                </span>
+                <button className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-marigold">
+                  <RotateCcw size={12} strokeWidth={2} />
+                  {t.today.confounderAction}
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : state.phase === 'elimination' ? (
         <>

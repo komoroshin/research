@@ -58,6 +58,16 @@ for (const [wk, s] of Object.entries(WEEKS)) {
       `${label}: counter-example stays a minority of its exposures`)
   }
 
+  // 3b. Помеченный день должен существовать в лестнице и быть уже записанным:
+  //     нельзя объявить недостоверным день, который ещё не наступил.
+  if (s.challenge && s.challenge.confounder) {
+    const conf = s.challenge.confounder
+    const rung = s.challenge.ladder.find((r) => r.day === conf.day)
+    ok(Boolean(rung), `${label}: помеченный день ${conf.day} есть в лестнице доз`)
+    ok(rung && rung.state === 'done', `${label}: помеченный день уже записан, а не впереди`)
+    ok(conf.day < s.challenge.day, `${label}: помечен прошедший день, а не сегодняшний`)
+  }
+
   // 4. The challenge on screen 2 must sit inside the day range printed in the
   //    queue, and its ladder must match the threshold the map reports.
   if (s.challenge) {

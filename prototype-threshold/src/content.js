@@ -180,6 +180,12 @@ export const CONTENT = {
       washout: (n) => `${n} rest days on the base diet between challenges.`,
       ruleLine:
         'Transition rule, applied automatically: three logged days → rest days until symptoms settle → the next group opens.',
+      unreliable: 'not counted',
+      confounderTitle: 'Day 1 is not counted',
+      confounderBody: (h, m) =>
+        `${h} h ${m} min of sleep the night before day 1. Short sleep moves gut symptoms on its own, so that day cannot separate the dose from the night.`,
+      confounderSource: 'From Health',
+      confounderAction: 'Repeat this group',
       eliminationTitle: 'Base period',
       eliminationBody: (d, of) => `Day ${d} of ${of}. Nothing to test yet — the record you make each evening sets the line the challenges are measured against.`,
       firstChallengeIn: (n) => `First challenge opens in ${n} days`,
@@ -452,6 +458,12 @@ export const CONTENT = {
       washout: (n) => `${n} дня отдыха на базовой диете между челленджами.`,
       ruleLine:
         'Правило перехода применяется автоматически: три записанных дня → дни отдыха до затихания симптомов → открывается следующая группа.',
+      unreliable: 'не в зачёт',
+      confounderTitle: 'День 1 не идёт в зачёт',
+      confounderBody: (h, m) =>
+        `${h} ч ${m} мин сна в ночь перед первым днём. Короткий сон сам по себе двигает симптомы, поэтому в этот день дозу от ночи не отделить.`,
+      confounderSource: 'Из Health',
+      confounderAction: 'Повторить группу',
       eliminationTitle: 'Базовый период',
       eliminationBody: (d, of) => `День ${d} из ${of}. Тестировать пока нечего — вечерние записи задают линию, относительно которой будут измеряться челленджи.`,
       firstChallengeIn: (n) => `Первый челлендж откроется через ${n} дней`,

@@ -94,6 +94,16 @@ export const WEEKS = {
         { food: 'yogurt', amount: 100, unit: 'g' },
       ],
       washoutDays: 3,
+      // Данные из Health нужны здесь не для графиков, а чтобы знать, когда
+      // результату дня можно верить. Ночь перед первым днём — 4 ч 50 мин,
+      // столько сна заметно двигает симптомы, поэтому день помечен как
+      // недостоверный и группа предложена к повтору.
+      confounder: {
+        day: 1,
+        source: 'sleep',
+        sleep: { h: 4, m: 50 },
+        action: 'repeat',
+      },
     },
     queue: [
       { id: 'sorbitol', status: 'done', outcome: 'tolerated', order: 1, days: 'day 8–10' },

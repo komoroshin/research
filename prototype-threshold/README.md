@@ -86,6 +86,27 @@ protocol), on the challenge day (a medication question — **the assistant
 refuses and sends the person to a clinician**), and on the map (what happens
 above a threshold).
 
+### The day that does not count
+
+On the challenge day, under the dose ladder, one block says day 1 is not
+counted: 4 h 50 min of sleep the night before, so that day cannot separate the
+dose from the night. It offers to repeat the group and names where the number
+came from — Health.
+
+That block is the whole argument for connected data in one line: continuous
+data is not there to draw charts, it is there to know when a protocol result
+can be trusted. The ladder marks that rung "not counted" rather than "no
+reaction", so the two statements cannot drift apart.
+
+It lives in `WEEKS[4].challenge.confounder` — the flagged day, the sleep
+figure and the suggested action. `npm run check` asserts that the flagged day
+exists in the ladder, that it is already logged, and that it is a past day
+rather than today: a day that has not happened cannot be declared unreliable.
+
+Deliberately **not** done: no correlations between steps, heart rate and
+symptoms. On this sample size that is noise mining, and it would undercut the
+one honest claim the screen makes.
+
 ### Where the new data lives
 
 All of it is in `src/data.js`, after the weekly states:
