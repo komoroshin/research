@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Screen, Eyebrow, Card, ThresholdRule, StatusMark, STATUS_COLOR } from '../components/bits.jsx'
+import Assistant from '../components/Assistant.jsx'
+import { ASSISTANT } from '../data.js'
 
 export default function ChallengeDay({ t, state, onOpenMap }) {
   const c = state.challenge
@@ -172,6 +174,7 @@ export default function ChallengeDay({ t, state, onOpenMap }) {
             {t.today.logDay}
           </button>
         )}
+        <Assistant t={t} id={ASSISTANT.today.id} tone={ASSISTANT.today.tone} />
       </div>
     </Screen>
   )

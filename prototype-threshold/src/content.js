@@ -12,7 +12,7 @@ export const CONTENT = {
   en: {
     brand: 'Threshold',
     caseLabel: 'Case',
-    nav: { check: 'Check', today: 'Today', signals: 'Signals', map: 'Map' },
+    nav: { check: 'Check', meal: 'Meal', today: 'Today', signals: 'Signals', map: 'Map', ask: 'Ask' },
     phase: {
       elimination: 'Base period',
       reintroduction: 'Reintroduction',
@@ -24,6 +24,15 @@ export const CONTENT = {
       sorbitol: 'Sorbitol',
       gos: 'GOS (legumes)',
       fructose: 'Excess fructose',
+    },
+    // Короткие подписи для тесных строк — полные названия остаются везде,
+    // где для них есть место.
+    groupsShort: {
+      lactose: 'Lactose',
+      fructans: 'Fructans',
+      sorbitol: 'Sorbitol',
+      gos: 'GOS',
+      fructose: 'Fructose',
     },
     foods: { milk: 'milk', yogurt: 'yogurt' },
     units: { ml: 'ml', g: 'g' },
@@ -70,6 +79,89 @@ export const CONTENT = {
         w8: 'Day 54 of 56 · all challenges resolved.',
       },
       again: 'Record again',
+    },
+
+
+    // -- Экран 2: журнал питания по фото ---------------------------------
+    meal: {
+      eyebrow: 'Meal log',
+      title: 'Photograph the plate',
+      idleHint: 'One photo. No searching, no database.',
+      shoot: 'Take a photo',
+      analyzing: 'Reading the plate',
+      dishLabel: 'On the plate',
+      dish: 'Creamy mushroom pasta',
+      ingredientsLabel: 'Ingredients',
+      groupsLabel: 'FODMAP groups in this meal',
+      items: {
+        pasta: 'Wheat pasta',
+        milk: 'Milk sauce',
+        mushrooms: 'Mushrooms',
+        onion: 'Onion',
+        parmesan: 'Parmesan',
+        oil: 'Olive oil',
+        garlic: 'Garlic',
+        parsley: 'Parsley',
+      },
+      units: { g: 'g', ml: 'ml', tbsp: 'tbsp' },
+      noGroup: '—',
+      edit: 'Edit',
+      remove: 'Remove',
+      add: 'Add an ingredient',
+      undo: 'Undo',
+      savedLine: (day, total) => `Logged to day ${day} of ${total}.`,
+      again: 'Photograph again',
+      cameraCta: 'Photo of a meal',
+      cameraCtaNote: '3 sec',
+    },
+
+    // -- Экран 6: вопрос по личным порогам -------------------------------
+    ask: {
+      eyebrow: 'Your lines',
+      title: 'Can I eat this?',
+      hint: 'Photograph the plate or type the question.',
+      placeholder: 'Ask about this meal',
+      askBtn: 'Ask',
+      question: 'Can I eat this?',
+      thinking: 'Checking against your map',
+      yourLine: 'Your line',
+      inDish: 'In this dish',
+      verdicts: { under: 'Under your line', over: 'Over your line', clear: 'No reaction' },
+      lineFor: {
+        lactose: (a, u) => `up to ${a} ${u} milk`,
+        fructans: 'reaction at every step, no amount found',
+        sorbitol: 'no reaction across the challenge',
+      },
+      sourceLine: (days) => `From your own challenge, ${days}`,
+      verdictTitle: 'What this comes to',
+      verdict:
+        'The dairy in this dish sits under your line. The wheat does not — fructans is the group that reacted at every amount you tried.',
+      swap: 'Same dish on gluten-free pasta keeps every group under your lines.',
+      disclaimer:
+        'Built from your own challenge results, not from a general food table. Amounts are estimated from the photo.',
+      emptyTitle: 'Your lines are not measured yet',
+      emptyBody: (done, total) =>
+        `${done} of ${total} challenges closed. This screen answers from your own thresholds, so it opens when the map is complete.`,
+    },
+
+    // -- Контекстный ассистент -------------------------------------------
+    assistant: {
+      label: 'Ask about this',
+      close: 'Close',
+      questions: {
+        meal: 'How much of this counts against my protocol?',
+        dose: 'Should I take a lactase pill to get through the challenge?',
+        over: 'What happens if I go over the line?',
+      },
+      answers: {
+        meal:
+          'Fructans and lactose both appear here. Fructans is already resolved as a reaction, so this meal is logged as an exposure day for it. The milk sauce is 90 ml — that is inside the lactose amount your challenge settled on.',
+        dose:
+          'That is a medication question, and it is outside what this protocol tests. Threshold does not advise on medicines. Ask a clinician — the challenge can wait.',
+        over:
+          'Nothing in the protocol changes. The map records the amount your challenge settled on; going above it is a choice you make with a known result, not a failure of the protocol.',
+      },
+      refusalNote: 'Outside the protocol',
     },
 
     // -- Screen 2 ----------------------------------------------------------
@@ -196,7 +288,7 @@ export const CONTENT = {
   ru: {
     brand: 'Threshold',
     caseLabel: 'Запись',
-    nav: { check: 'Чек', today: 'Сегодня', signals: 'Связи', map: 'Карта' },
+    nav: { check: 'Чек', meal: 'Еда', today: 'Сегодня', signals: 'Связи', map: 'Карта', ask: 'Вопрос' },
     phase: {
       elimination: 'Базовый период',
       reintroduction: 'Реинтродукция',
@@ -208,6 +300,13 @@ export const CONTENT = {
       sorbitol: 'Сорбит',
       gos: 'ГОС (бобовые)',
       fructose: 'Избыточная фруктоза',
+    },
+    groupsShort: {
+      lactose: 'Лактоза',
+      fructans: 'Фруктаны',
+      sorbitol: 'Сорбит',
+      gos: 'ГОС',
+      fructose: 'Фруктоза',
     },
     foods: { milk: 'молока', yogurt: 'йогурта' },
     units: { ml: 'мл', g: 'г' },
@@ -253,6 +352,89 @@ export const CONTENT = {
         w8: 'День 54 из 56 · все челленджи закрыты.',
       },
       again: 'Записать заново',
+    },
+
+
+    // -- Экран 2: журнал питания по фото ---------------------------------
+    meal: {
+      eyebrow: 'Журнал питания',
+      title: 'Сфотографируйте тарелку',
+      idleHint: 'Одно фото. Ничего не искать и не выбирать из базы.',
+      shoot: 'Сделать фото',
+      analyzing: 'Читаю тарелку',
+      dishLabel: 'На тарелке',
+      dish: 'Паста со сливочным соусом и грибами',
+      ingredientsLabel: 'Ингредиенты',
+      groupsLabel: 'Группы FODMAP в этом приёме пищи',
+      items: {
+        pasta: 'Паста из пшеницы',
+        milk: 'Молочный соус',
+        mushrooms: 'Грибы',
+        onion: 'Лук',
+        parmesan: 'Пармезан',
+        oil: 'Оливковое масло',
+        garlic: 'Чеснок',
+        parsley: 'Петрушка',
+      },
+      units: { g: 'г', ml: 'мл', tbsp: 'ст. л.' },
+      noGroup: '—',
+      edit: 'Поправить',
+      remove: 'Убрать',
+      add: 'Добавить ингредиент',
+      undo: 'Вернуть',
+      savedLine: (day, total) => `Записано в день ${day} из ${total}.`,
+      again: 'Сфотографировать заново',
+      cameraCta: 'Фото еды',
+      cameraCtaNote: '3 сек',
+    },
+
+    // -- Экран 6: вопрос по личным порогам -------------------------------
+    ask: {
+      eyebrow: 'Ваши пороги',
+      title: 'Можно ли мне это?',
+      hint: 'Сфотографируйте тарелку или спросите текстом.',
+      placeholder: 'Спросить про это блюдо',
+      askBtn: 'Спросить',
+      question: 'Можно ли мне это?',
+      thinking: 'Сверяю с вашей картой',
+      yourLine: 'Ваш порог',
+      inDish: 'В этом блюде',
+      verdicts: { under: 'Ниже порога', over: 'Выше порога', clear: 'Реакции не было' },
+      lineFor: {
+        lactose: (a, u) => `до ${a} ${u} молока`,
+        fructans: 'реакция на каждой ступени, порог не найден',
+        sorbitol: 'реакции за весь челлендж не было',
+      },
+      sourceLine: (days) => `Из вашего челленджа, ${days}`,
+      verdictTitle: 'К чему это сводится',
+      verdict:
+        'Молочная часть блюда укладывается в ваш порог. Пшеничная — нет: фруктаны реагировали на любом количестве, которое вы пробовали.',
+      swap: 'То же блюдо на безглютеновой пасте оставляет все группы ниже ваших порогов.',
+      disclaimer:
+        'Собрано из результатов ваших челленджей, а не из общей таблицы продуктов. Количества оценены по фотографии.',
+      emptyTitle: 'Пороги ещё не измерены',
+      emptyBody: (done, total) =>
+        `Закрыто ${done} челленджей из ${total}. Этот экран отвечает по вашим собственным порогам, поэтому открывается, когда карта закончена.`,
+    },
+
+    // -- Контекстный ассистент -------------------------------------------
+    assistant: {
+      label: 'Спросить про это',
+      close: 'Закрыть',
+      questions: {
+        meal: 'Сколько из этого попадёт в протокол?',
+        dose: 'Может, выпить таблетку лактазы, чтобы пройти челлендж?',
+        over: 'Что будет, если превысить порог?',
+      },
+      answers: {
+        meal:
+          'Здесь есть и фруктаны, и лактоза. По фруктанам реакция уже подтверждена, поэтому приём пищи записывается как день с ними. Молочного соуса 90 мл — это внутри того количества, на котором остановился ваш челлендж лактозы.',
+        dose:
+          'Это вопрос про лекарство, и он за пределами того, что проверяет протокол. Threshold не советует по препаратам. Спросите врача — челлендж подождёт.',
+        over:
+          'В протоколе ничего не меняется. Карта фиксирует количество, на котором остановился ваш челлендж; превысить его — ваш выбор с известным результатом, а не сбой протокола.',
+      },
+      refusalNote: 'За пределами протокола',
     },
 
     today: {

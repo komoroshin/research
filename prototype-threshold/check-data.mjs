@@ -1,7 +1,7 @@
 // Consistency check for the scenario. The demo's credibility rests on the
 // numbers on screen 3 agreeing with the map on screen 4, and on both agreeing
 // with what is actually drawn. Run with: npm run check
-import { WEEKS, CASE } from './src/data.js'
+import { WEEKS, CASE, MEAL, ASK } from './src/data.js'
 import { CONTENT } from './src/content.js'
 
 let failed = 0
@@ -84,7 +84,64 @@ for (const [wk, s] of Object.entries(WEEKS)) {
     `${label}: symptom load ${s.map.baseline} → ${s.map.current} on a 0–${CASE.symptomScaleMax} scale`)
 }
 
-// 7. Every group and outcome code has words in both languages.
+// 7. Три места, названные в ТЗ на доработку: блюдо, порог в ответе и числа
+//    корреляций против числа челленджей.
+{
+  const w8 = WEEKS[8]
+  const w4 = WEEKS[4]
+  const mealGroups = [...new Set(MEAL.ingredients.map((i) => i.group).filter(Boolean))]
+
+  ok(
+    mealGroups.includes(w4.challenge.group),
+    `блюдо содержит группу текущего челленджа (${w4.challenge.group}): ${mealGroups.join(', ')}`
+  )
+  ok(
+    mealGroups.includes(w8.signals.primary.group),
+    `блюдо содержит группу из корреляций (${w8.signals.primary.group})`
+  )
+  ok(
+    mealGroups.every((g) => w8.map.rows.some((r) => r.id === g)),
+    'каждая группа блюда есть на карте переносимости'
+  )
+
+  for (const line of ASK.lines) {
+    const row = w8.map.rows.find((r) => r.id === line.group)
+    ok(Boolean(row), `ответ шестого экрана ссылается на группу с карты: ${line.group}`)
+    if (row && row.status === 'threshold') {
+      const inMeal = MEAL.ingredients.find((i) => i.group === line.group)
+      ok(
+        line.inDish.unit === row.unit,
+        `порог и количество в блюде в одних единицах (${line.group}): ${row.unit}`
+      )
+      ok(
+        line.inDish.amount <= row.amount === (line.verdict === 'under'),
+        `вердикт «${line.verdict}» сходится с числами: ${line.inDish.amount} против порога ${row.amount} ${row.unit}`
+      )
+      ok(
+        inMeal && inMeal.amount === line.inDish.amount && inMeal.unit === line.inDish.unit,
+        `количество в ответе совпадает с ингредиентом блюда (${line.group})`
+      )
+    }
+    const src = w8.queue.find((q) => q.id === line.source)
+    ok(Boolean(src && src.status === 'done'), `источник порога — закрытый челлендж (${line.source}, ${src && src.days})`)
+  }
+
+  const challengeDays = 3
+  ok(
+    w8.signals.primary.of >= challengeDays,
+    `эпизодов в корреляциях (${w8.signals.primary.of}) не меньше дней челленджа (${challengeDays})`
+  )
+  ok(
+    w8.queue.find((q) => q.id === w8.signals.primary.group).outcome === 'reacts',
+    'группа из корреляций закрыта в очереди как «есть реакция»'
+  )
+  ok(
+    w8.queue.find((q) => q.id === w8.signals.counter.group).outcome === 'tolerated',
+    'группа-контрпример закрыта в очереди как «реакции нет»'
+  )
+}
+
+// 8. Every group and outcome code has words in both languages.
 for (const lang of ['en', 'ru']) {
   const c = CONTENT[lang]
   for (const id of Object.keys(WEEKS[8].map.rows.map((r) => r.id).reduce((a, id) => ((a[id] = 1), a), {}))) {

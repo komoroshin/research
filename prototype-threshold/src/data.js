@@ -214,3 +214,51 @@ export const WEEKS = {
 
 // The alarm-symptom screen. Reached from the presenter panel only.
 export const RED_FLAG = { trigger: 'blood', loggedOn: { en: 'today, 21:04', ru: 'сегодня, 21:04' } }
+
+// ---------------------------------------------------------------------------
+// Дополнение: журнал питания по фото и вопрос по личным порогам.
+//
+// Блюдо подобрано так, чтобы в нём сходились три группы кейса: пшеница и лук —
+// фруктаны (группа из корреляций), молочный соус — лактоза (группа из текущего
+// челленджа), грибы — сорбит (группа, по которой реакции нет). Количество
+// молока указано в тех же единицах, что и порог на карте, иначе сравнивать в
+// шестом экране было бы не с чем.
+// ---------------------------------------------------------------------------
+
+export const MEAL = {
+  id: 'pasta',
+  loggedAt: { en: '13:20', ru: '13:20' },
+  ingredients: [
+    { id: 'pasta', amount: 120, unit: 'g', group: 'fructans' },
+    { id: 'milk', amount: 90, unit: 'ml', group: 'lactose' },
+    { id: 'mushrooms', amount: 80, unit: 'g', group: 'sorbitol' },
+    { id: 'onion', amount: 30, unit: 'g', group: 'fructans' },
+    { id: 'parmesan', amount: 15, unit: 'g', group: null },
+    { id: 'oil', amount: 1, unit: 'tbsp', group: null },
+  ],
+  // Что можно добавить кнопкой «добавить ингредиент» — без базы и поиска.
+  spare: [
+    { id: 'garlic', amount: 5, unit: 'g', group: 'fructans' },
+    { id: 'parsley', amount: 3, unit: 'g', group: null },
+  ],
+}
+
+// Шестой экран. Ответ строится по строкам карты переносимости, а не по общей
+// таблице; каждая строка ссылается на челлендж, из которого взят порог.
+export const ASK = {
+  meal: 'pasta',
+  lines: [
+    { group: 'lactose', verdict: 'under', inDish: { amount: 90, unit: 'ml' }, source: 'lactose' },
+    { group: 'fructans', verdict: 'over', inDish: { amount: 150, unit: 'g' }, source: 'fructans' },
+    { group: 'sorbitol', verdict: 'clear', inDish: { amount: 80, unit: 'g' }, source: 'sorbitol' },
+  ],
+  swap: 'pasta',
+}
+
+// Контекстные входы вместо вкладки чата: по одному на экран, ответы написаны
+// заранее и живут в рамке протокола. Ответ на экране челленджа — отказ.
+export const ASSISTANT = {
+  meal: { id: 'meal', tone: 'answer' },
+  today: { id: 'dose', tone: 'refusal' },
+  map: { id: 'over', tone: 'answer' },
+}

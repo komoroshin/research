@@ -71,6 +71,49 @@ lactose crossed its threshold → GOS 32–34 (six days), GOS clean → fructose
 38–40 (three days). At week 8 the person is on day 54 with 51 evenings logged;
 the three missing evenings are the ones that left fructose undetermined.
 
+## What the June revision added
+
+Two screens and a new demo order.
+
+| Screen | What it is |
+|---|---|
+| **Meal log** (2) | A photo of a plate is taken apart in steps: the dish, then the ingredients, then FODMAP groups on the ones that carry them, then the totals for the meal. Ingredients can be removed, restored and added — nothing is saved. Reached from the nav or from the camera row on screen 1. |
+| **Your lines** (6) | "Can I eat this?" answered from this person's own map: the group, their threshold, the amount in the dish, the verdict, and the challenge each threshold came from. Opens only when the map is complete — before that it says how many challenges are still open. |
+
+There is no chat tab. Instead each of three screens carries one contextual
+question with a pre-written answer: on the meal (what counts against the
+protocol), on the challenge day (a medication question — **the assistant
+refuses and sends the person to a clinician**), and on the map (what happens
+above a threshold).
+
+### Where the new data lives
+
+All of it is in `src/data.js`, after the weekly states:
+
+- `MEAL` — the dish, its ingredients with amounts and groups, and the two spare
+  items the "add an ingredient" button offers. The dish is deliberately built
+  from three groups of the case: wheat and onion are fructans (the group in the
+  correlations), the milk sauce is lactose (the group in the current
+  challenge), mushrooms are sorbitol (the group with no reaction). The milk is
+  measured in millilitres because the threshold on the map is in millilitres —
+  otherwise screen 6 would have nothing to compare.
+- `ASK` — the three lines of the answer, each pointing at the challenge its
+  threshold came from. The threshold value itself is read from the map row at
+  render time, so it cannot drift from screen 5.
+- `ASSISTANT` — which contextual question sits on which screen, and which one
+  is the refusal.
+
+Wording for all of it is in `src/content.js` under `meal`, `ask` and
+`assistant`.
+
+### The plate is drawn, not photographed
+
+`MealPhoto.jsx` ends with a `Plate` component: an SVG of a bowl of pasta in the
+product's own palette. This environment has no image generation and no access
+to stock libraries, so a real photograph could not be produced or licensed
+here. To swap it for one, drop a JPEG into `public/` and replace the `<Plate/>`
+element with an `<img>` — nothing else on the screen depends on it.
+
 ## Presenter mode
 
 A control bar floats above the phone on desktop, outside the frame:
@@ -101,11 +144,15 @@ round it inside the product. For a stand visitor who gets stuck, tapping the
 ## Demo order
 
 1. **Check** — evening voice check. Answers "will anyone actually fill this in".
-2. **Today** — challenge day with today's amount, the dose ladder and the queue.
+2. **Meal** — a plate photographed and taken apart into groups. The most
+   frequent moment in the product, several times a day.
+3. **Today** — challenge day with today's amount, the dose ladder and the queue.
    The queue is the point: it is what a diary does not have.
-3. **Signals** — an association read out of the person's own records, with a
+4. **Signals** — an association read out of the person's own records, with a
    counter-example where nothing was found.
-4. **Map** — the tolerance map, the doctor summary, the next protocol.
+5. **Map** — the tolerance map, the doctor summary, the next protocol.
+6. **Your lines** — one question answered from this person's own thresholds.
+   This is the answer to "why keep paying after week eight".
 
 ---
 

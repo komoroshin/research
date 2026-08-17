@@ -2,9 +2,11 @@ import { RotateCcw, EyeOff, TriangleAlert } from 'lucide-react'
 
 const SCREENS = [
   { id: 'check', n: '1' },
-  { id: 'today', n: '2' },
-  { id: 'signals', n: '3' },
-  { id: 'map', n: '4' },
+  { id: 'meal', n: '2' },
+  { id: 'today', n: '3' },
+  { id: 'signals', n: '4' },
+  { id: 'map', n: '5' },
+  { id: 'ask', n: '6' },
 ]
 
 export default function Presenter({ t, visible, screen, week, onScreen, onWeek, onReset, onHide }) {

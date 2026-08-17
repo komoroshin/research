@@ -1,16 +1,26 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Mic, FlaskConical, Activity, Ruler, Eye } from 'lucide-react'
+import { Mic, Camera, FlaskConical, Activity, Ruler, MessageCircleQuestion, Eye } from 'lucide-react'
 import { CONTENT } from './content.js'
 import { WEEKS } from './data.js'
 import Presenter from './components/Presenter.jsx'
 import EveningCheck from './screens/EveningCheck.jsx'
+import MealPhoto from './screens/MealPhoto.jsx'
+import AskThreshold from './screens/AskThreshold.jsx'
 import ChallengeDay from './screens/ChallengeDay.jsx'
 import Signals from './screens/Signals.jsx'
 import ToleranceMap from './screens/ToleranceMap.jsx'
 import RedFlag from './screens/RedFlag.jsx'
 
-const SCREENS = ['check', 'today', 'signals', 'map']
-const NAV_ICON = { check: Mic, today: FlaskConical, signals: Activity, map: Ruler }
+// Порядок показа: чек → еда → челлендж → связи → карта → вопрос.
+const SCREENS = ['check', 'meal', 'today', 'signals', 'map', 'ask']
+const NAV_ICON = {
+  check: Mic,
+  meal: Camera,
+  today: FlaskConical,
+  signals: Activity,
+  map: Ruler,
+  ask: MessageCircleQuestion,
+}
 
 export default function App() {
   const [lang, setLang] = useState('en')
@@ -47,7 +57,11 @@ export default function App() {
     const props = { t, state, lang, key: `${screen}-${week}-${seed}` }
     switch (screen) {
       case 'check':
-        return <EveningCheck {...props} />
+        return <EveningCheck {...props} onOpenMeal={() => goto('meal')} />
+      case 'meal':
+        return <MealPhoto {...props} />
+      case 'ask':
+        return <AskThreshold {...props} />
       case 'today':
         return <ChallengeDay {...props} onOpenMap={() => goto('map')} />
       case 'signals':
@@ -188,15 +202,15 @@ function Nav({ t, screen, onScreen }) {
               <button
                 onClick={() => onScreen(s)}
                 aria-current={active ? 'page' : undefined}
-                className="group flex w-full flex-col items-center gap-1 rounded-xl py-1.5"
+                className="group flex w-full flex-col items-center gap-1 rounded-xl py-1.5 px-0.5"
               >
                 <Icon
-                  size={17}
+                  size={16}
                   strokeWidth={1.6}
                   className={active ? 'text-marigold' : 'text-faint group-hover:text-dim'}
                 />
                 <span
-                  className={`font-mono text-[9px] uppercase tracking-[0.14em] ${
+                  className={`font-mono text-[8px] uppercase tracking-[0.08em] ${
                     active ? 'text-bone' : 'text-faint group-hover:text-dim'
                   }`}
                 >

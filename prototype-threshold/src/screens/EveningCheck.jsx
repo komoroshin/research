@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Mic, Check, Square } from 'lucide-react'
+import { Mic, Check, Square, Camera, ChevronRight } from 'lucide-react'
 import { Screen, Eyebrow, Card, ThresholdRule, Stagger } from '../components/bits.jsx'
 
 // Scripted playback only. Nothing is recorded, nothing is recognised.
 const LISTEN_MS = 2400
 const WORD_MS = 55
 
-export default function EveningCheck({ t, state, lang }) {
+export default function EveningCheck({ t, state, lang, onOpenMeal }) {
   const [stage, setStage] = useState('idle') // idle | listening | transcript | parsed | saved
   const [seconds, setSeconds] = useState(0)
   const [words, setWords] = useState(0)
@@ -112,6 +112,22 @@ export default function EveningCheck({ t, state, lang }) {
           </div>
         )}
       </Card>
+
+      {/* Второй вход с главного экрана: съёмка еды случается несколько раз в
+          день, вечерний чек — один. */}
+      {stage === 'idle' && (
+        <button
+          onClick={onOpenMeal}
+          className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-white/[0.07] bg-surface px-4 py-3.5 text-left transition hover:bg-raised"
+        >
+          <Camera size={17} strokeWidth={1.7} className="shrink-0 text-marigold" />
+          <span className="flex-1 text-[14px] text-bone">{t.meal.cameraCta}</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
+            {t.meal.cameraCtaNote}
+          </span>
+          <ChevronRight size={15} strokeWidth={1.8} className="text-faint" />
+        </button>
+      )}
 
       {/* Transcript */}
       {stage !== 'idle' && stage !== 'listening' && (

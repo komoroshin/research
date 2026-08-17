@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { FileText, X, ArrowRight } from 'lucide-react'
 import { Screen, Eyebrow, Card, ThresholdRule, StatusMark, STATUS_COLOR } from '../components/bits.jsx'
-import { CASE } from '../data.js'
+import { CASE, ASSISTANT } from '../data.js'
+import Assistant from '../components/Assistant.jsx'
 
 export default function ToleranceMap({ t, state, lang }) {
   const [doc, setDoc] = useState(false)
@@ -67,6 +68,8 @@ export default function ToleranceMap({ t, state, lang }) {
         ))}
       </ol>
       {hasPending && <p className="mt-3 text-[11px] text-faint">{t.map.pendingNote}</p>}
+
+      <Assistant t={t} id={ASSISTANT.map.id} tone={ASSISTANT.map.tone} />
 
       <button
         onClick={() => setDoc(true)}
