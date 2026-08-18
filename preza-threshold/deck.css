@@ -65,6 +65,11 @@ html, body {
 }
 .canvas.is-current { display: block; }
 
+/* Служебное состояние для проверки переполнения: показать все холсты сразу,
+   иначе у скрытых слайдов нулевая высота и проверка ничего не находит. */
+body.measure-all .canvas { display: block; visibility: hidden; }
+body.measure-all .slide { display: flex; opacity: 1; animation: none; }
+
 /* --- slide skeleton ------------------------------------------------------ */
 
 .slide {
@@ -188,6 +193,19 @@ li::before {
   margin-left: 16px;
 }
 
+/* Раскладка metric: три числа одной строкой, подпись — под числом. Флексом
+   они переносились на вторую строку и съедали половину слайда. */
+.slide[data-layout='metric'] .metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+.slide[data-layout='metric'] .metric-value { font-size: 116px; }
+.slide[data-layout='metric'] .metric-unit { display: block; margin: 14px 0 0; }
+.slide[data-layout='metric'] li { max-width: none; }
+.slide[data-layout='metric'] .body { gap: 34px; }
+
 /* --- slide 7: arithmetic ------------------------------------------------- */
 
 .arith {
@@ -231,13 +249,116 @@ li::before {
   width: auto;
   padding-right: 0;
 }
-.levels tr:last-child td {
+.slide[data-layout='levels'] .levels tr:last-child td {
   border-bottom: none;
   background: var(--accent-soft);
   color: var(--ink);
 }
-.levels tr:last-child td:first-child { color: var(--ink); }
-.levels tr:last-child td:first-child { box-shadow: inset 4px 0 0 var(--accent); padding-left: 28px; }
+.slide[data-layout='levels'] .levels tr:last-child td:first-child { color: var(--ink); }
+.slide[data-layout='levels'] .levels tr:last-child td:first-child { box-shadow: inset 4px 0 0 var(--accent); padding-left: 28px; }
+
+/* --- слайды 11 и 12: широкая мера ---------------------------------------- */
+
+/* 46ch — мера коротких тезисов версии 1. На слайдах с длинными строками она
+   даёт колонку в треть слайда и вытесняет содержимое за нижний край. */
+.slide[data-layout='thresholds'] li,
+.slide[data-layout='dense'] li,
+.slide[data-layout='risks'] li { max-width: 86ch; }
+.slide[data-layout='thresholds'] ul,
+.slide[data-layout='dense'] ul { gap: 18px; }
+
+/* Плотные слайды версии 2 несут больше строк, чем тезисные слайды версии 1.
+   Воздух под линейкой и между блоками ужат ровно настолько, чтобы содержимое
+   помещалось в поле набора; кегли не трогаем. */
+.slide[data-layout='thresholds'] .rule,
+.slide[data-layout='dense'] .rule,
+.slide[data-layout='risks'] .rule,
+.slide[data-layout='capital'] .rule { margin-bottom: 26px; }
+.slide[data-layout='dense'] .body { gap: 18px; }
+/* Заголовок в 30ch ломается на три строки и съедает строку содержимого. */
+.slide[data-layout='dense'] h1.long { max-width: 36ch; }
+.slide[data-layout='dense'] .footnote { padding-top: 20px; margin-bottom: 0; }
+.slide[data-layout='dense'] .footnote { margin-bottom: 0; }
+
+/* --- слайд 12: риски ------------------------------------------------------ */
+
+.slide[data-layout='risks'] .levels td:first-child {
+  width: 24%;
+  white-space: normal;
+  line-height: 1.24;
+  padding-right: 44px;
+}
+.slide[data-layout='risks'] .levels td { padding: 24px 0 24px 0; }
+.slide[data-layout='risks'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+
+/* --- слайд 11: пороги по CAC --------------------------------------------- */
+
+/* Три порога — это шкала, а не список: у каждой строки левая колонка задаёт
+   границу, правая — что при ней делаем. Средний столбец таблицы уровней здесь
+   не нужен, поэтому границы получают акцент, а не фон. */
+.slide[data-layout='thresholds'] .levels td { padding: 14px 32px 14px 0; }
+.slide[data-layout='thresholds'] .levels td:first-child {
+  width: 16%;
+  color: var(--accent);
+}
+.slide[data-layout='thresholds'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+
+/* --- слайд 14: капитал по рубежам ---------------------------------------- */
+
+.capital-cols {
+  display: grid;
+  grid-template-columns: 2.05fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.capital-cols > div:first-child { display: flex; flex-direction: column; gap: 14px; }
+.slide[data-layout='capital'] p { font-size: var(--fs-small); color: var(--ink-3); max-width: none; }
+.slide[data-layout='capital'] .body { gap: 12px; }
+.slide[data-layout='capital'] .gate { margin-top: 24px; padding: 16px 32px; font-size: 32px; }
+.slide[data-layout='capital'] .footnote { margin-top: 16px; margin-bottom: 0; padding-top: 16px; }
+
+table.capital { width: 100%; border-collapse: collapse; }
+table.capital th {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-align: left;
+  padding: 0 24px 12px 0;
+  border-bottom: 2px solid var(--ink);
+}
+table.capital th:not(:first-child),
+table.capital td:not(:first-child) { text-align: right; width: 14%; white-space: nowrap; }
+table.capital td {
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--ink-2);
+  padding: 13px 24px 13px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.capital td:not(:first-child) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink);
+  padding-right: 0;
+}
+table.capital tr:last-child td { border-bottom: none; }
+
+/* Роль команды — три равные колонки под таблицей: это не список по важности,
+   а три строки одного бюджета. */
+.roles { border-top: 2px solid var(--ink); padding-top: 16px; margin-top: 4px; }
+.roles h2 {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.roles ul { gap: 18px; }
+.roles li { font-size: var(--fs-small); line-height: 1.34; max-width: none; }
 
 /* --- slide 12: tranches -------------------------------------------------- */
 
@@ -253,7 +374,7 @@ li::before {
   color: var(--ink);
 }
 .gate {
-  margin: 44px 0 0;
+  margin: 40px 0 0;
   border: 2px solid var(--accent);
   padding: 30px 36px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -432,7 +553,7 @@ li::before {
 .shot { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .shot img {
   display: block;
-  height: 736px;
+  height: 636px;
   width: auto;
   border-radius: 26px;
 }

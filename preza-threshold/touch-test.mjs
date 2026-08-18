@@ -13,6 +13,9 @@ const at = () => page.evaluate(() => Number(document.querySelector('.canvas.is-c
 const say = (label, got, want) =>
   console.log(`${got === want ? '  ok  ' : ' FAIL '} ${label}: ${got} (ожидалось ${want})`)
 
+// Число слайдов берём из презентации, чтобы тест не правился при её росте.
+const main = await page.evaluate(() => window.deckData.main.length)
+
 const size = page.viewportSize()
 const midY = Math.round(size.height / 2)
 
@@ -69,12 +72,12 @@ const pickerShown = await page.evaluate(() => document.querySelector('.deck-pick
 console.log(`${pickerShown ? '  ok  ' : ' FAIL '} список слайдов открывается`)
 await page.locator('.deck-picker button', { hasText: /^A1$/ }).click()
 await page.waitForTimeout(150)
-say('переход в приложение из списка', await at(), 12)
+say('переход в приложение из списка', await at(), main)
 
 // Дальше двенадцатого показ не уходит.
-await page.evaluate(() => window.deckGoto(11))
+await page.evaluate((i) => window.deckGoto(i), main - 1)
 await swipe(300, 60)
-say('свайп с двенадцатого не уводит в приложение', await at(), 11)
+say(`свайп с последнего слайда не уводит в приложение`, await at(), main - 1)
 
 await page.screenshot({ path: '/tmp/shots/deck-mobile.png' })
 await browser.close()

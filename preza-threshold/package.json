@@ -6,7 +6,8 @@
   "scripts": {
     "pdf": "node make-pdf.mjs",
     "serve": "npx --yes serve -l 5000 .",
-    "check": "node check.mjs"
+    "check": "node check.mjs",
+    "numbers": "node check-numbers.mjs"
   },
   "devDependencies": {
     "playwright": "^1.49.0"

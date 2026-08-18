@@ -157,6 +157,10 @@ const Deck = (() => {
       renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
     } else if (slide.layout === 'tranches') {
       renderTranches(body, rest)
+    } else if (slide.layout === 'capital') {
+      renderCapital(body, rest)
+    } else if (slide.layout === 'risks' || slide.layout === 'thresholds' || slide.layout === 'dense') {
+      renderBlocks(body, rest, slide.layout)
     } else {
       renderBlocks(body, rest, slide.layout)
     }
@@ -210,8 +214,9 @@ const Deck = (() => {
         host.appendChild(ul)
       } else if (b.type === 'accent') {
         const d = document.createElement('div')
-        d.className = layout === 'tranches' ? 'gate' : 'arith'
-        if (layout === 'tranches') d.dataset.label = 'Ворота'
+        const gated = layout === 'tranches' || layout === 'capital'
+        d.className = gated ? 'gate' : 'arith'
+        if (gated) d.dataset.label = 'Ворота'
         d.innerHTML = inline(b.text)
         host.appendChild(d)
       } else if (b.type === 'footnote') {
@@ -262,6 +267,68 @@ const Deck = (() => {
     }
     host.appendChild(grid)
     renderBlocks(host, after, 'tranches')
+  }
+
+  // Финальный слайд: таблица капитала по рубежам слева, роль команды справа,
+  // ворота и открытое допущение — во всю ширину под ними. Первая строка
+  // таблицы читается как шапка: в ней стоят названия колонок, не данные.
+  function renderCapital(host, blocks) {
+    const table = blocks.find((b) => b.type === 'table')
+    const idx = table ? blocks.indexOf(table) : blocks.length
+
+    const cols = document.createElement('div')
+    cols.className = 'capital-cols'
+    const left = document.createElement('div')
+    renderBlocks(left, blocks.slice(0, idx).filter((b) => b.type === 'p'), 'capital')
+    if (table) left.appendChild(capitalTable(table.rows))
+    cols.appendChild(left)
+
+    const roles = document.createElement('div')
+    roles.className = 'roles'
+    const tail = []
+    let inRoles = false
+    for (const b of blocks.slice(idx + 1)) {
+      if (b.type === 'h2') {
+        inRoles = true
+        const h2 = document.createElement('h2')
+        h2.textContent = b.text
+        roles.appendChild(h2)
+        continue
+      }
+      if (b.type === 'accent' || b.type === 'footnote') { tail.push(b); continue }
+      if (inRoles) renderBlocks(roles, [b], 'capital')
+      else tail.push(b)
+    }
+    cols.appendChild(roles)
+    host.appendChild(cols)
+    renderBlocks(host, tail, 'capital')
+  }
+
+  function capitalTable(rows) {
+    const t = document.createElement('table')
+    t.className = 'capital'
+    const [head, ...body] = rows
+    const thead = document.createElement('thead')
+    const htr = document.createElement('tr')
+    for (const cell of head) {
+      const th = document.createElement('th')
+      th.textContent = cell
+      htr.appendChild(th)
+    }
+    thead.appendChild(htr)
+    t.appendChild(thead)
+    const tb = document.createElement('tbody')
+    for (const row of body) {
+      const tr = document.createElement('tr')
+      row.forEach((cell) => {
+        const td = document.createElement('td')
+        td.innerHTML = inline(cell)
+        tr.appendChild(td)
+      })
+      tb.appendChild(tr)
+    }
+    t.appendChild(tb)
+    return t
   }
 
   // Slide 4: the four phases, drawn in code from the slide's own bullets.
@@ -571,17 +638,30 @@ function boot(source) {
 
   // Typography floor check: report any slide whose content does not fit at the
   // required minimum size. Never shrink the type — report it instead.
-  window.deckOverflows = () =>
-    canvases
+  // Слайды, кроме текущего, скрыты через display:none — у скрытого элемента
+  // scrollHeight равен нулю, и проверка молча считала, что всё помещается.
+  // Поэтому на время замера показываем все холсты, как это делает печать.
+  window.deckOverflows = () => {
+    document.body.classList.add('measure-all')
+    const over = canvases
       .map((c, i) => {
         const s = c.querySelector('.slide')
-        const over = s.scrollHeight - s.clientHeight
+        const b = c.querySelector('.body')
+        // .body — flex-элемент с min-height: 0: он схлопывается и режет
+        // содержимое, не переполняя при этом сам слайд. Мерим и его.
+        const px = Math.max(
+          s.scrollHeight - s.clientHeight,
+          b ? b.scrollHeight - b.clientHeight : 0
+        )
         const slide = deck.all[i]
-        return over > 1
-          ? { slide: slide.kind === 'appendix' ? `A${slide.num}` : String(slide.num), overflowPx: over }
+        return px > 1
+          ? { slide: slide.kind === 'appendix' ? `A${slide.num}` : String(slide.num), overflowPx: px }
           : null
       })
       .filter(Boolean)
+    document.body.classList.remove('measure-all')
+    return over
+  }
 
   window.deckData = deck
   window.deckGoto = show
