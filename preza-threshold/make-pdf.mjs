@@ -45,8 +45,15 @@ const withAppendix = process.argv.includes('--with-appendix')
 const counts = await page.evaluate(() => ({
   main: window.deckData.main.length,
   appendix: window.deckData.appendix.length,
+  // Номера страниц приложения, у которых есть что показать помимо заголовка.
+  filled: window.deckData.appendix
+    .map((s, i) => (s.blocks.filter((b) => b.type !== 'h1').length > 0 ? i : -1))
+    .filter((i) => i >= 0),
 }))
-const pageRanges = withAppendix ? '' : `1-${counts.main}`
+
+const pageRanges = withAppendix
+  ? ''
+  : [`1-${counts.main}`, ...counts.filled.map((i) => String(counts.main + i + 1))].join(',')
 
 await page.pdf({
   path: out,
@@ -57,10 +64,14 @@ await page.pdf({
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 })
 
+const skipped = counts.appendix - counts.filled.length
 console.log(
   withAppendix
-    ? `Включено страниц: ${counts.main + counts.appendix} (слайды и приложение)`
-    : `Включено страниц: ${counts.main}. Приложение (${counts.appendix} сл.) не вошло — у его слайдов нет содержимого, кроме заголовков. Нужно с ним: npm run pdf -- --with-appendix`
+    ? `Включено страниц: ${counts.main + counts.appendix} — все слайды и всё приложение.`
+    : `Включено страниц: ${counts.main + counts.filled.length} — ${counts.main} слайдов и ${counts.filled.length} из приложения.` +
+      (skipped
+        ? ` Пропущено ${skipped}: у этих слайдов приложения нет содержимого, кроме заголовка, и в файле они читались бы как пустые. Нужны все: npm run pdf -- --with-appendix`
+        : '')
 )
 
 await browser.close()

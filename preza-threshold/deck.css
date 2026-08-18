@@ -410,3 +410,38 @@ li::before {
 @media print {
   .deck-controls, .deck-picker { display: none !important; }
 }
+
+/* --- слайд со снимком экрана --------------------------------------------
+   Текст слева, телефон справа во всю высоту тела слайда. Снимок сделан из
+   самого прототипа, а не нарисован. */
+
+.screenshot-cols {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 64px;
+  align-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Отступ справа: номер слайда стоит в правом нижнем углу, и без него
+     рамка телефона наезжает на цифру. */
+  padding-right: 78px;
+}
+
+.screenshot-cols > div { display: flex; flex-direction: column; gap: 26px; }
+
+.shot { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.shot img {
+  display: block;
+  height: 736px;
+  width: auto;
+  border-radius: 26px;
+}
+.shot figcaption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: center;
+  max-width: 22ch;
+}

@@ -7,7 +7,7 @@
    «тракшена сегодня нет». На публичной ссылке этого быть не должно.
 */
 
-import { mkdirSync, copyFileSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { mkdirSync, copyFileSync, readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,6 +22,13 @@ mkdirSync(target, { recursive: true })
 
 for (const file of ['index.html', 'presenter.html', 'deck.css', 'deck.js']) {
   copyFileSync(join(here, file), join(target, file))
+}
+
+// Снимки экранов прототипа, если они есть.
+const assets = join(here, 'assets')
+if (existsSync(assets)) {
+  mkdirSync(join(target, 'assets'), { recursive: true })
+  for (const f of readdirSync(assets)) copyFileSync(join(assets, f), join(target, 'assets', f))
 }
 
 // Страница не для поиска: ссылка раздаётся адресно.
