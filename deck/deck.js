@@ -56,6 +56,12 @@ const Deck = (() => {
       if (line.startsWith('## ')) { flush(); blocks.push({ type: 'h2', text: line.slice(3) }); continue }
       if (line.startsWith('!! ')) { flush(); blocks.push({ type: 'accent', text: line.slice(3) }); continue }
       if (line.startsWith('> ')) { flush(); blocks.push({ type: 'footnote', text: line.slice(2) }); continue }
+      if (line.startsWith('[img] ')) {
+        flush()
+        const [src, caption = ''] = line.slice(6).split('|').map((x) => x.trim())
+        blocks.push({ type: 'image', src, caption })
+        continue
+      }
       if (line.startsWith('[big] ')) {
         flush()
         const [value, unit = ''] = line.slice(6).split('|').map((s) => s.trim())
@@ -123,7 +129,29 @@ const Deck = (() => {
 
     const body = document.createElement('div')
     body.className = 'body'
-    if (slide.layout === 'phases') {
+    if (slide.layout === 'screen') {
+      const image = rest.find((b) => b.type === 'image')
+      const cols = document.createElement('div')
+      cols.className = 'screenshot-cols'
+      const left = document.createElement('div')
+      renderBlocks(left, rest.filter((b) => b !== image), 'statement')
+      cols.appendChild(left)
+      if (image) {
+        const fig = document.createElement('figure')
+        fig.className = 'shot'
+        const img = document.createElement('img')
+        img.src = image.src
+        img.alt = ''
+        fig.appendChild(img)
+        if (image.caption) {
+          const cap = document.createElement('figcaption')
+          cap.textContent = image.caption
+          fig.appendChild(cap)
+        }
+        cols.appendChild(fig)
+      }
+      body.appendChild(cols)
+    } else if (slide.layout === 'phases') {
       const list = rest.find((b) => b.type === 'list')
       body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
       renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
