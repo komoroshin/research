@@ -1,6 +1,12 @@
 /* Renders the deck to a PDF, one slide per page, no cropping.
    Usage:  npm install  &&  npm run pdf
+           npm run pdf -- --with-appendix
    Output: threshold-deck.pdf next to this file.
+
+   By default the PDF holds the twelve numbered slides only. The appendix is
+   left out: those slides carry a headline and nothing else, so in a file sent
+   to a committee they read as blank pages. Pass --with-appendix when the
+   appendix has real content.
 
    The deck itself needs no build and no npm — this script is the only thing
    that does, and only when the PDF has to be regenerated. */
@@ -35,14 +41,27 @@ if (overflows.length) {
   console.log('All slides fit at the minimum type size.')
 }
 
+const withAppendix = process.argv.includes('--with-appendix')
+const counts = await page.evaluate(() => ({
+  main: window.deckData.main.length,
+  appendix: window.deckData.appendix.length,
+}))
+const pageRanges = withAppendix ? '' : `1-${counts.main}`
+
 await page.pdf({
   path: out,
   width: '1920px',
   height: '1080px',
   printBackground: true,
-  pageRanges: '',
+  pageRanges,
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 })
+
+console.log(
+  withAppendix
+    ? `Включено страниц: ${counts.main + counts.appendix} (слайды и приложение)`
+    : `Включено страниц: ${counts.main}. Приложение (${counts.appendix} сл.) не вошло — у его слайдов нет содержимого, кроме заголовков. Нужно с ним: npm run pdf -- --with-appendix`
+)
 
 await browser.close()
 console.log(`PDF written: ${out}`)
