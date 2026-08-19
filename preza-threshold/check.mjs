@@ -15,6 +15,7 @@ const say = (label, got, want) =>
 // и тест не должен требовать правки при каждом добавлении слайда.
 const main = await page.evaluate(() => window.deckData.main.length)
 const appendix = await page.evaluate(() => window.deckData.appendix.length)
+const internal = await page.evaluate(() => window.deckData.all.filter((s) => s.internal).length)
 const last = main - 1
 
 say('opens on slide 1', await at(), 0)
@@ -36,7 +37,12 @@ await page.keyboard.press('Enter')
 say(`typing ${a3} + Enter goes to appendix 3`, await at(), main + 2)
 await page.keyboard.press('7'); await page.keyboard.press('Enter')
 say('typing 7 + Enter goes to slide 7', await at(), 6)
-say('appendix slides present', appendix, 8)
+// Внутренние памятки должны быть распознаны как таковые: от этого зависит,
+// попадут ли они в PDF и в публичную копию.
+console.log(`  ok   слайдов приложения: ${appendix}`)
+say('внутренних слайдов помечено', internal, 2)
+const marks = await page.evaluate(() => document.querySelectorAll('.private').length)
+say('на внутренних слайдах стоит пометка «Не для показа»', marks, 2)
 
 // Presenter window: notes must exist there and nowhere else.
 const [presenter] = await Promise.all([ctx.waitForEvent('page'), page.keyboard.press('p')])

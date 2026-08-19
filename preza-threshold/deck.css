@@ -360,6 +360,75 @@ table.capital tr:last-child td { border-bottom: none; }
 .roles ul { gap: 18px; }
 .roles li { font-size: var(--fs-small); line-height: 1.34; max-width: none; }
 
+/* --- слайд 15: гейт и капитал далее --------------------------------------- */
+
+.slide[data-layout='outlook'] p { font-size: var(--fs-small); color: var(--ink-3); max-width: none; }
+.slide[data-layout='outlook'] .body { gap: 10px; }
+.slide[data-layout='outlook'] .rule { margin-bottom: 26px; }
+.slide[data-layout='outlook'] table.capital td { padding: 10px 24px 10px 0; }
+.slide[data-layout='outlook'] .levels td { padding: 11px 32px 11px 0; }
+.slide[data-layout='outlook'] .levels td:first-child { width: 16%; color: var(--accent); }
+.slide[data-layout='outlook'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+.slide[data-layout='outlook'] .footnote { margin-top: 12px; margin-bottom: 0; padding-top: 14px; }
+
+/* --- слайд 14: ask двумя этапами ------------------------------------------ */
+
+.slide[data-layout='ask'] h1.long { max-width: 42ch; }
+.slide[data-layout='ask'] .rule { margin-bottom: 26px; }
+.slide[data-layout='ask'] .tranches { gap: 64px; }
+/* Ask несёт два описания этапов и две сноски. 30px — всё ещё выше нижней
+   границы 26px, ниже неё в этом деке не опускается ничего. */
+.slide[data-layout='ask'] .tranche p { max-width: none; font-size: 28px; line-height: 1.34; }
+.slide[data-layout='ask'] .tranche h2 { font-size: 28px; letter-spacing: 0.08em; margin-bottom: 0; }
+.slide[data-layout='ask'] .tranche { display: flex; flex-direction: column; gap: 12px; padding-top: 18px; }
+.slide[data-layout='ask'] .gate { margin-top: 18px; padding: 16px 30px; font-size: 27px; }
+.slide[data-layout='ask'] .footnote { margin-top: 14px; margin-bottom: 0; padding-top: 14px; }
+
+/* --- приложение: сметы ----------------------------------------------------- */
+
+table.budget { width: 100%; border-collapse: collapse; }
+table.budget th {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-align: left;
+  padding: 0 0 12px;
+  border-bottom: 2px solid var(--ink);
+}
+table.budget th:last-child, table.budget td:last-child {
+  text-align: right;
+  width: 18%;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink);
+}
+table.budget td {
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--ink-2);
+  padding: 9px 32px 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); color: var(--ink); }
+.slide[data-layout='budget'] p { font-size: var(--fs-small); max-width: none; }
+.slide[data-layout='budget'] .body { gap: 16px; }
+.slide[data-layout='budget'] .rule { margin-bottom: 24px; }
+
+/* Пометка «не для показа» стоит там же, где метка подставного контента. */
+.private {
+  position: absolute;
+  left: var(--m-x); bottom: 54px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--react);
+}
+.slide[data-internal='1'] .eyebrow { color: var(--react); }
+
 /* --- slide 12: tranches -------------------------------------------------- */
 
 .tranches { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }

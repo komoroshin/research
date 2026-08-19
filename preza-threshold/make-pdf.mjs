@@ -3,10 +3,11 @@
            npm run pdf -- --with-appendix
    Output: threshold-deck.pdf next to this file.
 
-   By default the PDF holds the twelve numbered slides only. The appendix is
-   left out: those slides carry a headline and nothing else, so in a file sent
-   to a committee they read as blank pages. Pass --with-appendix when the
-   appendix has real content.
+   В PDF идут все нумерованные слайды и те слайды приложения, у которых есть
+   содержимое кроме заголовка. Пропускаются два вида: пустые (в файле они
+   читались бы как пустая страница) и помеченные `internal` — внутренние
+   памятки, которым в присланном комитету файле не место. Флаг --with-appendix
+   добавляет пустые, но не внутренние: те не попадают в PDF никогда.
 
    The deck itself needs no build and no npm — this script is the only thing
    that does, and only when the PDF has to be regenerated. */
@@ -47,13 +48,27 @@ const counts = await page.evaluate(() => ({
   appendix: window.deckData.appendix.length,
   // Номера страниц приложения, у которых есть что показать помимо заголовка.
   filled: window.deckData.appendix
-    .map((s, i) => (s.blocks.filter((b) => b.type !== 'h1').length > 0 ? i : -1))
+    .map((s, i) => (!s.internal && s.blocks.filter((b) => b.type !== 'h1').length > 0 ? i : -1))
+    .filter((i) => i >= 0),
+  // Внутренние слайды не печатаются ни при каком флаге.
+  internal: window.deckData.appendix
+    .map((s, i) => (s.internal ? i : -1))
     .filter((i) => i >= 0),
 }))
 
-const pageRanges = withAppendix
-  ? ''
-  : [`1-${counts.main}`, ...counts.filled.map((i) => String(counts.main + i + 1))].join(',')
+const appendixPages = withAppendix
+  ? [...Array(counts.appendix).keys()].filter((i) => !counts.internal.includes(i))
+  : counts.filled
+// Подстраховка: внутренний слайд не должен попасть в диапазон ни при какой
+// комбинации флагов. Дешевле проверить здесь, чем найти его в присланном файле.
+const leaked = appendixPages.filter((i) => counts.internal.includes(i))
+if (leaked.length) {
+  console.error(`ОШИБКА: внутренние слайды приложения попали в PDF: ${leaked.map((i) => 'A' + (i + 1)).join(', ')}`)
+  process.exit(1)
+}
+
+const pageRanges = [`1-${counts.main}`, ...appendixPages.map((i) => String(counts.main + i + 1))].join(',')
+console.log(`Страницы: ${pageRanges}`)
 
 await page.pdf({
   path: out,
@@ -64,14 +79,16 @@ await page.pdf({
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 })
 
-const skipped = counts.appendix - counts.filled.length
+const empty = counts.appendix - counts.filled.length - counts.internal.length
 console.log(
-  withAppendix
-    ? `Включено страниц: ${counts.main + counts.appendix} — все слайды и всё приложение.`
-    : `Включено страниц: ${counts.main + counts.filled.length} — ${counts.main} слайдов и ${counts.filled.length} из приложения.` +
-      (skipped
-        ? ` Пропущено ${skipped}: у этих слайдов приложения нет содержимого, кроме заголовка, и в файле они читались бы как пустые. Нужны все: npm run pdf -- --with-appendix`
-        : '')
+  `Включено страниц: ${counts.main + appendixPages.length} — ${counts.main} слайдов и ` +
+    `${appendixPages.length} из приложения.` +
+    (counts.internal.length
+      ? ` Не печатается ${counts.internal.length} со сметами: помечены internal, это внутренние памятки.`
+      : '') +
+    (!withAppendix && empty
+      ? ` Пропущено ${empty} пустых: у них нет содержимого кроме заголовка. Нужны и они: npm run pdf -- --with-appendix`
+      : '')
 )
 
 await browser.close()

@@ -10,7 +10,14 @@ await page.goto(`file://${dir}/index.html`, { waitUntil: 'networkidle' })
 
 const slides = await page.evaluate(() => document.querySelectorAll('.canvas').length)
 const badge = await page.evaluate(() => document.querySelector('.badge') !== null)
-const secrets = ['Отдельное юрлицо', 'вестинг', 'Тракшена сегодня нет', 'себестоимости']
+// Куски заметок и внутренних слайдов, которых на публичной ссылке быть не должно.
+const secrets = [
+  'Тракшена сегодня нет',
+  'договор автора с ней юристом не проверен',
+  'Наценка за перенесённую ценность',
+  'Сырая себестоимость',
+  'Не для показа',
+]
 const leaked = await page.evaluate((words) => {
   const html = document.documentElement.outerHTML + (window.DECK || '')
   return words.filter((w) => html.includes(w))
