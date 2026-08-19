@@ -27,6 +27,9 @@ const Deck = (() => {
         kind,
         num: Number(num),
         layout,
+        // Слайд с пометкой internal не идёт ни в PDF, ни в публичную копию:
+        // это внутренняя памятка, а не часть показа.
+        internal: opts.includes('internal'),
         blocks: parseBlocks(bodyRaw),
         notes: notesRaw.trim(),
       }
@@ -54,7 +57,13 @@ const Deck = (() => {
 
       if (line.startsWith('# ')) { flush(); blocks.push({ type: 'h1', text: line.slice(2) }); continue }
       if (line.startsWith('## ')) { flush(); blocks.push({ type: 'h2', text: line.slice(3) }); continue }
-      if (line.startsWith('!! ')) { flush(); blocks.push({ type: 'accent', text: line.slice(3) }); continue }
+      if (line.startsWith('!! ')) {
+        flush()
+        // «!! [Метка] текст» — метка садится на рамку блока.
+        const m = /^\[([^\]]+)\]\s*([\s\S]*)$/.exec(line.slice(3))
+        blocks.push(m ? { type: 'accent', label: m[1], text: m[2] } : { type: 'accent', text: line.slice(3) })
+        continue
+      }
       if (line.startsWith('> ')) { flush(); blocks.push({ type: 'footnote', text: line.slice(2) }); continue }
       if (line.startsWith('[img] ')) {
         flush()
@@ -106,6 +115,7 @@ const Deck = (() => {
     el.className = 'slide'
     el.dataset.layout = slide.layout
     if (slide.kind === 'appendix') el.dataset.appendix = '1'
+    if (slide.internal) el.dataset.internal = '1'
 
     const head = slide.blocks.find((b) => b.type === 'h1')
     const rest = slide.blocks.filter((b) => b !== head)
@@ -155,8 +165,19 @@ const Deck = (() => {
       const list = rest.find((b) => b.type === 'list')
       body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
       renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
-    } else if (slide.layout === 'tranches') {
+    } else if (slide.layout === 'tranches' || slide.layout === 'ask') {
       renderTranches(body, rest)
+    } else if (slide.layout === 'outlook') {
+      // Два разных стола на одном слайде: пороги в две колонки и капитал в три.
+      for (const b of rest) {
+        if (b.type === 'table' && b.rows[0].length === 3) body.appendChild(capitalTable(b.rows))
+        else renderBlocks(body, [b], 'outlook')
+      }
+    } else if (slide.layout === 'budget') {
+      for (const b of rest) {
+        if (b.type === 'table') body.appendChild(budgetTable(b.rows))
+        else renderBlocks(body, [b], 'budget')
+      }
     } else if (slide.layout === 'capital') {
       renderCapital(body, rest)
     } else if (slide.layout === 'risks' || slide.layout === 'thresholds' || slide.layout === 'dense') {
@@ -171,6 +192,13 @@ const Deck = (() => {
     num.textContent =
       slide.kind === 'appendix' ? `A${slide.num}` : `${slide.num} / ${total}`
     el.appendChild(num)
+
+    if (slide.internal) {
+      const mark = document.createElement('div')
+      mark.className = 'private'
+      mark.textContent = 'Не для показа'
+      el.appendChild(mark)
+    }
 
     canvas.appendChild(el)
     return canvas
@@ -214,9 +242,9 @@ const Deck = (() => {
         host.appendChild(ul)
       } else if (b.type === 'accent') {
         const d = document.createElement('div')
-        const gated = layout === 'tranches' || layout === 'capital'
+        const gated = layout === 'tranches' || layout === 'capital' || layout === 'ask' || layout === 'outlook'
         d.className = gated ? 'gate' : 'arith'
-        if (gated) d.dataset.label = 'Ворота'
+        if (gated) d.dataset.label = b.label || 'Ворота'
         d.innerHTML = inline(b.text)
         host.appendChild(d)
       } else if (b.type === 'footnote') {
@@ -302,6 +330,36 @@ const Deck = (() => {
     cols.appendChild(roles)
     host.appendChild(cols)
     renderBlocks(host, tail, 'capital')
+  }
+
+  // Смета: статья слева, сумма справа моноширинным. Строка «Итого» набрана в
+  // контенте жирным и получает подчёркнутую рамку.
+  function budgetTable(rows) {
+    const t = document.createElement('table')
+    t.className = 'budget'
+    const [head, ...body] = rows
+    const thead = document.createElement('thead')
+    const htr = document.createElement('tr')
+    for (const cell of head) {
+      const th = document.createElement('th')
+      th.textContent = cell
+      htr.appendChild(th)
+    }
+    thead.appendChild(htr)
+    t.appendChild(thead)
+    const tb = document.createElement('tbody')
+    for (const row of body) {
+      const tr = document.createElement('tr')
+      if (row.some((c) => c.startsWith('**'))) tr.className = 'sum'
+      row.forEach((cell) => {
+        const td = document.createElement('td')
+        td.innerHTML = inline(cell)
+        tr.appendChild(td)
+      })
+      tb.appendChild(tr)
+    }
+    t.appendChild(tb)
+    return t
   }
 
   function capitalTable(rows) {
