@@ -71,6 +71,15 @@ const Deck = (() => {
         blocks.push({ type: 'image', src, caption })
         continue
       }
+      if (line.startsWith('[time] ')) {
+        if (list) { blocks.push({ type: 'list', items: list }); list = null }
+        if (table) { blocks.push({ type: 'table', rows: table }); table = null }
+        const [when, what = ''] = line.slice(7).split('|').map((x) => x.trim())
+        const last = blocks[blocks.length - 1]
+        if (last && last.type === 'timeline') last.points.push({ when, what })
+        else blocks.push({ type: 'timeline', points: [{ when, what }] })
+        continue
+      }
       if (line.startsWith('[big] ')) {
         flush()
         const [value, unit = ''] = line.slice(6).split('|').map((s) => s.trim())
@@ -165,6 +174,10 @@ const Deck = (() => {
       const list = rest.find((b) => b.type === 'list')
       body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
       renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
+    } else if (slide.layout === 'timeline') {
+      const line = rest.find((b) => b.type === 'timeline')
+      if (line) body.appendChild(timelineDiagram(line.points))
+      renderBlocks(body, rest.filter((b) => b !== line), 'timeline')
     } else if (slide.layout === 'tranches' || slide.layout === 'ask') {
       renderTranches(body, rest)
     } else if (slide.layout === 'outlook') {
@@ -407,6 +420,67 @@ const Deck = (() => {
       else lines.push(w)
     }
     return lines
+  }
+
+  // Слайд 7: горизонт тремя годами. Первая точка залита — она уже строится,
+  // остальные обведены: это горизонт, а не план поставки с датами.
+  function timelineDiagram(points) {
+    const NS = 'http://www.w3.org/2000/svg'
+    const W = 1656
+    const H = 150
+    const svg = document.createElementNS(NS, 'svg')
+    svg.setAttribute('class', 'timeline')
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    svg.setAttribute('role', 'img')
+
+    const add = (name, attrs) => {
+      const n = document.createElementNS(NS, name)
+      for (const k in attrs) n.setAttribute(k, attrs[k])
+      svg.appendChild(n)
+      return n
+    }
+    const label = (x, y, text, cls, anchor) => {
+      const t = document.createElementNS(NS, 'text')
+      t.setAttribute('x', x)
+      t.setAttribute('y', y)
+      t.setAttribute('class', cls)
+      t.setAttribute('text-anchor', anchor)
+      t.textContent = text
+      svg.appendChild(t)
+      return t
+    }
+
+    const yAxis = 74
+    // Точки отступают от краёв на радиус, иначе первый кружок срезается полем,
+    // а последний налезает на стрелку.
+    const r = 11
+    const left = r + 1
+    const right = W - 96
+    const last = points.length - 1
+    const step = last > 0 ? (right - left) / last : 0
+
+    add('line', { x1: 0, y1: yAxis, x2: W - 34, y2: yAxis, stroke: 'var(--rule)', 'stroke-width': 3 })
+    // Стрелка вправо: горизонт продолжается за третьим годом.
+    add('path', {
+      d: `M ${W - 34} ${yAxis - 12} L ${W} ${yAxis} L ${W - 34} ${yAxis + 12} Z`,
+      fill: 'var(--rule)',
+    })
+
+    points.forEach((p, i) => {
+      const x = left + i * step
+      const now = i === 0
+      // Крайние подписи прижаты к краям, иначе третий год уезжает за поле.
+      const anchor = i === 0 ? 'start' : i === last ? 'end' : 'middle'
+      label(x, yAxis - 36, p.when, now ? 'when on' : 'when', anchor)
+      add('circle', {
+        cx: x, cy: yAxis, r: 11,
+        fill: now ? 'var(--accent)' : 'var(--paper)',
+        stroke: now ? 'var(--accent)' : 'var(--ink-3)',
+        'stroke-width': 3,
+      })
+      label(x, yAxis + 54, p.what, now ? 'what on' : 'what', anchor)
+    })
+    return svg
   }
 
   function phasesDiagram(phases) {
