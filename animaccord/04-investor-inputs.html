@@ -108,6 +108,15 @@ a{ color:var(--accent); text-decoration:none; border-bottom:.4pt solid var(--rul
     font-family:'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,sans-serif }
   .thesis-q{ font-style:normal }
   a{ color:var(--accent) }
+  thead th{ position:static }
+  /* тень на краю показывает, что таблицу можно листать вбок */
+  .tscroll,.tbl{
+    background:
+      linear-gradient(to right, var(--app-paper), rgba(243,240,232,0)) 0 0/28px 100% no-repeat local,
+      linear-gradient(to left, var(--app-paper), rgba(243,240,232,0)) 100% 0/28px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(17,17,17,.16), rgba(17,17,17,0)) 0 0/12px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(17,17,17,.16), rgba(17,17,17,0)) 100% 0/12px 100% no-repeat scroll;
+  }
 }
 @media screen{ :root{
   --ink:#111111; --ink-2:#3A3E42; --ink-3:#6B7075;
