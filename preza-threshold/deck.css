@@ -491,7 +491,7 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 
 /* --- слайд 7: горизонт --------------------------------------------------- */
 
-.timeline { width: 100%; margin: 8px 0 4px; flex: none; }
+.timeline { width: 100%; margin: 4px 0 0; flex: none; }
 .timeline text.when {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 26px;
@@ -503,9 +503,23 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 .timeline text.what { font-size: 34px; font-weight: 600; fill: var(--ink-2); }
 .timeline text.what.on { fill: var(--ink); }
 .slide[data-layout='timeline'] li { max-width: none; }
-.slide[data-layout='timeline'] ul { gap: 16px; }
-.slide[data-layout='timeline'] .body { gap: 20px; }
-.slide[data-layout='timeline'] .rule { margin-bottom: 22px; }
+/* Пять пунктов в одну колонку не помещаются под таймлайном, а кегль на этом
+   слайде не трогаем. Две колонки набора: строки короче, высота вдвое меньше,
+   слова не тронуты. */
+.slide[data-layout='timeline'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 64px;
+}
+/* Интерлиньяж на этом слайде плотнее общего 1,42 — кегль при этом остаётся
+   34px, как на всех остальных слайдах. */
+.slide[data-layout='timeline'] li { break-inside: avoid; margin-bottom: 12px; line-height: 1.32; }
+.slide[data-layout='timeline'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='timeline'] .body { gap: 10px; }
+.slide[data-layout='timeline'] .rule { margin-bottom: 8px; }
+/* Сноска про телемедицину прижата к низу, но без запаса в 44px:
+   на этом слайде он выталкивал последний буллет за поле набора. */
+.slide[data-layout='timeline'] .footnote { margin-bottom: 0; padding-top: 12px; line-height: 1.34; }
 .slide[data-layout='timeline'] h1.long { max-width: 40ch; }
 
 /* --- appendix marker ----------------------------------------------------- */
