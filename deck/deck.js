@@ -427,7 +427,7 @@ const Deck = (() => {
   function timelineDiagram(points) {
     const NS = 'http://www.w3.org/2000/svg'
     const W = 1656
-    const H = 150
+    const H = 104
     const svg = document.createElementNS(NS, 'svg')
     svg.setAttribute('class', 'timeline')
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
@@ -450,7 +450,7 @@ const Deck = (() => {
       return t
     }
 
-    const yAxis = 74
+    const yAxis = 52
     // Точки отступают от краёв на радиус, иначе первый кружок срезается полем,
     // а последний налезает на стрелку.
     const r = 11
@@ -471,14 +471,14 @@ const Deck = (() => {
       const now = i === 0
       // Крайние подписи прижаты к краям, иначе третий год уезжает за поле.
       const anchor = i === 0 ? 'start' : i === last ? 'end' : 'middle'
-      label(x, yAxis - 36, p.when, now ? 'when on' : 'when', anchor)
+      label(x, yAxis - 26, p.when, now ? 'when on' : 'when', anchor)
       add('circle', {
         cx: x, cy: yAxis, r: 11,
         fill: now ? 'var(--accent)' : 'var(--paper)',
         stroke: now ? 'var(--accent)' : 'var(--ink-3)',
         'stroke-width': 3,
       })
-      label(x, yAxis + 54, p.what, now ? 'what on' : 'what', anchor)
+      label(x, yAxis + 44, p.what, now ? 'what on' : 'what', anchor)
     })
     return svg
   }
