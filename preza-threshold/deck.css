@@ -201,7 +201,10 @@ li::before {
   gap: 56px;
   align-items: start;
 }
-.slide[data-layout='metric'] .metric-value { font-size: 116px; }
+/* Диапазон «$188–249» длиннее одиночного числа — переносился на вторую
+   строку и ломал ряд. Кегль подобран так, чтобы самое длинное значение
+   помещалось в свою треть. */
+.slide[data-layout='metric'] .metric-value { font-size: 100px; white-space: nowrap; }
 .slide[data-layout='metric'] .metric-unit { display: block; margin: 14px 0 0; }
 .slide[data-layout='metric'] li { max-width: none; }
 .slide[data-layout='metric'] .body { gap: 34px; }
@@ -485,6 +488,25 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 }
 .diagram text.on { fill: var(--ink); }
 .diagram text.big { font-size: 30px; fill: var(--ink); }
+
+/* --- слайд 7: горизонт --------------------------------------------------- */
+
+.timeline { width: 100%; margin: 8px 0 4px; flex: none; }
+.timeline text.when {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--ink-3);
+}
+.timeline text.when.on { fill: var(--accent); }
+.timeline text.what { font-size: 34px; font-weight: 600; fill: var(--ink-2); }
+.timeline text.what.on { fill: var(--ink); }
+.slide[data-layout='timeline'] li { max-width: none; }
+.slide[data-layout='timeline'] ul { gap: 16px; }
+.slide[data-layout='timeline'] .body { gap: 20px; }
+.slide[data-layout='timeline'] .rule { margin-bottom: 22px; }
+.slide[data-layout='timeline'] h1.long { max-width: 40ch; }
 
 /* --- appendix marker ----------------------------------------------------- */
 
