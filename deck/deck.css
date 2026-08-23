@@ -479,7 +479,27 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 
 /* --- slide 4: phases diagram --------------------------------------------- */
 
-.diagram { width: 100%; margin-top: 24px; }
+/* Слайд 4 несёт объяснение метода и три вывода поверх самой диаграммы —
+   больше текста, чем было в версии 3. Кегль не трогаем (34px везде), режем
+   межстрочный интервал и отступы, как на других плотных слайдах. Три вывода
+   под диаграммой — единственный список на этом слайде: диаграмма рисуется
+   отдельным SVG, не тегом ul, так что `ul` здесь однозначно адресует его. */
+.slide[data-layout='phases'] .body { gap: 4px; }
+.slide[data-layout='phases'] p { line-height: 1.1; }
+.slide[data-layout='phases'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 48px;
+}
+.slide[data-layout='phases'] li { break-inside: avoid; line-height: 1.1; margin-bottom: 8px; }
+.slide[data-layout='phases'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='phases'] .rule { margin-bottom: 4px; }
+
+/* flex: none и явная высота — иначе внутри переполненного flex-контейнера
+   SVG без заданной высоты схлопывается до нуля (виден только на слайде 4
+   после того как контента стало больше, чем помещается: раньше эта ветка
+   просто не срабатывала). */
+.diagram { width: 100%; height: 231px; margin-top: 0; flex: none; }
 .diagram text {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 26px;

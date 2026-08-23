@@ -171,9 +171,14 @@ const Deck = (() => {
       }
       body.appendChild(cols)
     } else if (slide.layout === 'phases') {
+      // Первый список в блоках — фазы для диаграммы. Всё, что стоит перед ним
+      // в контенте (например объяснение метода), рендерится над диаграммой;
+      // всё, что после, — под ней. Порядок в content.js задаёт порядок на слайде.
       const list = rest.find((b) => b.type === 'list')
+      const idx = list ? rest.indexOf(list) : rest.length
+      renderBlocks(body, rest.slice(0, idx), slide.layout)
       body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
-      renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
+      renderBlocks(body, rest.slice(idx + 1), slide.layout)
     } else if (slide.layout === 'timeline') {
       const line = rest.find((b) => b.type === 'timeline')
       if (line) body.appendChild(timelineDiagram(line.points))
@@ -486,7 +491,7 @@ const Deck = (() => {
   function phasesDiagram(phases) {
     const NS = 'http://www.w3.org/2000/svg'
     const W = 1656
-    const H = 250
+    const H = 231
     const svg = document.createElementNS(NS, 'svg')
     svg.setAttribute('class', 'diagram')
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
@@ -544,7 +549,7 @@ const Deck = (() => {
 
       // Mono at 26px runs ~17px per character; wrap to what the column holds.
       const perLine = Math.max(9, Math.floor(w / 17))
-      wrap(p.sub, perLine).forEach((line, n) => label(x, yBox + hBox + 40 + n * 32, line))
+      wrap(p.sub, perLine).forEach((line, n) => label(x, yBox + hBox + 34 + n * 27, line))
       x += w + gap
     })
 
