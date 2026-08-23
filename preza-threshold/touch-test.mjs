@@ -74,10 +74,31 @@ await page.locator('.deck-picker button', { hasText: /^A1$/ }).click()
 await page.waitForTimeout(150)
 say('переход в приложение из списка', await at(), main)
 
-// Дальше двенадцатого показ не уходит.
+// Дальше последнего основного слайда показ не уходит — но на телефоне нет
+// клавиши A, поэтому свайп/тап на этой границе не должен быть немым: он
+// открывает список слайдов вместо того, чтобы просто ничего не делать.
 await page.evaluate((i) => window.deckGoto(i), main - 1)
+await page.evaluate(() => document.querySelector('.deck-picker').classList.remove('show'))
 await swipe(300, 60)
 say(`свайп с последнего слайда не уводит в приложение`, await at(), main - 1)
+const pickerAfterSwipe = await page.evaluate(() =>
+  document.querySelector('.deck-picker').classList.contains('show')
+)
+console.log(`${pickerAfterSwipe ? '  ok  ' : ' FAIL '} свайп с последнего слайда открывает список слайдов`)
+
+// Кнопка «вперёд» на этой же границе должна быть кликабельной (не disabled)
+// и делать то же самое — иначе на телефоне нет способа узнать про приложение.
+await page.evaluate(() => document.querySelector('.deck-picker').classList.remove('show'))
+const nextBtnDisabled = await page.evaluate(() =>
+  document.querySelector('.deck-controls button[aria-label="Следующий слайд"]').disabled
+)
+console.log(`${!nextBtnDisabled ? '  ok  ' : ' FAIL '} кнопка «вперёд» на последнем слайде не отключена`)
+await page.locator('.deck-controls button[aria-label="Следующий слайд"]').click()
+await page.waitForTimeout(120)
+const pickerAfterButton = await page.evaluate(() =>
+  document.querySelector('.deck-picker').classList.contains('show')
+)
+console.log(`${pickerAfterButton ? '  ok  ' : ' FAIL '} кнопка «вперёд» на последнем слайде открывает список слайдов`)
 
 await page.screenshot({ path: '/tmp/shots/deck-mobile.png' })
 await browser.close()

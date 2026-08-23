@@ -631,6 +631,19 @@ function boot(source) {
   const next = () => show(index >= lastMain && index < total ? Math.min(index + 1, lastMain) : index + 1)
   const prev = () => show(index - 1)
 
+  // On touch, "next" at the boundary can't silently stop the way it does on
+  // a keyboard — the phone has no `A` key to fall back on, and a swipe that
+  // does nothing reads as broken, not as "the deck is over". So a touch
+  // advance at the last main slide opens the picker instead of no-op'ing.
+  // Keyboard ArrowRight/Space keep the plain no-op — that behavior is
+  // covered by check.mjs and is what a presenter driving from a laptop
+  // expects.
+  let picker = null
+  const advance = () => {
+    if (index === lastMain && picker) picker.classList.add('show')
+    else next()
+  }
+
   let typed = ''
   let typedTimer = null
   const overlay = document.querySelector('.overlay')
@@ -695,7 +708,7 @@ function boot(source) {
     const dy = t.clientY - touchY
     touchX = null
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      dx < 0 ? next() : prev()
+      dx < 0 ? advance() : prev()
     }
   }, { passive: true })
 
@@ -704,13 +717,13 @@ function boot(source) {
   document.addEventListener('click', (e) => {
     if (e.target.closest('.deck-controls') || e.target.closest('.deck-picker')) return
     // Открытый список закрывается касанием мимо и слайд при этом не листает.
-    const picker = document.querySelector('.deck-picker.show')
-    if (picker) {
-      picker.classList.remove('show')
+    const openPicker = document.querySelector('.deck-picker.show')
+    if (openPicker) {
+      openPicker.classList.remove('show')
       return
     }
     const x = e.clientX / window.innerWidth
-    if (x > 0.68) next()
+    if (x > 0.68) advance()
     else if (x < 0.32) prev()
   })
 
@@ -732,13 +745,13 @@ function boot(source) {
     const prevBtn = mk('‹', 'Предыдущий слайд', prev)
     const counter = mk('', 'Список слайдов', () => picker.classList.toggle('show'))
     counter.className = 'counter'
-    const nextBtn = mk('›', 'Следующий слайд', next)
+    const nextBtn = mk('›', 'Следующий слайд', advance)
 
     bar.append(prevBtn, counter, nextBtn)
     document.body.appendChild(bar)
 
     // Список для перехода: на телефоне номер с клавиатуры не набрать.
-    const picker = document.createElement('div')
+    picker = document.createElement('div')
     picker.className = 'deck-picker'
     deck.all.forEach((slide, i) => {
       const b = document.createElement('button')
@@ -757,7 +770,9 @@ function boot(source) {
       const slide = deck.all[index]
       counter.textContent = slide.kind === 'appendix' ? `A${slide.num}` : `${slide.num} / ${total}`
       prevBtn.disabled = index === 0
-      nextBtn.disabled = index >= lastMain && index < total
+      // Disabled only at the true end (last appendix slide). At the last
+      // main slide it stays tappable — that tap is what opens the picker.
+      nextBtn.disabled = index === canvases.length - 1
       picker.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === index))
     }
     updateControls()
