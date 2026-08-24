@@ -71,6 +71,15 @@ const Deck = (() => {
         blocks.push({ type: 'image', src, caption })
         continue
       }
+      if (line.startsWith('[time] ')) {
+        if (list) { blocks.push({ type: 'list', items: list }); list = null }
+        if (table) { blocks.push({ type: 'table', rows: table }); table = null }
+        const [when, what = ''] = line.slice(7).split('|').map((x) => x.trim())
+        const last = blocks[blocks.length - 1]
+        if (last && last.type === 'timeline') last.points.push({ when, what })
+        else blocks.push({ type: 'timeline', points: [{ when, what }] })
+        continue
+      }
       if (line.startsWith('[big] ')) {
         flush()
         const [value, unit = ''] = line.slice(6).split('|').map((s) => s.trim())
@@ -162,9 +171,18 @@ const Deck = (() => {
       }
       body.appendChild(cols)
     } else if (slide.layout === 'phases') {
+      // Первый список в блоках — фазы для диаграммы. Всё, что стоит перед ним
+      // в контенте (например объяснение метода), рендерится над диаграммой;
+      // всё, что после, — под ней. Порядок в content.js задаёт порядок на слайде.
       const list = rest.find((b) => b.type === 'list')
+      const idx = list ? rest.indexOf(list) : rest.length
+      renderBlocks(body, rest.slice(0, idx), slide.layout)
       body.appendChild(phasesDiagram((list ? list.items : []).map(parsePhase)))
-      renderBlocks(body, rest.filter((b) => b !== list), slide.layout)
+      renderBlocks(body, rest.slice(idx + 1), slide.layout)
+    } else if (slide.layout === 'timeline') {
+      const line = rest.find((b) => b.type === 'timeline')
+      if (line) body.appendChild(timelineDiagram(line.points))
+      renderBlocks(body, rest.filter((b) => b !== line), 'timeline')
     } else if (slide.layout === 'tranches' || slide.layout === 'ask') {
       renderTranches(body, rest)
     } else if (slide.layout === 'outlook') {
@@ -409,10 +427,71 @@ const Deck = (() => {
     return lines
   }
 
+  // Слайд 7: горизонт тремя годами. Первая точка залита — она уже строится,
+  // остальные обведены: это горизонт, а не план поставки с датами.
+  function timelineDiagram(points) {
+    const NS = 'http://www.w3.org/2000/svg'
+    const W = 1656
+    const H = 104
+    const svg = document.createElementNS(NS, 'svg')
+    svg.setAttribute('class', 'timeline')
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    svg.setAttribute('role', 'img')
+
+    const add = (name, attrs) => {
+      const n = document.createElementNS(NS, name)
+      for (const k in attrs) n.setAttribute(k, attrs[k])
+      svg.appendChild(n)
+      return n
+    }
+    const label = (x, y, text, cls, anchor) => {
+      const t = document.createElementNS(NS, 'text')
+      t.setAttribute('x', x)
+      t.setAttribute('y', y)
+      t.setAttribute('class', cls)
+      t.setAttribute('text-anchor', anchor)
+      t.textContent = text
+      svg.appendChild(t)
+      return t
+    }
+
+    const yAxis = 52
+    // Точки отступают от краёв на радиус, иначе первый кружок срезается полем,
+    // а последний налезает на стрелку.
+    const r = 11
+    const left = r + 1
+    const right = W - 96
+    const last = points.length - 1
+    const step = last > 0 ? (right - left) / last : 0
+
+    add('line', { x1: 0, y1: yAxis, x2: W - 34, y2: yAxis, stroke: 'var(--rule)', 'stroke-width': 3 })
+    // Стрелка вправо: горизонт продолжается за третьим годом.
+    add('path', {
+      d: `M ${W - 34} ${yAxis - 12} L ${W} ${yAxis} L ${W - 34} ${yAxis + 12} Z`,
+      fill: 'var(--rule)',
+    })
+
+    points.forEach((p, i) => {
+      const x = left + i * step
+      const now = i === 0
+      // Крайние подписи прижаты к краям, иначе третий год уезжает за поле.
+      const anchor = i === 0 ? 'start' : i === last ? 'end' : 'middle'
+      label(x, yAxis - 26, p.when, now ? 'when on' : 'when', anchor)
+      add('circle', {
+        cx: x, cy: yAxis, r: 11,
+        fill: now ? 'var(--accent)' : 'var(--paper)',
+        stroke: now ? 'var(--accent)' : 'var(--ink-3)',
+        'stroke-width': 3,
+      })
+      label(x, yAxis + 44, p.what, now ? 'what on' : 'what', anchor)
+    })
+    return svg
+  }
+
   function phasesDiagram(phases) {
     const NS = 'http://www.w3.org/2000/svg'
     const W = 1656
-    const H = 250
+    const H = 231
     const svg = document.createElementNS(NS, 'svg')
     svg.setAttribute('class', 'diagram')
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
@@ -470,7 +549,7 @@ const Deck = (() => {
 
       // Mono at 26px runs ~17px per character; wrap to what the column holds.
       const perLine = Math.max(9, Math.floor(w / 17))
-      wrap(p.sub, perLine).forEach((line, n) => label(x, yBox + hBox + 40 + n * 32, line))
+      wrap(p.sub, perLine).forEach((line, n) => label(x, yBox + hBox + 34 + n * 27, line))
       x += w + gap
     })
 
@@ -552,6 +631,19 @@ function boot(source) {
   const next = () => show(index >= lastMain && index < total ? Math.min(index + 1, lastMain) : index + 1)
   const prev = () => show(index - 1)
 
+  // On touch, "next" at the boundary can't silently stop the way it does on
+  // a keyboard — the phone has no `A` key to fall back on, and a swipe that
+  // does nothing reads as broken, not as "the deck is over". So a touch
+  // advance at the last main slide opens the picker instead of no-op'ing.
+  // Keyboard ArrowRight/Space keep the plain no-op — that behavior is
+  // covered by check.mjs and is what a presenter driving from a laptop
+  // expects.
+  let picker = null
+  const advance = () => {
+    if (index === lastMain && picker) picker.classList.add('show')
+    else next()
+  }
+
   let typed = ''
   let typedTimer = null
   const overlay = document.querySelector('.overlay')
@@ -616,7 +708,7 @@ function boot(source) {
     const dy = t.clientY - touchY
     touchX = null
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      dx < 0 ? next() : prev()
+      dx < 0 ? advance() : prev()
     }
   }, { passive: true })
 
@@ -625,13 +717,13 @@ function boot(source) {
   document.addEventListener('click', (e) => {
     if (e.target.closest('.deck-controls') || e.target.closest('.deck-picker')) return
     // Открытый список закрывается касанием мимо и слайд при этом не листает.
-    const picker = document.querySelector('.deck-picker.show')
-    if (picker) {
-      picker.classList.remove('show')
+    const openPicker = document.querySelector('.deck-picker.show')
+    if (openPicker) {
+      openPicker.classList.remove('show')
       return
     }
     const x = e.clientX / window.innerWidth
-    if (x > 0.68) next()
+    if (x > 0.68) advance()
     else if (x < 0.32) prev()
   })
 
@@ -653,13 +745,13 @@ function boot(source) {
     const prevBtn = mk('‹', 'Предыдущий слайд', prev)
     const counter = mk('', 'Список слайдов', () => picker.classList.toggle('show'))
     counter.className = 'counter'
-    const nextBtn = mk('›', 'Следующий слайд', next)
+    const nextBtn = mk('›', 'Следующий слайд', advance)
 
     bar.append(prevBtn, counter, nextBtn)
     document.body.appendChild(bar)
 
     // Список для перехода: на телефоне номер с клавиатуры не набрать.
-    const picker = document.createElement('div')
+    picker = document.createElement('div')
     picker.className = 'deck-picker'
     deck.all.forEach((slide, i) => {
       const b = document.createElement('button')
@@ -678,7 +770,9 @@ function boot(source) {
       const slide = deck.all[index]
       counter.textContent = slide.kind === 'appendix' ? `A${slide.num}` : `${slide.num} / ${total}`
       prevBtn.disabled = index === 0
-      nextBtn.disabled = index >= lastMain && index < total
+      // Disabled only at the true end (last appendix slide). At the last
+      // main slide it stays tappable — that tap is what opens the picker.
+      nextBtn.disabled = index === canvases.length - 1
       picker.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === index))
     }
     updateControls()

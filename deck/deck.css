@@ -201,7 +201,10 @@ li::before {
   gap: 56px;
   align-items: start;
 }
-.slide[data-layout='metric'] .metric-value { font-size: 116px; }
+/* Диапазон «$188–249» длиннее одиночного числа — переносился на вторую
+   строку и ломал ряд. Кегль подобран так, чтобы самое длинное значение
+   помещалось в свою треть. */
+.slide[data-layout='metric'] .metric-value { font-size: 100px; white-space: nowrap; }
 .slide[data-layout='metric'] .metric-unit { display: block; margin: 14px 0 0; }
 .slide[data-layout='metric'] li { max-width: none; }
 .slide[data-layout='metric'] .body { gap: 34px; }
@@ -476,7 +479,27 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 
 /* --- slide 4: phases diagram --------------------------------------------- */
 
-.diagram { width: 100%; margin-top: 24px; }
+/* Слайд 4 несёт объяснение метода и три вывода поверх самой диаграммы —
+   больше текста, чем было в версии 3. Кегль не трогаем (34px везде), режем
+   межстрочный интервал и отступы, как на других плотных слайдах. Три вывода
+   под диаграммой — единственный список на этом слайде: диаграмма рисуется
+   отдельным SVG, не тегом ul, так что `ul` здесь однозначно адресует его. */
+.slide[data-layout='phases'] .body { gap: 4px; }
+.slide[data-layout='phases'] p { line-height: 1.1; }
+.slide[data-layout='phases'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 48px;
+}
+.slide[data-layout='phases'] li { break-inside: avoid; line-height: 1.1; margin-bottom: 8px; }
+.slide[data-layout='phases'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='phases'] .rule { margin-bottom: 4px; }
+
+/* flex: none и явная высота — иначе внутри переполненного flex-контейнера
+   SVG без заданной высоты схлопывается до нуля (виден только на слайде 4
+   после того как контента стало больше, чем помещается: раньше эта ветка
+   просто не срабатывала). */
+.diagram { width: 100%; height: 231px; margin-top: 0; flex: none; }
 .diagram text {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 26px;
@@ -485,6 +508,39 @@ table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); 
 }
 .diagram text.on { fill: var(--ink); }
 .diagram text.big { font-size: 30px; fill: var(--ink); }
+
+/* --- слайд 7: горизонт --------------------------------------------------- */
+
+.timeline { width: 100%; margin: 4px 0 0; flex: none; }
+.timeline text.when {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--ink-3);
+}
+.timeline text.when.on { fill: var(--accent); }
+.timeline text.what { font-size: 34px; font-weight: 600; fill: var(--ink-2); }
+.timeline text.what.on { fill: var(--ink); }
+.slide[data-layout='timeline'] li { max-width: none; }
+/* Пять пунктов в одну колонку не помещаются под таймлайном, а кегль на этом
+   слайде не трогаем. Две колонки набора: строки короче, высота вдвое меньше,
+   слова не тронуты. */
+.slide[data-layout='timeline'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 64px;
+}
+/* Интерлиньяж на этом слайде плотнее общего 1,42 — кегль при этом остаётся
+   34px, как на всех остальных слайдах. */
+.slide[data-layout='timeline'] li { break-inside: avoid; margin-bottom: 12px; line-height: 1.32; }
+.slide[data-layout='timeline'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='timeline'] .body { gap: 10px; }
+.slide[data-layout='timeline'] .rule { margin-bottom: 8px; }
+/* Сноска про телемедицину прижата к низу, но без запаса в 44px:
+   на этом слайде он выталкивал последний буллет за поле набора. */
+.slide[data-layout='timeline'] .footnote { margin-bottom: 0; padding-top: 12px; line-height: 1.34; }
+.slide[data-layout='timeline'] h1.long { max-width: 40ch; }
 
 /* --- appendix marker ----------------------------------------------------- */
 
