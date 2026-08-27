@@ -1,39 +1,24 @@
 import { useState } from 'react';
-import type { Confidence, ScaleCase } from '../types';
+import type { ScaleCase } from '../types';
 import { TELEGRAM, budgetLabel, ctaMessage } from '../lib/data';
-
-export function ConfidenceBadge({ c }: { c: Confidence }) {
-  // Уровни каталога переиспользуют стили внутренних бейджей: review ~ high, vendor ~ medium.
-  return <span className={`conf conf-${c.level === 'review' ? 'high' : 'medium'}`}>{c.label}</span>;
-}
 
 export function BudgetBadge({ item }: { item: ScaleCase }) {
   if (item.budget_band === 'undisclosed' && !item.budget_note) return null;
-  return (
-    <span className="tag budget" title="Бюджетная вилка, раскрытая источником кейса">
-      {budgetLabel(item)}
-    </span>
-  );
-}
-
-/** Все цифры каталога — со слов стороны проекта; бейдж честно это проговаривает. */
-export function ReportedBadge({ c }: { c: Confidence }) {
-  return (
-    <span
-      className="mstatus reported"
-      title={
-        c.level === 'review'
-          ? 'Результат назван клиентом проекта в верифицированном отзыве'
-          : 'Результат заявлен исполнителем проекта'
-      }
-    >
-      {c.level === 'review' ? 'со слов клиента' : 'по данным исполнителя'}
-    </span>
-  );
+  return <span className="tag budget">{budgetLabel(item)}</span>;
 }
 
 export function headlineMetric(c: ScaleCase) {
   return c.metrics[0];
+}
+
+/**
+ * Заголовок кейса для клиента — сразу про результат: «Время выполнения задач: −25%».
+ * Если цифр нет, остаётся содержательный заголовок кейса.
+ */
+export function resultHeadline(c: ScaleCase): { head: string; sub: string } {
+  const m = headlineMetric(c);
+  if (m) return { head: `${m.name}: ${m.result}`, sub: c.title };
+  return { head: c.title, sub: c.result_summary };
 }
 
 /**

@@ -12,11 +12,6 @@ export interface ScaleMetric {
   status: 'reported';
 }
 
-export interface Confidence {
-  level: 'review' | 'vendor';
-  label: string;
-}
-
 export interface ScaleCase {
   id: string;
   title: string;
@@ -40,10 +35,6 @@ export interface ScaleCase {
   budget_note: string | null;
   duration_months: number | null;
   year: number;
-  stage: string;
-  confidence: Confidence;
-  /** Текстовая плашка вместо ссылки: «Верифицированный отзыв клиента · Clutch · 2024». */
-  source_label: string;
 }
 
 export type View = 'home' | 'cases' | 'compare';

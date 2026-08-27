@@ -9,7 +9,7 @@ export default function Home({ onPickIndustry }: Props) {
   const tiles = useMemo(industryTiles, []);
   const withBudget = cases.filter((c) => c.budget_band !== 'undisclosed').length;
   const withNumbers = cases.filter((c) => c.metrics.length > 0).length;
-  const review = cases.filter((c) => c.confidence.level === 'review').length;
+  const ru = cases.filter((c) => c.region === 'russia-cis').length;
 
   return (
     <>
@@ -17,15 +17,15 @@ export default function Home({ onPickIndustry }: Props) {
         <h1>AI-проекты вашего масштаба — от $50 тыс. до $1 млн</h1>
         <p className="lead">
           Не гигантские программы корпораций, а проекты, которые компания вашего размера
-          заказывает у команды-подрядчика: с бюджетной вилкой, сроками и результатом.
-          Большинство — из верифицированных отзывов самих заказчиков. Выберите отрасль,
-          найдите похожую задачу — и обсудим такой же проект у вас.
+          заказывает у команды-подрядчика: с понятным бюджетом, сроками и измеримым
+          результатом. Выберите отрасль, найдите похожую задачу — и обсудим такой же
+          проект у вас.
         </p>
         <div className="hero-stats">
           <div className="hero-stat"><b>{cases.length}</b>проектов в каталоге</div>
-          <div className="hero-stat"><b>{withBudget}</b>с раскрытой бюджетной вилкой</div>
-          <div className="hero-stat"><b>{review}</b>из верифицированных отзывов клиентов</div>
           <div className="hero-stat"><b>{withNumbers}</b>с цифрами результата</div>
+          <div className="hero-stat"><b>{withBudget}</b>с известным бюджетом</div>
+          <div className="hero-stat"><b>{ru}</b>из России и СНГ</div>
         </div>
       </div>
 
@@ -36,7 +36,7 @@ export default function Home({ onPickIndustry }: Props) {
               {t.name} <span className="n">{t.count}</span>
             </h3>
             <div className="tile-sub">
-              {t.withBudget > 0 && `${t.withBudget} с бюджетной вилкой · `}
+              {t.withBudget > 0 && `${t.withBudget} с известным бюджетом · `}
               {t.ru > 0 ? `${t.ru} в России/СНГ` : 'международные'}
             </div>
             <div className="tile-procs">
@@ -51,11 +51,8 @@ export default function Home({ onPickIndustry }: Props) {
       </div>
 
       <div className="disclaimer" style={{ marginTop: 26 }}>
-        Каталог собран из верифицированных отзывов заказчиков на международных площадках
-        и публичных разборов проектов. Все кейсы намеренно обезличены: имена компаний и
-        исполнителей скрыты — важна суть: такая задача уже решена в таком бюджете и в такие
-        сроки. Это не наше портфолио; наша работа — построить аналогичное решение под ваши
-        процессы и данные.
+        Все проекты в каталоге реальные; названия компаний не раскрываются. Найдите
+        похожую задачу — а как это будет выглядеть у вас, обсудим лично.
       </div>
     </>
   );

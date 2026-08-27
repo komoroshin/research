@@ -30,9 +30,9 @@ const tiles = await page.locator('.tile').count();
 const disclaimer = await page.locator('.disclaimer').innerText();
 check('главная: плитки отраслей', tiles >= 8, `${tiles} плиток`);
 check(
-  'дисклеймер: обезличенность и «не портфолио»',
-  disclaimer.includes('обезличены') && disclaimer.includes('не наше портфолио'),
-  '',
+  'подпись каталога: коротко и по-клиентски',
+  disclaimer.includes('реальные') && disclaimer.includes('обсудим') && disclaimer.length < 200,
+  `${disclaimer.length} символов`,
 );
 
 // --- 2. Путь заказчика: отрасль -> список кейсов ---
@@ -58,29 +58,30 @@ await page.waitForTimeout(300);
 const withNumbers = await page.locator('.card').count();
 check('фильтр «с цифрами» сужает выборку', withNumbers > 0 && withNumbers <= before, `${before} -> ${withNumbers}`);
 
-// --- 5. Кейс — страница; бюджет и сроки в паспорте ---
+// --- 5. Кейс — страница; заголовок сразу про результат, без служебных плашек ---
+const cardHeadline = await page.locator('.card .card-headline .chl-value').first().innerText();
+check('карточка: результат — заголовком', /[\d%×]/.test(cardHeadline), cardHeadline);
+
 await page.locator('.card').first().click();
 await page.waitForTimeout(400);
 check('кейс открывается страницей', await page.locator('.case-page').isVisible(), '');
 
+const h2 = await page.locator('.case-page h2').innerText();
+check('заголовок кейса начинается с результата', /[\d%×]/.test(h2), h2.slice(0, 60));
+
 const pageText = (await page.locator('.case-page').innerText()).toLowerCase();
 check(
-  'страница кейса: секции и паспорт проекта',
+  'страница кейса: боль → что сделали → что изменилось → рамки',
   pageText.includes('в чём была боль') &&
-    pageText.includes('какая была задача') &&
-    pageText.includes('паспорт проекта') &&
-    pageText.includes('бюджет') &&
-    pageText.includes('откуда этот кейс'),
+    pageText.includes('что сделали') &&
+    pageText.includes('что изменилось') &&
+    pageText.includes('рамки проекта') &&
+    pageText.includes('бюджет'),
   '',
 );
 check(
-  'боль: реконструкция честно оговорена',
-  pageText.includes('наша реконструкция'),
-  '',
-);
-check(
-  'страница кейса: плашка происхождения вместо ссылок',
-  /верифицированный отзыв клиента|публичный разбор проекта/.test(pageText),
+  'нет служебного языка внутренней базы',
+  !/верифицированн|со слов клиента|по данным исполнителя|реконструкц|откуда этот кейс|clutch|стадия/.test(pageText),
   '',
 );
 

@@ -42,13 +42,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2023,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2023"
+    "year": 2023
   },
   {
     "id": "sc-078",
@@ -89,13 +83,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 12,
-    "year": 2018,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2018"
+    "year": 2018
   },
   {
     "id": "sc-058",
@@ -135,13 +123,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-005",
@@ -181,13 +163,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 10,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-038",
@@ -222,13 +198,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-057",
@@ -265,13 +235,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-027",
@@ -307,13 +271,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 16,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-056",
@@ -348,13 +306,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 24,
-    "year": 2024,
-    "stage": "scaled-production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-047",
@@ -390,13 +342,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 3,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-026",
@@ -427,13 +373,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 12,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-017",
@@ -462,13 +402,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2016,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2016"
+    "year": 2016
   },
   {
     "id": "sc-054",
@@ -499,13 +433,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 13,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-015",
@@ -534,13 +462,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2019,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2019"
+    "year": 2019
   },
   {
     "id": "sc-013",
@@ -569,13 +491,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2021,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2021"
+    "year": 2021
   },
   {
     "id": "sc-043",
@@ -605,13 +521,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-006",
@@ -642,13 +552,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 5,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-075",
@@ -680,13 +584,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2018,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2018"
+    "year": 2018
   },
   {
     "id": "sc-055",
@@ -717,13 +615,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-003",
@@ -753,13 +645,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-085",
@@ -791,13 +677,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-037",
@@ -829,13 +709,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-045",
@@ -866,13 +740,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 8,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-051",
@@ -902,13 +770,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 5,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-061",
@@ -938,13 +800,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 18,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-086",
@@ -974,13 +830,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 10,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-077",
@@ -1009,13 +859,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2022,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2022"
+    "year": 2022
   },
   {
     "id": "sc-039",
@@ -1046,13 +890,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-049",
@@ -1081,13 +919,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-040",
@@ -1118,13 +950,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2019,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2019"
+    "year": 2019
   },
   {
     "id": "sc-044",
@@ -1154,13 +980,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-032",
@@ -1192,13 +1012,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 14,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-095",
@@ -1229,13 +1043,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-011",
@@ -1260,13 +1068,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2023,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2023"
+    "year": 2023
   },
   {
     "id": "sc-050",
@@ -1290,13 +1092,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 5,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-030",
@@ -1321,13 +1117,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-009",
@@ -1351,13 +1141,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2021,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2021"
+    "year": 2021
   },
   {
     "id": "sc-029",
@@ -1382,13 +1166,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-002",
@@ -1413,13 +1191,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 3,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-076",
@@ -1444,13 +1216,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 6,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-020",
@@ -1473,13 +1239,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2022,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2022"
+    "year": 2022
   },
   {
     "id": "sc-007",
@@ -1504,13 +1264,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2025,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-041",
@@ -1534,13 +1288,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 10,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-025",
@@ -1564,13 +1312,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2020,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2020"
+    "year": 2020
   },
   {
     "id": "sc-010",
@@ -1593,13 +1335,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2019,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2019"
+    "year": 2019
   },
   {
     "id": "sc-019",
@@ -1623,13 +1359,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2021,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2021"
+    "year": 2021
   },
   {
     "id": "sc-001",
@@ -1653,13 +1383,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 8,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-083",
@@ -1683,13 +1407,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 22,
-    "year": 2022,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2022"
+    "year": 2022
   },
   {
     "id": "sc-008",
@@ -1712,13 +1430,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2019,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2019"
+    "year": 2019
   },
   {
     "id": "sc-031",
@@ -1742,13 +1454,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-036",
@@ -1772,13 +1478,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 16,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-021",
@@ -1802,13 +1502,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2020,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2020"
+    "year": 2020
   },
   {
     "id": "sc-034",
@@ -1832,13 +1526,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 8,
-    "year": 2026,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-074",
@@ -1863,13 +1551,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 8,
-    "year": 2020,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2020"
+    "year": 2020
   },
   {
     "id": "sc-059",
@@ -1894,13 +1576,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2025,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-023",
@@ -1924,13 +1600,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2021,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2021"
+    "year": 2021
   },
   {
     "id": "sc-080",
@@ -1955,13 +1625,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2023,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2023"
+    "year": 2023
   },
   {
     "id": "sc-004",
@@ -1984,13 +1648,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 6,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-018",
@@ -2013,13 +1671,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2023,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2023"
+    "year": 2023
   },
   {
     "id": "sc-012",
@@ -2043,13 +1695,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2019,
-    "stage": "pilot",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2019"
+    "year": 2019
   },
   {
     "id": "sc-028",
@@ -2074,13 +1720,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-101",
@@ -2104,13 +1744,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 10,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-060",
@@ -2135,13 +1769,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 26,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-052",
@@ -2165,13 +1793,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 6,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-082",
@@ -2196,13 +1818,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-048",
@@ -2226,13 +1842,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 3,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-053",
@@ -2255,13 +1865,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-084",
@@ -2286,13 +1890,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2026"
+    "year": 2026
   },
   {
     "id": "sc-022",
@@ -2316,13 +1914,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 7,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-033",
@@ -2346,13 +1938,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 15,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-035",
@@ -2375,13 +1961,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-079",
@@ -2406,13 +1986,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 10,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-024",
@@ -2437,13 +2011,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 6,
-    "year": 2021,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2021"
+    "year": 2021
   },
   {
     "id": "sc-016",
@@ -2467,13 +2035,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2018,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2018"
+    "year": 2018
   },
   {
     "id": "sc-081",
@@ -2497,13 +2059,7 @@
     "budget_band": "usd_200k_1m",
     "budget_note": null,
     "duration_months": 12,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-014",
@@ -2526,13 +2082,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": null,
-    "year": 2023,
-    "stage": "poc",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2023"
+    "year": 2023
   },
   {
     "id": "sc-046",
@@ -2557,13 +2107,7 @@
     "budget_band": "usd_50_200k",
     "budget_note": null,
     "duration_months": 4,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2024"
+    "year": 2024
   },
   {
     "id": "sc-062",
@@ -2588,13 +2132,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "review",
-      "label": "Подтверждён верифицированным отзывом клиента"
-    },
-    "source_label": "Верифицированный отзыв клиента · Clutch · 2025"
+    "year": 2025
   },
   {
     "id": "sc-087",
@@ -2639,13 +2177,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Хабр · 2026"
+    "year": 2026
   },
   {
     "id": "sc-094",
@@ -2692,13 +2224,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": 9,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2026"
+    "year": 2026
   },
   {
     "id": "sc-093",
@@ -2739,13 +2265,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-070",
@@ -2786,13 +2306,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2024"
+    "year": 2024
   },
   {
     "id": "sc-092",
@@ -2829,13 +2343,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2026"
+    "year": 2026
   },
   {
     "id": "sc-071",
@@ -2871,13 +2379,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-088",
@@ -2912,13 +2414,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": 1,
-    "year": 2026,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2026"
+    "year": 2026
   },
   {
     "id": "sc-069",
@@ -2954,13 +2450,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "pilot",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-063",
@@ -2997,13 +2487,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2026,
-    "stage": "pilot",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2026"
+    "year": 2026
   },
   {
     "id": "sc-091",
@@ -3034,13 +2518,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-089",
@@ -3072,13 +2550,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-090",
@@ -3109,13 +2581,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-073",
@@ -3146,13 +2612,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-097",
@@ -3182,13 +2642,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-098",
@@ -3218,13 +2672,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-068",
@@ -3255,13 +2703,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2024,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Хабр · 2024"
+    "year": 2024
   },
   {
     "id": "sc-064",
@@ -3286,13 +2728,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": 1,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2025"
+    "year": 2025
   },
   {
     "id": "sc-067",
@@ -3318,13 +2754,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2025"
+    "year": 2025
   },
   {
     "id": "sc-066",
@@ -3350,13 +2780,7 @@
     "budget_band": "undisclosed",
     "budget_note": "бюджет раскрыт площадкой: 3 млн ₽",
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2025"
+    "year": 2025
   },
   {
     "id": "sc-065",
@@ -3380,13 +2804,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2022,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · Workspace · 2022"
+    "year": 2022
   },
   {
     "id": "sc-072",
@@ -3410,13 +2828,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-096",
@@ -3441,13 +2853,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-100",
@@ -3472,13 +2878,7 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   },
   {
     "id": "sc-099",
@@ -3502,12 +2902,6 @@
     "budget_band": "undisclosed",
     "budget_note": null,
     "duration_months": null,
-    "year": 2025,
-    "stage": "production",
-    "confidence": {
-      "level": "vendor",
-      "label": "По данным исполнителя проекта"
-    },
-    "source_label": "Публичный разбор проекта · публичный разбор исполнителя · 2025"
+    "year": 2025
   }
 ]

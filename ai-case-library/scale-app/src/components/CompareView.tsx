@@ -1,6 +1,5 @@
 import type { ScaleCase } from '../types';
 import { budgetLabel, durationLabel, label, labels } from '../lib/data';
-import { ConfidenceBadge } from './Shared';
 
 interface Props {
   items: readonly ScaleCase[];
@@ -32,8 +31,7 @@ const ROWS: { title: string; render: (c: ScaleCase) => React.ReactNode }[] = [
         </ul>
       ),
   },
-  { title: 'Стадия', render: (c) => label(c.stage) },
-  { title: 'Подтверждение', render: (c) => <ConfidenceBadge c={c.confidence} /> },
+  { title: 'Год', render: (c) => c.year },
 ];
 
 export default function CompareView({ items, onRemove, onOpen }: Props) {
