@@ -157,6 +157,12 @@ for (const c of cases) {
       if (m.source_type && !allowed.source_type.has(m.source_type)) {
         err(id, `${tag}: source_type "${m.source_type}" вне таксономии`);
       }
+      // Источник метрики обязан быть в списке источников кейса: иначе в интерфейсе
+      // цифра ведёт на страницу, которой нет среди перечисленных доказательств,
+      // и читатель не может соотнести её с общей доказательной базой кейса.
+      if (m.source_url && !(c.sources ?? []).some((s) => s.url === m.source_url)) {
+        err(id, `${tag}: source_url не входит в sources кейса — ${m.source_url}`);
+      }
     }
     // Цифра в прозе, но пустой metrics — типичный признак незакрытого источника.
     if (c.metrics.length === 0) {
