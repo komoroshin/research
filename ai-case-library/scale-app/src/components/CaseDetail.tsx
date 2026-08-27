@@ -1,10 +1,28 @@
 import type { ScaleCase } from '../types';
-import { budgetLabel, durationLabel, label, labels } from '../lib/data';
+import { budgetLabel, cases, durationLabel, label, labels } from '../lib/data';
 import { BudgetBadge, CtaButton, resultHeadline } from './Shared';
 
 interface Props {
   item: ScaleCase;
   onBack: () => void;
+  onOpen: (id: string) => void;
+}
+
+/** Похожие кейсы: та же отрасль важнее всего, дальше общие процессы и наличие цифр. */
+function relatedCases(c: ScaleCase): ScaleCase[] {
+  return cases
+    .filter((x) => x.id !== c.id)
+    .map((x) => ({
+      x,
+      score:
+        (x.industry === c.industry ? 4 : 0) +
+        x.business_process.filter((p) => c.business_process.includes(p)).length * 2 +
+        (x.metrics.length > 0 ? 1 : 0),
+    }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((r) => r.x);
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -21,8 +39,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * «боль → что сделали → что изменилось» и рамки проекта. Служебной информации
  * о происхождении кейса здесь нет намеренно — читателю она не нужна.
  */
-export default function CaseDetail({ item: c, onBack }: Props) {
+export default function CaseDetail({ item: c, onBack, onOpen }: Props) {
   const { head, sub } = resultHeadline(c);
+  const related = relatedCases(c);
 
   return (
     <article className="case-page">
@@ -108,6 +127,43 @@ export default function CaseDetail({ item: c, onBack }: Props) {
           </div>
         </aside>
       </div>
+
+      {/* Похожие кейсы — читатель углубляется, а не возвращается к списку. */}
+      {related.length > 0 && (
+        <section className="related">
+          <h3 className="related-title">Похожие кейсы</h3>
+          <div className="cards related-cards">
+            {related.map((r) => {
+              const rh = resultHeadline(r);
+              return (
+                <article
+                  key={r.id}
+                  className="card"
+                  onClick={() => onOpen(r.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onOpen(r.id);
+                    }
+                  }}
+                >
+                  <div className="card-title" style={{ fontSize: 15 }}>{rh.head}</div>
+                  <div className="card-geo">
+                    {r.client_profile} · {label(r.industry)}
+                  </div>
+                  <div className="card-foot">
+                    <BudgetBadge item={r} />
+                    <span className="spacer" />
+                    <span className="pickbtn">открыть →</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* На узком экране липкой колонки нет — CTA закреплена снизу. */}
       <div className="cta-mobile-bar">

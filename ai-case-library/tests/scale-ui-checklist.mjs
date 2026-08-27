@@ -68,6 +68,18 @@ check('кейс открывается страницей', await page.locator('
 
 const h2 = await page.locator('.case-page h2').innerText();
 check('заголовок кейса начинается с результата', /[\d%×]/.test(h2), h2.slice(0, 60));
+// Рукописный заголовок — человеческая фраза, а не «метрика: значение».
+check('заголовок рукописный, без двоеточия автосборки', !/^[^:]+: /.test(h2), h2.slice(0, 60));
+
+// Похожие кейсы: блок есть, клик открывает другой кейс.
+const relatedCount = await page.locator('.related .card').count();
+check('блок «похожие кейсы» на странице', relatedCount >= 2, `${relatedCount} карточек`);
+await page.locator('.related .card').first().click();
+await page.waitForTimeout(400);
+const h2b = await page.locator('.case-page h2').innerText();
+check('клик по похожему открывает другой кейс', h2b !== h2 && h2b.length > 0, h2b.slice(0, 50));
+await page.goBack();
+await page.waitForTimeout(400);
 
 const pageText = (await page.locator('.case-page').innerText()).toLowerCase();
 check(

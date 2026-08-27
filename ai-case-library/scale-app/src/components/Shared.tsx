@@ -12,10 +12,12 @@ export function headlineMetric(c: ScaleCase) {
 }
 
 /**
- * Заголовок кейса для клиента — сразу про результат: «Время выполнения задач: −25%».
- * Если цифр нет, остаётся содержательный заголовок кейса.
+ * Заголовок кейса для клиента — сразу про результат. Рукописный headline
+ * («Выплата разбирается за 12 минут вместо 45») важнее автосборки из метрики;
+ * если цифр нет, остаётся содержательный заголовок кейса.
  */
 export function resultHeadline(c: ScaleCase): { head: string; sub: string } {
+  if (c.headline) return { head: c.headline, sub: c.title };
   const m = headlineMetric(c);
   if (m) return { head: `${m.name}: ${m.result}`, sub: c.title };
   return { head: c.title, sub: c.result_summary };

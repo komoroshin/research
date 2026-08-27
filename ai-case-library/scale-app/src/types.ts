@@ -15,6 +15,8 @@ export interface ScaleMetric {
 export interface ScaleCase {
   id: string;
   title: string;
+  /** Рукописный клиентский заголовок «сразу про результат»; есть у кейсов с цифрами. */
+  headline?: string;
   region: string;
   geo: string;
   industry: string;

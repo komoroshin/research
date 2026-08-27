@@ -37,6 +37,8 @@ export default function App() {
       if (caseChanged) window.history.pushState(null, '', next);
       else window.history.replaceState(null, '', next);
     }
+    // Переход по «похожим кейсам» открывает новую страницу — читаем её с начала.
+    if (caseChanged && caseId) window.scrollTo(0, 0);
   }, [filters, view, caseId, compare]);
 
   useEffect(() => {
@@ -115,7 +117,7 @@ export default function App() {
             />
           )}
           {openItem ? (
-            <CaseDetail item={openItem} onBack={() => setCaseId(null)} />
+            <CaseDetail item={openItem} onBack={() => setCaseId(null)} onOpen={setCaseId} />
           ) : (
             <>
               {view === 'cases' && (
