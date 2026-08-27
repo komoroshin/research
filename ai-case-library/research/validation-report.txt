@@ -1,22 +1,26 @@
-Проверка: 2026-08-27T08:42:53.388Z
-Кейсов: 141
-НЕДО всего кейсов не меньше 150 — 141
+Проверка: 2026-08-27T09:02:56.905Z
+Кейсов: 165
+OK   всего кейсов не меньше 150 — 165
 OK   нет Grade D — D: 0
-НЕДО минимум 120 Grade A/B — A/B: 117
-OK   максимум 30 Grade C — C: 24
-OK   минимум 70 Россия/СНГ — 89
-OK   минимум 50 не-Россия — 52
-OK   у каждого кейса есть источник — 141/141
+OK   минимум 120 Grade A/B — A/B: 135
+OK   максимум 30 Grade C — C: 30
+OK   минимум 70 Россия/СНГ — 102
+OK   минимум 50 не-Россия — 63
+OK   у каждого кейса есть источник — 165/165
 
-Предупреждения (11):
+Предупреждения (15):
+  ! us-ag-deere-seeandspray-01: клиент не назван при Grade A — обычно это уровень C
   ! sg-fi-dbs-ai-strategy-01: Grade A с единственным источником — обычно требуется подтверждение
   ! us-mf-ge-aerospace-borescope-01: Grade A с единственным источником — обычно требуется подтверждение
   ! us-rt-instacart-intent-engine-01: Grade A с единственным источником — обычно требуется подтверждение
   ! il-hc-aidoc-sheba-01: Grade A с единственным источником — обычно требуется подтверждение
   ! de-mf-siemens-amberg-ai-01: Grade A с единственным источником — обычно требуется подтверждение
   ! us-hc-kaiserpermanente-scribe-01: Grade A с единственным источником — обычно требуется подтверждение
+  ! ru-ag-progressagro-precision-01: Grade A с единственным источником — обычно требуется подтверждение
   ! ru-mf-rusal-ingot-cv-01: Grade A с единственным источником — обычно требуется подтверждение
   ! us-fi-wellsfargo-fargo-assistant-01: Grade A с единственным источником — обычно требуется подтверждение
+  ! ru-ag-step-digitaltwin-01: quantitative metric without source: в поле "scale" есть число, но metrics пуст
+  ! ru-dc-evraz-legal-01: quantitative metric without source: в поле "result_summary" есть число, но metrics пуст
   ! ru-fi-moex-ai-surveillance-01: quantitative metric without source: в поле "result_summary" есть число, но metrics пуст
   ! проверьте ru-mf-rusal-machine-hearing-01 ~ ru-mf-rusal-electrolysis-nn-01: один клиент, один подрядчик и общий процесс — возможно, это один проект
   ! общий источник tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82:%D0%A0%D1%83%D1%81%D0%B0%D0%BB_(%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82_(%D0%98%D0%98,_Artificial_intelligence,_AI)) у кейсов одного клиента с общим процессом: ru-mf-rusal-machine-hearing-01, ru-mf-rusal-electrolysis-nn-01 — проверьте, не один ли это проект

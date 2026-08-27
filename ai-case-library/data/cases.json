@@ -688,6 +688,381 @@
     "research_notes": "Конкретный вендор технологии не назван в источниках — вероятно, разработка внутренняя или силами системного интегратора, имя которого не раскрывается."
   },
   {
+    "id": "us-ag-deere-seeandspray-01",
+    "title": "See & Spray: точечное внесение гербицидов на базе компьютерного зрения (John Deere)",
+    "client": "Фермеры-клиенты John Deere, выращивающие сою и кукурузу в США (агрегированные данные по сезону 2025 г.)",
+    "client_disclosed": false,
+    "client_url": "",
+    "vendor": [
+      "John Deere"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "John Deere"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations"
+    ],
+    "problem": "Сплошное (broadcast) внесение гербицидов по всему полю приводит к избыточному расходу химикатов там, где сорняков нет, увеличивая затраты и экологическую нагрузку.",
+    "before_state": "Сплошное опрыскивание всей площади поля независимо от фактического распределения сорняков.",
+    "solution": "Система See & Spray на базе камер и компьютерного зрения сканирует до 2500 кв. футов в секунду на скорости до 15 миль/ч, распознаёт сорняки в реальном времени и включает точечное распыление через индивидуальные форсунки системы ExactApply только там, где обнаружен сорняк.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "robotics"
+    ],
+    "data_used": [
+      "видеопоток с камер опрыскивателя в реальном времени"
+    ],
+    "integrations": [
+      "система точечного распыления ExactApply"
+    ],
+    "deployment": "edge",
+    "stage": "scaled-production",
+    "scale": "В 2025 г. клиенты John Deere применили See & Spray на площади свыше 5 млн акров (территория больше штата Нью-Джерси); технология доступна как заводская опция или комплект модернизации для опрыскивателей от 2018 модельного года.",
+    "metrics": [
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение расхода гербицидов не сплошного действия в сезоне 2025 г.",
+        "baseline": "сплошное опрыскивание",
+        "result": "в среднем на ~50% меньше, экономия около 31 млн галлонов гербицидного раствора",
+        "delta": "-50%",
+        "status": "reported",
+        "source_url": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение расхода гербицидов в независимом 3-летнем полевом исследовании (соя, Арканзас)",
+        "baseline": "сплошное опрыскивание",
+        "result": "снижение на 43–59%",
+        "delta": "-43–59%",
+        "status": "measured",
+        "source_url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "source_type": "academic"
+      },
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Экономия на акр при настройке высокой чувствительности и окупаемость апгрейда",
+        "baseline": "",
+        "result": "экономия $30,49/акр; окупаемость апгрейда стоимостью $25 000 после обработки 819 акров",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "source_type": "academic"
+      }
+    ],
+    "timeline": "2021 (запуск технологии) – 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "See & Spray масштабирована на более чем 5 млн акров у клиентов John Deere в 2025 г. со средним снижением использования гербицидов не сплошного действия почти на 50%; независимое трёхлетнее исследование Университета Арканзаса подтвердило снижение расхода гербицидов на 43–59% и экономию до $30,49/акр при настройке высокой чувствительности.",
+    "sources": [
+      {
+        "url": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+        "title": "John Deere Customers Use See & Spray Technology Across Five Million Acres in 2025",
+        "type": "vendor",
+        "publisher": "John Deere (пресс-релиз, republished by Oklahoma Farm Report)",
+        "date": "2025-11-04"
+      },
+      {
+        "url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "title": "Precision Agriculture Research Measures Effectiveness of See & Spray Technology",
+        "type": "academic",
+        "publisher": "Arkansas Agricultural Experiment Station, University of Arkansas",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Редкий случай, когда заявления вендора о массовом масштабе внедрения (5 млн акров) независимо подтверждены многолетним академическим полевым исследованием с точными цифрами экономии — сильная доказательная база для CV в точном земледелии.",
+    "entry_hypothesis": "У растениеводческих хозяйств, всё ещё применяющих сплошное опрыскивание, часть гербицидов, вероятно, расходуется на участки поля без сорняков — стоит оценить фактическую плотность засорения полей и потенциальную экономию от точечного внесения на пилотном участке.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Установка комплекта модернизации на один опрыскиватель и сравнение расхода гербицидов на части полей за один сезон.",
+    "expand_opportunities": [
+      "точное внесение удобрений",
+      "картирование урожайности",
+      "интеграция с автопилотом техники"
+    ],
+    "tags": [
+      "computer vision",
+      "гербициды",
+      "точное земледелие",
+      "See and Spray",
+      "John Deere"
+    ],
+    "research_notes": "Клиент не персонализирован (client_disclosed=false) — источники описывают агрегированные показатели по всей базе клиентов John Deere в сезон 2025 г., а не одну названную ферму; академическое исследование Арканзаса относится к отдельному полевому эксперименту с прототипом технологии."
+  },
+  {
+    "id": "ru-ag-cognitivepilot-autopilot-01",
+    "title": "Автопилот Cognitive Agro Pilot на зерноуборочных комбайнах крупных агрохолдингов",
+    "client": "ЭкоНива, «Русагро», ГК «Степь», ГАП «Ресурс», «Агрокомплекс им. Н.И. Ткачева» и другие агрохолдинги (клиенты Cognitive Pilot в сезоне 2020 г.)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Cognitive Pilot"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Cognitive Pilot"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations"
+    ],
+    "problem": "Уборка урожая ведётся дорогостоящей сельхозтехникой, которой может не хватать, если одновременно нужно убирать много полей; человеческий фактор при управлении комбайном увеличивает потери зерна и себестоимость уборки.",
+    "before_state": "",
+    "solution": "Система автономного вождения Cognitive Agro Pilot на базе одной видеокамеры и нейросети распознаёт кромки культур, валки, препятствия и людей без опоры на GPS-навигацию; устанавливается на зерноуборочные комбайны, тракторы и опрыскиватели.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "robotics"
+    ],
+    "data_used": [
+      "видеопоток с камеры комбайна"
+    ],
+    "integrations": [
+      "бортовые системы сельхозтехники"
+    ],
+    "deployment": "edge",
+    "stage": "scaled-production",
+    "scale": "Сезон 2020 г.: более 350 комбайнов с автопилотом работали в 35 регионах России (включая Ростовскую, Белгородскую, Томскую, Курганскую области, Краснодарский и Ставропольский края), суммарно 230 тыс. часов работы и 950 тыс. км пробега; среди клиентов — ЭкоНива, «Русагро», ГАП «Ресурс», ГК «Степь», «АгроСоюз Юг Руси», «Агрокомплекс им. Ткачева».",
+    "metrics": [
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Совокупный экономический эффект от применения автопилотов за сезон 2020 г.",
+        "baseline": "",
+        "result": "более 500 млн руб.",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение себестоимости зерна при уборке с автопилотом",
+        "baseline": "0%",
+        "result": "-3% до -5%",
+        "delta": "-3–5%",
+        "status": "reported",
+        "source_url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Сокращение потерь зерна при уборке урожая",
+        "baseline": "",
+        "result": "потери сокращены примерно в 2 раза",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "2020 (сезон июнь–октябрь)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Автопилот Cognitive Agro Pilot массово применялся на комбайнах ряда крупных российских агрохолдингов в сезон 2020 г.: свыше 350 машин в 35 регионах наработали 230 тыс. часов, совокупный экономический эффект по отрасли превысил 500 млн руб., себестоимость зерна снизилась на 3–5%, потери при уборке сократились примерно вдвое.",
+    "sources": [
+      {
+        "url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "title": "Сбербанк и Cognitive Pilot запускают умный комбайн на полях агрокомплексов России",
+        "type": "vendor",
+        "publisher": "Cognitive Pilot",
+        "date": "2020-07-16"
+      },
+      {
+        "url": "https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym",
+        "title": "Комбайны с искусственным интеллектом собрали 720 тыс. тонн урожая",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2020-11-03"
+      }
+    ],
+    "primary_source": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из самых зрелых и массово подтверждённых российских AI-кейсов в АПК: конкретная технология применяется у нескольких узнаваемых агрохолдингов одновременно, с независимым медиа-подтверждением реальных сезонных результатов, а не только заявлений вендора.",
+    "entry_hypothesis": "У холдингов с большим парком уборочной техники и территориально разбросанными полями операторская квалификация и человеческий фактор могут быть узким местом при уборке — стоит проверить, сколько потерь урожая и перерасхода топлива связано именно с качеством вождения, а не с погодой или логистикой.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот автопилота на одной-двух моделях комбайнов на части парка в один сезон, с измерением потерь и топлива до/после.",
+    "expand_opportunities": [
+      "автопилоты для тракторов и опрыскивателей",
+      "картирование урожайности и полей",
+      "предиктивное обслуживание парка сельхозтехники"
+    ],
+    "tags": [
+      "автопилот",
+      "комбайн",
+      "точное земледелие",
+      "компьютерное зрение",
+      "Cognitive Pilot"
+    ],
+    "research_notes": "Данные о численности парка на 2024 г. (упоминались в поисковой выдаче со ссылкой на Handelsblatt/TAdviser) не включены в кейс, так как соответствующая страница не открывалась в этой сессии и цифра не подтверждена напрямую. Использованы только показатели сезона 2020 г., подтверждённые двумя независимо открытыми источниками (вендор + CNews)."
+  },
+  {
+    "id": "gb-dc-aoshearman-harvey-01",
+    "title": "A&O Shearman развернула ContractMatrix на базе Harvey для проверки договоров тысячами юристов",
+    "client": "A&O Shearman",
+    "client_disclosed": true,
+    "client_url": "https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful",
+    "vendor": [
+      "Harvey",
+      "Microsoft"
+    ],
+    "vendor_type": "ai-studio",
+    "technology_providers": [
+      "Harvey",
+      "Microsoft Azure"
+    ],
+    "country": "Великобритания",
+    "region": "europe",
+    "industry": "professional-services",
+    "subindustry": [
+      "legal"
+    ],
+    "business_function": [
+      "legal-compliance-function"
+    ],
+    "business_process": [
+      "legal-compliance"
+    ],
+    "problem": "Юристам требовалось много времени на ручную проверку договоров на соответствие клиентским плейбукам и позициям по переговорам в масштабе глобальной юридической фирмы.",
+    "before_state": "Ручная построчная проверка договоров юристами без специализированного AI-инструмента.",
+    "solution": "Совместно с Harvey и Microsoft создана и развёрнута платформа ContractMatrix (включая модуль Analyze), автоматически сверяющая договоры с плейбуками и позициями клиента, формирующая список замечаний (red/amber/green) и предлагающая правки; итоговое решение остаётся за юристом.",
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent",
+      "document-ai"
+    ],
+    "data_used": [
+      "тексты договоров",
+      "клиентские плейбуки и политики"
+    ],
+    "integrations": [
+      "Microsoft Azure"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "1900–2000 юристов используют ContractMatrix ежедневно, в 43 юрисдикциях",
+    "metrics": [
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Среднее время экономии на одну проверку договора",
+        "baseline": "",
+        "result": "~7 часов на договор",
+        "delta": "около 30% сокращения времени проверки",
+        "status": "reported",
+        "source_url": "https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Экономия времени юриста в неделю",
+        "baseline": "",
+        "result": "2–3 часа в неделю",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "users",
+        "metric_name": "Юристы, использующие ContractMatrix ежедневно",
+        "baseline": "",
+        "result": "1900–2000",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность при использовании экспертных плейбуков",
+        "baseline": "",
+        "result": "выше 95%",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful",
+        "source_type": "client"
+      }
+    ],
+    "timeline": "ContractMatrix — публично анонсирована в мае 2024; модуль Analyze — июль 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "ContractMatrix используют ежедневно около 2000 юристов A&O Shearman в 43 юрисдикциях: проверка договора в среднем ускоряется примерно на 30% (около 7 часов на договор), юристы экономят 2–3 часа в неделю на рутинных задачах; точность при работе с экспертными плейбуками превышает 95%.",
+    "sources": [
+      {
+        "url": "https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful",
+        "title": "Analyze is the new ContractMatrix module, making contract review even more powerful",
+        "type": "client",
+        "publisher": "A&O Shearman",
+        "date": "2025-07"
+      },
+      {
+        "url": "https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/",
+        "title": "How A&O Shearman is reshaping law with trailblazing AI tool",
+        "type": "platform",
+        "publisher": "Microsoft UK Stories",
+        "date": "2024-05"
+      },
+      {
+        "url": "https://www.harvey.ai/customers/a-and-o-shearman",
+        "title": "A&O Shearman | Customers | Harvey",
+        "type": "vendor",
+        "publisher": "Harvey",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из самых зрелых публичных кейсов legal AI в мире: названный клиент — глобальная юрфирма из топ-10, тысячи ежедневных пользователей, конкретные измеримые эффекты (часы на договор, доля юристов), подтверждено и клиентом, и технологическим партнёром.",
+    "entry_hypothesis": "У крупных юридических департаментов и юрфирм с большим потоком договоров ручная проверка на соответствие внутренним плейбукам может отнимать значительную долю времени senior/mid-юристов. Стоит проверить долю времени, уходящую именно на сверку с плейбуками, а не на содержательные переговоры.",
+    "likely_buyer": [
+      "legal-director",
+      "coo"
+    ],
+    "land_opportunity": "Пилот AI-проверки договоров одного типа (например, NDA или типовые коммерческие контракты) против готового плейбука на ограниченной практике.",
+    "expand_opportunities": [
+      "клиентский доступ к инструменту проверки договоров",
+      "автоматизация due diligence",
+      "агентные workflows для сложных транзакций"
+    ],
+    "tags": [
+      "legal AI",
+      "проверка договоров",
+      "Harvey",
+      "юридическая фирма"
+    ],
+    "research_notes": "Первичный источник — собственный сайт клиента (aoshearman.com), независимо подтверждён публикацией Microsoft (технологический партнёр/платформа) с конкретными цифрами; грейд A обоснован наличием первичного источника со стороны клиента и независимого подтверждения."
+  },
+  {
     "id": "se-hc-lunit-capio-01",
     "title": "ИИ как независимый второй читатель маммограмм в госпитале Capio S:t Göran",
     "client": "Capio S:t Göran Hospital (Стокгольм, Швеция)",
@@ -1949,6 +2324,126 @@
     "research_notes": "Цифра «$300-400 млн/год» — ожидаемый эффект при полном внедрении к 2017 г. по оценке BSR на момент публикации кейса, отмечена как projected. Более поздние данные о фактически достигнутом эффекте в открытых источниках сессии отдельно не подтверждены."
   },
   {
+    "id": "gb-dc-vodafone-copilot-01",
+    "title": "Юридическая команда Vodafone экономит часы в неделю с Microsoft 365 Copilot",
+    "client": "Vodafone",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Microsoft"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "Microsoft 365 Copilot"
+    ],
+    "country": "Великобритания",
+    "region": "europe",
+    "industry": "telecom",
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "operations-copilot",
+      "legal-compliance"
+    ],
+    "problem": "Компании требовалось повысить производительность сотрудников и ускорить цифровую трансформацию, включая рутинные задачи составления писем, резюмирования встреч, поиска информации и подготовки договоров в юридическом департаменте.",
+    "before_state": "",
+    "solution": "Развёрнут Microsoft 365 Copilot: сначала пилот на 300 пользователей, затем расширение до 68 000 сотрудников по всему миру; юридический и compliance-департамент используют Copilot для резюмирования документов и ускорения подготовки договоров.",
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent"
+    ],
+    "data_used": [
+      "корпоративная почта",
+      "документы",
+      "записи встреч"
+    ],
+    "integrations": [
+      "Microsoft 365"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Пилот на 300 пользователей, план расширения до 68 000 сотрудников по всему миру",
+    "metrics": [
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Среднее время экономии на пользователя в неделю",
+        "baseline": "",
+        "result": "4 часа в неделю",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Сокращение времени составления нового договора (юридический департамент)",
+        "baseline": "",
+        "result": "-1 час на договор",
+        "delta": "-1 час на договор",
+        "status": "reported",
+        "source_url": "https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "users",
+        "metric_name": "Запланированный масштаб внедрения",
+        "baseline": "300 (пилот)",
+        "result": "68 000 сотрудников",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "публикация — декабрь 2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Сотрудники Vodafone экономят в среднем 4 часа в неделю с Microsoft 365 Copilot; юридический департамент отдельно отмечает ускорение подготовки новых договоров (на 1 час быстрее) и более быстрые проверки документов, что стало основанием для расширения внедрения с 300 пилотных пользователей до 68 000 сотрудников по всему миру.",
+    "sources": [
+      {
+        "url": "https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot",
+        "title": "Time savings and an enhanced employee experience at Vodafone through its use of Microsoft 365 Copilot",
+        "type": "platform",
+        "publisher": "Microsoft Customer Stories",
+        "date": "2024-12"
+      },
+      {
+        "url": "https://www.mobileworldlive.com/microsoft/vodafone-gives-staff-a-microsoft-copilot/",
+        "title": "Vodafone gives staff a Microsoft Copilot",
+        "type": "media",
+        "publisher": "Mobile World Live",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Named крупный телеком-оператор с чёткими цифрами по экономии времени как в целом по компании, так и отдельно для юридической функции — хороший ориентир масштаба эффекта от копилота для конкретной функции внутри большой организации.",
+    "entry_hypothesis": "В компаниях с большим штатом юридический департамент часто одним из первых получает измеримый эффект от копилотов общего назначения (резюмирование, драфтинг) ещё до внедрения специализированного legal AI. Стоит проверить, используют ли юристы клиента уже установленный Copilot/аналог для этих задач.",
+    "likely_buyer": [
+      "cio",
+      "legal-director"
+    ],
+    "land_opportunity": "Пилот Copilot для конкретной функции (юридический департамент или другой back-office блок) с измерением часов, сэкономленных в неделю.",
+    "expand_opportunities": [
+      "копилот для контакт-центра",
+      "автоматизация внутренней отчётности",
+      "агентные workflows для типовых юридических задач"
+    ],
+    "tags": [
+      "Microsoft Copilot",
+      "телеком",
+      "юридический департамент",
+      "производительность"
+    ],
+    "research_notes": "Основной источник — customer story Microsoft (платформа/вендор), независимо упоминается в отраслевых медиа (Mobile World Live, itchanneloxygen.com — заголовок процитирован по данным WebSearch, отдельный WebFetch этой статьи не выполнялся). Грейд A — есть количественные данные по конкретной функции (юридический департамент), а не только общий агрегат по компании."
+  },
+  {
     "id": "ru-fi-alfabank-glowbyte-currency-01",
     "title": "ИИ-агент для валютного контроля контрактов",
     "client": "Альфа-Банк",
@@ -2813,6 +3308,130 @@
       "нейрохирургия"
     ],
     "research_notes": "Единственный источник — публикация вендора (Viz.ai), подтверждения со стороны клиники или независимого издания не найдено, поэтому грейд B, а не A."
+  },
+  {
+    "id": "global-dc-accenture-githubcopilot-01",
+    "title": "Accenture и GitHub измерили эффект Copilot в RCT-исследовании на предприятии",
+    "client": "Accenture",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "GitHub",
+      "Microsoft"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "GitHub Copilot"
+    ],
+    "country": "Ирландия",
+    "region": "global",
+    "industry": "professional-services",
+    "subindustry": [
+      "consulting",
+      "it-services"
+    ],
+    "business_function": [
+      "it-function"
+    ],
+    "business_process": [
+      "software-engineering"
+    ],
+    "problem": "Компании требовалось количественно оценить реальное влияние GitHub Copilot на продуктивность корпоративных разработчиков перед масштабным развёртыванием.",
+    "before_state": "Разработка велась без AI-ассистента для написания кода в контрольной группе.",
+    "solution": "Проведено рандомизированное контролируемое исследование (RCT) с участием разработчиков Accenture, разделённых на группы с доступом к GitHub Copilot и без него; собраны DevOps-телеметрия, данные об адаптации и опросы разработчиков совместно с GitHub Customer Research, Microsoft Office of the Chief Economist и командой измерения качества GitHub Copilot.",
+    "ai_mechanisms": [
+      "llm"
+    ],
+    "data_used": [
+      "DevOps-телеметрия",
+      "данные использования IDE-расширения",
+      "опросы разработчиков"
+    ],
+    "integrations": [
+      "IDE",
+      "системы контроля версий"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "После успешного RCT решение развёрнуто более чем на 12 000 разработчиков Accenture",
+    "metrics": [
+      {
+        "metric_type": "automation_rate",
+        "metric_name": "Доля разработчиков, начавших принимать предложения Copilot в день установки",
+        "baseline": "",
+        "result": "96%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "operations_volume",
+        "metric_name": "Рост числа pull request на разработчика",
+        "baseline": "",
+        "result": "+8,69%",
+        "delta": "+8,69%",
+        "status": "measured",
+        "source_url": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "cycle_time",
+        "metric_name": "Рост доли успешных сборок (builds)",
+        "baseline": "",
+        "result": "+84%",
+        "delta": "+84%",
+        "status": "measured",
+        "source_url": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "csat",
+        "metric_name": "Доля разработчиков, ощутивших большую удовлетворённость работой",
+        "baseline": "",
+        "result": "90%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "исследование опубликовано 13 мая 2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "В контролируемом исследовании на разработчиках Accenture GitHub Copilot дал рост числа pull request на 8,69%, рост доли успешных сборок на 84%, рост коэффициента слияния PR на 15%; 90% разработчиков сообщили о большей удовлетворённости работой. По итогам решение масштабировано на более чем 12 000 разработчиков компании.",
+    "sources": [
+      {
+        "url": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+        "title": "Research: Quantifying GitHub Copilot's impact in the enterprise with Accenture",
+        "type": "platform",
+        "publisher": "GitHub Blog",
+        "date": "2024-05"
+      }
+    ],
+    "primary_source": "https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из немногих публичных RCT-кейсов AI-копилота для разработчиков с контрольной группой, а не просто до/после — методологически самый строгий пример из всего направления software-engineering copilot.",
+    "entry_hypothesis": "Крупные ИТ-организации и интеграторы, внедряющие AI-копилоты для разработчиков, часто не имеют контрольной группы для оценки реального эффекта. Стоит предложить пилот с контрольной группой для объективного измерения ROI перед полным раскаткой.",
+    "likely_buyer": [
+      "cto",
+      "head-of-rnd"
+    ],
+    "land_opportunity": "Пилот AI-копилота для разработки с контрольной группой на одной продуктовой команде и заранее определёнными метриками (PR, время сборки, retention кода).",
+    "expand_opportunities": [
+      "копилоты для тестирования и код-ревью",
+      "автоматизация документации кода",
+      "AI-агенты для рефакторинга легаси-кода"
+    ],
+    "tags": [
+      "GitHub Copilot",
+      "RCT",
+      "разработка ПО",
+      "продуктивность разработчиков"
+    ],
+    "research_notes": "Единственный найденный источник — блог GitHub (платформа/вендор, в партнёрстве с Microsoft), опубликовавший результаты совместно с Accenture; независимой публикации со стороны самой Accenture в рамках сессии не найдено, поэтому грейд B, а не A."
   },
   {
     "id": "au-mn-bhp-truck-maintenance-01",
@@ -4113,6 +4732,200 @@
       "свежие продукты"
     ],
     "research_notes": "Единственный источник — материал самого вендора RELEX с именем клиента и детальными цифрами; независимого второго источника не найдено, поэтому грейд ограничен B, а не A."
+  },
+  {
+    "id": "ru-ag-damate-cv-01",
+    "title": "Видеомониторинг и ИИ-контроль соблюдения регламентов на птицефабриках «Дамате»",
+    "client": "ГК «Дамате»",
+    "client_disclosed": true,
+    "client_url": "https://www.acdamate.com/",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock",
+      "food-processing"
+    ],
+    "business_function": [
+      "production"
+    ],
+    "business_process": [
+      "quality-control"
+    ],
+    "problem": "Нужно контролировать соблюдение производственных регламентов и здоровье/сохранность птицы на множестве распределённых площадок, а также прослеживаемость продукции на заводе от поступления сырья до готовой партии.",
+    "before_state": "",
+    "solution": "Система видеонаблюдения и машинного зрения на более чем 500 объектах компании (птичники и производственные площадки), обрабатываемая ситуационным центром компании. Отдельная система «Директива. Птичники» контролирует соблюдение регламентных процедур в птичниках. На заводе система биометрического распознавания лиц контролирует допуск сотрудников в стерильные зоны, а мониторинговые системы отслеживают перемещение и состояние каждой партии птицы через все этапы переработки.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "biometrics"
+    ],
+    "data_used": [
+      "видеопоток с камер на площадках и заводе",
+      "данные о партиях птицы"
+    ],
+    "integrations": [
+      "ситуационный центр компании"
+    ],
+    "deployment": "on-prem",
+    "stage": "production",
+    "scale": "Более 500 объектов компании в разных регионах, около 45 000 оцифрованных полей (растениеводческое направление группы); согласно источникам, к 2022 г. система «Директива. Птичники» действовала на части площадок.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Сохранность поголовья птицы на площадках с системой «Директива. Птичники»",
+        "baseline": "уровень сохранности на площадках без системы",
+        "result": "выше на 1–1,5 п.п.",
+        "delta": "+1–1,5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "по состоянию на 2021–2022",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Дамате» развернула видеонаблюдение и машинное зрение на более чем 500 объектах для контроля регламентов и прослеживаемости продукции; система контроля регламентов «Директива. Птичники» связана с сохранностью поголовья на 1–1,5 п.п. выше, чем на площадках без системы.",
+    "sources": [
+      {
+        "url": "https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/",
+        "title": "Цифра и искусственный интеллект вышли на поля",
+        "type": "client",
+        "publisher": "Дамате (пресс-центр)",
+        "date": "2021-03-26"
+      },
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      },
+      {
+        "url": "https://www.techinsider.ru/technologies/500942-iskusstvennyy-intellekt-dlya-indeyki/",
+        "title": "Искусственный интеллект для индейки: экскурсия по заводу",
+        "type": "media",
+        "publisher": "TechInsider",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/",
+    "evidence_grade": "A",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Редкий для российского животноводства кейс, где сама компания раскрывает архитектуру видеомониторинга на 500+ объектах, а отраслевое издание независимо подтверждает измеримый эффект (сохранность поголовья) от конкретной системы контроля регламентов.",
+    "entry_hypothesis": "У вертикально интегрированных производителей птицы/мяса с десятками распределённых площадок соблюдение регламентов, вероятно, контролируется выборочными проверками — стоит проверить, сколько случаев нарушения регламента и потерь поголовья связано именно с человеческим фактором на площадках без видеоконтроля.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "quality-director"
+    ],
+    "land_opportunity": "Пилот системы контроля регламента (видеомониторинг + автоматические алерты) на нескольких птичниках/площадках с сравнением сохранности к контрольной группе.",
+    "expand_opportunities": [
+      "биометрический контроль доступа на заводе",
+      "прослеживаемость партий продукции",
+      "видеоаналитика для контроля качества готовой продукции"
+    ],
+    "tags": [
+      "видеомониторинг",
+      "машинное зрение",
+      "биометрия",
+      "птицеводство",
+      "контроль регламентов"
+    ],
+    "research_notes": "Кейс объединяет несколько описанных в разных источниках компонентов одной и той же цифровой экосистемы видеомониторинга компании (пресс-центр Дамате описывает общую архитектуру и ~500 объектов; Агроинвестор называет конкретную систему «Директива. Птичники» и даёт цифру эффекта; TechInsider независимо описывает работу видеоконтроля и биометрии на заводе). Если это в реальности три разных проекта, а не грани одной программы цифровизации — грейд следует пересмотреть в сторону B при дальнейшей проверке."
+  },
+  {
+    "id": "ru-ag-progressagro-precision-01",
+    "title": "Точное земледелие ГК «Прогресс Агро»: дифференцированное внесение удобрений и точный сев на автопилоте",
+    "client": "ГК «Прогресс Агро»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations",
+      "optimization"
+    ],
+    "problem": "Растущий спрос на продовольствие при сокращении пахотных земель требует повышения эффективности использования имеющихся площадей.",
+    "before_state": "",
+    "solution": "Проект «Точное земледелие»: дифференцированное внесение удобрений по данным спутникового мониторинга и агрохимической картограммы; точный сев с равномерной глубиной заделки семян; автопилот сельхозтехники (в том числе для ночной работы и составления карты сева для последующей культивации). ИИ рассчитывает необходимое количество удобрений для конкретного участка поля и передаёт данные на технику, которая в автопилоте вносит удобрения по полученной схеме.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "optimization-ml",
+      "robotics"
+    ],
+    "data_used": [
+      "спутниковый мониторинг полей",
+      "агрохимическая картограмма"
+    ],
+    "integrations": [
+      "сельхозтехника с автопилотом"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Агрохолдинг со штаб-квартирой в Усть-Лабинске Краснодарского края; проект охватывает этапы от планирования севооборота до сбора урожая.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Рост урожайности от точного сева (равномерная глубина заделки семян)",
+        "baseline": "0%",
+        "result": "+15–20%",
+        "delta": "+15–20%",
+        "status": "reported",
+        "source_url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "source_type": "client"
+      }
+    ],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "ГК «Прогресс Агро» внедрила дифференцированное внесение удобрений по спутниковым данным, точный сев и автопилот сельхозтехники в рамках проекта «Точное земледелие»; по словам гендиректора компании, точный сев увеличивает урожайность на 15–20%.",
+    "sources": [
+      {
+        "url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "title": "Цифровизируй, чтобы жить: как технологии меняют сельхозпроизводство на Юге",
+        "type": "interview",
+        "publisher": "Эксперт Юг",
+        "date": "2024-08-19"
+      }
+    ],
+    "primary_source": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+    "evidence_grade": "A",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Прямая цитата первого лица компании с конкретной цифрой прироста урожайности от точного земледелия — редкий для российского АПК случай, когда клиент сам, а не подрядчик, называет измеримый результат.",
+    "entry_hypothesis": "У растениеводческих холдингов, ещё не перешедших на дифференцированное внесение удобрений, часть полей вероятно получает единые нормы удобрений независимо от неоднородности почвы внутри поля — стоит проверить экономику перехода на картограммы и точный сев на пилотном участке.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилотная агрохимическая картограмма и дифференцированное внесение удобрений на нескольких полях одной культуры с сравнением урожайности к контрольным полям.",
+    "expand_opportunities": [
+      "автопилоты на весь парк техники",
+      "предиктивная модель цен на будущий урожай",
+      "цифровой двойник полей"
+    ],
+    "tags": [
+      "точное земледелие",
+      "дифференцированное внесение",
+      "точный сев",
+      "автопилот",
+      "спутниковый мониторинг"
+    ],
+    "research_notes": "Единственный источник — интервью с гендиректором в отраслевом издании; второй независимый источник не найден в рамках бюджета сессии. Грейд A присвоен на основании прямой цитаты первого лица компании (первичный источник — интервью представителя клиента), а не на основании единственной публикации СМИ как таковой."
   },
   {
     "id": "ru-mf-kamaz-paint-cv-01",
@@ -6712,6 +7525,107 @@
     "research_notes": "Метрики помечены как projected (ожидаемый эффект), а не measured — источник не сообщает о фактически достигнутых показателях на момент публикации. Единственный найденный источник — карточка проекта на цифровом маркетплейсе; независимого подтверждения со стороны СМИ не найдено, поэтому грейд B, а не A."
   },
   {
+    "id": "ru-ag-rusmolko-dairy-01",
+    "title": "Мониторинг активности и жвачки коров SCR в молочном холдинге «Русмолко»",
+    "client": "ООО «Русмолко»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "SCR"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "SCR"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock"
+    ],
+    "business_function": [
+      "asset-management-function"
+    ],
+    "business_process": [
+      "predictive-maintenance"
+    ],
+    "problem": "Требуется своевременно выявлять оптимальное время осеменения и ранние признаки проблем со здоровьем у новотельных коров на большом молочном стаде.",
+    "before_state": "",
+    "solution": "С 2016 г. используется система мониторинга активности и жвачки SCR (датчики-ошейники с алгоритмической обработкой данных), которая выявляет признаки охоты и отклонения в поведении/здоровье животных. Компания также внедряет автоматическое выпаивание телят.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "данные датчиков активности и жвачки животных"
+    ],
+    "integrations": [
+      "система управления стадом"
+    ],
+    "deployment": "on-prem",
+    "stage": "production",
+    "scale": "Молочный комплекс в Пензенской области; система применяется с 2016 г.",
+    "metrics": [
+      {
+        "metric_type": "retention",
+        "metric_name": "Результативность осеменения",
+        "baseline": "32%",
+        "result": "37%",
+        "delta": "+5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "retention",
+        "metric_name": "Выбытие новотельных коров",
+        "baseline": "7%",
+        "result": "3,5%",
+        "delta": "-3,5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "с 2016",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Русмолко» с 2016 г. использует систему мониторинга активности и жвачки SCR; результативность осеменения выросла с 32% до 37%, выбытие новотельных коров снизилось с 7% до 3,5%.",
+    "sources": [
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      }
+    ],
+    "primary_source": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретные, легко проверяемые операционные метрики молочного животноводства (осеменение, выбытие коров) с named-клиентом — хороший ориентир по порядку величины эффекта от датчикового мониторинга стада.",
+    "entry_hypothesis": "У молочных хозяйств без датчикового мониторинга активности коров пропуски оптимального окна осеменения и поздно замеченные проблемы со здоровьем новотельных животных могут быть существенной, но неизмеряемой статьёй потерь — стоит оценить текущий процент результативного осеменения и выбытия как отправную точку.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот датчикового мониторинга на одной ферме/секции стада с сравнением показателей осеменения и выбытия до/после.",
+    "expand_opportunities": [
+      "автоматическое выпаивание телят",
+      "прогноз надоев",
+      "цифровой профиль каждого животного"
+    ],
+    "tags": [
+      "молочное животноводство",
+      "мониторинг стада",
+      "осеменение",
+      "SCR",
+      "датчики"
+    ],
+    "research_notes": "Единственный источник — отраслевое издание (медиа), первичный источник со стороны клиента/вендора не найден в рамках бюджета сессии; грейд B, а не A."
+  },
+  {
     "id": "ru-cn-apri-napoleonit-visual-01",
     "title": "Платформа визуального интеллекта ТОР для контроля строительства ЖК «Грани» (АПРИ)",
     "client": "ПАО «АПРИ»",
@@ -7014,6 +7928,121 @@
       "генеративный ИИ"
     ],
     "research_notes": "Это отдельный проект от обновления моделей автоматической оценки стоимости жилья «Домклик» (апрель 2025, rbcrealty.ru) — по правилу «не объединять два разных проекта» второй проект в этот кейс не включён и не используется как источник метрик."
+  },
+  {
+    "id": "ru-dc-pochta-doczilla-01",
+    "title": "«Почта России» ускорила подготовку и согласование типовых договоров с Doczilla",
+    "client": "Почта России",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Doczilla"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Doczilla Pro"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "logistics-transport",
+    "subindustry": [
+      "logistics"
+    ],
+    "business_function": [
+      "back-office"
+    ],
+    "business_process": [
+      "document-processing",
+      "legal-compliance"
+    ],
+    "problem": "Сотрудники готовили типовые договоры в MS Word, после чего юристы перепроверяли каждый документ на предмет ошибок; ежедневно готовилось около 700 документов, что создавало очереди согласования (7–8 подразделений на маршруте).",
+    "before_state": "Подготовка договоров в MS Word с последующей полной ручной проверкой юристом и многоступенчатым бумажным/почтовым согласованием.",
+    "solution": "Внедрена платформа Doczilla Pro с автоматизированными защищёнными шаблонами договоров, интеграцией с ЕСЭД, ЕГРЮЛ, ФИАС/КЛАДР и Active Directory и оптимизированным маршрутом согласования типовых документов.",
+    "ai_mechanisms": [
+      "document-ai"
+    ],
+    "data_used": [
+      "шаблоны договоров",
+      "данные ЕГРЮЛ",
+      "данные ФИАС/КЛАДР"
+    ],
+    "integrations": [
+      "ЕСЭД",
+      "ЕГРЮЛ",
+      "ФИАС/КЛАДР",
+      "Active Directory"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "1000+ пользователей в 83 филиалах; около 8% документов готовится через платформу на момент публикации",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время проверки договора юристом",
+        "baseline": "61 минута",
+        "result": "6 минут",
+        "delta": "~10x быстрее",
+        "status": "measured",
+        "source_url": "https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "cycle_time",
+        "metric_name": "Срок согласования договора",
+        "baseline": "5 дней",
+        "result": "2 дня",
+        "delta": "в 2,5 раза быстрее",
+        "status": "measured",
+        "source_url": "https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Подготовка доходного договора",
+        "baseline": "28 минут",
+        "result": "14–15 минут",
+        "delta": "в 2 раза быстрее",
+        "status": "measured",
+        "source_url": "https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "внедрение завершено в декабре 2021 (интеграция — за 2 месяца)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Менеджеры «Почты России» готовят типовые договоры быстрее и с меньшим числом ошибок, время проверки договора юристом сократилось с 61 до 6 минут, срок согласования — в 2,5 раза, число согласующих подразделений уменьшилось с 7–8 до 1–3.",
+    "sources": [
+      {
+        "url": "https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/",
+        "title": "Кейс: Почта России — автоматизация подготовки и согласования документов",
+        "type": "vendor",
+        "publisher": "Doczilla",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Сильный, детализированный количественный кейс автоматизации подготовки и юридической проверки типовых договоров в компании федерального масштаба.",
+    "entry_hypothesis": "У крупных компаний с большим потоком типовых договоров юристы могут тратить много времени на построчную проверку однотипных документов вместо содержательной юридической работы. Стоит проверить долю типовых договоров и текущее время их проверки.",
+    "likely_buyer": [
+      "legal-director",
+      "coo"
+    ],
+    "land_opportunity": "Пилот по автоматизации подготовки и проверки одного типа типового договора в одном подразделении.",
+    "expand_opportunities": [
+      "автоматизация проверки нетиповых договоров",
+      "юридический due diligence",
+      "интеграция с ЕГРЮЛ/реестрами для проверки контрагентов"
+    ],
+    "tags": [
+      "автоматизация договоров",
+      "юридическая проверка",
+      "document AI",
+      "госкомпания"
+    ],
+    "research_notes": "Единственный источник — сайт вендора Doczilla (vendor-side, кейс на его собственном сайте), независимого подтверждения со стороны Почты России не найдено в рамках сессии, поэтому грейд B."
   },
   {
     "id": "ru-rt-bit-ntechlab-antitheft-01",
@@ -8134,6 +9163,139 @@
       "HR"
     ],
     "research_notes": "Источник — материал, аффилированный с вендором (Just AI/Generation AI), независимого СМИ-подтверждения цифр не найдено; отсюда грейд B, а не A, несмотря на подробные метрики."
+  },
+  {
+    "id": "ru-dc-podruzhka-directum-01",
+    "title": "Directum Ario ускоряет обработку счетов поставщиков в сети «Подружка»",
+    "client": "Табер Трейд (розничная сеть «Подружка»)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "ЦВД (Центр внедрения документооборота)",
+      "Directum"
+    ],
+    "vendor_type": "integrator",
+    "technology_providers": [
+      "Directum Ario"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "retail-ecommerce",
+    "subindustry": [
+      "specialty-retail"
+    ],
+    "business_function": [
+      "back-office"
+    ],
+    "business_process": [
+      "document-processing"
+    ],
+    "problem": "Ежемесячно поступали тысячи счетов от более чем 100 поставщиков, около 90% — в бумажном виде или PDF без текстового слоя; бухгалтеры тратили 2–3 часа в день на ручной ввод данных, был высокий риск ошибок и задержек оплат.",
+    "before_state": "Ручной ввод данных из бумажных и сканированных счетов вручную в учётную систему бухгалтерами сети.",
+    "solution": "Внедрена платформа Directum Ario с интеграцией в Контур.Диадок, Корус.Сфера и 1С для автоматического распознавания, классификации и извлечения данных из входящих счетов.",
+    "ai_mechanisms": [
+      "document-ai",
+      "ocr"
+    ],
+    "data_used": [
+      "сканы и PDF счетов поставщиков"
+    ],
+    "integrations": [
+      "Контур.Диадок",
+      "Корус.Сфера",
+      "1С"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "250+ магазинов сети «Подружка», более 100 поставщиков",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время обработки одного счёта",
+        "baseline": "2 дня",
+        "result": "1 час",
+        "delta": "сокращение примерно в 48 раз",
+        "status": "measured",
+        "source_url": "https://centrvd.ru/cases/podruzhka",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность классификации документов",
+        "baseline": "",
+        "result": "95%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://centrvd.ru/cases/podruzhka",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "error_rate",
+        "metric_name": "Снижение количества ошибок ввода",
+        "baseline": "",
+        "result": "-95%",
+        "delta": "-95%",
+        "status": "measured",
+        "source_url": "https://centrvd.ru/cases/podruzhka",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Высвобожденное время бухгалтера",
+        "baseline": "",
+        "result": "3 часа в день",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://centrvd.ru/cases/podruzhka",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Финансовая экономия",
+        "baseline": "",
+        "result": "до 1,5 млн руб./год",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://centrvd.ru/cases/podruzhka",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "апрель–октябрь 2020 (6 месяцев)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "После внедрения Directum Ario время обработки счёта сократилось с 2 дней до 1 часа, точность классификации документов достигла 95%, количество ошибок снизилось на 95%, бухгалтеры высвобождают около 3 часов в день на других задачах.",
+    "sources": [
+      {
+        "url": "https://centrvd.ru/cases/podruzhka",
+        "title": "Кейс: Directum Ario в сети «Подружка»",
+        "type": "vendor",
+        "publisher": "ЦВД",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://centrvd.ru/cases/podruzhka",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Показывает типичный ROI-паттерн Document AI в рознице: автоматизация обработки первичных документов (счетов) быстро окупается через сокращение ручного труда бухгалтерии и ускорение оплат поставщикам.",
+    "entry_hypothesis": "У розничных сетей с большим количеством поставщиков и магазинов значительный объём времени бухгалтерии может уходить на ручной ввод данных из бумажных и PDF-счетов. Стоит проверить долю таких документов и текущее время обработки.",
+    "likely_buyer": [
+      "cfo",
+      "coo"
+    ],
+    "land_opportunity": "Пилот по автоматическому распознаванию и вводу данных для одной категории первичных документов (счета) на ограниченном числе поставщиков.",
+    "expand_opportunities": [
+      "автоматизация актов и накладных",
+      "сверка договоров с закрывающими документами",
+      "интеграция с ЭДО и 1С в масштабе всей сети"
+    ],
+    "tags": [
+      "OCR счетов",
+      "document AI",
+      "ритейл",
+      "бухгалтерия"
+    ],
+    "research_notes": "Единственный найденный источник — сайт партнёра-интегратора ЦВД (vendor-side), независимого подтверждения со стороны клиента или самого Directum в рамках сессии не найдено, поэтому грейд B, а не A."
   },
   {
     "id": "ru-mn-tatneft-video-analytics-01",
@@ -9470,6 +10632,99 @@
     "research_notes": "Кейс опубликован вендором (Яндекс) о собственном клиенте — vendor_claim=true, поэтому грейд ограничен B несмотря на подробные измеренные цифры."
   },
   {
+    "id": "global-dc-kpmg-azure-01",
+    "title": "KPMG переводит аудит на agentic AI поверх Azure, отходя от выборочной проверки",
+    "client": "KPMG International",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Microsoft"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "Microsoft Azure AI Foundry",
+      "Azure Cosmos DB",
+      "Microsoft Agent Framework"
+    ],
+    "country": "Нидерланды",
+    "region": "global",
+    "industry": "professional-services",
+    "subindustry": [
+      "accounting-audit"
+    ],
+    "business_function": [
+      "finance-function"
+    ],
+    "business_process": [
+      "finance-accounting"
+    ],
+    "problem": "Традиционные методы выборочного аудита (sampling) не успевали за сложностью финансовых данных при необходимости соблюдать регуляторные требования и доверие клиентов в сети из 95 000 аудиторов в более чем 140 странах.",
+    "before_state": "Аудит на основе выборочной проверки (sampling) части транзакций и документов.",
+    "solution": "Развёрнута облачная платформа KPMG Clara AI на базе Azure с использованием агентного ИИ (Azure AI Foundry, Azure Cosmos DB, Microsoft Agent Framework) для автоматизации аудиторских процедур и анализа полных наборов данных вместо выборок: сверка данных, тестирование транзакций, автогенерация схем процессов для walkthrough-проверок.",
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent"
+    ],
+    "data_used": [
+      "финансовая отчётность клиентов",
+      "транзакционные данные"
+    ],
+    "integrations": [
+      "Microsoft Azure"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "95 000 аудиторов в более чем 140 странах",
+    "metrics": [
+      {
+        "metric_type": "users",
+        "metric_name": "Аудиторы, использующие KPMG Clara AI",
+        "baseline": "",
+        "result": "95 000",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "кейс опубликован 1 октября 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "KPMG Clara AI на базе Azure используют 95 000 аудиторов в более чем 140 странах; платформа позволяет переходить от выборочного аудита к анализу полных наборов данных и автоматизирует рутинные задачи (сверка данных, тестирование транзакций, документация).",
+    "sources": [
+      {
+        "url": "https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure",
+        "title": "KPMG is redefining the audit with agentic AI using Azure",
+        "type": "platform",
+        "publisher": "Microsoft Customer Stories",
+        "date": "2025-10"
+      }
+    ],
+    "primary_source": "https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Показывает переход от выборочного к сплошному аудиту с помощью agentic AI в одной из крупнейших аудиторских сетей мира — актуальный ориентир для финансовой функции и внутреннего аудита в крупных компаниях.",
+    "entry_hypothesis": "У крупных компаний с большим объёмом транзакций внутренний аудит и финансовый контроль могут по-прежнему полагаться на выборочные проверки из-за ограничений ручной обработки. Стоит проверить, какая доля транзакций сейчас проверяется выборочно, и какой эффект даст сплошная AI-проверка.",
+    "likely_buyer": [
+      "cfo",
+      "risk-director"
+    ],
+    "land_opportunity": "Пилот AI-агента для сплошной (а не выборочной) проверки одного типа транзакций или одного бизнес-процесса в рамках внутреннего аудита.",
+    "expand_opportunities": [
+      "автоматизация закрытия отчётного периода",
+      "комплаенс-мониторинг транзакций",
+      "AI-агенты для проверки первичных документов"
+    ],
+    "tags": [
+      "аудит",
+      "agentic AI",
+      "Azure",
+      "финансы"
+    ],
+    "research_notes": "Отдельный отчёт KPMG 'Total Experience' (октябрь 2025) содержал недостоверные/сфабрикованные цитаты по данным независимой проверки GPTZero и намеренно не использован как источник для этого кейса; вместо него использован только материал Microsoft Customer Stories. Единственный источник (платформа Microsoft), поэтому грейд B, а не A; количественных операционных результатов (экономия времени, снижение стоимости) в открытом источнике не раскрыто, только масштаб внедрения."
+  },
+  {
     "id": "gb-cn-mace-buildots-cv-01",
     "title": "Автоматизированное отслеживание прогресса на проекте расширения аэропорта (Mace, Buildots)",
     "client": "Mace",
@@ -9556,6 +10811,107 @@
       "аэропорт"
     ],
     "research_notes": "Единственный источник — сайт вендора (Buildots); независимого клиентского подтверждения цифры 4 200 часов не найдено."
+  },
+  {
+    "id": "uk-ag-mowi-akva-01",
+    "title": "AKVA Observe: ИИ-распознавание кормовых гранул для управления кормлением на фермах Mowi Scotland",
+    "client": "Mowi Scotland",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "AKVA group"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "AKVA Observe"
+    ],
+    "country": "Великобритания (Шотландия)",
+    "region": "europe",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "aquaculture"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "optimization"
+    ],
+    "problem": "Нужно повышать эффективность кормления лосося (снижать несъеденный корм и коэффициент конверсии корма) на удалённых морских фермах, управляемых из центра удалённых операций.",
+    "before_state": "",
+    "solution": "Программное обеспечение AKVA Observe с искусственным интеллектом распознаёт кормовые гранулы на видео с ферм и поддерживает решения по кормлению; работает через центр удалённых операций (Remote Operations Centre) в Форт-Уильяме, обслуживающий несколько ферм.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "видеопоток камер наблюдения за кормлением на садках"
+    ],
+    "integrations": [
+      "центр удалённых операций (ROC)"
+    ],
+    "deployment": "hybrid",
+    "stage": "scaled-production",
+    "scale": "Центр удалённых операций (ROC) в Форт-Уильяме работает с июня 2024 г. и обслуживает 18 участков разведения лосося силами 12 сотрудников (расширен до 14 к маю 2025 г.); в мае 2025 г. начато тестирование AKVA Observe, в октябре 2025 г. технология внедрена на всех подключённых фермах; открыт второй центр в Сторновее.",
+    "metrics": [
+      {
+        "metric_type": "resource_utilization",
+        "metric_name": "Биологический коэффициент конверсии корма (bFCR), ферма Gorsten (2025)",
+        "baseline": "исторический уровень Mowi Scotland",
+        "result": "0,98 — самый низкий показатель за всю историю Mowi Scotland",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Индекс относительного роста и выживаемость на фермах с системой (2025)",
+        "baseline": "",
+        "result": "индекс относительного роста выше 100%, выживаемость выше 85% на всех четырёх фермах",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2024–2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Mowi Scotland внедрила ИИ-систему AKVA Observe для распознавания кормовых гранул через центр удалённых операций; в 2025 г. ферма Gorsten показала рекордно низкий для Mowi Scotland коэффициент конверсии корма (0,98), а все охваченные фермы — рост выше 100% и выживаемость выше 85%.",
+    "sources": [
+      {
+        "url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "title": "Remote feeding center leads to record feed efficiency for top salmon producer",
+        "type": "media",
+        "publisher": "Global Seafood Alliance / Responsible Seafood Advocate",
+        "date": "2025"
+      }
+    ],
+    "primary_source": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретный именованный производитель лосося с измеримым рекордным показателем конверсии корма после внедрения ИИ-распознавания кормления — сильный отраслевой бенчмарк для аквакультуры, хотя источник единственный.",
+    "entry_hypothesis": "У лососевых/форелевых хозяйств, где решения о кормлении принимают операторы на месте по визуальной оценке, коэффициент конверсии корма может быть выше оптимального — стоит сравнить текущий bFCR хозяйства с отраслевыми ориентирами и оценить потенциал централизованного видеомониторинга кормления.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот видеомониторинга кормления на одном-двух садках с сравнением конверсии корма к контрольным садкам.",
+    "expand_opportunities": [
+      "централизация управления фермами в один операционный центр",
+      "мониторинг здоровья и биомассы рыбы",
+      "прогноз оптимальных объёмов корма по погоде и температуре воды"
+    ],
+    "tags": [
+      "аквакультура",
+      "лосось",
+      "кормление",
+      "компьютерное зрение",
+      "AKVA"
+    ],
+    "research_notes": "Единственный источник — отраслевое издание Global Seafood Alliance с цитатами представителей Mowi; независимый второй источник (fishfocus.co.uk) не открылся в сессии (защита от бота), поэтому грейд B, а не A."
   },
   {
     "id": "us-en-orsted-sparkcognition-01",
@@ -9979,6 +11335,226 @@
       "розничные консультанты"
     ],
     "research_notes": "Единственный источник — customer story облачной платформы (AWS) при vendor_claim=true; независимого подтверждения со стороны Tapestry не найдено, поэтому грейд B, а не A."
+  },
+  {
+    "id": "us-dc-thermofisher-uipath-01",
+    "title": "Thermo Fisher Scientific ускорила обработку счетов на 70% с UiPath Document Understanding",
+    "client": "Thermo Fisher Scientific",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "UiPath"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "UiPath Document Understanding",
+      "UiPath AI Center",
+      "UiPath Action Center"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "healthcare",
+    "subindustry": [
+      "medtech"
+    ],
+    "business_function": [
+      "finance-function"
+    ],
+    "business_process": [
+      "document-processing",
+      "finance-accounting"
+    ],
+    "problem": "Подразделение Global Business Services получало тысячи полуструктурированных счетов в разных форматах от множества поставщиков; сотрудники вручную извлекали данные из PDF и вносили их в ERP-систему — повторяющийся процесс, нагрузка на который выросла из-за пандемийного спроса.",
+    "before_state": "Ручное извлечение данных из счетов и ввод в ERP-систему через платформу управления расходами Coupa.",
+    "solution": "Внедрены UiPath Document Understanding и RPA поверх платформы Coupa; модели машинного обучения обучены через UiPath AI Center на нескольких вариантах документов, а UiPath Action Center обеспечивает проверку извлечённых данных человеком.",
+    "ai_mechanisms": [
+      "document-ai",
+      "ocr",
+      "classical-ml"
+    ],
+    "data_used": [
+      "счета поставщиков в формате PDF"
+    ],
+    "integrations": [
+      "Coupa",
+      "ERP-система"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "824 000 счетов обрабатывается ежегодно; решение снизило нагрузку на команду из 8 штатных сотрудников",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Сокращение времени обработки счёта",
+        "baseline": "",
+        "result": "-70%",
+        "delta": "-70%",
+        "status": "measured",
+        "source_url": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "automation_rate",
+        "metric_name": "Доля счетов, обработанных полностью автоматически (straight-through)",
+        "baseline": "",
+        "result": "53%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность извлечения данных при первом развёртывании",
+        "baseline": "",
+        "result": "82,4% (целевой показатель — 85%)",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "documents",
+        "metric_name": "Счетов обрабатывается ежегодно",
+        "baseline": "",
+        "result": "824 000",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "срок разработки и внедрения решения — 12 недель",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "UiPath Document Understanding сократил время обработки счёта на 70%, обеспечил полностью автоматическую (straight-through) обработку 53% из 824 000 счетов в год при точности извлечения данных 82,4%, снизив нагрузку на команду обработки счетов из 8 сотрудников.",
+    "sources": [
+      {
+        "url": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+        "title": "Document Understanding Reduces Thermo Fisher Scientific's Invoice Process",
+        "type": "vendor",
+        "publisher": "UiPath",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Детализированный количественный кейс intelligent document processing для обработки счетов в крупной глобальной компании с очень высоким объёмом документооборота (824 тыс. счетов/год).",
+    "entry_hypothesis": "У крупных многонациональных компаний с централизованными Global Business Services / shared services центрами обработка полуструктурированных счетов от множества поставщиков в разных форматах может оставаться узким местом даже при наличии ERP. Стоит проверить долю счетов, которые до сих пор обрабатываются вручную.",
+    "likely_buyer": [
+      "cfo",
+      "coo"
+    ],
+    "land_opportunity": "Пилот Document Understanding для одной категории поставщиков/форматов счетов с измерением straight-through rate.",
+    "expand_opportunities": [
+      "автоматизация обработки заказов на закупку",
+      "сверка счетов с договорами",
+      "автоматизация закрытия периода в финансах"
+    ],
+    "tags": [
+      "UiPath",
+      "обработка счетов",
+      "Document Understanding",
+      "финансы"
+    ],
+    "research_notes": "Единственный источник — собственная кейс-страница вендора UiPath (vendor-side); независимого подтверждения со стороны Thermo Fisher Scientific в рамках сессии не найдено, поэтому грейд B. URL исправлен: в исходной ссылке была опечатка («scientifics» вместо «scientific»), из-за чего страница отдавала 404. По исправленному адресу страница открывается, цифры кейса подтверждены на ней: 824 000 счетов в год, -70% времени обработки, 85% точности извлечения, 53% сквозной обработки."
+  },
+  {
+    "id": "us-ag-tyson-cv-01",
+    "title": "Компьютерное зрение для автоматического подсчёта лотков с курицей на линиях Tyson Foods (AWS Panorama + SageMaker)",
+    "client": "Tyson Foods",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "AWS",
+      "Amazon ML Solutions Lab"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "AWS Panorama",
+      "Amazon SageMaker"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "food-processing"
+    ],
+    "business_function": [
+      "production"
+    ],
+    "business_process": [
+      "cv-inspection"
+    ],
+    "problem": "На линиях упаковки требовался точный подсчёт в реальном времени количества упакованных лотков с курицей; ручной подсчёт был ненадёжным и не давал немедленной обратной связи об объёмах производства при мощности порядка 45 млн голов птицы в неделю.",
+    "before_state": "Ручной подсчёт упакованных лотков на производственных линиях.",
+    "solution": "Совместно с Amazon ML Solutions Lab разработано приложение компьютерного зрения на базе моделей детекции объектов (SSD-ResNet50 и YOLOv3-DarkNet53), развёрнутое на периферийном устройстве AWS Panorama прямо на линии упаковки. Разметка изображений выполнена через Amazon SageMaker Ground Truth, обучение — в SageMaker Script Mode с GluonCV, инференс — на периферии с компиляцией SageMaker Neo и квантизацией FP16. Результаты передаются через MQTT в AWS IoT Core и отображаются в дашбордах Amazon QuickSight.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "изображения с камер на линии упаковки, сохраняемые каждые 60 секунд"
+    ],
+    "integrations": [
+      "AWS IoT Core",
+      "Amazon QuickSight"
+    ],
+    "deployment": "edge",
+    "stage": "production",
+    "scale": "Линии упаковки завода с производственной мощностью около 45 млн голов птицы в неделю.",
+    "metrics": [
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность модели детекции лотков с курицей (mAP)",
+        "baseline": "",
+        "result": "0,91",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "2020 (анонс) – 2022 (публикация)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Tyson Foods развернула на периферийных устройствах AWS Panorama систему компьютерного зрения для автоматического подсчёта лотков с курицей на линиях упаковки в реальном времени, с точностью модели детекции (mAP) 0,91; результаты доступны менеджерам производства через дашборды в реальном времени.",
+    "sources": [
+      {
+        "url": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+        "title": "Industrial automation at Tyson with computer vision, AWS Panorama, and Amazon SageMaker",
+        "type": "platform",
+        "publisher": "AWS Machine Learning Blog",
+        "date": "2022-01"
+      }
+    ],
+    "primary_source": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Подробный, технически прозрачный кейс edge-компьютерного зрения на пищевом производстве огромного масштаба (45 млн голов/неделю) с конкретной технической метрикой качества модели — хороший референс по архитектуре, хотя бизнес-эффект (экономия, снижение ошибок) в источнике не раскрыт.",
+    "entry_hypothesis": "На линиях упаковки пищевых предприятий с ручным подсчётом продукции вероятно отсутствует немедленная обратная связь об отклонениях от плана производства — стоит оценить, как часто расхождения обнаруживаются только по итогам смены, а не в реальном времени.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "quality-director"
+    ],
+    "land_opportunity": "Пилот edge-камеры с детекцией объектов на одной линии упаковки с сравнением точности подсчёта к ручному учёту.",
+    "expand_opportunities": [
+      "дашборды реального времени для менеджеров цехов",
+      "детекция дефектов упаковки",
+      "геозонирование для безопасности на производстве"
+    ],
+    "tags": [
+      "computer vision",
+      "AWS Panorama",
+      "пищевая переработка",
+      "подсчёт объектов",
+      "мясопереработка"
+    ],
+    "research_notes": "Единственный источник — блог платформы (AWS), поэтому грейд B, а не A, согласно правилу о vendor_claim и единственном источнике-платформе. Отдельная инициатива Tyson по автоматизации маркировки (описанная в thefeed.blog, презентация на Northwest Arkansas Technology Summit) — это другой проект без количественных результатов; в кейс не включена во избежание объединения двух разных проектов, зафиксирована отдельно в candidates/rejected."
   },
   {
     "id": "de-tl-vodafone-genesys-tobi-01",
@@ -10514,6 +12090,127 @@
     "research_notes": "Источник — агрегирующая статья New Retail без прямой ссылки на первичный пресс-релиз «Магнита»; разработчик/вендор системы не назван, поэтому vendor оставлен пустым. Фактическая цифра (1,2%) отмечена как measured, а оценка эффекта на 2025–2026 годы — как projected."
   },
   {
+    "id": "us-dc-servicenow-internal-01",
+    "title": "ServiceNow развернула AI-агентов на себе: 90% ИТ-обращений закрываются без участия человека",
+    "client": "ServiceNow",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "ServiceNow Now Assist / AI Agents"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "technology",
+    "subindustry": [
+      "software-vendors"
+    ],
+    "business_function": [
+      "it-function"
+    ],
+    "business_process": [
+      "operations-copilot"
+    ],
+    "problem": "Компании требовалось повысить скорость обработки внутренних обращений и инцидентов по ИТ, клиентскому сервису, HR, финансам и цепочке поставок собственными силами, прежде чем предлагать решение внешним клиентам.",
+    "before_state": "",
+    "solution": "ServiceNow развернула собственных AI-агентов на платформе Now Assist во внутренних процессах ITSM, CSM, HR, Finance и Supply Chain для автоматической обработки запросов сотрудников и инцидентов.",
+    "ai_mechanisms": [
+      "ai-agent",
+      "llm"
+    ],
+    "data_used": [
+      "внутренние тикеты и обращения сотрудников"
+    ],
+    "integrations": [
+      "ITSM",
+      "HR-система",
+      "финансовые системы",
+      "Supply Chain системы"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Внедрено во внутренних процессах ITSM, CSM, HR, Finance и Supply Chain компании",
+    "metrics": [
+      {
+        "metric_type": "automation_rate",
+        "metric_name": "Доля ИТ-обращений, обрабатываемых без участия человека",
+        "baseline": "",
+        "result": "90%",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "cycle_time",
+        "metric_name": "Ускорение закрытия инцидентов",
+        "baseline": "",
+        "result": "в 7 раз быстрее",
+        "delta": "в 7 раз быстрее",
+        "status": "reported",
+        "source_url": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "cycle_time",
+        "metric_name": "Ускорение решения HR-обращений",
+        "baseline": "",
+        "result": "в 20 раз быстрее",
+        "delta": "в 20 раз быстрее",
+        "status": "reported",
+        "source_url": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Заявленный эффект от AI-агентов во внутренних процессах",
+        "baseline": "",
+        "result": "$355 млн+",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "публикация — март 2026",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Во внутреннем 'production'-развёртывании AI-агентов ServiceNow сообщает, что 90% ИТ-обращений закрываются без участия человека, закрытие инцидентов ускорилось в 7 раз, а решение HR-обращений — в 20 раз; совокупный заявленный эффект от AI-агентов во внутренних процессах — свыше $355 млн.",
+    "sources": [
+      {
+        "url": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+        "title": "AI Agents Are Already Paying Off. Here's What Keeps Most Enterprises from Seeing It.",
+        "type": "vendor",
+        "publisher": "ServiceNow",
+        "date": "2026-03"
+      }
+    ],
+    "primary_source": "https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Пример 'dogfooding' — вендор AI-агентов сначала внедряет их у себя во внутренних ИТ/HR/финансовых процессах и приводит конкретные цифры, что можно использовать как ориентир масштаба эффекта для похожих внутренних shared-service функций.",
+    "entry_hypothesis": "У крупных компаний с большим внутренним ИТ- или HR-сервис-деском значительная доля обращений сотрудников может быть типовой и решаться автоматически без участия человека. Стоит проверить долю типовых обращений в текущей структуре тикетов.",
+    "likely_buyer": [
+      "cio",
+      "coo"
+    ],
+    "land_opportunity": "Пилот AI-агента для одного типа внутренних обращений (например, сброс паролей или типовые HR-вопросы) с измерением доли автоматической обработки.",
+    "expand_opportunities": [
+      "AI-агенты для финансовых операций",
+      "автоматизация supply chain обращений",
+      "копилот для CSM/поддержки клиентов"
+    ],
+    "tags": [
+      "AI-агенты",
+      "внутренний ИТ",
+      "HR",
+      "shared services"
+    ],
+    "research_notes": "Единственный источник — собственный блог ServiceNow (vendor-side, компания описывает собственное внедрение); цифра '$355 млн+' — совокупный эффект по нескольким функциям (ITSM, CSM, HR, Finance, Supply Chain) заявлен как единый эффект одной инициативы (внедрение AI Agents во всей компании), а не сумма разных проектов разных лет — сохранён в metrics с пометкой status=reported, но стоит трактовать как оценку вендора. Независимого подтверждения не найдено, поэтому грейд C, а не B."
+  },
+  {
     "id": "ru-fi-alfastrakhovanie-audatex-cv-01",
     "title": "Visual Intelligence для оценки убытков по ОСАГО через мобильное приложение",
     "client": "АльфаСтрахование",
@@ -10601,6 +12298,261 @@
       "оценка ущерба"
     ],
     "research_notes": "На момент публикации — пилот в отдельных регионах, не общероссийское production-внедрение; более поздних подтверждений масштабирования в открытых источниках не найдено."
+  },
+  {
+    "id": "ru-ag-agrosila-dairy-01",
+    "title": "ИИ-аналитика молочного производства «Агросила» (Dairy Production Analytic)",
+    "client": "АО «Агросила»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "optimization"
+    ],
+    "problem": "Требуется повышать продуктивность молочного стада и эффективность производства на крупном агрохолдинге в Татарстане.",
+    "before_state": "",
+    "solution": "С 2019 г. реализуется проект «Dairy production analytic» с использованием искусственного интеллекта для анализа и оптимизации показателей молочного производства.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "forecasting-ml"
+    ],
+    "data_used": [
+      "производственные данные молочного комплекса"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Молочный дивизион агрохолдинга «Агросила» в Республике Татарстан.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Средний надой на корову",
+        "baseline": "4947 кг (2018)",
+        "result": "5296 кг (2019)",
+        "delta": "+349 кг",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "с 2019",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Агросила» реализует с 2019 г. проект ИИ-аналитики молочного производства; средний надой на корову вырос с 4947 кг в 2018 г. до 5296 кг в 2019 г. (+349 кг), произведено 62 тыс. т сырого молока.",
+    "sources": [
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      }
+    ],
+    "primary_source": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Ещё один именованный молочный холдинг с прямой цифрой прироста продуктивности после внедрения ИИ-аналитики — усиливает статистику по отрасли, хотя детали методологии проекта в источнике не раскрыты.",
+    "entry_hypothesis": "У молочных холдингов, ведущих учёт надоев только на уровне фермы/стада без предиктивной аналитики по каждому животному, часть потенциального прироста продуктивности может оставаться нереализованной — стоит проверить глубину текущей аналитики надоев.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Аудит текущих данных по надоям и здоровью стада и пилот аналитической модели на одном комплексе.",
+    "expand_opportunities": [
+      "прогноз продуктивности стада",
+      "оптимизация рационов кормления",
+      "мониторинг здоровья животных"
+    ],
+    "tags": [
+      "молочное животноводство",
+      "надои",
+      "производственная аналитика",
+      "Татарстан"
+    ],
+    "research_notes": "Название проекта и годовые цифры взяты из единственного независимого медиа-источника (Агроинвестор); вендор/технологический партнёр проекта в источнике не назван, поэтому vendor оставлен пустым, а vendor_type — unknown."
+  },
+  {
+    "id": "ru-ag-step-digitaltwin-01",
+    "title": "Цифровые двойники полей и ИИ-планирование посевных площадей в агрохолдинге «Степь»",
+    "client": "АО Агрохолдинг «Степь»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "optimization",
+      "field-operations"
+    ],
+    "problem": "Нужно оптимизировать структуру посевных площадей с учётом маржинальности и рентабельности культур, а также контролировать все процессы растениеводства от планирования севооборота до уборки урожая на большом количестве полей.",
+    "before_state": "",
+    "solution": "Созданы цифровые двойники хозяйств: облачный сервис с оцифрованными картами полей, куда стекаются данные о работе техники и характеристиках почвы. Работает цифровая система планирования урожая на ИИ и больших данных — российская разработка, которая даёт рекомендации по структуре посевных площадей с учётом агрономических правил и прогнозов цен на будущий урожай. Комплексная система «История поля» фиксирует все работы для анализа эффективности агрономов. С 2025 г. используются тракторы с «умными камерами» для точного внесения удобрений и средств защиты растений. В 2026 г. создано подразделение «Центр фудтех-разработок» для разработки собственных нейросетей и ИИ-агентов, реализован первый проект для животноводческого дивизиона.",
+    "ai_mechanisms": [
+      "forecasting-ml",
+      "optimization-ml",
+      "computer-vision"
+    ],
+    "data_used": [
+      "карты полей",
+      "данные о работе техники",
+      "характеристики почвы",
+      "прогнозы цен на урожай"
+    ],
+    "integrations": [
+      "облачный сервис цифровых двойников хозяйств"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Агрохолдинг объединяет ряд сельхозпредприятий в Ростовской области, Краснодарском и Ставропольском краях; в 2025 г. компания владела 578 тыс. га сельхозземель.",
+    "metrics": [],
+    "timeline": "2024–2026",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Степь» развивает комплексную цифровую экосистему растениеводства — цифровые двойники полей, ИИ-систему планирования посевных площадей и тракторы со «умными камерами» для точного внесения удобрений; количественные бизнес-результаты в открытых источниках не раскрыты.",
+    "sources": [
+      {
+        "url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "title": "Цифровизируй, чтобы жить: как технологии меняют сельхозпроизводство на Юге",
+        "type": "interview",
+        "publisher": "Эксперт Юг",
+        "date": "2024-08-19"
+      },
+      {
+        "url": "https://www.tadviser.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F:%D0%A1%D1%82%D0%B5%D0%BF%D1%8C,_%D0%90%D0%9E_%D0%B0%D0%B3%D1%80%D0%BE%D1%85%D0%BE%D0%BB%D0%B4%D0%B8%D0%BD%D0%B3",
+        "title": "Степь, АО агрохолдинг",
+        "type": "media",
+        "publisher": "TAdviser",
+        "date": "2026"
+      }
+    ],
+    "primary_source": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает системный, многолетний подход крупного агрохолдинга к цифровизации растениеводства (не разовый пилот), включая собственное подразделение по ИИ — полезный бенчмарк зрелости, но без измеримых цифр эффекта.",
+    "entry_hypothesis": "У холдингов с несколькими разрозненными хозяйствами решения о структуре посевных площадей часто принимаются на уровне отдельных агрономов без единой модели маржинальности культур — стоит проверить, есть ли единый цифровой двойник хозяйств и модель рекомендаций по севообороту.",
+    "likely_buyer": [
+      "cdo",
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот цифровой карты полей с базовой аналитикой почвы и техники на одном хозяйстве холдинга.",
+    "expand_opportunities": [
+      "ИИ-планирование севооборота по марже",
+      "умные камеры на технике для точного внесения",
+      "цифровизация животноводческого дивизиона"
+    ],
+    "tags": [
+      "цифровой двойник",
+      "точное земледелие",
+      "планирование урожая",
+      "умные камеры"
+    ],
+    "research_notes": "Метрик с конкретными цифрами эффекта не найдено ни в одном из двух источников — грейд B, а не A, несмотря на два независимых источника (интервью первого лица + TAdviser), именно из-за отсутствия измеримого результата. Страница TAdviser открыта через fetch-page.mjs (WebFetch отдавал 404); текст содержит фактическую хронологию внедрений компании, а не отдельную развёрнутую статью."
+  },
+  {
+    "id": "ru-dc-domrf-smartid-01",
+    "title": "Банк ДОМ.РФ внедрил распознавание документов заёмщиков на базе ИИ",
+    "client": "Банк ДОМ.РФ (ранее Российский капитал)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Smart Engines",
+      "NVI Solutions"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Smart ID Engine (ранее Smart IDReader)"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "finance-insurance",
+    "subindustry": [
+      "banking"
+    ],
+    "business_function": [
+      "back-office"
+    ],
+    "business_process": [
+      "document-processing"
+    ],
+    "problem": "Ручная проверка документов заёмщиков (паспорт, 2-НДФЛ и др.) при рассмотрении кредитных заявок замедляла процесс кредитования и оформления ипотеки.",
+    "before_state": "",
+    "solution": "Банк ДОМ.РФ совместно со Smart Engines и NVI Solutions внедрил ИТ-решение по распознаванию документов заёмщиков на основе искусственного интеллекта и компьютерного зрения (Smart IDReader), автоматически распознающее паспорт, 2-НДФЛ и другие документы по дистанционным каналам и в отделениях.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "ocr",
+      "document-ai"
+    ],
+    "data_used": [
+      "сканы и фото паспортов, 2-НДФЛ и других документов заёмщиков"
+    ],
+    "integrations": [
+      "мобильное и интернет-приложение банка",
+      "системы отделений"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Применяется при рассмотрении всех заявок банка по дистанционным каналам и в отделениях",
+    "metrics": [],
+    "timeline": "сентябрь 2020 — декабрь 2022 (проект в целом: ноябрь 2019 — декабрь 2022)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Внедрение технологии распознавания документов на основе ИИ позволило автоматизировать заполнение заявки, сократить объём вручную вносимых и верифицируемых данных и ускорить процесс кредитования.",
+    "sources": [
+      {
+        "url": "https://www.tadviser.ru/index.php/Проект:Дом.РФ_АКБ_(ранее_Российский_капитал)_(Smart_IDReader)",
+        "title": "Банк Дом.РФ внедрил систему распознавания документов при кредитовании на основе искусственного интеллекта",
+        "type": "media",
+        "publisher": "TAdviser (со ссылкой на пресс-релиз Smart Engines)",
+        "date": "2020-06"
+      }
+    ],
+    "primary_source": "https://www.tadviser.ru/index.php/Проект:Дом.РФ_АКБ_(ранее_Российский_капитал)_(Smart_IDReader)",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Пример внедрения Document AI/computer vision в розничном кредитовании банка — распознавание документов заёмщика напрямую в цифровых каналах без ручной верификации.",
+    "entry_hypothesis": "У банков с розничным кредитованием часть времени операциониста или кредитного менеджера может уходить на ручную сверку паспортных данных и справок 2-НДФЛ. Стоит проверить долю заявок, где это узкое место.",
+    "likely_buyer": [
+      "cio",
+      "coo"
+    ],
+    "land_opportunity": "Пилот автоматического распознавания одного типа документа (паспорт) в одном канале подачи заявки.",
+    "expand_opportunities": [
+      "распознавание справок о доходах",
+      "автоматическая оценка недвижимости",
+      "антифрод-проверка документов"
+    ],
+    "tags": [
+      "распознавание документов",
+      "кредитование",
+      "компьютерное зрение",
+      "банк"
+    ],
+    "research_notes": "Числовая метрика '~80% решений принимается почти мгновенно' относится к цифровой ипотеке банка в целом (более широкий процесс), а не конкретно к этой системе распознавания документов — по правилу периметра цифры не включена в metrics этого кейса. Единственный источник — TAdviser, пересказывающий пресс-релиз вендора Smart Engines; независимого подтверждения со стороны банка не найдено в рамках сессии."
   },
   {
     "id": "ru-tl-beeline-predictive-dialer-01",
@@ -11185,6 +13137,111 @@
       "цифровая платформа"
     ],
     "research_notes": "Клиент не назван в источнике («одна из крупнейших частных энергетических компаний России»), поэтому грейд ограничен и client_disclosed=false. Единственный источник — ComNews, независимого подтверждения со стороны клиента не найдено."
+  },
+  {
+    "id": "global-ag-taranis-precision-01",
+    "title": "Taranis: ИИ-платформа раннего обнаружения болезней и вредителей по снимкам дронов на базе Google Cloud",
+    "client": "Сельхозпроизводители — клиенты платформы Taranis (агрегированно, свыше 20 млн акров под управлением)",
+    "client_disclosed": false,
+    "client_url": "",
+    "vendor": [
+      "Taranis"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Google Cloud",
+      "TensorFlow"
+    ],
+    "country": "Глобально (штаб-квартира Taranis — Израиль)",
+    "region": "global",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "cv-inspection"
+    ],
+    "problem": "До 40% урожая регулярно теряется из-за насекомых-вредителей, болезней растений, сорняков и дефицита питательных веществ; фермерам сложно поддерживать визуальный контроль сотен тысяч акров и вовремя выявлять проблемы, особенно в удалённых районах со слабой связью для выгрузки больших объёмов снимков с дронов.",
+    "before_state": "",
+    "solution": "Платформа точного земледелия на основе снимков дронов и спутников с высоким разрешением на уровне отдельного листа; модели на TensorFlow обучены на десятках миллионов размеченных изображений (разметку выполняют 30 штатных агрономов) для распознавания болезней, вредителей и абиотического стресса. Инфраструктура на Google Cloud (Compute Engine с GPU, Kubernetes Engine, Cloud Storage, Pub/Sub) обрабатывает свыше 30 ТБ данных.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "снимки с дронов высокого разрешения",
+      "спутниковые снимки",
+      "размеченные агрономами изображения"
+    ],
+    "integrations": [
+      "Google Cloud инфраструктура"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Платформа управляет данными свыше 20 млн акров, каждый вылет дрона — около 10 тыс. снимков, всего обработано порядка 100 млн отдельных признаков на ~700 тыс. изображений.",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время выгрузки снимков с дронов в удалённых локациях",
+        "baseline": "около суток",
+        "result": "несколько часов",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://cloud.google.com/customers/taranis",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Стоимость обработки одного снимка",
+        "baseline": "",
+        "result": "снижена примерно в 10 раз",
+        "delta": "-90%",
+        "status": "reported",
+        "source_url": "https://cloud.google.com/customers/taranis",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Платформа Taranis на инфраструктуре Google Cloud обрабатывает данные более 20 млн акров посевов, распознавая болезни, вредителей и стресс растений по снимкам дронов; согласно кейс-стади Google Cloud, скорость выгрузки снимков выросла в разы, а стоимость обработки одного фото снизилась примерно в 10 раз.",
+    "sources": [
+      {
+        "url": "https://cloud.google.com/customers/taranis",
+        "title": "Taranis Case Study",
+        "type": "platform",
+        "publisher": "Google Cloud",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://cloud.google.com/customers/taranis",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Хороший пример инфраструктурной стороны AI-мониторинга полей в промышленном масштабе (десятки миллионов акров), хотя измеримые агрономические результаты (снижение потерь урожая) в источнике не раскрыты — только инфраструктурные метрики.",
+    "entry_hypothesis": "У агротехнологических компаний, обрабатывающих спутниковые/дроновые снимки собственными силами, инфраструктурные затраты на хранение и обработку изображений могут быть узким местом масштабирования — стоит оценить текущую стоимость обработки снимка и время цикла от съёмки до рекомендации агроному.",
+    "likely_buyer": [
+      "cto",
+      "cio"
+    ],
+    "land_opportunity": "Не применимо напрямую к конечному сельхозпроизводителю — это инфраструктурный кейс агротех-платформы; land-возможность актуальна для агротех-вендоров, а не для ферм.",
+    "expand_opportunities": [
+      "масштабирование на новые регионы",
+      "интеграция с BI (BigQuery/Looker)",
+      "новые категории обнаружения болезней"
+    ],
+    "tags": [
+      "дроны",
+      "спутниковый мониторинг",
+      "болезни растений",
+      "Google Cloud",
+      "точное земледелие"
+    ],
+    "research_notes": "Единственный источник — customer story платформы (Google Cloud), поэтому грейд B, а не A, согласно правилу о vendor_claim и единственном источнике-платформе. Конкретные фермерские клиенты Taranis не названы."
   },
   {
     "id": "ru-hc-mtt-alfacenter-voice-01",
@@ -12455,6 +14512,80 @@
     "research_notes": "Ни один из трёх найденных источников (вендор, Ведомости, IoT.ru) не приводит цифр эффекта после внедрения — только описание архитектуры решения. Грейд снижен до C из-за отсутствия метрик, несмотря на именованного крупного клиента."
   },
   {
+    "id": "ru-dc-evraz-legal-01",
+    "title": "ЕВРАЗ автоматизирует выжимки по договорам и листы ознакомления в юридическом департаменте",
+    "client": "ЕВРАЗ",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "manufacturing",
+    "subindustry": [
+      "metallurgy"
+    ],
+    "business_function": [
+      "legal-compliance-function"
+    ],
+    "business_process": [
+      "legal-compliance"
+    ],
+    "problem": "При штате компании 70–80 тысяч человек юридическому департаменту требовалось быстро готовить выжимки по большому количеству договоров и локальных нормативных актов и определять, кого из сотрудников нужно ознакомить с документом.",
+    "before_state": "",
+    "solution": "Собственная корпоративная система электронного документооборота с ИИ-функциями генерирует краткие выжимки по договорам и локальным нормативным актам и автоматически формирует листы ознакомления, определяя, какие сотрудники должны быть уведомлены.",
+    "ai_mechanisms": [
+      "llm",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "тексты договоров",
+      "локальные нормативные акты"
+    ],
+    "integrations": [
+      "корпоративная система электронного документооборота"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Компания с персоналом 70–80 тысяч человек",
+    "metrics": [],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Инструменты успешно интегрированы в корпоративные системы и, по словам представителя компании, особенно полезны при масштабе персонала в 70–80 тысяч человек; количественных показателей эффекта не раскрыто.",
+    "sources": [
+      {
+        "url": "https://pravo.ru/company_news/258472/",
+        "title": "Как юрдепартаменты используют ИИ: кейсы компаний",
+        "type": "media",
+        "publisher": "Право.ру",
+        "date": ""
+      }
+    ],
+    "primary_source": "https://pravo.ru/company_news/258472/",
+    "evidence_grade": "C",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Пример применения ИИ для рутинных, но объёмных юридических задач (выжимки, рассылка на ознакомление) в компании с очень большим штатом — типовая точка входа для legal AI в промышленном холдинге.",
+    "entry_hypothesis": "У крупных промышленных холдингов с десятками тысяч сотрудников юридический департамент может тратить много времени на ручное определение круга лиц для ознакомления с внутренними актами. Стоит проверить объём такой рутинной работы.",
+    "likely_buyer": [
+      "legal-director"
+    ],
+    "land_opportunity": "Пилот автоматической генерации выжимок по одному типу документов (например, локальные нормативные акты одного подразделения).",
+    "expand_opportunities": [
+      "автоматизация проверки договоров на риски",
+      "мониторинг изменений законодательства",
+      "комплаенс-отчётность"
+    ],
+    "tags": [
+      "юридический департамент",
+      "выжимки договоров",
+      "металлургия"
+    ],
+    "research_notes": "Источник — цитата представителя компании (Екатерина Зеленова) в статье СМИ Право.ру; интервью-цитата от лица клиента, но без измеримых цифр и без отдельного первичного источника со стороны ЕВРАЗ. Грейд C из-за отсутствия количественных результатов."
+  },
+  {
     "id": "ru-cn-sber2b-videoanalytics-rostov-01",
     "title": "Видеоаналитика на основе ИИ для контроля безопасности на стройплощадке (застройщик Ростовской области)",
     "client": "Крупнейший застройщик Ростовской области (имя не раскрыто в источнике)",
@@ -12778,6 +14909,96 @@
     "research_notes": "Измеримых цифр результата (рост конверсии, снижение возвратов) в источнике нет — все эффекты описаны как ожидаемые (projected); metrics оставлены пустыми в соответствии с правилами. Для business_process выбран ближайший id «marketing» (генерация контента для карточек товара), точного id «product content generation» в таксономии нет."
   },
   {
+    "id": "ru-ag-rusagro-harvest-01",
+    "title": "ML-система планирования уборки урожая в агрохолдинге «Русагро»",
+    "client": "ПАО «Русагро»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Инфосистемы Джет"
+    ],
+    "vendor_type": "integrator",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "scheduling-dispatching"
+    ],
+    "problem": "Из-за ежегодных колебаний погоды урожай на разных полях созревает в разное время, поэтому агрономы должны регулярно и вручную проверять степень зрелости культур; при этом дорогостоящей уборочной техники может не хватать, если одновременно требуется убирать много полей.",
+    "before_state": "",
+    "solution": "Интеллектуальная система планирования уборки урожая с алгоритмами машинного обучения, прогнозирующими даты технической спелости культур и выделяющими поля, требующие неотложного внимания агрономов. Система интегрирует данные агрономических отчётов, аэросъёмки, индексов вегетации, метеоинформации и ERP-системы; планы актуализируются ежедневно с учётом фактически выполненных работ.",
+    "ai_mechanisms": [
+      "forecasting-ml",
+      "classical-ml"
+    ],
+    "data_used": [
+      "агрономические отчёты",
+      "аэросъёмка",
+      "индексы вегетации",
+      "метеоданные",
+      "данные ERP-системы"
+    ],
+    "integrations": [
+      "ERP-система холдинга"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Система охватывает около 6000 полей агрохолдинга, где выращивают зерновые, бобовые культуры и сахарную свёклу.",
+    "metrics": [],
+    "timeline": "2022",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Русагро» внедрила ML-систему планирования уборки урожая на ~6000 полях, которая прогнозирует сроки технической спелости культур и ежедневно актуализирует план уборки; конкретные количественные результаты (экономия, снижение потерь) в открытых источниках не раскрыты.",
+    "sources": [
+      {
+        "url": "https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/",
+        "title": "Как технологии ИИ помогают планировать полевые работы в агропромышленном холдинге «Русагро»",
+        "type": "vendor",
+        "publisher": "Инфосистемы Джет",
+        "date": "2022-10"
+      },
+      {
+        "url": "https://www.vedomosti.ru/press_releases/2022/10/13/iskusstvennii-intellekt-pomogaet-agroholdingu-rusagro-planirovat-uborku-urozhaya",
+        "title": "Искусственный интеллект помогает агрохолдингу «Русагро» планировать уборку урожая",
+        "type": "media",
+        "publisher": "Ведомости (пресс-релиз)",
+        "date": "2022-10-13"
+      }
+    ],
+    "primary_source": "https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Понятный, легко воспроизводимый паттерн интеграции разнородных данных (агрономия + аэросъёмка + погода + ERP) в единый план уборки — полезный бенчмарк для похожих растениеводческих холдингов с большим числом полей, но без цифр эффекта.",
+    "entry_hypothesis": "У растениеводческих холдингов с тысячами полей агрономы, вероятно, вручную сопоставляют данные о зрелости культур с доступностью техники — стоит проверить, сколько времени уходит на ручное планирование уборки и как часто теряется урожай из-за нехватки техники в пиковые дни.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "cio"
+    ],
+    "land_opportunity": "Пилот прогнозной модели сроков технической спелости на одной культуре и одном регионе присутствия холдинга.",
+    "expand_opportunities": [
+      "диспетчеризация уборочной техники",
+      "прогноз урожайности по полям",
+      "интеграция со спутниковым мониторингом"
+    ],
+    "tags": [
+      "планирование уборки урожая",
+      "прогноз спелости",
+      "ERP-интеграция",
+      "растениеводство"
+    ],
+    "research_notes": "Вторая ссылка (Ведомости, пресс-релиз) технически открыта, но отдала контент в виде изображения — текст не извлечён, факты из неё не использованы, только заголовок для sources/лога. Цифр результата ни один из источников не содержит, поэтому грейд C, а не выше, несмотря на конкретного клиента и внедрение."
+  },
+  {
     "id": "ru-lg-pochta-teraplan-01",
     "title": "ИИ-прогнозирование грузопотока и оптимизация сортировки в Почте России",
     "client": "Почта России",
@@ -12957,6 +15178,161 @@
       "промышленный ИИ"
     ],
     "research_notes": "Экономический эффект или снижение аварийности источником не раскрыты; на дату публикации (май 2025) интеграция ИИ описывается как продолжающаяся инициатива, а не завершённый проект — присвоен статус stage=pilot."
+  },
+  {
+    "id": "ru-dc-sber-gigalegal-01",
+    "title": "Сбербанк запустил юридического ИИ-ассистента GigaLegal на базе GigaChat",
+    "client": "Сбербанк",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "GigaChat Pro",
+      "GigaChat API"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "finance-insurance",
+    "subindustry": [
+      "banking"
+    ],
+    "business_function": [
+      "legal-compliance-function"
+    ],
+    "business_process": [
+      "legal-compliance"
+    ],
+    "problem": "Сотрудники юридических подразделений, риелторы, менеджеры по закупкам и другие специалисты, работающие с юридической документацией и российским законодательством, тратят значительное время на составление договоров, анализ судебной практики и подготовку к судебным процессам.",
+    "before_state": "",
+    "solution": "Сбербанк представил умного юридического помощника GigaLegal на базе API модели GigaChat Pro — сервис работает 24/7, помогает анализировать договоры, сопоставлять их с шаблонами, выявлять отклонения, формировать список замечаний, отслеживать изменения законодательства. Итоговые рекомендации требуют утверждения специалистом.",
+    "ai_mechanisms": [
+      "llm"
+    ],
+    "data_used": [
+      "тексты договоров",
+      "нормативно-правовые акты",
+      "судебная практика"
+    ],
+    "integrations": [],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Доступен юристам, риелторам, менеджерам по закупкам и другим специалистам, работающим с юридической документацией",
+    "metrics": [],
+    "timeline": "запуск — март 2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "GigaLegal должен сокращать время на составление договоров, анализ судебной практики и подготовку к судебным процессам, снижать вероятность ошибок и повышать эффективность юридических команд; конкретных измеренных цифр в открытых источниках на момент публикации не раскрыто.",
+    "sources": [
+      {
+        "url": "https://banks.cnews.ru/news/line/2024-03-14_yuristamrieltoram_i_drugim",
+        "title": "Юристам, риелторам и другим специалистам теперь доступен умный юридический помощник от Сбербанка GigaLegal",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2024-03"
+      }
+    ],
+    "primary_source": "https://banks.cnews.ru/news/line/2024-03-14_yuristamrieltoram_i_drugim",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает, что даже у крупнейшего банка с собственной LLM-платформой юридический AI-ассистент на момент запуска не сопровождался публичными измеримыми результатами — типичная стадия 'запущено, но эффект не измерен'.",
+    "entry_hypothesis": "Компании, разворачивающие внутренние юридические LLM-ассистенты, часто не измеряют эффект количественно на старте. Стоит предложить методологию измерения ROI ещё на этапе пилота, а не после запуска.",
+    "likely_buyer": [
+      "legal-director",
+      "cio"
+    ],
+    "land_opportunity": "Пилот с измеримыми метриками (время на договор, % автоматически найденных рисков) на одном типе договоров.",
+    "expand_opportunities": [
+      "юридический due diligence",
+      "мониторинг изменений законодательства",
+      "комплаенс-проверки"
+    ],
+    "tags": [
+      "юридический ассистент",
+      "GigaChat",
+      "LLM",
+      "банк"
+    ],
+    "research_notes": "Найдены только качественные заявления без цифр; отдельно упоминались агрегированные цифры GigaChat Business в целом (до 35% задач компании, экономия 20-70% времени), но это эффект по всей платформе GigaChat Business, а не именно GigaLegal — по правилу периметра цифры эти данные не включены в metrics этого кейса."
+  },
+  {
+    "id": "ru-dc-sbermarket-naumen-01",
+    "title": "СберМаркет перенёс корпоративную базу знаний на Naumen KMS с ИИ-помощником",
+    "client": "СберМаркет",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Naumen"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Naumen KMS"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "retail-ecommerce",
+    "subindustry": [
+      "marketplaces"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "knowledge-management"
+    ],
+    "problem": "Неэффективное управление базой знаний в Confluence приводило к более долгой обработке обращений и снижению качества обслуживания.",
+    "before_state": "База знаний велась в Confluence.",
+    "solution": "Миграция корпоративной базы знаний с Confluence на платформу Naumen KMS с рефакторингом контента и AI-помощником для поиска информации.",
+    "ai_mechanisms": [
+      "rag",
+      "semantic-search"
+    ],
+    "data_used": [
+      "база знаний компании",
+      "регламенты и инструкции"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Используется на нескольких площадках поддержки СберМаркета",
+    "metrics": [],
+    "timeline": "публикация — июль 2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "После миграции на Naumen KMS сократилось среднее время обработки обращения на нескольких площадках, повысилась удобство поиска информации сотрудниками; конкретные числовые показатели именно для СберМаркета в источнике не раскрыты (в отличие от других клиентов Naumen KMS, упомянутых в той же статье).",
+    "sources": [
+      {
+        "url": "https://www.naumen.ru/products/kms/academy/articles/kak-baza-znaniy-na-platforme-naumen-kms-pomogaet-riteyleru-uluchshit-biznes-pokazateli/",
+        "title": "Как база знаний на платформе Naumen KMS помогает ритейлеру улучшить бизнес-показатели?",
+        "type": "vendor",
+        "publisher": "Naumen",
+        "date": "2024-07"
+      }
+    ],
+    "primary_source": "https://www.naumen.ru/products/kms/academy/articles/kak-baza-znaniy-na-platforme-naumen-kms-pomogaet-riteyleru-uluchshit-biznes-pokazateli/",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает типичный сценарий перехода корпоративной базы знаний на специализированную RAG/KMS-платформу вместо wiki-инструментов (Confluence) в быстрорастущей e-commerce компании.",
+    "entry_hypothesis": "Компании, использующие общие wiki-инструменты (Confluence и аналоги) для корпоративной базы знаний, могут сталкиваться с ростом времени поиска нужной информации по мере масштабирования. Стоит проверить текущее время поиска и удовлетворённость сотрудников поиском.",
+    "likely_buyer": [
+      "coo",
+      "head-of-contact-center"
+    ],
+    "land_opportunity": "Пилот миграции одного раздела базы знаний (например, для одной продуктовой линии) с измерением времени поиска до/после.",
+    "expand_opportunities": [
+      "RAG-ассистент для операторов поддержки",
+      "база знаний для новых сотрудников",
+      "аналитика пробелов в знаниях"
+    ],
+    "tags": [
+      "база знаний",
+      "RAG",
+      "e-commerce",
+      "Confluence"
+    ],
+    "research_notes": "В том же источнике для других клиентов Naumen KMS (Делимобиль, Эвотор) приведены числовые метрики (+7% эффективности новых сотрудников, -11% AHT; -180 сек, +10% CSI), но это метрики контакт-центра/customer support у других компаний — вне периметра направления и вне периметра кейса СберМаркета, поэтому не включены в metrics."
   },
   {
     "id": "ru-mf-sveza-safety-cv-01",
@@ -13284,6 +15660,102 @@
     "research_notes": "Единственный источник — материал самого Т-Банка на vc.ru, независимого подтверждения цифры 80–90% не найдено; цифра помечена статусом reported, а не measured. Конкретных пользовательских/бизнес-метрик (не только costs) не раскрыто."
   },
   {
+    "id": "ru-dc-fintech-happystar-01",
+    "title": "Финтех-стартап сократил первичный скрининг резюме с 10 часов до 20 минут",
+    "client": "Финтех-стартап (клиент под NDA)",
+    "client_disclosed": false,
+    "client_url": "",
+    "vendor": [
+      "HappyStar Recruiting"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "finance-insurance",
+    "subindustry": [
+      "fintech"
+    ],
+    "business_function": [
+      "hr-function"
+    ],
+    "business_process": [
+      "hr-recruitment"
+    ],
+    "problem": "HR-менеджеры тратили до 70% рабочего времени на ручной скрининг тысяч резюме на одну вакансию, что замедляло закрытие вакансий.",
+    "before_state": "Ручной первичный отбор резюме занимал около 10 часов на одну вакансию.",
+    "solution": "Внедрена AI-система автоматического скрининга резюме на основе NLP и машинного обучения (HappyStar Recruiting).",
+    "ai_mechanisms": [
+      "nlp-classification",
+      "llm"
+    ],
+    "data_used": [
+      "резюме кандидатов"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Финтех-стартап, нанимающий 10–15 специалистов ежемесячно",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время первичного отбора резюме на вакансию",
+        "baseline": "10 часов",
+        "result": "20 минут",
+        "delta": "сокращение примерно в 30 раз",
+        "status": "reported",
+        "source_url": "https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "retention",
+        "metric_name": "Текучесть кадров",
+        "baseline": "",
+        "result": "-33% (снижение на треть)",
+        "delta": "-33% (снижение на треть)",
+        "status": "reported",
+        "source_url": "https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "публикация — май 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "После внедрения AI-скрининга время первичного отбора резюме на вакансию сократилось с 10 часов до 20 минут, расходы на скрининг снизились вдвое, скорость закрытия вакансий выросла в два раза, текучесть кадров снизилась на треть за счёт перераспределения времени на адаптацию.",
+    "sources": [
+      {
+        "url": "https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/",
+        "title": "Скрининг резюме на автомате: как AI сокращает время подбора кадров вдвое",
+        "type": "media",
+        "publisher": "РБК Компании",
+        "date": "2025-05"
+      }
+    ],
+    "primary_source": "https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Наглядный количественный пример того, насколько сильно AI-скрининг резюме может сократить время первичного отбора у быстрорастущей компании с высоким потоком кандидатов.",
+    "entry_hypothesis": "У быстрорастущих компаний с высоким потоком кандидатов на массовые/линейные позиции значительная часть времени HR может уходить на ручной первичный скрининг резюме. Стоит проверить объём этой рутины и текущее время закрытия вакансий.",
+    "likely_buyer": [
+      "hr-director",
+      "coo"
+    ],
+    "land_opportunity": "Пилот AI-скрининга резюме для одной массовой позиции с высоким потоком кандидатов.",
+    "expand_opportunities": [
+      "автоматизация первичных интервью",
+      "аналитика воронки найма",
+      "онбординг новых сотрудников"
+    ],
+    "tags": [
+      "скрининг резюме",
+      "рекрутинг",
+      "NLP",
+      "финтех"
+    ],
+    "research_notes": "Клиент указан под NDA как 'финтех-стартап' без названия — имя не выдумано. Источник единственный (медиа-статья, пересказывающая заявления вендора HappyStar Recruiting), поэтому грейд C, а не B/A, несмотря на наличие цифр."
+  },
+  {
     "id": "us-mn-bakerhughes-inventory-01",
     "title": "ИИ-оптимизация запасов запчастей на предприятии нефтесервиса",
     "client": "Baker Hughes",
@@ -13553,6 +16025,96 @@
     "research_notes": "Основной источник (AI CERTs) — нишевое отраслевое медиа, специализирующееся на новостях об ИИ, не первичный источник JD.com; академическая статья (EWA Publishing, aemps.ewapub.com) подтвердила лишь общее описание кейса без конкретных цифр (доступна только аннотация). Числа «снижение затрат на 24,8%», «сокращение сроков на 21,3%», «снижение ошибок на 52,6%», встречавшиеся в сводке поиска (со ссылкой на ResearchGate), НЕ подтверждены при попытке открыть источник (доступ заблокирован — HTTP 403) и не использованы в этом кейсе."
   },
   {
+    "id": "gb-dc-unilever-hirevue-01",
+    "title": "Unilever сократила время найма выпускников на 75% с видео-интервью на базе AI",
+    "client": "Unilever",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "HireVue"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "HireVue",
+      "Pymetrics"
+    ],
+    "country": "Великобритания",
+    "region": "europe",
+    "industry": "retail-ecommerce",
+    "subindustry": [
+      "fmcg"
+    ],
+    "business_function": [
+      "hr-function"
+    ],
+    "business_process": [
+      "hr-recruitment"
+    ],
+    "problem": "Ручной отбор кандидатов требовал просмотра тысяч резюме и большого числа часов на интервью, что было неэффективно и затратно.",
+    "before_state": "Цикл найма выпускников занимал более четырёх месяцев с ручным просмотром резюме и очными интервью.",
+    "solution": "Внедрён четырёхэтапный процесс найма с использованием видео-интервью HireVue с AI-анализом ответов кандидатов (включая невербальные сигналы) и нейронаучных игр Pymetrics для оценки когнитивных и эмоциональных качеств; финальный этап — очная оценка в Discovery Center.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "nlp-classification",
+      "classical-ml"
+    ],
+    "data_used": [
+      "видеозаписи интервью кандидатов",
+      "результаты игр-тестов"
+    ],
+    "integrations": [],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Компания с более чем 155 000 сотрудников; программа применяется к найму выпускников",
+    "metrics": [
+      {
+        "metric_type": "cycle_time",
+        "metric_name": "Сокращение времени найма выпускников",
+        "baseline": "более 4 месяцев",
+        "result": "-75%",
+        "delta": "-75%",
+        "status": "reported",
+        "source_url": "https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "внедрено начиная с 2016 года",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "После внедрения AI-видеоинтервью и нейронаучных тестов время найма выпускников сократилось примерно на 75%, при этом компания сообщает об улучшении качества нанимаемых кандидатов и разнообразия за счёт снижения предвзятости в оценке.",
+    "sources": [
+      {
+        "url": "https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n",
+        "title": "The Practical Application of AI: Unilever Reduced Recruitment Time by 75%",
+        "type": "media",
+        "publisher": "pumpedu.cz",
+        "date": "2024-08"
+      }
+    ],
+    "primary_source": "https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Один из самых цитируемых в индустрии примеров AI в массовом найме — показывает, каким может быть эффект AI-видеоинтервью на скорость закрытия массовых позиций (выпускники) в глобальной FMCG-компании.",
+    "entry_hypothesis": "У крупных компаний с массовым ежегодным набором (например, программы для выпускников) существенная доля времени HR может уходить на первичные очные интервью с большим количеством кандидатов. Стоит проверить объём такого найма и текущие сроки цикла.",
+    "likely_buyer": [
+      "hr-director"
+    ],
+    "land_opportunity": "Пилот AI-видеоинтервью для одной программы массового найма (например, стажёры) с контролем на предвзятость оценки.",
+    "expand_opportunities": [
+      "AI-скрининг резюме",
+      "автоматизация онбординга",
+      "аналитика качества найма"
+    ],
+    "tags": [
+      "HireVue",
+      "видео-интервью",
+      "массовый найм",
+      "FMCG"
+    ],
+    "research_notes": "Кейс широко цитируется в отраслевых источниках (bestpractice.ai, thecasecentre.org и др., упомянутые в WebSearch), но при прямом WebFetch удалось подтвердить цифры только через вторичный агрегатор pumpedu.cz (со ссылкой на статью Bernard Marr, которую сам не открывал и потому не включаю в sources). Первичного источника со стороны Unilever или HireVue с этими же цифрами найти и открыть в рамках сессии не удалось — грейд C, а не B, из-за единственного вторичного медиа-источника."
+  },
+  {
     "id": "ru-lg-wildberries-robots-01",
     "title": "Роботы-манипуляторы и машинное зрение на складах Wildberries",
     "client": "Wildberries",
@@ -13642,6 +16204,100 @@
     "research_notes": "Материал TAdviser с деталями об этом проекте («Проект:Складские роботы в Wildberries») недоступен — оба варианта URL (прямой и URL-кодированный) вернули 404. Использован единственный доступный источник RoboTrends, поэтому грейд ограничен C. Факты о закупке китайских манипуляторов и ИИ-сервисе оценки визуала карточек (из отдельных новостей CNews) не относятся к складской логистике и не включены в этот кейс."
   },
   {
+    "id": "ru-dc-x5-jaycopilot-01",
+    "title": "X5 Group внедрила GenAI-копилот для аналитики без кода на базе Jay Copilot",
+    "client": "X5 Group",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Just AI"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Jay Copilot",
+      "ChatGPT 3.5 Turbo",
+      "YandexGPT",
+      "GigaChat"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "retail-ecommerce",
+    "subindustry": [
+      "grocery-retail"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "operations-copilot",
+      "knowledge-management"
+    ],
+    "problem": "Для поиска и обработки данных сотрудникам требовалось знание SQL, что замедляло data-driven подход к принятию решений в компании с ~25 тыс. магазинов и 378 тыс. сотрудников.",
+    "before_state": "Анализ данных и написание запросов к базам данных выполнялись преимущественно специалистами со знанием SQL.",
+    "solution": "Внедрена платформа генеративного AI для аналитики Jay Copilot, позволяющая сотрудникам делать текстовые запросы вместо написания SQL-кода, с маскированием чувствительных данных.",
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent"
+    ],
+    "data_used": [
+      "внутренние базы данных о продажах и операциях"
+    ],
+    "integrations": [
+      "корпоративные базы данных"
+    ],
+    "deployment": "cloud",
+    "stage": "pilot",
+    "scale": "11 демообучений с охватом более 5 тыс. сотрудников; 1,3 тыс. человек протестировали приложения",
+    "metrics": [
+      {
+        "metric_type": "users",
+        "metric_name": "Сотрудники, протестировавшие приложения на базе Jay Copilot",
+        "baseline": "",
+        "result": "1,3 тыс. человек",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://generation-ai.ru/cases/x5-group-i-analitika",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "по итогам 2023–2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Внедрение Jay Copilot позволило сотрудникам без знания SQL делать текстовые запросы к данным вместо написания кода и существенно ускорило анализ недельных отчётов о продажах.",
+    "sources": [
+      {
+        "url": "https://generation-ai.ru/cases/x5-group-i-analitika",
+        "title": "Генеративный ИИ для аналитики и баз данных в X5 Group",
+        "type": "media",
+        "publisher": "generation-ai.ru",
+        "date": "2024-07"
+      }
+    ],
+    "primary_source": "https://generation-ai.ru/cases/x5-group-i-analitika",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Пример 'text-to-insight' копилота для сотрудников без навыков SQL в крупном ритейлере — снижает зависимость операционных решений от узкого круга аналитиков-программистов.",
+    "entry_hypothesis": "В компаниях, где бизнес-пользователи зависят от аналитиков со знанием SQL для получения простых отчётов, может накапливаться очередь запросов и задержки в принятии решений. Стоит проверить объём таких запросов и среднее время ожидания отчёта.",
+    "likely_buyer": [
+      "cdo",
+      "coo"
+    ],
+    "land_opportunity": "Пилот text-to-SQL копилота для одного отдела (например, категорийные менеджеры) на ограниченном наборе отчётов.",
+    "expand_opportunities": [
+      "автоматизация еженедельной отчётности",
+      "копилот для закупщиков",
+      "RAG-поиск по внутренней документации"
+    ],
+    "tags": [
+      "text-to-SQL",
+      "аналитика",
+      "копилот",
+      "ритейл"
+    ],
+    "research_notes": "В источнике указан совокупный эффект по итогам 2023 года ('5 млрд руб.', '~1,5% эффект на EBITDA') — это заявленный агрегированный эффект по нескольким AI-инициативам X5 в целом, а не измеримый результат именно Jay Copilot; по правилу периметра цифры эта сумма не включена в metrics и приведена только здесь для контекста. Стадия обозначена как pilot, так как в источнике описаны демо-обучения и тестирование, а не полное промышленное развертывание на всю компанию."
+  },
+  {
     "id": "ru-rt-x5-demand-forecast-01",
     "title": "Собственная система прогнозирования спроса и автозаказа в X5 Group",
     "client": "X5 Group (сети «Пятёрочка», «Перекрёсток», «Карусель»)",
@@ -13720,166 +16376,6 @@
       "продуктовый ритейл"
     ],
     "research_notes": "Конкретных измеримых цифр результата (ROI, % снижения потерь) в открытых источниках найти не удалось; секонд-хенд упоминания о «5 млрд рублей операционной прибыли» из агрегаторских источников (axioma-ai.ru) не использованы, так как эта страница не открывалась через WebFetch и не может быть проверена по правилам анти-галлюцинации."
-  },
-  {
-    "id": "ru-lg-mosgortrans-antison-01",
-    "title": "Система «Антисон» для мониторинга усталости водителей Мосгортранса",
-    "client": "ГУП «Мосгортранс»",
-    "client_disclosed": true,
-    "client_url": "https://www.mosgortrans.ru",
-    "vendor": [
-      "КСОР",
-      "Октоинформ Рус"
-    ],
-    "vendor_type": "product-vendor",
-    "technology_providers": [
-      "Антисон"
-    ],
-    "country": "Россия",
-    "region": "russia-cis",
-    "industry": "logistics-transport",
-    "subindustry": [
-      "urban-transport"
-    ],
-    "business_function": [
-      "hse"
-    ],
-    "business_process": [
-      "security"
-    ],
-    "problem": "Усталость и потеря концентрации водителей общественного транспорта повышают риск ДТП.",
-    "before_state": "",
-    "solution": "Бесконтактная система мониторинга состояния водителя «Антисон»: ИК-камера на приборной панели анализирует более 60 точек лица водителя через нейросеть, выявляя признаки засыпания и отвлечения внимания.",
-    "ai_mechanisms": [
-      "computer-vision",
-      "anomaly-detection"
-    ],
-    "data_used": [
-      "видеопоток с ИК-камеры в кабине водителя"
-    ],
-    "integrations": [
-      "бортовые системы автобусов и электробусов"
-    ],
-    "deployment": "edge",
-    "stage": "production",
-    "scale": "Система внедрена в ГУП «Мосгортранс» начиная с 2019 года.",
-    "metrics": [],
-    "timeline": "с 2019 года; критика в СМИ в 2020 году",
-    "budget_disclosed": 1700000000,
-    "budget_note": "По данным TAdviser (2020), стоимость созданной системы составила 1,7 млрд рублей.",
-    "result_summary": "Мосгортранс с 2019 года использует систему бесконтактного мониторинга усталости водителей «Антисон» (КСОР/Октоинформ Рус); наряду с фактом эксплуатации в СМИ отмечались жалобы водителей на дискомфорт и ухудшение зрения при использовании системы.",
-    "sources": [
-      {
-        "url": "https://www.tadviser.ru/index.php/Компания:Мосгортранс,_ГУП",
-        "title": "Мосгортранс, ГУП — цифровой паспорт компании",
-        "type": "media",
-        "publisher": "TAdviser",
-        "date": ""
-      },
-      {
-        "url": "https://www.cnews.ru/articles/2022-11-08_kak_nejroseti_sledyat_za_ustalostyu",
-        "title": "Как нейросети следят за усталостью водителя и сокращают аварийность",
-        "type": "media",
-        "publisher": "CNews",
-        "date": "2022-11-08"
-      }
-    ],
-    "primary_source": "https://www.tadviser.ru/index.php/Компания:Мосгортранс,_ГУП",
-    "evidence_grade": "C",
-    "vendor_claim": false,
-    "sales_relevance": 2,
-    "why_it_matters": "Показывает риски и сложности внедрения систем мониторинга состояния водителя — важен не только технологический результат, но и эргономика и доверие водителей, иначе возможно сопротивление и жалобы.",
-    "entry_hypothesis": "При внедрении систем контроля усталости водителей важно заранее учитывать эргономику оборудования (положение камеры, освещение) и коммуникацию с водителями — иначе есть риск жалоб на самочувствие и саботажа использования.",
-    "likely_buyer": [
-      "hse-director",
-      "coo"
-    ],
-    "land_opportunity": "Пилотное тестирование системы мониторинга усталости на ограниченной группе водителей с последующим сбором обратной связи.",
-    "expand_opportunities": [
-      "интеграция с системой диспетчеризации",
-      "аналитика инцидентов безопасности"
-    ],
-    "tags": [
-      "мониторинг усталости",
-      "безопасность",
-      "городской транспорт"
-    ],
-    "research_notes": "Отдельная детальная статья TAdviser по этому проекту оказалась недоступна (404 / «публикация недоступна для просмотра»). Использована краткая информация из общей страницы компании TAdviser и статьи CNews 2022 года. Совокупная цифра снижения ДТП на городском транспорте Москвы в 2020–2021 гг. (-26% / -7,5%), встречавшаяся в источнике CNews, описывает эффект по всему наземному транспорту Москвы, а не измеримый эффект именно этой системы — по правилу периметра цифры не включена в metrics."
-  },
-  {
-    "id": "ru-lg-rzd-digital-station-01",
-    "title": "Пилот цифровой модели станции с элементами ИИ в РЖД",
-    "client": "РЖД (ОАО «Российские железные дороги»)",
-    "client_disclosed": true,
-    "client_url": "",
-    "vendor": [],
-    "vendor_type": "in-house",
-    "technology_providers": [],
-    "country": "Россия",
-    "region": "russia-cis",
-    "industry": "logistics-transport",
-    "subindustry": [
-      "railway"
-    ],
-    "business_function": [
-      "asset-management-function"
-    ],
-    "business_process": [
-      "predictive-maintenance",
-      "optimization"
-    ],
-    "problem": "Необходимость модернизации и автоматизации железнодорожной инфраструктуры для повышения эффективности диагностики и обработки данных о состоянии путей и станционных объектов.",
-    "before_state": "",
-    "solution": "Создание эталонной «цифровой станции» нового поколения с элементами ИИ (в т.ч. система мониторинга дефектов железнодорожных путей) для последующего тиражирования по сети; пилот запущен на станции Челябинск-Главный.",
-    "ai_mechanisms": [
-      "digital-twin",
-      "anomaly-detection"
-    ],
-    "data_used": [
-      "данные диагностики железнодорожных путей",
-      "данные систем мониторинга станции"
-    ],
-    "integrations": [
-      "системы диагностики инфраструктуры РЖД"
-    ],
-    "deployment": "on-prem",
-    "stage": "pilot",
-    "scale": "Пилот на станции Челябинск-Главный; программа предусматривает тиражирование эталонной модели на 20 станций сети.",
-    "metrics": [],
-    "timeline": "публикация 2026-08-21; тиражирование планируется в ближайшие годы",
-    "budget_disclosed": null,
-    "budget_note": "",
-    "result_summary": "РЖД разрабатывает и тестирует «эталонную» цифровую модель станции с элементами ИИ, включая мониторинг дефектов пути, на пилотной станции Челябинск-Главный, с последующим тиражированием на 20 станций сети.",
-    "sources": [
-      {
-        "url": "https://www.comnews.ru/digital-economy/content/247002/2026-08-21/2026-w34/1012/ii-vykhodit-puti-rzhd-tirazhiruet-cifrovuyu-model-stanciy-vsey-seti",
-        "title": "ИИ выходит на пути: РЖД тиражирует цифровую модель станций по всей сети",
-        "type": "media",
-        "publisher": "ComNews",
-        "date": "2026-08-21"
-      }
-    ],
-    "primary_source": "https://www.comnews.ru/digital-economy/content/247002/2026-08-21/2026-w34/1012/ii-vykhodit-puti-rzhd-tirazhiruet-cifrovuyu-model-stanciy-vsey-seti",
-    "evidence_grade": "C",
-    "vendor_claim": false,
-    "sales_relevance": 2,
-    "why_it_matters": "Даёт представление о направлении цифровизации РЖД в области диагностики инфраструктуры и цифровых двойников станций — раннем этапе, но по крупнейшему железнодорожному оператору страны.",
-    "entry_hypothesis": "У железнодорожных операторов ручная или периодическая диагностика путевой инфраструктуры может задерживать выявление дефектов — стоит оценить текущий цикл диагностики и обработки данных на конкретном участке сети.",
-    "likely_buyer": [
-      "chief-engineer",
-      "cio"
-    ],
-    "land_opportunity": "Пилот цифрового двойника для одного диагностического участка или станции.",
-    "expand_opportunities": [
-      "предиктивное обслуживание подвижного состава",
-      "оптимизация движения поездов"
-    ],
-    "tags": [
-      "железная дорога",
-      "цифровой двойник",
-      "диагностика инфраструктуры"
-    ],
-    "research_notes": "Стадия — пилот, количественных измеримых результатов на момент публикации не раскрыто (только качественные формулировки об ускорении обработки диагностики). Включено для покрытия темы предиктивного обслуживания на железной дороге при честном указании ограниченности доказательной базы (единственный источник, без метрик)."
   },
   {
     "id": "ru-tl-federal-operator-nbo-voice-01",

@@ -1,4 +1,28 @@
 research_track,url,publisher,source_type,accessed,status,used_for
+agri,https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/,Cognitive Pilot,vendor,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+agri,https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym,CNews,media,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+agri,https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/,Инфосистемы Джет,vendor,2026-08-27,ok,ru-ag-rusagro-harvest-01
+agri,https://www.vedomosti.ru/press_releases/2022/10/13/iskusstvennii-intellekt-pomogaet-agroholdingu-rusagro-planirovat-uborku-urozhaya,Ведомости,media,2026-08-27,partial,ru-ag-rusagro-harvest-01
+agri,https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/,Дамате,client,2026-08-27,ok,ru-ag-damate-cv-01
+agri,https://www.techinsider.ru/technologies/500942-iskusstvennyy-intellekt-dlya-indeyki/,TechInsider,media,2026-08-27,ok,ru-ag-damate-cv-01
+agri,https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/,Агроинвестор,media,2026-08-27,ok,"ru-ag-damate-cv-01, ru-ag-rusmolko-dairy-01, ru-ag-agrosila-dairy-01"
+agri,https://www.tadviser.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F:%D0%A1%D1%82%D0%B5%D0%BF%D1%8C,_%D0%90%D0%9E_%D0%B0%D0%B3%D1%80%D0%BE%D1%85%D0%BE%D0%BB%D0%B4%D0%B8%D0%BD%D0%B3,TAdviser,"media, 2026-08-27",ok,ru-ag-step-digitaltwin-01
+agri,https://www.interfax.ru/business/1104379,Интерфакс,media,2026-08-27,ok,rejected (cand-016)
+agri,https://digirpt.com/2026/08/11/pochemu-lososja-stalo-menshe-kak-bpla-i-ii-schitajut-rybu-na-dalnem-vostoke/,Digital Report,media,2026-08-27,ok,rejected (cand-021)
+agri,https://aaes.uada.edu/news/see-and-spray-research/,Arkansas Agricultural Experiment Station,academic,2026-08-27,ok,us-ag-deere-seeandspray-01
+agri,https://www.deere.com/en/news/all-news/see-spray-herbicide-savings/,John Deere,vendor,2026-08-27,blocked,"not used (page returned only title,  no extractable content)"
+agri,https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/,Эксперт Юг,interview,2026-08-27,ok,"ru-ag-progressagro-precision-01, ru-ag-step-digitaltwin-01"
+agri,https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/,Oklahoma Farm Report (John Deere press release),vendor,2026-08-27,ok,us-ag-deere-seeandspray-01
+agri,https://www.fishfarmingexpert.com/ai-canada-cermaq/implementing-ai-technology-on-two-cermaq-sites/1815467,Fish Farming Expert,media,2026-08-27,ok,ca-ag-cermaq-reeldata-01
+agri,https://www.globalseafood.org/advocate/project-uses-ai-powered-cameras-to-improve-fish-growth-tracking-and-feeding-strategies/,Global Seafood Alliance,media,2026-08-27,ok,rejected (cand-034)
+agri,https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/,Global Seafood Alliance,media,2026-08-27,ok,uk-ag-mowi-akva-01
+agri,https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/,AWS Machine Learning Blog,platform,2026-08-27,ok,us-ag-tyson-cv-01
+agri,https://fishfocus.co.uk/how-ai-cameras-are-transforming-deepwater-farming/,Fish Focus,media,2026-08-27,blocked,"not used (anti-bot verification page,  no content extracted)"
+agri,https://thefeed.blog/2023/11/14/future-of-food-ai-artificial-intelligence-food-industry/,Tyson Foods (The Feed blog),client,2026-08-27,ok,rejected (cand-037)
+agri,https://cloud.google.com/customers/taranis,Google Cloud,platform,2026-08-27,ok,global-ag-taranis-precision-01
+agri,https://inarctica.com/,INARCTICA,client,2026-08-27,ok,rejected (cand-020)
+agri,https://fish-info.ru/news/ii-v-rybnom-khozyaystve-ot-prognozov-vylova-do-dokumentooborota/,Fish-Info,media,2026-08-27,ok,rejected (cand-022)
+agri,https://russianfishery.ru/customers/production/,РРПК,client,2026-08-27,blocked,rejected (cand-023)
 construction,https://www.vedomosti.ru/press_releases/2020/07/21/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroitelei-gk-pik-na-20,Ведомости,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
 construction,https://www.comnews.ru/digital-economy/content/208188/2020-07-21/2020-w30/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik,ComNews,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
 construction,https://www.lanit.ru/press/archive/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik-na-20/,ЛАНИТ,vendor,2026-08-27,ok,ru-cn-pik-solut-labor-01
@@ -25,6 +49,32 @@ construction,https://brainboxai.com/en/case-studies/dollar-tree-unlocks-major-en
 construction,https://www.jll.com/en-us/client-stories/ai-powered-facilities-management,JLL,vendor,2026-08-27,ok,global-cn-jll-fm-semiconductor-01
 construction,https://www.testfit.io/customer-stories/bsb-design,TestFit,vendor,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
 construction,https://www.bsbdesign.com/insights/ai-case-study-testfit-concept-to-entitlement-package/,BSB Design,client,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
+crossdoc,https://banks.cnews.ru/news/line/2024-03-14_yuristamrieltoram_i_drugim,CNews,media,2026-08-27,ok,Сбербанк GigaLegal (ru-dc-sber-gigalegal-01)
+crossdoc,https://centrvd.ru/cases/podruzhka,ЦВД,vendor,2026-08-27,ok,Directum Ario в сети «Подружка» (ru-dc-podruzhka-directum-01)
+crossdoc,https://www.tadviser.ru/index.php/Проект:Дом.РФ_АКБ_(ранее_Российский_капитал)_(Smart_IDReader),TAdviser,media,2026-08-27,ok,Банк ДОМ.РФ Smart IDReader (ru-dc-domrf-smartid-01) - открыто через fetch-page.mjs после 404 в WebFetch
+crossdoc,https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/,Doczilla,vendor,2026-08-27,ok,Почта России автоматизация договоров (ru-dc-pochta-doczilla-01)
+crossdoc,https://pravo.ru/company_news/258472/,Право.ру,media,2026-08-27,ok,ЕВРАЗ (ru-dc-evraz-legal-01) и Ростелеком (ru-dc-rostelecom-legalwatch-01)
+crossdoc,https://www.naumen.ru/products/kms/academy/articles/kak-baza-znaniy-na-platforme-naumen-kms-pomogaet-riteyleru-uluchshit-biznes-pokazateli/,Naumen,vendor,2026-08-27,ok,СберМаркет и Naumen KMS (ru-dc-sbermarket-naumen-01)
+crossdoc,https://napoleonit.ru/blog,Napoleon IT,vendor,2026-08-27,partial,"Проверка кандидатов ХОЛОДИЛЬНИК.РУ и «Подружка» AI-ассистент - не подтверждено, кандидаты отклонены"
+crossdoc,https://www.harvey.ai/resources/reports/accelerating-impact-of-legal-ai,Harvey,vendor,2026-08-27,partial,"Проверка Harvey/A&O Shearman - конкретных цифр по клиенту не найдено на этой странице, использованы другие источники"
+crossdoc,https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/,GitHub Blog,platform,2026-08-27,ok,Accenture GitHub Copilot RCT (global-dc-accenture-githubcopilot-01)
+crossdoc,https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process,UiPath,vendor,2026-08-27,error,"404 - неверный URL-слаг, использован скорректированный вариант ниже"
+crossdoc,https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure,Microsoft Customer Stories,platform,2026-08-27,ok,KPMG Azure agentic AI аудит (global-dc-kpmg-azure-01)
+crossdoc,https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientifics-invoice-process,UiPath,vendor,2026-08-27,ok,Thermo Fisher Scientific Document Understanding (us-dc-thermofisher-uipath-01)
+crossdoc,https://claude.com/customers/harvey,Anthropic,platform,2026-08-27,partial,Общее описание Harvey+Claude без конкретных цифр по A&O Shearman
+crossdoc,https://www.tadviser.ru/index.php/Продукт:MTS_AI_ИИ-помощник_для_банковских_сотрудников,TAdviser,media,2026-08-27,error,404 - страница недоступна
+crossdoc,"https://www.bestpractice.ai/ai-case-study-best-practice/unilever_saved_over_50,000_hours_in_candidate_interview_time_and_delivered_over_%C2%A31m_annual_savings_and_improved_candidate_diversity_with_machine_analysis_of_video-based_interviewing.",bestpractice.ai,analyst,2026-08-27,partial,Целевой кейс Unilever не найден на возвращённой странице (общий листинг библиотеки кейсов)
+crossdoc,https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/,РБК Компании,media,2026-08-27,ok,HappyStar Recruiting фintech-стартап (ru-dc-fintech-happystar-01)
+crossdoc,https://legal.thomsonreuters.com/blog/accelerate-business-outcomes-with-cocounsel-legal/,Thomson Reuters Legal,vendor,2026-08-27,partial,"Проверка именного кейса CoCounsel Legal - конкретной юрфирмы с цифрами не найдено, кандидат отклонён"
+crossdoc,https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful,A&O Shearman,client,2026-08-27,ok,A&O Shearman ContractMatrix/Harvey (gb-dc-aoshearman-harvey-01)
+crossdoc,https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/,Microsoft UK Stories,platform,2026-08-27,ok,A&O Shearman ContractMatrix независимое подтверждение (gb-dc-aoshearman-harvey-01)
+crossdoc,https://www.tadviser.ru/index.php/Продукт:Content_AI_ContentReader_PDF_(ранее_ABBYY_FineReader_PDF)?cache=no&ptype=decision,TAdviser,media,2026-08-27,error,404 через WebFetch - использован fetch-page.mjs с редиректом (см. ниже)
+crossdoc,https://www.cnews.ru/news/line/2024-10-16_mts_ai_sozdala_ii-pomoshchnika,CNews,media,2026-08-27,ok,"Подтверждение, что MTS AI не называет конкретного банка-клиента - кандидат отклонён (no_client)"
+crossdoc,https://www.tadviser.ru/index.php/Проект:ContentReader_PDF_(ранее_ABBYY_FineReader_PDF),TAdviser,media,2026-08-27,partial,"Открыто через fetch-page.mjs (редирект с предыдущего URL) - Rosselkhozbank/банковский кейс в полученном фрагменте не обнаружен, кандидат Content AI отклонён как unverifiable"
+crossdoc,https://generation-ai.ru/cases/x5-group-i-analitika,generation-ai.ru,media,2026-08-27,ok,X5 Group Jay Copilot (ru-dc-x5-jaycopilot-01)
+crossdoc,https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n,pumpedu.cz,media,2026-08-27,ok,Unilever HireVue (gb-dc-unilever-hirevue-01)
+crossdoc,https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot,Microsoft Customer Stories,platform,2026-08-27,ok,Vodafone Microsoft 365 Copilot (gb-dc-vodafone-copilot-01)
+crossdoc,https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045,ServiceNow,vendor,2026-08-27,ok,ServiceNow внутреннее развёртывание AI-агентов (us-dc-servicenow-internal-01)
 energy,https://www.so-ups.ru/news/press/press-release-view/news/24306/,СО ЕЭС,client,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
 energy,https://www.bigpowernews.ru/markets/document113467.phtml,BigpowerNews,media,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
 energy,https://www.zyfra.com/ru/news/media/t-plius-ziiot/,Zyfra,vendor,2026-08-27,ok,ru-en-tplus-ziiot-pdm-01
