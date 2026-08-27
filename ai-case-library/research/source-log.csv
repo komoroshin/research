@@ -1,0 +1,73 @@
+research_track,url,publisher,source_type,accessed,status,used_for
+construction,https://www.vedomosti.ru/press_releases/2020/07/21/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroitelei-gk-pik-na-20,Ведомости,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://www.comnews.ru/digital-economy/content/208188/2020-07-21/2020-w30/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik,ComNews,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://www.lanit.ru/press/archive/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik-na-20/,ЛАНИТ,vendor,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://cio.osp.ru/articles/110423-Samolet-intellektualnyy-monitoring-stroyki,CIO.osp.ru (Открытые системы),media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://www.secuteck.ru/articles/avtomatizaciya-stroitelstva-opyt-gk-samolet,Secuteck.ru,media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://dvizhenie.ru/media/181/iskusstvennyi-intellekt-v-developmente-keisy-zastroishchikov,Движение.ру,media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://platforms.su/project/2535,Цифровой маркетплейс platforms.su,vendor,2026-08-27,ok,ru-cn-fsk-samolet10d-cv-01
+construction,https://ruward.ru/award/2025/571632/,RUWARD AWARD 2025,media,2026-08-27,ok,ru-cn-fsk-redmadrobot-rag-01
+construction,"https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82:%D0%93%D0%9A_%D0%A4%D0%A1%D0%9A_(%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82_(%D0%98%D0%98,_Artificial_intelligence,_AI))",TAdviser,media,2026-08-27,ok,ru-cn-fsk-redmadrobot-rag-01
+construction,https://xn--80aque.xn--p1ai/news/napoleon-it-i-pao-apri-zapuskayut-masshtabnoe-vnedrenie-vizualnogo-intellekta-v-stroitelstve/,Всеостройке.рф,vendor,2026-08-27,ok,ru-cn-apri-napoleonit-visual-01
+construction,https://www.tbank.ru/invest/social/profile/APRI_Official/18f72677-61cc-4dd7-a4fe-3ee30299c2c7/,Т-Инвестиции (пост АПРИ),client,2026-08-27,ok,ru-cn-apri-napoleonit-visual-01
+construction,https://www.norbit.ru/proekty/razrabotka-sistemy-prognozirovaniya-prodazh-na-baze-ai-tekhnologiy-v-gruppe-etalon/,НОРБИТ,vendor,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://www.vedomosti.ru/press_releases/2023/06/07/norbit-i-gruppa-etalon-zapuskayut-sistemu-prognozirovaniya-prodazh-na-baze-iskusstvennogo-intellekta,Ведомости,media,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://iot.ru/riteyl/norbit-i-gruppa-etalon-zapuskayut-sistemu-prognozirovaniya-prodazh-na-baze-ii,IoT.ru,media,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://sberbs.ru/blogs/cases/videoanalitika-na-osnove-ii-dlya-povysheniya-bezopasnosti-na-stroyploschadke,Сбер2B (Сбер Бизнес Софт),vendor,2026-08-27,ok,ru-cn-sber2b-videoanalytics-rostov-01
+construction,https://finance.mail.ru/article/domklik-testiruet-ii-agenta-dlya-podbora-zhilya-69214998/,Финансы Mail.ru,media,2026-08-27,ok,ru-cn-domclick-ai-agent-01
+construction,https://russianhighways.ru/press/news/119776/,Автодор (russianhighways.ru),client,2026-08-27,ok,ru-cn-avtodor-m11-noisescreens-cv-01
+construction,https://buildots.com/case-studies/intel-partners-with-buildots/,Buildots,vendor,2026-08-27,ok,us-cn-intel-buildots-cv-01
+construction,https://pages.buildots.com/intel-case-study,Buildots,vendor,2026-08-27,ok,us-cn-intel-buildots-cv-01
+construction,https://buildots.com/case-study/mace-partners-with-buildots/,Buildots,vendor,2026-08-27,ok,gb-cn-mace-buildots-cv-01
+construction,https://www.openspace.ai/resources/case-studies/openspace-improves-jll-project-delivery-through-faster-more-complete-documentation/,OpenSpace,vendor,2026-08-27,ok,us-cn-jll-openspace-docs-01
+construction,https://blog.alicetechnologies.com/case-studies/af-gruppen,ALICE Technologies,vendor,2026-08-27,ok,no-cn-afgruppen-alice-schedule-01
+construction,https://brainboxai.com/en/case-studies/dollar-tree-unlocks-major-energy-and-emissions-savings-with-brainbox-ai,BrainBox AI,vendor,2026-08-27,ok,us-cn-dollartree-brainboxai-hvac-01
+construction,https://www.jll.com/en-us/client-stories/ai-powered-facilities-management,JLL,vendor,2026-08-27,ok,global-cn-jll-fm-semiconductor-01
+construction,https://www.testfit.io/customer-stories/bsb-design,TestFit,vendor,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
+construction,https://www.bsbdesign.com/insights/ai-case-study-testfit-concept-to-entitlement-package/,BSB Design,client,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
+energy,https://www.so-ups.ru/news/press/press-release-view/news/24306/,СО ЕЭС,client,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
+energy,https://www.bigpowernews.ru/markets/document113467.phtml,BigpowerNews,media,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
+energy,https://www.zyfra.com/ru/news/media/t-plius-ziiot/,Zyfra,vendor,2026-08-27,ok,ru-en-tplus-ziiot-pdm-01
+energy,https://www.cnews.ru/news/line/2023-10-24_t_plyus_nachala_ispolzovat,CNews,media,2026-08-27,ok,ru-en-tplus-ziiot-pdm-01
+energy,https://www.company.rt.ru/press/news/d476709/,Ростелеком,vendor,2026-08-27,ok,ru-en-mosenergosbyt-rt-cc-01
+energy,https://www.cnews.ru/news/line/2026-02-05_rostelekom_povysil_effektivnost,CNews,media,2026-08-27,ok,ru-en-mosenergosbyt-rt-cc-01
+energy,https://www.cnews.ru/news/line/2021-03-17_mailru_group_pomogla_rosseti,CNews,media,2026-08-27,ok,ru-en-mailru-predict-rosseti-loss-01
+energy,https://www.vedomosti.ru/technologies/industries_and_markets/news/2025/10/16/1147306-elektroenergii-pomoschyu,Ведомости,media,2026-08-27,ok,ru-en-mts-energytool-rosseti-01
+energy,https://cio.osp.ru/news/200623-Rosseti-Sibir-budut-iskat-hischeniya-elektroenergii-s-pomoschyu-iskusstvennogo-intellekta,CIO/OSP,media,2026-08-27,ok,ru-en-mts-energytool-rosseti-01
+energy,https://strana-rosatom.ru/2026/05/21/vkalyvaet-ii-a-ne-chelovek-kak-iskusstv/,«Страна Росатом»,client,2026-08-27,ok,ru-en-rosatom-kursk-operator-01
+energy,https://www.comnews.ru/digital-economy/content/235312/2024-09-20/2024-w38/1012/cifra-i-sapran-zapustili-sistemu-prognosticheskogo-analiza-i-diagnostiki-oborudovaniya-vosmi-tec,ComNews,media,2026-08-27,ok,ru-en-cifra-sapran-chp8-01
+energy,https://deepmind.google/blog/machine-learning-can-boost-the-value-of-wind-energy/,DeepMind / Google,client,2026-08-27,ok,us-en-deepmind-wind-forecast-01
+energy,https://www.forbes.com/sites/jeffmcmahon/2020/05/31/thanks-to-renewables-and-machine-learning-google-now-forecasts-the-wind/,Forbes,media,2026-08-27,ok,us-en-deepmind-wind-forecast-01
+energy,https://www.globenewswire.com/en/news-release/2018/08/02/1546519/0/en/Enel-Green-Power-North-America-and-Raptor-Maps-Team-Up-for-Cutting-Edge-Solar-Management-Through-Drones-and-AI.html,GlobeNewswire,media,2026-08-27,ok,us-en-enel-raptormaps-solar-01
+energy,https://www.enelgreenpower.com/media/news/2018/8/egp-drones-and-ai-to-boost-solar-plants,Enel Green Power,client,2026-08-27,ok,us-en-enel-raptormaps-solar-01
+energy,https://us.orsted.com/news-archive/2023/11/orsted-deploys-sparkcognitions-ai-solution-to-enhance-wind-solar-and-storage,Ørsted,client,2026-08-27,ok,us-en-orsted-sparkcognition-01
+energy,https://www.prnewswire.com/news-releases/orsted-deploys-sparkcognitions-ai-solution-to-enhance-wind-solar-and-storage-asset-performance-and-increase-energy-production-301980060.html,PR Newswire,media,2026-08-27,ok,us-en-orsted-sparkcognition-01
+energy,https://stories.xcelenergy.com/stories/using-advanced-technology-to-combat-wildfire-risk,Xcel Energy,client,2026-08-27,ok,us-en-xcelenergy-panoai-wildfire-01
+energy,https://newsroom.xcelenergy.com/news/xcel-energy-brings-ai-driven-wildfire-detection-to-minnesota,Xcel Energy Newsroom,client,2026-08-27,ok,us-en-xcelenergy-panoai-wildfire-01
+energy,https://www.tdworld.com/digital-innovations/article/21262976/duke-energys-hybrid-approach-to-ai,T&D World,media,2026-08-27,ok,us-en-dukeenergy-sciml-transformer-01
+energy,https://aws.amazon.com/solutions/case-studies/encored-technologies-case-study/,Amazon Web Services,platform,2026-08-27,ok,kr-en-encored-aws-vpp-01
+healthcare,https://celsus.ai/blog/sczenarii-skrining/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+healthcare,https://celsus.ai/smi/mammogram/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+healthcare,https://sk.ru/news/botkinai-itogi-2021/,Сколково,vendor,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+healthcare,https://vademec.ru/news/2020/08/19/botkin-ai-integrirovalsya-co-stolichnym-eris-dlya-poiska-raka-legkogo-na-kt-snimkakh/,Vademecum,media,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+healthcare,https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik,CNews,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+healthcare,https://www.ixbt.com/news/2024/12/12/v-sberzdorove-pojavilsja-iipomoshnik-na-baze-gigachat.html,iXBT,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+healthcare,https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/,SL Soft,vendor,2026-08-27,ok,ru-hc-slsoft-medsi-voice-01
+healthcare,https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya,МТС Exolve / vc.ru,vendor,2026-08-27,ok,ru-hc-mtt-alfacenter-voice-01
+healthcare,https://robo-voice.ru/case_bot_dlya_gemotest/,RoboVoice / SL Soft,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+healthcare,https://softline.ru/about/news/gemotest-povysil-effektivnost-koll-tsentra-s-pomoshchyu-golosovogo-bota-robovoice-ot-kompanii-sl-sof,Softline,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+healthcare,https://www.speechpro.ru/media/news/11-11-2020,ЦРТ,vendor,2026-08-27,ok,ru-hc-crt-voice2med-01
+healthcare,https://www.vedomosti.ru/technology/articles/2022/06/05/925209-tehnologiyu-raspoznavaniya-rechi,Ведомости,media,2026-08-27,ok,ru-hc-crt-voice2med-01
+healthcare,https://robotmia.ru/blog/detail/sm_clinic,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+healthcare,https://robotmia.ru/perviy-golosovoy-robot-v-medicine-dlya-sm-clinica,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+healthcare,https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/,Lunit,vendor,2026-08-27,ok,se-hc-lunit-capio-01
+healthcare,https://www.itnonline.com/content/lunit-ai-releases-successful-study-results-breast-cancer-screening-deployment,Imaging Technology News,media,2026-08-27,ok,se-hc-lunit-capio-01
+healthcare,https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/,Sheba Medical Center,client,2026-08-27,ok,il-hc-aidoc-sheba-01
+healthcare,https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care,Viz.ai,vendor,2026-08-27,ok,us-hc-vizai-validate-01
+healthcare,https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health,Digital Health News,media,2026-08-27,ok,ke-hc-pendahealth-openai-01
+healthcare,https://openai.com/index/ai-clinical-copilot-penda-health/,OpenAI,vendor,2026-08-27,ok,ke-hc-pendahealth-openai-01
+healthcare,https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/,Microsoft,vendor,2026-08-27,ok,us-hc-nuance-dax-northwestern-01
+healthcare,https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/,Permanente Medicine,client,2026-08-27,ok,us-hc-kaiserpermanente-scribe-01
+healthcare,https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals,Google Cloud,platform,2026-08-27,ok,in-hc-manipal-googlecloud-01
+healthcare,https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/,Microsoft,vendor,2026-08-27,ok,ch-hc-novartis-azure-01
+healthcare,https://www.novartis.com/stories/art-drug-design-technological-age,Novartis,client,2026-08-27,ok,ch-hc-novartis-azure-01
