@@ -44,6 +44,7 @@ npm run preview      # посмотреть собранное
 
 ```bash
 npm run validate-data   # схема, таксономия, метрики без источников, дубли, квоты
+npm run test-ui         # чек-лист интерфейса (п.61 ТЗ) в реальном браузере
 npm run check-links     # доступность всех URL: working / redirect / unavailable / broken
 npm run build-csv       # сгенерировать data/cases.csv из data/cases.json
 npm run report          # пересобрать research/research-report.md
@@ -87,6 +88,8 @@ ai-case-library/
 │   ├── research-report.md    # отчёт о качестве исследования
 │   └── executive-summary.md  # выводы для руководителя
 ├── scripts/                  # валидация, merge, экспорт, проверка ссылок, отчёты
+├── tests/
+│   └── ui-checklist.mjs      # 17 проверок интерфейса по п.61 ТЗ (Playwright)
 └── src/                      # приложение
 ```
 

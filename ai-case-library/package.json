@@ -16,7 +16,8 @@
     "summary": "node scripts/build-summary.mjs",
     "pipeline": "npm run merge-research && npm run validate-data && npm run build-csv && npm run report && npm run summary",
     "deploy-pages": "node scripts/deploy-pages.mjs",
-    "repair-csv": "node scripts/repair-csv.mjs"
+    "repair-csv": "node scripts/repair-csv.mjs",
+    "test-ui": "node tests/ui-checklist.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -41,8 +41,12 @@ export default function CardsView({ list, onOpen, selected, onTogglePick }: Prop
                 <div className="card-client">
                   {c.client}
                   {!c.client_disclosed && (
-                    <span className="tag" style={{ marginLeft: 6, verticalAlign: 'middle' }}>
-                      NDA
+                    <span
+                      className="tag"
+                      style={{ marginLeft: 6, verticalAlign: 'middle' }}
+                      title="Имя клиента не раскрыто: NDA, агрегированные данные по нескольким клиентам либо источник не называет компанию"
+                    >
+                      имя не раскрыто
                     </span>
                   )}
                 </div>

@@ -74,7 +74,15 @@ export default function CaseDetail({ item: c, onClose, picked, onTogglePick }: P
               <div className="lbl">Client — кому внедряли</div>
               <div className="val">
                 {c.client_url ? <Ext href={c.client_url}>{c.client}</Ext> : c.client}
-                {!c.client_disclosed && <span className="tag" style={{ marginLeft: 6 }}>под NDA</span>}
+                {!c.client_disclosed && (
+                  <span
+                    className="tag"
+                    style={{ marginLeft: 6 }}
+                    title="NDA, агрегированные данные по нескольким клиентам либо источник не называет компанию"
+                  >
+                    имя не раскрыто
+                  </span>
+                )}
               </div>
             </div>
             <div className="party">
