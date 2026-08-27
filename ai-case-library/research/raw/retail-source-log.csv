@@ -1,0 +1,33 @@
+url,publisher,source_type,accessed,status,used_for
+https://www.retail.ru/cases/videoanalitika-m-video-eldorado-30-000-kamer-odin-kompyuter-i-neyroset/,Retail.ru,media,2026-08-27,ok,ru-rt-mvideo-video-analytics-01
+https://www.x5.ru/en/news/x5-introduces-solutions-for-automated-demand-and-replenishment-planning/,X5 Group,client,2026-08-27,error,не использован (404)
+https://sidorinlab.ru/blog/vkusvill-iskusstvennyij-intellekt-v-klientskom-servise,Sidorin Lab,media,2026-08-27,ok,отклонён как no_result (rt-018)
+https://napoleonit.ru/blog/razrabotka-ml-produkta-dlya-riteyla-kak-my-sozdavali-powerprice,Napoleon IT,vendor,2026-08-27,ok,фон (клиент не назван, в кейсы не включён)
+https://new-retail.ru/tehnologii/nevidimyy_sotrudnik_kak_iskusstvennyy_intellekt_beret_pod_kontrol_polki_kassy_i_grafiki/,New Retail,media,2026-08-27,ok,ru-rt-magnit-headcount-01
+https://www.tadviser.ru/index.php/Статья:Цифровые_технологии_в_X5_Retail_Group,TAdviser,media,2026-08-27,error,не использован (404)
+https://rb.ru/columns/demand-forecasting-x5/,RB.RU,media,2026-08-27,ok,ru-rt-x5-demand-forecast-01
+https://www.cnews.ru/news/line/2026-06-04_wildberries_dobavit_ii-assistenta,CNews,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+https://www.ixbt.com/news/2026/08/21/429485-v-wildberries-prokacali-ii-tovary-teper-sravnivaiutsia-po-otzyvam-i-realnym-scenariiam.html,iXBT,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+https://navicons.com/case/rigla/,Navicon,vendor,2026-08-27,ok,отклонён как no_result (rt-019)
+https://www.comnews.ru/digital-economy/content/232779/2024-04-18/2024-w16/1012/detskiy-mir-perekhodit-sistemu-upravleniya-rasprodazhami-baze-ii,ComNews,media,2026-08-27,ok,ru-rt-detmir-b1-pricing-01
+https://www.cnews.ru/news/line/2025-06-11_fix_price_masshtabiroval_sistemu,CNews,media,2026-08-27,ok,ru-rt-fixprice-video-analytics-01
+https://tass.ru/ekonomika/25128137,ТАСС,media,2026-08-27,blocked,не использован (403)
+https://vc.ru/marketplace/419931-vsevidyashee-oko-v-riteile-keis-h5-group,vc.ru,media,2026-08-27,ok,ru-rt-x5-video-analytics-01
+https://vc.ru/id6006806/2977263-neyroseti-na-wildberries,vc.ru,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+https://www.forbes.ru/newsroom/tehnologii/436107-mvideo-eldorado-vnedrila-neyroset-dlya-otvetov-na-voprosy-pokupateley,Forbes.ru,media,2026-08-27,blocked,"не использован — отдавал только закодированное изображение, без текста (WebFetch и fetch-page.mjs)"
+https://www.tadviser.ru/index.php/Проект:Тандер_Сеть_магазинов_Магнит_(Умные_весы...),TAdviser,media,2026-08-27,error,"не использован — открылась другая (несвязанная) статья проекта из-за проблемы кодирования URL"
+https://www.instacart.com/company/tech-innovation/building-the-intent-engine-how-instacart-is-revamping-query-understanding-with-llms,Instacart,client,2026-08-27,partial,редирект на company.instacart.com — контент получен по новому URL
+https://engineering.zalando.com/posts/2024/12/gnn-recommendations-zalando.html,Zalando Engineering Blog,client,2026-08-27,ok,de-rt-zalando-gnn-recs-01
+https://company.instacart.com/tech-innovation/building-the-intent-engine-how-instacart-is-revamping-query-understanding-with-llms,Instacart,client,2026-08-27,ok,us-rt-instacart-intent-engine-01
+https://www.cnews.ru/news/line/2025-11-26_magnit_protestiruet_umnye,CNews,media,2026-08-27,ok,ru-rt-magnit-smart-scales-01
+https://retail-loyalty.org/news/m-video-eldorado-zapustila-neyroset-dlya-avtomatizatsii-kommunikatsii-sotrudnikov/,Retail Loyalty,media,2026-08-27,ok,ru-rt-mvideo-autofaq-01
+https://aws.amazon.com/solutions/case-studies/biggo/,AWS Customer Stories,platform,2026-08-27,ok,tw-rt-biggo-genai-content-01
+https://cloud.google.com/customers/bestbuy,Google Cloud,platform,2026-08-27,partial,us-rt-bestbuy-gift-finder-01 (контент получен частично/обрезан)
+https://www.relexsolutions.com/resources/case-one-stop/,RELEX Solutions,vendor,2026-08-27,ok,uk-rt-onestop-relex-forecast-01
+https://aws.amazon.com/solutions/case-studies/tapestry-generative-ai-case-study/,AWS Customer Stories,platform,2026-08-27,ok,us-rt-tapestry-tellrexy-01
+https://bit-tech.io/blog/ntechlab-rossiyskiy-ii-servis-bit-zashchitil-magaziny-ot-krazh-na-2-mlrd-rubley/,BIT / NtechLab,vendor,2026-08-27,ok,ru-rt-bit-ntechlab-antitheft-01
+https://habr.com/ru/companies/fix_price/news/933730/,Fix Price (Habr),client,2026-08-27,ok,ru-rt-fixprice-video-analytics-01
+https://techora.ru/avito-ranker-3-ispolzuet-100-signalov-2026-07-09,Techora,media,2026-08-27,blocked,"не использован — антибот-проверка вернула служебную страницу без контента"
+https://rostec.ru/media/news/otechestvennyy-ii-predotvratil-krazhi-v-magazinakh-bolee-chem-na-2-mlrd-rubley/,Ростех,media,2026-08-27,error,"не использован (через fetch-page.mjs — HTTP 503)"
+https://www.tadviser.ru/index.php/Продукт:Avito_Ranker,TAdviser,media,2026-08-27,ok,"ru-rt-avito-ranker-01 (получен через fetch-page.mjs)"
+https://zdrav.expert/index.php/Проект:Аптеки_36,6_(Искусственный_интеллект_(ИИ,_Artificial_intelligence,_AI)),Zdrav.Expert (TAdviser),media,2026-08-27,ok,"ru-rt-apteka366-ai-agent-01 (получен через fetch-page.mjs)"

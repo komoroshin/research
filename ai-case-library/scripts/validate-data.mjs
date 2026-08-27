@@ -176,6 +176,19 @@ for (const c of cases) {
   if (c.evidence_grade === 'A' && (c.sources?.length ?? 0) < 2) {
     warn(id, 'Grade A с единственным источником — обычно требуется подтверждение');
   }
+  // Grade B по определению — «информация в основном со стороны подрядчика».
+  // Значит A при vendor_claim и единственном vendor/platform-источнике противоречит
+  // самой шкале, а не просто выглядит сомнительно. Это ошибка, а не предупреждение:
+  // иначе завышенный грейд расходится по базе от направления к направлению.
+  const onlyVendorSource =
+    (c.sources?.length ?? 0) === 1 && ['vendor', 'platform'].includes(c.sources?.[0]?.type);
+  if (c.evidence_grade === 'A' && c.vendor_claim === true && onlyVendorSource) {
+    err(
+      id,
+      `Grade A при vendor_claim=true и единственном источнике типа "${c.sources[0].type}" — ` +
+        'по определению шкалы это Grade B (информация в основном со стороны подрядчика)',
+    );
+  }
   if (c.client_disclosed === false && c.evidence_grade === 'A') {
     warn(id, 'клиент не назван при Grade A — обычно это уровень C');
   }

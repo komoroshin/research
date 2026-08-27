@@ -1,0 +1,25 @@
+candidate_id,client,vendor,url,reason_code,reason
+rt-003,X5 Group,не назван,https://generation-ai.ru/cases/x5-group-i-analitika,source_unavailable,Страница вторичного агрегатора не открывалась через WebFetch в этой сессии; данные о Jay Copilot непроверяемы
+rt-007,Магнит,не назван,https://shoppers.media/news/28310_magnit-nacal-primeniat-neirotexnologii-dlia-analiza-raboty-kass-samoobsluzivaniia,no_result,Тест распознавания эмоций покупателей (2021) без опубликованных измеримых результатов
+rt-008,Магнит,не назван,new-retail.ru (агрегатор),no_result,Метрика по росту среднего чека от анализа отзывов сформулирована расплывчато («существенный рост») без конкретной цифры
+rt-009,Магнит,не назван,new-retail.ru (агрегатор),no_result,ML-модель анализа тендерных предложений упомянута без опубликованного результата пилота
+rt-013,Ozon,разные (сторонние сервисы),https://seller.ozon.ru/media/boost/7-nejrosetej-dlya-prodavcov-na-marketplejsah/,grade_d_marketing,Обзор сторонних генеративных инструментов для продавцов без единого клиентского кейса Ozon
+rt-014,Ozon,личный проект автора,https://vc.ru/id5255038/2740640-avtomatizatsiya-otvetov-na-otzyvy-dlya-ozon-s-pomoshchyu-ai-assistenta,out_of_scope,Личная история одного продавца-блогера, не корпоративный кейс площадки
+rt-015,Яндекс Маркет,собственная разработка (YandexGPT 5 Pro),https://adindex.ru/news/digital/2025/04/30/333241.phtml,announcement_only,Анонс запуска чат-ассистента «Маркет AI» без измеримых результатов использования
+rt-017,Avito,собственная разработка,pikabu/techora (заблокированы для WebFetch),not_ai,Анонс модели A-Vibe и её места в бенчмарке MERA — не кейс внедрения с клиентским результатом, а анонс модели
+rt-018,ВкусВилл,не назван,https://sidorinlab.ru/blog/vkusvill-iskusstvennyij-intellekt-v-klientskom-servise,no_result,Более 70 проектов ИИ заявлены качественно («ускорены», «снижена нагрузка») без единой измеримой цифры; материал award-агентства, организующего премию STORM
+rt-019,Ригла,Navicon,https://navicons.com/case/rigla/,no_result,Аналитическая платформа для выбора локаций аптек описана без измеримого бизнес-результата («100% прозрачность данных» не является метрикой эффекта)
+rt-022,Детский мир,не назван,ComNews (2023, не открывалась повторно),duplicate,Пересекается по клиенту с включённым кейсом B1 Pricing (rt-021); отдельная статья про ИИ-таргетинг не открывалась через WebFetch для проверки цифр
+rt-025,BIT / NtechLab,NtechLab,https://tass.ru/ekonomika/25128137,duplicate,Независимая публикация о том же результате BIT/NtechLab (2,2 млрд руб.); страница вернула HTTP 403 и не была прочитана
+rt-028,М.Видео-Эльдорадо,собственная разработка,https://www.forbes.ru/newsroom/tehnologii/436107-mvideo-eldorado-vnedrila-neyroset-dlya-otvetov-na-voprosy-pokupateley,source_unavailable,При WebFetch и fetch-page.mjs страница отдавала только закодированное изображение (base64 GIF) без текста
+rt-029,М.Видео-Эльдорадо,не назван,https://www.retail.ru/cases/m-video-eldorado-kak-zarabotat-trillion-na-oneretail/,unverifiable,Страница о платформе OneRetail не открывалась через WebFetch в этой сессии
+rt-030,Спортмастер,-,https://www.retail.ru/interviews/maksim-permyakov-sportmaster-ii-otlichnyy-pomoshchnik-no-prinyatie-otvetstvennykh-resheniy-ostaetsya/,no_implementation,Интервью содержит только общие рассуждения о подходе к ИИ-пилотам без конкретного внедрения и результата
+rt-031,Fix Price,не назван,https://www.tadviser.ru/index.php/Проект:Fix_Price_(Бэст_Прайс)_(Видеоаналитика_(проекты)),duplicate,Более ранняя стадия (ноябрь 2024) того же проекта видеоаналитики, что и включённый кейс rt-023 (июнь 2025)
+rt-032,Золотое яблоко,YandexART,adindex.ru (не открывалась),unverifiable,Страница о персонализированных обложках подарочных карт не открывалась через WebFetch в этой сессии
+rt-033,Золотое яблоко,-,selsup.ru (не открывалась),unverifiable,Страница о боте «Зоя» не открывалась через WebFetch в этой сессии
+rt-034,Ашан,не назван,поисковый сниппет (не открывалась),unverifiable,Только сниппет поиска про динамическое ценообразование категории «пресса»; страница не открывалась
+rt-035,О'КЕЙ,не назван,поисковый сниппет (не открывалась),unverifiable,Только сниппет поиска про утилизацию полочного пространства (30%); страница не открывалась
+rt-042,Walmart,разные (вторичные источники),digitaldefynd.com / scribd / aiproductivelab,unverifiable,Только вторичные неавторитетные агрегаторские сайты без проверяемого первичного источника Walmart
+rt-043,Sephora,разные (вторичные источники),cosupport.ai / digitaldefynd.com,unverifiable,Только вторичные блоги без проверяемого первичного источника Sephora
+rt-044,IKEA,разные (вторичные источники),forbes.com / aiexpert.network,unverifiable,Только вторичные обзорные статьи; страницы не открывались через WebFetch в этой сессии
+rt-045,Kroger,New Retail (агрегатор),https://new-retail.ru/tehnologii/nevidimyy_sotrudnik_kak_iskusstvennyy_intellekt_beret_pod_kontrol_polki_kassy_i_grafiki/,unverifiable,Только упоминание во вторичном русскоязычном агрегаторе; первичный источник Kroger не найден и не открывался
