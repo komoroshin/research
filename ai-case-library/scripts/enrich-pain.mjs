@@ -92,7 +92,9 @@ const PAIN = {
 const file = path.join(DATA, 'small-cases.json');
 const cases = readJson(file);
 
-const missing = cases.filter((c) => !PAIN[c.id]).map((c) => c.id);
+// Кейсы добора (sc-074+) несут pain прямо в записи — словарь для них не обязателен
+// и работает как оверрайд. Ошибка только если боли нет ни в записи, ни в словаре.
+const missing = cases.filter((c) => !PAIN[c.id] && !c.pain).map((c) => c.id);
 const orphans = Object.keys(PAIN).filter((id) => !cases.some((c) => c.id === id));
 if (missing.length || orphans.length) {
   console.error(COLORS.red('Словарь pain не совпадает с базой:'));
@@ -106,7 +108,7 @@ const enriched = cases.map((c) => {
   for (const [k, v] of Object.entries(c)) {
     if (k === 'pain') continue; // идемпотентность: старое значение заменяется
     out[k] = v;
-    if (k === 'client_profile') out.pain = PAIN[c.id];
+    if (k === 'client_profile') out.pain = PAIN[c.id] ?? c.pain;
   }
   return out;
 });
