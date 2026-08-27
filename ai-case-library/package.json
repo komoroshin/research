@@ -25,7 +25,10 @@
     "build-scale-data": "node scripts/build-scale-data.mjs",
     "build-scale": "npm run build-scale-data && tsc -p scale-app && vite build scale-app",
     "deploy-projects": "node scripts/deploy-projects.mjs",
-    "test-scale-ui": "node tests/scale-ui-checklist.mjs"
+    "test-scale-ui": "node tests/scale-ui-checklist.mjs",
+    "build-solutions": "tsc -p solutions-app && vite build solutions-app",
+    "deploy-solutions": "node scripts/deploy-solutions.mjs",
+    "test-solutions-ui": "node tests/solutions-ui-checklist.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
