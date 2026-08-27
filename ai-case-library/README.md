@@ -47,12 +47,21 @@ npm run validate-data   # схема, таксономия, метрики бе�
 npm run check-links     # доступность всех URL: working / redirect / unavailable / broken
 npm run build-csv       # сгенерировать data/cases.csv из data/cases.json
 npm run report          # пересобрать research/research-report.md
+npm run summary         # пересобрать research/executive-summary.md
 ```
 
 Пересборка базы из исходных материалов исследования:
 
 ```bash
 npm run merge-research  # research/raw/*.json -> data/cases.json + сводные журналы
+npm run pipeline        # merge + validate + csv + report + summary одной командой
+```
+
+Публикация:
+
+```bash
+npm run build           # сборка в dist/
+npm run deploy-pages    # скопировать dist/ в <repo>/cases/ для GitHub Pages
 ```
 
 ---
@@ -405,8 +414,7 @@ Document AI, Contact Center AI, Knowledge / RAG, Predictive Maintenance, Compute
 ```bash
 npm run validate-data
 npm run check-links
-npm run build-csv
-npm run report
+npm run pipeline        # csv + отчёт + executive summary
 npm run build
 ```
 
@@ -425,10 +433,11 @@ npm run build
 3. `npm run merge-research` собирает всё в `data/cases.json`: отбрасывает Grade D,
    схлопывает дубли (объединяя источники и метрики, повышая грейд до лучшего),
    пишет сводные журналы и `research/dedup-log.csv`.
-4. `npm run validate-data && npm run check-links && npm run build-csv && npm run report`.
+4. `npm run pipeline` — валидация, CSV, research report и executive summary.
+   Отдельно `npm run check-links`: сеть медленнее остальных шагов.
 5. Просмотрите глазами минимум 30 случайных кейсов: источник существует, клиент настоящий,
    summary соответствует источнику, цифры не искажены, отрасль и процесс верные, не дубль.
-6. `npm run build`.
+6. `npm run build && npm run deploy-pages`.
 
 Порядок принципиально такой: **сначала данные, потом интерфейс.** Не расширяйте UI,
 пока не подтверждена модель данных.
