@@ -1,0 +1,1098 @@
+[
+  {
+    "id": "ru-ag-cognitivepilot-autopilot-01",
+    "title": "Автопилот Cognitive Agro Pilot на зерноуборочных комбайнах крупных агрохолдингов",
+    "client": "ЭкоНива, «Русагро», ГК «Степь», ГАП «Ресурс», «Агрокомплекс им. Н.И. Ткачева» и другие агрохолдинги (клиенты Cognitive Pilot в сезоне 2020 г.)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Cognitive Pilot"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Cognitive Pilot"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations"
+    ],
+    "problem": "Уборка урожая ведётся дорогостоящей сельхозтехникой, которой может не хватать, если одновременно нужно убирать много полей; человеческий фактор при управлении комбайном увеличивает потери зерна и себестоимость уборки.",
+    "before_state": "",
+    "solution": "Система автономного вождения Cognitive Agro Pilot на базе одной видеокамеры и нейросети распознаёт кромки культур, валки, препятствия и людей без опоры на GPS-навигацию; устанавливается на зерноуборочные комбайны, тракторы и опрыскиватели.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "robotics"
+    ],
+    "data_used": [
+      "видеопоток с камеры комбайна"
+    ],
+    "integrations": [
+      "бортовые системы сельхозтехники"
+    ],
+    "deployment": "edge",
+    "stage": "scaled-production",
+    "scale": "Сезон 2020 г.: более 350 комбайнов с автопилотом работали в 35 регионах России (включая Ростовскую, Белгородскую, Томскую, Курганскую области, Краснодарский и Ставропольский края), суммарно 230 тыс. часов работы и 950 тыс. км пробега; среди клиентов — ЭкоНива, «Русагро», ГАП «Ресурс», ГК «Степь», «АгроСоюз Юг Руси», «Агрокомплекс им. Ткачева».",
+    "metrics": [
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Совокупный экономический эффект от применения автопилотов за сезон 2020 г.",
+        "baseline": "",
+        "result": "более 500 млн руб.",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение себестоимости зерна при уборке с автопилотом",
+        "baseline": "0%",
+        "result": "-3% до -5%",
+        "delta": "-3–5%",
+        "status": "reported",
+        "source_url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Сокращение потерь зерна при уборке урожая",
+        "baseline": "",
+        "result": "потери сокращены примерно в 2 раза",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "2020 (сезон июнь–октябрь)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Автопилот Cognitive Agro Pilot массово применялся на комбайнах ряда крупных российских агрохолдингов в сезон 2020 г.: свыше 350 машин в 35 регионах наработали 230 тыс. часов, совокупный экономический эффект по отрасли превысил 500 млн руб., себестоимость зерна снизилась на 3–5%, потери при уборке сократились примерно вдвое.",
+    "sources": [
+      {
+        "url": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+        "title": "Сбербанк и Cognitive Pilot запускают умный комбайн на полях агрокомплексов России",
+        "type": "vendor",
+        "publisher": "Cognitive Pilot",
+        "date": "2020-07-16"
+      },
+      {
+        "url": "https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym",
+        "title": "Комбайны с искусственным интеллектом собрали 720 тыс. тонн урожая",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2020-11-03"
+      }
+    ],
+    "primary_source": "https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из самых зрелых и массово подтверждённых российских AI-кейсов в АПК: конкретная технология применяется у нескольких узнаваемых агрохолдингов одновременно, с независимым медиа-подтверждением реальных сезонных результатов, а не только заявлений вендора.",
+    "entry_hypothesis": "У холдингов с большим парком уборочной техники и территориально разбросанными полями операторская квалификация и человеческий фактор могут быть узким местом при уборке — стоит проверить, сколько потерь урожая и перерасхода топлива связано именно с качеством вождения, а не с погодой или логистикой.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот автопилота на одной-двух моделях комбайнов на части парка в один сезон, с измерением потерь и топлива до/после.",
+    "expand_opportunities": [
+      "автопилоты для тракторов и опрыскивателей",
+      "картирование урожайности и полей",
+      "предиктивное обслуживание парка сельхозтехники"
+    ],
+    "tags": [
+      "автопилот",
+      "комбайн",
+      "точное земледелие",
+      "компьютерное зрение",
+      "Cognitive Pilot"
+    ],
+    "research_notes": "Данные о численности парка на 2024 г. (упоминались в поисковой выдаче со ссылкой на Handelsblatt/TAdviser) не включены в кейс, так как соответствующая страница не открывалась в этой сессии и цифра не подтверждена напрямую. Использованы только показатели сезона 2020 г., подтверждённые двумя независимо открытыми источниками (вендор + CNews)."
+  },
+  {
+    "id": "ru-ag-progressagro-precision-01",
+    "title": "Точное земледелие ГК «Прогресс Агро»: дифференцированное внесение удобрений и точный сев на автопилоте",
+    "client": "ГК «Прогресс Агро»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations",
+      "optimization"
+    ],
+    "problem": "Растущий спрос на продовольствие при сокращении пахотных земель требует повышения эффективности использования имеющихся площадей.",
+    "before_state": "",
+    "solution": "Проект «Точное земледелие»: дифференцированное внесение удобрений по данным спутникового мониторинга и агрохимической картограммы; точный сев с равномерной глубиной заделки семян; автопилот сельхозтехники (в том числе для ночной работы и составления карты сева для последующей культивации). ИИ рассчитывает необходимое количество удобрений для конкретного участка поля и передаёт данные на технику, которая в автопилоте вносит удобрения по полученной схеме.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "optimization-ml",
+      "robotics"
+    ],
+    "data_used": [
+      "спутниковый мониторинг полей",
+      "агрохимическая картограмма"
+    ],
+    "integrations": [
+      "сельхозтехника с автопилотом"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Агрохолдинг со штаб-квартирой в Усть-Лабинске Краснодарского края; проект охватывает этапы от планирования севооборота до сбора урожая.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Рост урожайности от точного сева (равномерная глубина заделки семян)",
+        "baseline": "0%",
+        "result": "+15–20%",
+        "delta": "+15–20%",
+        "status": "reported",
+        "source_url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "source_type": "client"
+      }
+    ],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "ГК «Прогресс Агро» внедрила дифференцированное внесение удобрений по спутниковым данным, точный сев и автопилот сельхозтехники в рамках проекта «Точное земледелие»; по словам гендиректора компании, точный сев увеличивает урожайность на 15–20%.",
+    "sources": [
+      {
+        "url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "title": "Цифровизируй, чтобы жить: как технологии меняют сельхозпроизводство на Юге",
+        "type": "interview",
+        "publisher": "Эксперт Юг",
+        "date": "2024-08-19"
+      }
+    ],
+    "primary_source": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+    "evidence_grade": "A",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Прямая цитата первого лица компании с конкретной цифрой прироста урожайности от точного земледелия — редкий для российского АПК случай, когда клиент сам, а не подрядчик, называет измеримый результат.",
+    "entry_hypothesis": "У растениеводческих холдингов, ещё не перешедших на дифференцированное внесение удобрений, часть полей вероятно получает единые нормы удобрений независимо от неоднородности почвы внутри поля — стоит проверить экономику перехода на картограммы и точный сев на пилотном участке.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилотная агрохимическая картограмма и дифференцированное внесение удобрений на нескольких полях одной культуры с сравнением урожайности к контрольным полям.",
+    "expand_opportunities": [
+      "автопилоты на весь парк техники",
+      "предиктивная модель цен на будущий урожай",
+      "цифровой двойник полей"
+    ],
+    "tags": [
+      "точное земледелие",
+      "дифференцированное внесение",
+      "точный сев",
+      "автопилот",
+      "спутниковый мониторинг"
+    ],
+    "research_notes": "Единственный источник — интервью с гендиректором в отраслевом издании; второй независимый источник не найден в рамках бюджета сессии. Грейд A присвоен на основании прямой цитаты первого лица компании (первичный источник — интервью представителя клиента), а не на основании единственной публикации СМИ как таковой."
+  },
+  {
+    "id": "ru-ag-step-digitaltwin-01",
+    "title": "Цифровые двойники полей и ИИ-планирование посевных площадей в агрохолдинге «Степь»",
+    "client": "АО Агрохолдинг «Степь»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "optimization",
+      "field-operations"
+    ],
+    "problem": "Нужно оптимизировать структуру посевных площадей с учётом маржинальности и рентабельности культур, а также контролировать все процессы растениеводства от планирования севооборота до уборки урожая на большом количестве полей.",
+    "before_state": "",
+    "solution": "Созданы цифровые двойники хозяйств: облачный сервис с оцифрованными картами полей, куда стекаются данные о работе техники и характеристиках почвы. Работает цифровая система планирования урожая на ИИ и больших данных — российская разработка, которая даёт рекомендации по структуре посевных площадей с учётом агрономических правил и прогнозов цен на будущий урожай. Комплексная система «История поля» фиксирует все работы для анализа эффективности агрономов. С 2025 г. используются тракторы с «умными камерами» для точного внесения удобрений и средств защиты растений. В 2026 г. создано подразделение «Центр фудтех-разработок» для разработки собственных нейросетей и ИИ-агентов, реализован первый проект для животноводческого дивизиона.",
+    "ai_mechanisms": [
+      "forecasting-ml",
+      "optimization-ml",
+      "computer-vision"
+    ],
+    "data_used": [
+      "карты полей",
+      "данные о работе техники",
+      "характеристики почвы",
+      "прогнозы цен на урожай"
+    ],
+    "integrations": [
+      "облачный сервис цифровых двойников хозяйств"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Агрохолдинг объединяет ряд сельхозпредприятий в Ростовской области, Краснодарском и Ставропольском краях; в 2025 г. компания владела 578 тыс. га сельхозземель.",
+    "metrics": [],
+    "timeline": "2024–2026",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Степь» развивает комплексную цифровую экосистему растениеводства — цифровые двойники полей, ИИ-систему планирования посевных площадей и тракторы со «умными камерами» для точного внесения удобрений; количественные бизнес-результаты в открытых источниках не раскрыты.",
+    "sources": [
+      {
+        "url": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+        "title": "Цифровизируй, чтобы жить: как технологии меняют сельхозпроизводство на Юге",
+        "type": "interview",
+        "publisher": "Эксперт Юг",
+        "date": "2024-08-19"
+      },
+      {
+        "url": "https://www.tadviser.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F:%D0%A1%D1%82%D0%B5%D0%BF%D1%8C,_%D0%90%D0%9E_%D0%B0%D0%B3%D1%80%D0%BE%D1%85%D0%BE%D0%BB%D0%B4%D0%B8%D0%BD%D0%B3",
+        "title": "Степь, АО агрохолдинг",
+        "type": "media",
+        "publisher": "TAdviser",
+        "date": "2026"
+      }
+    ],
+    "primary_source": "https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает системный, многолетний подход крупного агрохолдинга к цифровизации растениеводства (не разовый пилот), включая собственное подразделение по ИИ — полезный бенчмарк зрелости, но без измеримых цифр эффекта.",
+    "entry_hypothesis": "У холдингов с несколькими разрозненными хозяйствами решения о структуре посевных площадей часто принимаются на уровне отдельных агрономов без единой модели маржинальности культур — стоит проверить, есть ли единый цифровой двойник хозяйств и модель рекомендаций по севообороту.",
+    "likely_buyer": [
+      "cdo",
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот цифровой карты полей с базовой аналитикой почвы и техники на одном хозяйстве холдинга.",
+    "expand_opportunities": [
+      "ИИ-планирование севооборота по марже",
+      "умные камеры на технике для точного внесения",
+      "цифровизация животноводческого дивизиона"
+    ],
+    "tags": [
+      "цифровой двойник",
+      "точное земледелие",
+      "планирование урожая",
+      "умные камеры"
+    ],
+    "research_notes": "Метрик с конкретными цифрами эффекта не найдено ни в одном из двух источников — грейд B, а не A, несмотря на два независимых источника (интервью первого лица + TAdviser), именно из-за отсутствия измеримого результата. Страница TAdviser открыта через fetch-page.mjs (WebFetch отдавал 404); текст содержит фактическую хронологию внедрений компании, а не отдельную развёрнутую статью."
+  },
+  {
+    "id": "ru-ag-rusagro-harvest-01",
+    "title": "ML-система планирования уборки урожая в агрохолдинге «Русагро»",
+    "client": "ПАО «Русагро»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Инфосистемы Джет"
+    ],
+    "vendor_type": "integrator",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "scheduling-dispatching"
+    ],
+    "problem": "Из-за ежегодных колебаний погоды урожай на разных полях созревает в разное время, поэтому агрономы должны регулярно и вручную проверять степень зрелости культур; при этом дорогостоящей уборочной техники может не хватать, если одновременно требуется убирать много полей.",
+    "before_state": "",
+    "solution": "Интеллектуальная система планирования уборки урожая с алгоритмами машинного обучения, прогнозирующими даты технической спелости культур и выделяющими поля, требующие неотложного внимания агрономов. Система интегрирует данные агрономических отчётов, аэросъёмки, индексов вегетации, метеоинформации и ERP-системы; планы актуализируются ежедневно с учётом фактически выполненных работ.",
+    "ai_mechanisms": [
+      "forecasting-ml",
+      "classical-ml"
+    ],
+    "data_used": [
+      "агрономические отчёты",
+      "аэросъёмка",
+      "индексы вегетации",
+      "метеоданные",
+      "данные ERP-системы"
+    ],
+    "integrations": [
+      "ERP-система холдинга"
+    ],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Система охватывает около 6000 полей агрохолдинга, где выращивают зерновые, бобовые культуры и сахарную свёклу.",
+    "metrics": [],
+    "timeline": "2022",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Русагро» внедрила ML-систему планирования уборки урожая на ~6000 полях, которая прогнозирует сроки технической спелости культур и ежедневно актуализирует план уборки; конкретные количественные результаты (экономия, снижение потерь) в открытых источниках не раскрыты.",
+    "sources": [
+      {
+        "url": "https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/",
+        "title": "Как технологии ИИ помогают планировать полевые работы в агропромышленном холдинге «Русагро»",
+        "type": "vendor",
+        "publisher": "Инфосистемы Джет",
+        "date": "2022-10"
+      },
+      {
+        "url": "https://www.vedomosti.ru/press_releases/2022/10/13/iskusstvennii-intellekt-pomogaet-agroholdingu-rusagro-planirovat-uborku-urozhaya",
+        "title": "Искусственный интеллект помогает агрохолдингу «Русагро» планировать уборку урожая",
+        "type": "media",
+        "publisher": "Ведомости (пресс-релиз)",
+        "date": "2022-10-13"
+      }
+    ],
+    "primary_source": "https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Понятный, легко воспроизводимый паттерн интеграции разнородных данных (агрономия + аэросъёмка + погода + ERP) в единый план уборки — полезный бенчмарк для похожих растениеводческих холдингов с большим числом полей, но без цифр эффекта.",
+    "entry_hypothesis": "У растениеводческих холдингов с тысячами полей агрономы, вероятно, вручную сопоставляют данные о зрелости культур с доступностью техники — стоит проверить, сколько времени уходит на ручное планирование уборки и как часто теряется урожай из-за нехватки техники в пиковые дни.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "cio"
+    ],
+    "land_opportunity": "Пилот прогнозной модели сроков технической спелости на одной культуре и одном регионе присутствия холдинга.",
+    "expand_opportunities": [
+      "диспетчеризация уборочной техники",
+      "прогноз урожайности по полям",
+      "интеграция со спутниковым мониторингом"
+    ],
+    "tags": [
+      "планирование уборки урожая",
+      "прогноз спелости",
+      "ERP-интеграция",
+      "растениеводство"
+    ],
+    "research_notes": "Вторая ссылка (Ведомости, пресс-релиз) технически открыта, но отдала контент в виде изображения — текст не извлечён, факты из неё не использованы, только заголовок для sources/лога. Цифр результата ни один из источников не содержит, поэтому грейд C, а не выше, несмотря на конкретного клиента и внедрение."
+  },
+  {
+    "id": "ru-ag-damate-cv-01",
+    "title": "Видеомониторинг и ИИ-контроль соблюдения регламентов на птицефабриках «Дамате»",
+    "client": "ГК «Дамате»",
+    "client_disclosed": true,
+    "client_url": "https://www.acdamate.com/",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock",
+      "food-processing"
+    ],
+    "business_function": [
+      "production"
+    ],
+    "business_process": [
+      "quality-control"
+    ],
+    "problem": "Нужно контролировать соблюдение производственных регламентов и здоровье/сохранность птицы на множестве распределённых площадок, а также прослеживаемость продукции на заводе от поступления сырья до готовой партии.",
+    "before_state": "",
+    "solution": "Система видеонаблюдения и машинного зрения на более чем 500 объектах компании (птичники и производственные площадки), обрабатываемая ситуационным центром компании. Отдельная система «Директива. Птичники» контролирует соблюдение регламентных процедур в птичниках. На заводе система биометрического распознавания лиц контролирует допуск сотрудников в стерильные зоны, а мониторинговые системы отслеживают перемещение и состояние каждой партии птицы через все этапы переработки.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "biometrics"
+    ],
+    "data_used": [
+      "видеопоток с камер на площадках и заводе",
+      "данные о партиях птицы"
+    ],
+    "integrations": [
+      "ситуационный центр компании"
+    ],
+    "deployment": "on-prem",
+    "stage": "production",
+    "scale": "Более 500 объектов компании в разных регионах, около 45 000 оцифрованных полей (растениеводческое направление группы); согласно источникам, к 2022 г. система «Директива. Птичники» действовала на части площадок.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Сохранность поголовья птицы на площадках с системой «Директива. Птичники»",
+        "baseline": "уровень сохранности на площадках без системы",
+        "result": "выше на 1–1,5 п.п.",
+        "delta": "+1–1,5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "по состоянию на 2021–2022",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Дамате» развернула видеонаблюдение и машинное зрение на более чем 500 объектах для контроля регламентов и прослеживаемости продукции; система контроля регламентов «Директива. Птичники» связана с сохранностью поголовья на 1–1,5 п.п. выше, чем на площадках без системы.",
+    "sources": [
+      {
+        "url": "https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/",
+        "title": "Цифра и искусственный интеллект вышли на поля",
+        "type": "client",
+        "publisher": "Дамате (пресс-центр)",
+        "date": "2021-03-26"
+      },
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      },
+      {
+        "url": "https://www.techinsider.ru/technologies/500942-iskusstvennyy-intellekt-dlya-indeyki/",
+        "title": "Искусственный интеллект для индейки: экскурсия по заводу",
+        "type": "media",
+        "publisher": "TechInsider",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/",
+    "evidence_grade": "A",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Редкий для российского животноводства кейс, где сама компания раскрывает архитектуру видеомониторинга на 500+ объектах, а отраслевое издание независимо подтверждает измеримый эффект (сохранность поголовья) от конкретной системы контроля регламентов.",
+    "entry_hypothesis": "У вертикально интегрированных производителей птицы/мяса с десятками распределённых площадок соблюдение регламентов, вероятно, контролируется выборочными проверками — стоит проверить, сколько случаев нарушения регламента и потерь поголовья связано именно с человеческим фактором на площадках без видеоконтроля.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "quality-director"
+    ],
+    "land_opportunity": "Пилот системы контроля регламента (видеомониторинг + автоматические алерты) на нескольких птичниках/площадках с сравнением сохранности к контрольной группе.",
+    "expand_opportunities": [
+      "биометрический контроль доступа на заводе",
+      "прослеживаемость партий продукции",
+      "видеоаналитика для контроля качества готовой продукции"
+    ],
+    "tags": [
+      "видеомониторинг",
+      "машинное зрение",
+      "биометрия",
+      "птицеводство",
+      "контроль регламентов"
+    ],
+    "research_notes": "Кейс объединяет несколько описанных в разных источниках компонентов одной и той же цифровой экосистемы видеомониторинга компании (пресс-центр Дамате описывает общую архитектуру и ~500 объектов; Агроинвестор называет конкретную систему «Директива. Птичники» и даёт цифру эффекта; TechInsider независимо описывает работу видеоконтроля и биометрии на заводе). Если это в реальности три разных проекта, а не грани одной программы цифровизации — грейд следует пересмотреть в сторону B при дальнейшей проверке."
+  },
+  {
+    "id": "ru-ag-rusmolko-dairy-01",
+    "title": "Мониторинг активности и жвачки коров SCR в молочном холдинге «Русмолко»",
+    "client": "ООО «Русмолко»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "SCR"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "SCR"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock"
+    ],
+    "business_function": [
+      "asset-management-function"
+    ],
+    "business_process": [
+      "predictive-maintenance"
+    ],
+    "problem": "Требуется своевременно выявлять оптимальное время осеменения и ранние признаки проблем со здоровьем у новотельных коров на большом молочном стаде.",
+    "before_state": "",
+    "solution": "С 2016 г. используется система мониторинга активности и жвачки SCR (датчики-ошейники с алгоритмической обработкой данных), которая выявляет признаки охоты и отклонения в поведении/здоровье животных. Компания также внедряет автоматическое выпаивание телят.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "данные датчиков активности и жвачки животных"
+    ],
+    "integrations": [
+      "система управления стадом"
+    ],
+    "deployment": "on-prem",
+    "stage": "production",
+    "scale": "Молочный комплекс в Пензенской области; система применяется с 2016 г.",
+    "metrics": [
+      {
+        "metric_type": "retention",
+        "metric_name": "Результативность осеменения",
+        "baseline": "32%",
+        "result": "37%",
+        "delta": "+5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "retention",
+        "metric_name": "Выбытие новотельных коров",
+        "baseline": "7%",
+        "result": "3,5%",
+        "delta": "-3,5 п.п.",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "с 2016",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Русмолко» с 2016 г. использует систему мониторинга активности и жвачки SCR; результативность осеменения выросла с 32% до 37%, выбытие новотельных коров снизилось с 7% до 3,5%.",
+    "sources": [
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      }
+    ],
+    "primary_source": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретные, легко проверяемые операционные метрики молочного животноводства (осеменение, выбытие коров) с named-клиентом — хороший ориентир по порядку величины эффекта от датчикового мониторинга стада.",
+    "entry_hypothesis": "У молочных хозяйств без датчикового мониторинга активности коров пропуски оптимального окна осеменения и поздно замеченные проблемы со здоровьем новотельных животных могут быть существенной, но неизмеряемой статьёй потерь — стоит оценить текущий процент результативного осеменения и выбытия как отправную точку.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот датчикового мониторинга на одной ферме/секции стада с сравнением показателей осеменения и выбытия до/после.",
+    "expand_opportunities": [
+      "автоматическое выпаивание телят",
+      "прогноз надоев",
+      "цифровой профиль каждого животного"
+    ],
+    "tags": [
+      "молочное животноводство",
+      "мониторинг стада",
+      "осеменение",
+      "SCR",
+      "датчики"
+    ],
+    "research_notes": "Единственный источник — отраслевое издание (медиа), первичный источник со стороны клиента/вендора не найден в рамках бюджета сессии; грейд B, а не A."
+  },
+  {
+    "id": "ru-ag-agrosila-dairy-01",
+    "title": "ИИ-аналитика молочного производства «Агросила» (Dairy Production Analytic)",
+    "client": "АО «Агросила»",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "unknown",
+    "technology_providers": [],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "livestock"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "optimization"
+    ],
+    "problem": "Требуется повышать продуктивность молочного стада и эффективность производства на крупном агрохолдинге в Татарстане.",
+    "before_state": "",
+    "solution": "С 2019 г. реализуется проект «Dairy production analytic» с использованием искусственного интеллекта для анализа и оптимизации показателей молочного производства.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "forecasting-ml"
+    ],
+    "data_used": [
+      "производственные данные молочного комплекса"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Молочный дивизион агрохолдинга «Агросила» в Республике Татарстан.",
+    "metrics": [
+      {
+        "metric_type": "yield",
+        "metric_name": "Средний надой на корову",
+        "baseline": "4947 кг (2018)",
+        "result": "5296 кг (2019)",
+        "delta": "+349 кг",
+        "status": "reported",
+        "source_url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "с 2019",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "«Агросила» реализует с 2019 г. проект ИИ-аналитики молочного производства; средний надой на корову вырос с 4947 кг в 2018 г. до 5296 кг в 2019 г. (+349 кг), произведено 62 тыс. т сырого молока.",
+    "sources": [
+      {
+        "url": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+        "title": "Конец ручного управления. Какие цифровые технологии внедряются на животноводческих предприятиях",
+        "type": "media",
+        "publisher": "Агроинвестор",
+        "date": "2022"
+      }
+    ],
+    "primary_source": "https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Ещё один именованный молочный холдинг с прямой цифрой прироста продуктивности после внедрения ИИ-аналитики — усиливает статистику по отрасли, хотя детали методологии проекта в источнике не раскрыты.",
+    "entry_hypothesis": "У молочных холдингов, ведущих учёт надоев только на уровне фермы/стада без предиктивной аналитики по каждому животному, часть потенциального прироста продуктивности может оставаться нереализованной — стоит проверить глубину текущей аналитики надоев.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Аудит текущих данных по надоям и здоровью стада и пилот аналитической модели на одном комплексе.",
+    "expand_opportunities": [
+      "прогноз продуктивности стада",
+      "оптимизация рационов кормления",
+      "мониторинг здоровья животных"
+    ],
+    "tags": [
+      "молочное животноводство",
+      "надои",
+      "производственная аналитика",
+      "Татарстан"
+    ],
+    "research_notes": "Название проекта и годовые цифры взяты из единственного независимого медиа-источника (Агроинвестор); вендор/технологический партнёр проекта в источнике не назван, поэтому vendor оставлен пустым, а vendor_type — unknown."
+  },
+  {
+    "id": "us-ag-deere-seeandspray-01",
+    "title": "See & Spray: точечное внесение гербицидов на базе компьютерного зрения (John Deere)",
+    "client": "Фермеры-клиенты John Deere, выращивающие сою и кукурузу в США (агрегированные данные по сезону 2025 г.)",
+    "client_disclosed": false,
+    "client_url": "",
+    "vendor": [
+      "John Deere"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "John Deere"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "field-operations"
+    ],
+    "problem": "Сплошное (broadcast) внесение гербицидов по всему полю приводит к избыточному расходу химикатов там, где сорняков нет, увеличивая затраты и экологическую нагрузку.",
+    "before_state": "Сплошное опрыскивание всей площади поля независимо от фактического распределения сорняков.",
+    "solution": "Система See & Spray на базе камер и компьютерного зрения сканирует до 2500 кв. футов в секунду на скорости до 15 миль/ч, распознаёт сорняки в реальном времени и включает точечное распыление через индивидуальные форсунки системы ExactApply только там, где обнаружен сорняк.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "robotics"
+    ],
+    "data_used": [
+      "видеопоток с камер опрыскивателя в реальном времени"
+    ],
+    "integrations": [
+      "система точечного распыления ExactApply"
+    ],
+    "deployment": "edge",
+    "stage": "scaled-production",
+    "scale": "В 2025 г. клиенты John Deere применили See & Spray на площади свыше 5 млн акров (территория больше штата Нью-Джерси); технология доступна как заводская опция или комплект модернизации для опрыскивателей от 2018 модельного года.",
+    "metrics": [
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение расхода гербицидов не сплошного действия в сезоне 2025 г.",
+        "baseline": "сплошное опрыскивание",
+        "result": "в среднем на ~50% меньше, экономия около 31 млн галлонов гербицидного раствора",
+        "delta": "-50%",
+        "status": "reported",
+        "source_url": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Снижение расхода гербицидов в независимом 3-летнем полевом исследовании (соя, Арканзас)",
+        "baseline": "сплошное опрыскивание",
+        "result": "снижение на 43–59%",
+        "delta": "-43–59%",
+        "status": "measured",
+        "source_url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "source_type": "academic"
+      },
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Экономия на акр при настройке высокой чувствительности и окупаемость апгрейда",
+        "baseline": "",
+        "result": "экономия $30,49/акр; окупаемость апгрейда стоимостью $25 000 после обработки 819 акров",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "source_type": "academic"
+      }
+    ],
+    "timeline": "2021 (запуск технологии) – 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "See & Spray масштабирована на более чем 5 млн акров у клиентов John Deere в 2025 г. со средним снижением использования гербицидов не сплошного действия почти на 50%; независимое трёхлетнее исследование Университета Арканзаса подтвердило снижение расхода гербицидов на 43–59% и экономию до $30,49/акр при настройке высокой чувствительности.",
+    "sources": [
+      {
+        "url": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+        "title": "John Deere Customers Use See & Spray Technology Across Five Million Acres in 2025",
+        "type": "vendor",
+        "publisher": "John Deere (пресс-релиз, republished by Oklahoma Farm Report)",
+        "date": "2025-11-04"
+      },
+      {
+        "url": "https://aaes.uada.edu/news/see-and-spray-research/",
+        "title": "Precision Agriculture Research Measures Effectiveness of See & Spray Technology",
+        "type": "academic",
+        "publisher": "Arkansas Agricultural Experiment Station, University of Arkansas",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/",
+    "evidence_grade": "A",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Редкий случай, когда заявления вендора о массовом масштабе внедрения (5 млн акров) независимо подтверждены многолетним академическим полевым исследованием с точными цифрами экономии — сильная доказательная база для CV в точном земледелии.",
+    "entry_hypothesis": "У растениеводческих хозяйств, всё ещё применяющих сплошное опрыскивание, часть гербицидов, вероятно, расходуется на участки поля без сорняков — стоит оценить фактическую плотность засорения полей и потенциальную экономию от точечного внесения на пилотном участке.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Установка комплекта модернизации на один опрыскиватель и сравнение расхода гербицидов на части полей за один сезон.",
+    "expand_opportunities": [
+      "точное внесение удобрений",
+      "картирование урожайности",
+      "интеграция с автопилотом техники"
+    ],
+    "tags": [
+      "computer vision",
+      "гербициды",
+      "точное земледелие",
+      "See and Spray",
+      "John Deere"
+    ],
+    "research_notes": "Клиент не персонализирован (client_disclosed=false) — источники описывают агрегированные показатели по всей базе клиентов John Deere в сезон 2025 г., а не одну названную ферму; академическое исследование Арканзаса относится к отдельному полевому эксперименту с прототипом технологии. ПРОВЕРЕНО ВРУЧНУЮ по публикации Арканзасской сельхозопытной станции: подтверждены снижение расхода гербицидов на 43–59% относительно сплошного внесения, экономия $30,49 на акр за сезон и окупаемость апгрейда стоимостью $25 000 после 819 акров."
+  },
+  {
+    "id": "global-ag-taranis-precision-01",
+    "title": "Taranis: ИИ-платформа раннего обнаружения болезней и вредителей по снимкам дронов на базе Google Cloud",
+    "client": "Сельхозпроизводители — клиенты платформы Taranis (агрегированно, свыше 20 млн акров под управлением)",
+    "client_disclosed": false,
+    "client_url": "",
+    "vendor": [
+      "Taranis"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Google Cloud",
+      "TensorFlow"
+    ],
+    "country": "Глобально (штаб-квартира Taranis — Израиль)",
+    "region": "global",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "crop-farming"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "forecasting",
+      "cv-inspection"
+    ],
+    "problem": "До 40% урожая регулярно теряется из-за насекомых-вредителей, болезней растений, сорняков и дефицита питательных веществ; фермерам сложно поддерживать визуальный контроль сотен тысяч акров и вовремя выявлять проблемы, особенно в удалённых районах со слабой связью для выгрузки больших объёмов снимков с дронов.",
+    "before_state": "",
+    "solution": "Платформа точного земледелия на основе снимков дронов и спутников с высоким разрешением на уровне отдельного листа; модели на TensorFlow обучены на десятках миллионов размеченных изображений (разметку выполняют 30 штатных агрономов) для распознавания болезней, вредителей и абиотического стресса. Инфраструктура на Google Cloud (Compute Engine с GPU, Kubernetes Engine, Cloud Storage, Pub/Sub) обрабатывает свыше 30 ТБ данных.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "снимки с дронов высокого разрешения",
+      "спутниковые снимки",
+      "размеченные агрономами изображения"
+    ],
+    "integrations": [
+      "Google Cloud инфраструктура"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Платформа управляет данными свыше 20 млн акров, каждый вылет дрона — около 10 тыс. снимков, всего обработано порядка 100 млн отдельных признаков на ~700 тыс. изображений.",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время выгрузки снимков с дронов в удалённых локациях",
+        "baseline": "около суток",
+        "result": "несколько часов",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://cloud.google.com/customers/taranis",
+        "source_type": "platform"
+      },
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Стоимость обработки одного снимка",
+        "baseline": "",
+        "result": "снижена примерно в 10 раз",
+        "delta": "-90%",
+        "status": "reported",
+        "source_url": "https://cloud.google.com/customers/taranis",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Платформа Taranis на инфраструктуре Google Cloud обрабатывает данные более 20 млн акров посевов, распознавая болезни, вредителей и стресс растений по снимкам дронов; согласно кейс-стади Google Cloud, скорость выгрузки снимков выросла в разы, а стоимость обработки одного фото снизилась примерно в 10 раз.",
+    "sources": [
+      {
+        "url": "https://cloud.google.com/customers/taranis",
+        "title": "Taranis Case Study",
+        "type": "platform",
+        "publisher": "Google Cloud",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://cloud.google.com/customers/taranis",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Хороший пример инфраструктурной стороны AI-мониторинга полей в промышленном масштабе (десятки миллионов акров), хотя измеримые агрономические результаты (снижение потерь урожая) в источнике не раскрыты — только инфраструктурные метрики.",
+    "entry_hypothesis": "У агротехнологических компаний, обрабатывающих спутниковые/дроновые снимки собственными силами, инфраструктурные затраты на хранение и обработку изображений могут быть узким местом масштабирования — стоит оценить текущую стоимость обработки снимка и время цикла от съёмки до рекомендации агроному.",
+    "likely_buyer": [
+      "cto",
+      "cio"
+    ],
+    "land_opportunity": "Не применимо напрямую к конечному сельхозпроизводителю — это инфраструктурный кейс агротех-платформы; land-возможность актуальна для агротех-вендоров, а не для ферм.",
+    "expand_opportunities": [
+      "масштабирование на новые регионы",
+      "интеграция с BI (BigQuery/Looker)",
+      "новые категории обнаружения болезней"
+    ],
+    "tags": [
+      "дроны",
+      "спутниковый мониторинг",
+      "болезни растений",
+      "Google Cloud",
+      "точное земледелие"
+    ],
+    "research_notes": "Единственный источник — customer story платформы (Google Cloud), поэтому грейд B, а не A, согласно правилу о vendor_claim и единственном источнике-платформе. Конкретные фермерские клиенты Taranis не названы."
+  },
+  {
+    "id": "uk-ag-mowi-akva-01",
+    "title": "AKVA Observe: ИИ-распознавание кормовых гранул для управления кормлением на фермах Mowi Scotland",
+    "client": "Mowi Scotland",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "AKVA group"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "AKVA Observe"
+    ],
+    "country": "Великобритания (Шотландия)",
+    "region": "europe",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "aquaculture"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "optimization"
+    ],
+    "problem": "Нужно повышать эффективность кормления лосося (снижать несъеденный корм и коэффициент конверсии корма) на удалённых морских фермах, управляемых из центра удалённых операций.",
+    "before_state": "",
+    "solution": "Программное обеспечение AKVA Observe с искусственным интеллектом распознаёт кормовые гранулы на видео с ферм и поддерживает решения по кормлению; работает через центр удалённых операций (Remote Operations Centre) в Форт-Уильяме, обслуживающий несколько ферм.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "видеопоток камер наблюдения за кормлением на садках"
+    ],
+    "integrations": [
+      "центр удалённых операций (ROC)"
+    ],
+    "deployment": "hybrid",
+    "stage": "scaled-production",
+    "scale": "Центр удалённых операций (ROC) в Форт-Уильяме работает с июня 2024 г. и обслуживает 18 участков разведения лосося силами 12 сотрудников (расширен до 14 к маю 2025 г.); в мае 2025 г. начато тестирование AKVA Observe, в октябре 2025 г. технология внедрена на всех подключённых фермах; открыт второй центр в Сторновее.",
+    "metrics": [
+      {
+        "metric_type": "resource_utilization",
+        "metric_name": "Биологический коэффициент конверсии корма (bFCR), ферма Gorsten (2025)",
+        "baseline": "исторический уровень Mowi Scotland",
+        "result": "0,98 — самый низкий показатель за всю историю Mowi Scotland",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Индекс относительного роста и выживаемость на фермах с системой (2025)",
+        "baseline": "",
+        "result": "индекс относительного роста выше 100%, выживаемость выше 85% на всех четырёх фермах",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2024–2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Mowi Scotland внедрила ИИ-систему AKVA Observe для распознавания кормовых гранул через центр удалённых операций; в 2025 г. ферма Gorsten показала рекордно низкий для Mowi Scotland коэффициент конверсии корма (0,98), а все охваченные фермы — рост выше 100% и выживаемость выше 85%.",
+    "sources": [
+      {
+        "url": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+        "title": "Remote feeding center leads to record feed efficiency for top salmon producer",
+        "type": "media",
+        "publisher": "Global Seafood Alliance / Responsible Seafood Advocate",
+        "date": "2025"
+      }
+    ],
+    "primary_source": "https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретный именованный производитель лосося с измеримым рекордным показателем конверсии корма после внедрения ИИ-распознавания кормления — сильный отраслевой бенчмарк для аквакультуры, хотя источник единственный.",
+    "entry_hypothesis": "У лососевых/форелевых хозяйств, где решения о кормлении принимают операторы на месте по визуальной оценке, коэффициент конверсии корма может быть выше оптимального — стоит сравнить текущий bFCR хозяйства с отраслевыми ориентирами и оценить потенциал централизованного видеомониторинга кормления.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот видеомониторинга кормления на одном-двух садках с сравнением конверсии корма к контрольным садкам.",
+    "expand_opportunities": [
+      "централизация управления фермами в один операционный центр",
+      "мониторинг здоровья и биомассы рыбы",
+      "прогноз оптимальных объёмов корма по погоде и температуре воды"
+    ],
+    "tags": [
+      "аквакультура",
+      "лосось",
+      "кормление",
+      "компьютерное зрение",
+      "AKVA"
+    ],
+    "research_notes": "Единственный источник — отраслевое издание Global Seafood Alliance с цитатами представителей Mowi; независимый второй источник (fishfocus.co.uk) не открылся в сессии (защита от бота), поэтому грейд B, а не A."
+  },
+  {
+    "id": "us-ag-tyson-cv-01",
+    "title": "Компьютерное зрение для автоматического подсчёта лотков с курицей на линиях Tyson Foods (AWS Panorama + SageMaker)",
+    "client": "Tyson Foods",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "AWS",
+      "Amazon ML Solutions Lab"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "AWS Panorama",
+      "Amazon SageMaker"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "agriculture-food",
+    "subindustry": [
+      "food-processing"
+    ],
+    "business_function": [
+      "production"
+    ],
+    "business_process": [
+      "cv-inspection"
+    ],
+    "problem": "На линиях упаковки требовался точный подсчёт в реальном времени количества упакованных лотков с курицей; ручной подсчёт был ненадёжным и не давал немедленной обратной связи об объёмах производства при мощности порядка 45 млн голов птицы в неделю.",
+    "before_state": "Ручной подсчёт упакованных лотков на производственных линиях.",
+    "solution": "Совместно с Amazon ML Solutions Lab разработано приложение компьютерного зрения на базе моделей детекции объектов (SSD-ResNet50 и YOLOv3-DarkNet53), развёрнутое на периферийном устройстве AWS Panorama прямо на линии упаковки. Разметка изображений выполнена через Amazon SageMaker Ground Truth, обучение — в SageMaker Script Mode с GluonCV, инференс — на периферии с компиляцией SageMaker Neo и квантизацией FP16. Результаты передаются через MQTT в AWS IoT Core и отображаются в дашбордах Amazon QuickSight.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "изображения с камер на линии упаковки, сохраняемые каждые 60 секунд"
+    ],
+    "integrations": [
+      "AWS IoT Core",
+      "Amazon QuickSight"
+    ],
+    "deployment": "edge",
+    "stage": "production",
+    "scale": "Линии упаковки завода с производственной мощностью около 45 млн голов птицы в неделю.",
+    "metrics": [
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность модели детекции лотков с курицей (mAP)",
+        "baseline": "",
+        "result": "0,91",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "2020 (анонс) – 2022 (публикация)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Tyson Foods развернула на периферийных устройствах AWS Panorama систему компьютерного зрения для автоматического подсчёта лотков с курицей на линиях упаковки в реальном времени, с точностью модели детекции (mAP) 0,91; результаты доступны менеджерам производства через дашборды в реальном времени.",
+    "sources": [
+      {
+        "url": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+        "title": "Industrial automation at Tyson with computer vision, AWS Panorama, and Amazon SageMaker",
+        "type": "platform",
+        "publisher": "AWS Machine Learning Blog",
+        "date": "2022-01"
+      }
+    ],
+    "primary_source": "https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Подробный, технически прозрачный кейс edge-компьютерного зрения на пищевом производстве огромного масштаба (45 млн голов/неделю) с конкретной технической метрикой качества модели — хороший референс по архитектуре, хотя бизнес-эффект (экономия, снижение ошибок) в источнике не раскрыт.",
+    "entry_hypothesis": "На линиях упаковки пищевых предприятий с ручным подсчётом продукции вероятно отсутствует немедленная обратная связь об отклонениях от плана производства — стоит оценить, как часто расхождения обнаруживаются только по итогам смены, а не в реальном времени.",
+    "likely_buyer": [
+      "coo",
+      "head-of-operations",
+      "quality-director"
+    ],
+    "land_opportunity": "Пилот edge-камеры с детекцией объектов на одной линии упаковки с сравнением точности подсчёта к ручному учёту.",
+    "expand_opportunities": [
+      "дашборды реального времени для менеджеров цехов",
+      "детекция дефектов упаковки",
+      "геозонирование для безопасности на производстве"
+    ],
+    "tags": [
+      "computer vision",
+      "AWS Panorama",
+      "пищевая переработка",
+      "подсчёт объектов",
+      "мясопереработка"
+    ],
+    "research_notes": "Единственный источник — блог платформы (AWS), поэтому грейд B, а не A, согласно правилу о vendor_claim и единственном источнике-платформе. Отдельная инициатива Tyson по автоматизации маркировки (описанная в thefeed.blog, презентация на Northwest Arkansas Technology Summit) — это другой проект без количественных результатов; в кейс не включена во избежание объединения двух разных проектов, зафиксирована отдельно в candidates/rejected."
+  }
+]

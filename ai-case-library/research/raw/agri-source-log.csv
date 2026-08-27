@@ -1,0 +1,25 @@
+url,publisher,source_type,accessed,status,used_for
+https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/,Cognitive Pilot,vendor,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym,CNews,media,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/,Инфосистемы Джет,vendor,2026-08-27,ok,ru-ag-rusagro-harvest-01
+https://www.vedomosti.ru/press_releases/2022/10/13/iskusstvennii-intellekt-pomogaet-agroholdingu-rusagro-planirovat-uborku-urozhaya,Ведомости,media,2026-08-27,partial,ru-ag-rusagro-harvest-01
+https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/,Дамате,client,2026-08-27,ok,ru-ag-damate-cv-01
+https://www.techinsider.ru/technologies/500942-iskusstvennyy-intellekt-dlya-indeyki/,TechInsider,media,2026-08-27,ok,ru-ag-damate-cv-01
+https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/,Агроинвестор,media,2026-08-27,ok,"ru-ag-damate-cv-01, ru-ag-rusmolko-dairy-01, ru-ag-agrosila-dairy-01"
+https://www.tadviser.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F:%D0%A1%D1%82%D0%B5%D0%BF%D1%8C,_%D0%90%D0%9E_%D0%B0%D0%B3%D1%80%D0%BE%D1%85%D0%BE%D0%BB%D0%B4%D0%B8%D0%BD%D0%B3,TAdviser,"media, 2026-08-27",ok,ru-ag-step-digitaltwin-01
+https://www.interfax.ru/business/1104379,Интерфакс,media,2026-08-27,ok,rejected (cand-016)
+https://digirpt.com/2026/08/11/pochemu-lososja-stalo-menshe-kak-bpla-i-ii-schitajut-rybu-na-dalnem-vostoke/,Digital Report,media,2026-08-27,ok,rejected (cand-021)
+https://aaes.uada.edu/news/see-and-spray-research/,Arkansas Agricultural Experiment Station,academic,2026-08-27,ok,us-ag-deere-seeandspray-01
+https://www.deere.com/en/news/all-news/see-spray-herbicide-savings/,John Deere,vendor,2026-08-27,blocked,"not used (page returned only title,  no extractable content)"
+https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/,Эксперт Юг,interview,2026-08-27,ok,"ru-ag-progressagro-precision-01, ru-ag-step-digitaltwin-01"
+https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/,Oklahoma Farm Report (John Deere press release),vendor,2026-08-27,ok,us-ag-deere-seeandspray-01
+https://www.fishfarmingexpert.com/ai-canada-cermaq/implementing-ai-technology-on-two-cermaq-sites/1815467,Fish Farming Expert,media,2026-08-27,ok,ca-ag-cermaq-reeldata-01
+https://www.globalseafood.org/advocate/project-uses-ai-powered-cameras-to-improve-fish-growth-tracking-and-feeding-strategies/,Global Seafood Alliance,media,2026-08-27,ok,rejected (cand-034)
+https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/,Global Seafood Alliance,media,2026-08-27,ok,uk-ag-mowi-akva-01
+https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/,AWS Machine Learning Blog,platform,2026-08-27,ok,us-ag-tyson-cv-01
+https://fishfocus.co.uk/how-ai-cameras-are-transforming-deepwater-farming/,Fish Focus,media,2026-08-27,blocked,"not used (anti-bot verification page,  no content extracted)"
+https://thefeed.blog/2023/11/14/future-of-food-ai-artificial-intelligence-food-industry/,Tyson Foods (The Feed blog),client,2026-08-27,ok,rejected (cand-037)
+https://cloud.google.com/customers/taranis,Google Cloud,platform,2026-08-27,ok,global-ag-taranis-precision-01
+https://inarctica.com/,INARCTICA,client,2026-08-27,ok,rejected (cand-020)
+https://fish-info.ru/news/ii-v-rybnom-khozyaystve-ot-prognozov-vylova-do-dokumentooborota/,Fish-Info,media,2026-08-27,ok,rejected (cand-022)
+https://russianfishery.ru/customers/production/,РРПК,client,2026-08-27,blocked,rejected (cand-023)

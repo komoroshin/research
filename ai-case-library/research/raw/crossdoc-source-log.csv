@@ -1,0 +1,27 @@
+url,publisher,source_type,accessed,status,used_for
+https://banks.cnews.ru/news/line/2024-03-14_yuristamrieltoram_i_drugim,CNews,media,2026-08-27,ok,Сбербанк GigaLegal (ru-dc-sber-gigalegal-01)
+https://centrvd.ru/cases/podruzhka,ЦВД,vendor,2026-08-27,ok,Directum Ario в сети «Подружка» (ru-dc-podruzhka-directum-01)
+https://www.tadviser.ru/index.php/Проект:Дом.РФ_АКБ_(ранее_Российский_капитал)_(Smart_IDReader),TAdviser,media,2026-08-27,ok,Банк ДОМ.РФ Smart IDReader (ru-dc-domrf-smartid-01) - открыто через fetch-page.mjs после 404 в WebFetch
+https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/,Doczilla,vendor,2026-08-27,ok,Почта России автоматизация договоров (ru-dc-pochta-doczilla-01)
+https://pravo.ru/company_news/258472/,Право.ру,media,2026-08-27,ok,"ЕВРАЗ (ru-dc-evraz-legal-01) и Ростелеком (ru-dc-rostelecom-legalwatch-01)"
+https://www.naumen.ru/products/kms/academy/articles/kak-baza-znaniy-na-platforme-naumen-kms-pomogaet-riteyleru-uluchshit-biznes-pokazateli/,Naumen,vendor,2026-08-27,ok,СберМаркет и Naumen KMS (ru-dc-sbermarket-naumen-01)
+https://napoleonit.ru/blog,Napoleon IT,vendor,2026-08-27,partial,"Проверка кандидатов ХОЛОДИЛЬНИК.РУ и «Подружка» AI-ассистент - не подтверждено, кандидаты отклонены"
+https://www.harvey.ai/resources/reports/accelerating-impact-of-legal-ai,Harvey,vendor,2026-08-27,partial,"Проверка Harvey/A&O Shearman - конкретных цифр по клиенту не найдено на этой странице, использованы другие источники"
+https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/,GitHub Blog,platform,2026-08-27,ok,Accenture GitHub Copilot RCT (global-dc-accenture-githubcopilot-01)
+https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process,UiPath,vendor,2026-08-27,error,"404 - неверный URL-слаг, использован скорректированный вариант ниже"
+https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure,Microsoft Customer Stories,platform,2026-08-27,ok,KPMG Azure agentic AI аудит (global-dc-kpmg-azure-01)
+https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientifics-invoice-process,UiPath,vendor,2026-08-27,ok,Thermo Fisher Scientific Document Understanding (us-dc-thermofisher-uipath-01)
+https://claude.com/customers/harvey,Anthropic,platform,2026-08-27,partial,"Общее описание Harvey+Claude без конкретных цифр по A&O Shearman"
+https://www.tadviser.ru/index.php/Продукт:MTS_AI_ИИ-помощник_для_банковских_сотрудников,TAdviser,media,2026-08-27,error,404 - страница недоступна
+"https://www.bestpractice.ai/ai-case-study-best-practice/unilever_saved_over_50,000_hours_in_candidate_interview_time_and_delivered_over_%C2%A31m_annual_savings_and_improved_candidate_diversity_with_machine_analysis_of_video-based_interviewing.",bestpractice.ai,analyst,2026-08-27,partial,"Целевой кейс Unilever не найден на возвращённой странице (общий листинг библиотеки кейсов)"
+https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/,РБК Компании,media,2026-08-27,ok,HappyStar Recruiting фintech-стартап (ru-dc-fintech-happystar-01)
+https://legal.thomsonreuters.com/blog/accelerate-business-outcomes-with-cocounsel-legal/,Thomson Reuters Legal,vendor,2026-08-27,partial,"Проверка именного кейса CoCounsel Legal - конкретной юрфирмы с цифрами не найдено, кандидат отклонён"
+https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful,A&O Shearman,client,2026-08-27,ok,A&O Shearman ContractMatrix/Harvey (gb-dc-aoshearman-harvey-01)
+https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/,Microsoft UK Stories,platform,2026-08-27,ok,A&O Shearman ContractMatrix независимое подтверждение (gb-dc-aoshearman-harvey-01)
+https://www.tadviser.ru/index.php/Продукт:Content_AI_ContentReader_PDF_(ранее_ABBYY_FineReader_PDF)?cache=no&ptype=decision,TAdviser,media,2026-08-27,error,404 через WebFetch - использован fetch-page.mjs с редиректом (см. ниже)
+https://www.cnews.ru/news/line/2024-10-16_mts_ai_sozdala_ii-pomoshchnika,CNews,media,2026-08-27,ok,"Подтверждение, что MTS AI не называет конкретного банка-клиента - кандидат отклонён (no_client)"
+https://www.tadviser.ru/index.php/Проект:ContentReader_PDF_(ранее_ABBYY_FineReader_PDF),TAdviser,media,2026-08-27,partial,"Открыто через fetch-page.mjs (редирект с предыдущего URL) - Rosselkhozbank/банковский кейс в полученном фрагменте не обнаружен, кандидат Content AI отклонён как unverifiable"
+https://generation-ai.ru/cases/x5-group-i-analitika,generation-ai.ru,media,2026-08-27,ok,X5 Group Jay Copilot (ru-dc-x5-jaycopilot-01)
+https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n,pumpedu.cz,media,2026-08-27,ok,Unilever HireVue (gb-dc-unilever-hirevue-01)
+https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot,Microsoft Customer Stories,platform,2026-08-27,ok,Vodafone Microsoft 365 Copilot (gb-dc-vodafone-copilot-01)
+https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045,ServiceNow,vendor,2026-08-27,ok,ServiceNow внутреннее развёртывание AI-агентов (us-dc-servicenow-internal-01)

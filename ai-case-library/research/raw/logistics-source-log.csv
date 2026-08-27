@@ -1,0 +1,41 @@
+url,publisher,source_type,accessed,status,used_for
+https://sber.pro/cases/sgenerirui-marshrut-kak-v-sdek-avtomatizirovali-upravlenie-kurerami/,СберПро Медиа,media,2026-08-27,ok,ru-lg-sdek-routing-01
+https://www.cnews.ru/news/line/2025-06-11_sdek_vnedryaet_iskusstvennyj,CNews,media,2026-08-27,ok,ru-lg-sdek-routing-01
+https://www.mosgortrans.ru/press/news/ispolzuem-iskusstvennyy-intellekt-na-vsekh-ploshchadkakh-mosgortransa/,ГУП Мосгортранс,client,2026-08-27,error,"HTTP 503 через WebFetch, не использован напрямую - взят альтернативный релиз того же источника"
+https://www.retail.ru/news/ozon-novaya-model-umnoy-sortirovki-i-otgruzki-tovarov-povysit-effektivnost-prots-26-maya-2026-278172/,Retail.ru,media,2026-08-27,ok,ru-lg-ozon-sorting-01
+https://dprom.online/mining/sistema-kontrolya-ustalosti-voditelya-alrosa/,dprom.online,media,2026-08-27,error,"пустой контент через WebFetch и fetch-page.mjs (JS-рендеринг) - кандидат АЛРОСА не использован, заменён кейсом Полюс Логистика"
+https://www.tadviser.ru/index.php/Проект:Складские_роботы_в_Wildberries,TAdviser,media,2026-08-27,error,"HTTP 404 (декодированный и URL-кодированный варианты) - не использован"
+https://www.cnews.ru/news/line/2026-05-26_ozon_razvivaet_sistemu_umnoj,CNews,media,2026-08-27,ok,ru-lg-ozon-sorting-01
+https://www.sobyanin.ru/ii-delaet-moskovskii-transport-komfortnee-i-bezopasnee,sobyanin.ru (Мэрия Москвы),government,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+https://mintrans.gov.ru/press-center/news/12846,Минтранс России,government,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+https://mosgortrans.ru/press/news/kak-iskusstvennyy-intellekt-uluchshaet-rabotu-nazemnogo-transporta/,ГУП Мосгортранс,client,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+"https://www.tadviser.ru/index.php/Компания:Мосгортранс,_ГУП",TAdviser,media,2026-08-27,ok,ru-lg-mosgortrans-antison-01
+https://robotrends.ru/pub/2503/avtomatizaciya-skladov---opyt-wildberries,RoboTrends,media,2026-08-27,ok,ru-lg-wildberries-robots-01
+https://www.cnews.ru/articles/2022-11-08_kak_nejroseti_sledyat_za_ustalostyu,CNews,media,2026-08-27,ok,"ru-lg-mosgortrans-antison-01, ru-lg-polyus-logistika-fatigue-01"
+https://abnews.ru/center/news/mosreg/2026/8/20/v-podmoskove-pochta-rossii-sokratila-sroki-dostavki-blagodarya-ii,АБН 24,media,2026-08-27,ok,ru-lg-pochta-teraplan-01
+https://ar2024.fesco.ru/strategic-report/digitalisation,FESCO,client,2026-08-27,ok,"не использован как основа кейса - not_ai (см. rejected c19)"
+https://www.comnews.ru/digital-economy/content/247002/2026-08-21/2026-w34/1012/ii-vykhodit-puti-rzhd-tirazhiruet-cifrovuyu-model-stanciy-vsey-seti,ComNews,media,2026-08-27,ok,ru-lg-rzd-digital-station-01
+https://yandex.ru/routing/articles/all,Яндекс,vendor,2026-08-27,ok,"обзорная страница - источник ссылок на justfood/askona/sibur/iceberry/apteka-aprel/yandex-market"
+https://yandex.ru/routing/articles/sibur/,Яндекс,vendor,2026-08-27,ok,"использован только для отклонённого кандидата c23 (out_of_scope)"
+https://www.supplychaindive.com/news/ups-orion-route-planning-analytics-data-logistics/601673/,Supply Chain Dive,media,2026-08-27,ok,us-lg-ups-orion-01
+https://www.bsr.org/en/case-studies/center-for-technology-and-sustainability-orion-technology-ups,BSR,analyst,2026-08-27,partial,"HTTP 403 через WebFetch; успешно открыт через fetch-page.mjs - использован как us-lg-ups-orion-01"
+https://www.aboutamazon.com/news/operations/amazon-robotics-robots-fulfillment-center,Amazon,client,2026-08-27,ok,us-lg-amazon-sequoia-01
+https://press.siemens.com/global/en/pressrelease/deutsche-bahn-and-siemens-launch-pilot-project-predictive-maintenance,Siemens,vendor,2026-08-27,ok,"использован только для отклонённого кандидата c33 (no_result - нет метрик)"
+https://www.engadget.com/amazon-says-its-new-ai-powered-robots-reduce-fulfilment-time-by-25-percent-122517342.html,Engadget,media,2026-08-27,ok,us-lg-amazon-sequoia-01
+https://www.bestpractice.ai/ai-case-study-best-practice/deutsche_bahn_reduces_maintenance_cost_by_25%25_and_delay-causing_failures_using_machine_learning,Best Practice AI,media,2026-08-27,partial,"страница открылась, но кейс Deutsche Bahn не найден в отображённом содержимом - использован для отклонённого кандидата c34 (unverifiable)"
+https://www.tandfonline.com/doi/full/10.1080/15228053.2023.2300921,Taylor & Francis,academic,2026-08-27,blocked,"HTTP 403 и через WebFetch, и через fetch-page.mjs (JS-челлендж Cloudflare) - Maersk кандидат c31 отклонён как source_unavailable"
+https://www.researchgate.net/publication/385039143_Application_of_Artificial_intelligence_in_Logistics_40_DHL_case_study_analysis,ResearchGate,academic,2026-08-27,blocked,"HTTP 403 и через WebFetch, и через fetch-page.mjs - DHL кандидат c30 отклонён как source_unavailable"
+https://www.aicerts.ai/news/jd-com-scales-ai-warehouse-robots-to-transform-global-logistics/,AI CERTs,media,2026-08-27,ok,"HTTP 403 через WebFetch; успешно открыт через fetch-page.mjs - использован как cn-lg-jd-langzutech-01"
+https://www.ewadirect.com/proceedings/aemps/article/view/15837,EWA Publishing,academic,2026-08-27,partial,"редирект 301 на aemps.ewapub.com - фактически открыт по новому адресу"
+https://aemps.ewapub.com/article/view/15837,EWA Publishing,academic,2026-08-27,ok,cn-lg-jd-langzutech-01
+https://www.tadviser.ru/index.php/Проект:S7_Airlines_Сибирь_Авиакомпания_(Predictive_Analytics_),TAdviser,media,2026-08-27,ok,ru-lg-s7-datadvance-pm-01
+https://www.hylios.com/intelligence/dhl-deploys-ai-to-transform-last-mile-delivery-operations,Hylios,media,2026-08-27,ok,"использован для отклонённого кандидата c29 - выявлено, что цифра 15-20% является гипотетическим сценарием, а не результатом"
+https://digitaldefynd.com/IQ/dhl-using-ai-case-study/,DigitalDefynd,media,2026-08-27,ok,"использован для отклонённого кандидата c29 - контент-маркетинговая статья без company-specific цифр"
+https://devsdata.com/case-studies/ai-data-science-maersk-tankers-maritime-logistics/,DevsData LLC,vendor,2026-08-27,ok,"использован для отклонённого кандидата c32 (no_result - результаты под NDA)"
+https://www.mobilityinfotechlogistics.com/case-study/dhl-supply-chain-route-optimization,Mobility Infotech Logistics,vendor,2026-08-27,ok,"использован для отклонённого кандидата c28 (unverifiable)"
+https://www.pumpedu.cz/en/news/ai-in-practice-dhl-has-accelerated-the-delivery-of-parcels-114n,Pumpedu,media,2026-08-27,ok,"использован для отклонённого кандидата c29 (без конкретных цифр)"
+https://yandex.ru/routing/articles/justfood/,Яндекс,vendor,2026-08-27,ok,ru-lg-justfood-yandex-01
+https://aws.amazon.com/solutions/case-studies/?awsf.customer-references-industry=customer-references-transportation-logistics,AWS,platform,2026-08-27,partial,"фильтр по индустрии не применился (JS-рендеринг) - конкретного logistics-кейса не найдено, не использован"
+https://yandex.ru/routing/articles/yandex-market/,Яндекс,vendor,2026-08-27,ok,ru-lg-yandex-market-delivery-01
+https://www.tadviser.ru/index.php/Проект:Мосгортранс_(Антисон),TAdviser,media,2026-08-27,error,"HTTP 404 - публикация недоступна для просмотра, не использован"
+https://www.tadviser.ru/index.php/Мосгортранс_водители_жалуются_система_борьбы_со_сном,TAdviser,media,2026-08-27,error,"HTTP 404 - страница не существует, не использован"

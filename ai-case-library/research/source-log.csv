@@ -1,0 +1,348 @@
+research_track,url,publisher,source_type,accessed,status,used_for
+agri,https://cognitivepilot.com/cognitive-news/blog/sberbank-i-cognitive-pilot-zapuskayut-umnyj-kombajn-na-polyah-vedushhih-otechestvennyh-agrokompleksov-rossii/,Cognitive Pilot,vendor,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+agri,https://www.cnews.ru/news/line/2020-11-03_kombajny_s_iskusstvennym,CNews,media,2026-08-27,ok,ru-ag-cognitivepilot-autopilot-01
+agri,https://jet.su/czentr-ekspertizy/all/kak-tekhnologii-ii-pomogayut-planirovat-polevye-raboty-v-agropromyshlennom-kholdinge-rusagro/,Инфосистемы Джет,vendor,2026-08-27,ok,ru-ag-rusagro-harvest-01
+agri,https://www.vedomosti.ru/press_releases/2022/10/13/iskusstvennii-intellekt-pomogaet-agroholdingu-rusagro-planirovat-uborku-urozhaya,Ведомости,media,2026-08-27,partial,ru-ag-rusagro-harvest-01
+agri,https://www.acdamate.com/press-center/press/tsifra-i-iskusstvennyy-intellekt-vyshli-na-polya/,Дамате,client,2026-08-27,ok,ru-ag-damate-cv-01
+agri,https://www.techinsider.ru/technologies/500942-iskusstvennyy-intellekt-dlya-indeyki/,TechInsider,media,2026-08-27,ok,ru-ag-damate-cv-01
+agri,https://www.agroinvestor.ru/animal/article/33325-konets-ruchnogo-upravleniya-kakie-tsifrovye-tekhnologii-vnedryayutsya-na-zhivotnovodcheskikh-predpri/,Агроинвестор,media,2026-08-27,ok,"ru-ag-damate-cv-01, ru-ag-rusmolko-dairy-01, ru-ag-agrosila-dairy-01"
+agri,https://www.tadviser.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F:%D0%A1%D1%82%D0%B5%D0%BF%D1%8C,_%D0%90%D0%9E_%D0%B0%D0%B3%D1%80%D0%BE%D1%85%D0%BE%D0%BB%D0%B4%D0%B8%D0%BD%D0%B3,TAdviser,"media, 2026-08-27",ok,ru-ag-step-digitaltwin-01
+agri,https://www.interfax.ru/business/1104379,Интерфакс,media,2026-08-27,ok,rejected (cand-016)
+agri,https://digirpt.com/2026/08/11/pochemu-lososja-stalo-menshe-kak-bpla-i-ii-schitajut-rybu-na-dalnem-vostoke/,Digital Report,media,2026-08-27,ok,rejected (cand-021)
+agri,https://aaes.uada.edu/news/see-and-spray-research/,Arkansas Agricultural Experiment Station,academic,2026-08-27,ok,us-ag-deere-seeandspray-01
+agri,https://www.deere.com/en/news/all-news/see-spray-herbicide-savings/,John Deere,vendor,2026-08-27,blocked,"not used (page returned only title,  no extractable content)"
+agri,https://expertsouth.ru/articles/tsifroviziruy-chtoby-zhit-kak-tekhnologii-menyayut-selkhozproizvodstvo-na-yuge/,Эксперт Юг,interview,2026-08-27,ok,"ru-ag-progressagro-precision-01, ru-ag-step-digitaltwin-01"
+agri,https://www.oklahomafarmreport.com/okfr/2025/11/04/john-deere-customers-use-see-spray-technology-across-five-million-acres-in-2025/,Oklahoma Farm Report (John Deere press release),vendor,2026-08-27,ok,us-ag-deere-seeandspray-01
+agri,https://www.fishfarmingexpert.com/ai-canada-cermaq/implementing-ai-technology-on-two-cermaq-sites/1815467,Fish Farming Expert,media,2026-08-27,ok,ca-ag-cermaq-reeldata-01
+agri,https://www.globalseafood.org/advocate/project-uses-ai-powered-cameras-to-improve-fish-growth-tracking-and-feeding-strategies/,Global Seafood Alliance,media,2026-08-27,ok,rejected (cand-034)
+agri,https://www.globalseafood.org/advocate/remote-feeding-center-leads-to-record-feed-efficiency-for-top-salmon-producer/,Global Seafood Alliance,media,2026-08-27,ok,uk-ag-mowi-akva-01
+agri,https://aws.amazon.com/blogs/machine-learning/industrial-automation-at-tyson-with-computer-vision-aws-panorama-and-amazon-sagemaker/,AWS Machine Learning Blog,platform,2026-08-27,ok,us-ag-tyson-cv-01
+agri,https://fishfocus.co.uk/how-ai-cameras-are-transforming-deepwater-farming/,Fish Focus,media,2026-08-27,blocked,"not used (anti-bot verification page,  no content extracted)"
+agri,https://thefeed.blog/2023/11/14/future-of-food-ai-artificial-intelligence-food-industry/,Tyson Foods (The Feed blog),client,2026-08-27,ok,rejected (cand-037)
+agri,https://cloud.google.com/customers/taranis,Google Cloud,platform,2026-08-27,ok,global-ag-taranis-precision-01
+agri,https://inarctica.com/,INARCTICA,client,2026-08-27,ok,rejected (cand-020)
+agri,https://fish-info.ru/news/ii-v-rybnom-khozyaystve-ot-prognozov-vylova-do-dokumentooborota/,Fish-Info,media,2026-08-27,ok,rejected (cand-022)
+agri,https://russianfishery.ru/customers/production/,РРПК,client,2026-08-27,blocked,rejected (cand-023)
+construction,https://www.vedomosti.ru/press_releases/2020/07/21/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroitelei-gk-pik-na-20,Ведомости,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://www.comnews.ru/digital-economy/content/208188/2020-07-21/2020-w30/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik,ComNews,media,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://www.lanit.ru/press/archive/ii-sistema-monitoringa-truda-solut-uvelichila-proizvoditelnost-stroiteley-gk-pik-na-20/,ЛАНИТ,vendor,2026-08-27,ok,ru-cn-pik-solut-labor-01
+construction,https://cio.osp.ru/articles/110423-Samolet-intellektualnyy-monitoring-stroyki,CIO.osp.ru (Открытые системы),media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://www.secuteck.ru/articles/avtomatizaciya-stroitelstva-opyt-gk-samolet,Secuteck.ru,media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://dvizhenie.ru/media/181/iskusstvennyi-intellekt-v-developmente-keisy-zastroishchikov,Движение.ру,media,2026-08-27,ok,ru-cn-samolet-site-monitoring-01
+construction,https://platforms.su/project/2535,Цифровой маркетплейс platforms.su,vendor,2026-08-27,ok,ru-cn-fsk-samolet10d-cv-01
+construction,https://ruward.ru/award/2025/571632/,RUWARD AWARD 2025,media,2026-08-27,ok,ru-cn-fsk-redmadrobot-rag-01
+construction,"https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82:%D0%93%D0%9A_%D0%A4%D0%A1%D0%9A_(%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82_(%D0%98%D0%98,_Artificial_intelligence,_AI))",TAdviser,media,2026-08-27,ok,ru-cn-fsk-redmadrobot-rag-01
+construction,https://xn--80aque.xn--p1ai/news/napoleon-it-i-pao-apri-zapuskayut-masshtabnoe-vnedrenie-vizualnogo-intellekta-v-stroitelstve/,Всеостройке.рф,vendor,2026-08-27,ok,ru-cn-apri-napoleonit-visual-01
+construction,https://www.tbank.ru/invest/social/profile/APRI_Official/18f72677-61cc-4dd7-a4fe-3ee30299c2c7/,Т-Инвестиции (пост АПРИ),client,2026-08-27,ok,ru-cn-apri-napoleonit-visual-01
+construction,https://www.norbit.ru/proekty/razrabotka-sistemy-prognozirovaniya-prodazh-na-baze-ai-tekhnologiy-v-gruppe-etalon/,НОРБИТ,vendor,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://www.vedomosti.ru/press_releases/2023/06/07/norbit-i-gruppa-etalon-zapuskayut-sistemu-prognozirovaniya-prodazh-na-baze-iskusstvennogo-intellekta,Ведомости,media,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://iot.ru/riteyl/norbit-i-gruppa-etalon-zapuskayut-sistemu-prognozirovaniya-prodazh-na-baze-ii,IoT.ru,media,2026-08-27,ok,ru-cn-etalon-norbit-sales-01
+construction,https://sberbs.ru/blogs/cases/videoanalitika-na-osnove-ii-dlya-povysheniya-bezopasnosti-na-stroyploschadke,Сбер2B (Сбер Бизнес Софт),vendor,2026-08-27,ok,ru-cn-sber2b-videoanalytics-rostov-01
+construction,https://finance.mail.ru/article/domklik-testiruet-ii-agenta-dlya-podbora-zhilya-69214998/,Финансы Mail.ru,media,2026-08-27,ok,ru-cn-domclick-ai-agent-01
+construction,https://russianhighways.ru/press/news/119776/,Автодор (russianhighways.ru),client,2026-08-27,ok,ru-cn-avtodor-m11-noisescreens-cv-01
+construction,https://buildots.com/case-studies/intel-partners-with-buildots/,Buildots,vendor,2026-08-27,ok,us-cn-intel-buildots-cv-01
+construction,https://pages.buildots.com/intel-case-study,Buildots,vendor,2026-08-27,ok,us-cn-intel-buildots-cv-01
+construction,https://buildots.com/case-study/mace-partners-with-buildots/,Buildots,vendor,2026-08-27,ok,gb-cn-mace-buildots-cv-01
+construction,https://www.openspace.ai/resources/case-studies/openspace-improves-jll-project-delivery-through-faster-more-complete-documentation/,OpenSpace,vendor,2026-08-27,ok,us-cn-jll-openspace-docs-01
+construction,https://blog.alicetechnologies.com/case-studies/af-gruppen,ALICE Technologies,vendor,2026-08-27,ok,no-cn-afgruppen-alice-schedule-01
+construction,https://brainboxai.com/en/case-studies/dollar-tree-unlocks-major-energy-and-emissions-savings-with-brainbox-ai,BrainBox AI,vendor,2026-08-27,ok,us-cn-dollartree-brainboxai-hvac-01
+construction,https://www.jll.com/en-us/client-stories/ai-powered-facilities-management,JLL,vendor,2026-08-27,ok,global-cn-jll-fm-semiconductor-01
+construction,https://www.testfit.io/customer-stories/bsb-design,TestFit,vendor,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
+construction,https://www.bsbdesign.com/insights/ai-case-study-testfit-concept-to-entitlement-package/,BSB Design,client,2026-08-27,ok,us-cn-bsbdesign-testfit-sitefeasibility-01
+crossdoc,https://banks.cnews.ru/news/line/2024-03-14_yuristamrieltoram_i_drugim,CNews,media,2026-08-27,ok,Сбербанк GigaLegal (ru-dc-sber-gigalegal-01)
+crossdoc,https://centrvd.ru/cases/podruzhka,ЦВД,vendor,2026-08-27,ok,Directum Ario в сети «Подружка» (ru-dc-podruzhka-directum-01)
+crossdoc,https://www.tadviser.ru/index.php/Проект:Дом.РФ_АКБ_(ранее_Российский_капитал)_(Smart_IDReader),TAdviser,media,2026-08-27,ok,Банк ДОМ.РФ Smart IDReader (ru-dc-domrf-smartid-01) - открыто через fetch-page.mjs после 404 в WebFetch
+crossdoc,https://doczilla.pro/ru/cases/pochta-rossii-avtomatizaciya-podgotovki/,Doczilla,vendor,2026-08-27,ok,Почта России автоматизация договоров (ru-dc-pochta-doczilla-01)
+crossdoc,https://pravo.ru/company_news/258472/,Право.ру,media,2026-08-27,ok,ЕВРАЗ (ru-dc-evraz-legal-01) и Ростелеком (ru-dc-rostelecom-legalwatch-01)
+crossdoc,https://www.naumen.ru/products/kms/academy/articles/kak-baza-znaniy-na-platforme-naumen-kms-pomogaet-riteyleru-uluchshit-biznes-pokazateli/,Naumen,vendor,2026-08-27,ok,СберМаркет и Naumen KMS (ru-dc-sbermarket-naumen-01)
+crossdoc,https://napoleonit.ru/blog,Napoleon IT,vendor,2026-08-27,partial,"Проверка кандидатов ХОЛОДИЛЬНИК.РУ и «Подружка» AI-ассистент - не подтверждено, кандидаты отклонены"
+crossdoc,https://www.harvey.ai/resources/reports/accelerating-impact-of-legal-ai,Harvey,vendor,2026-08-27,partial,"Проверка Harvey/A&O Shearman - конкретных цифр по клиенту не найдено на этой странице, использованы другие источники"
+crossdoc,https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-in-the-enterprise-with-accenture/,GitHub Blog,platform,2026-08-27,ok,Accenture GitHub Copilot RCT (global-dc-accenture-githubcopilot-01)
+crossdoc,https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientific-invoice-process,UiPath,vendor,2026-08-27,error,"404 - неверный URL-слаг, использован скорректированный вариант ниже"
+crossdoc,https://www.microsoft.com/en/customers/story/25353-kpmg-international-azure,Microsoft Customer Stories,platform,2026-08-27,ok,KPMG Azure agentic AI аудит (global-dc-kpmg-azure-01)
+crossdoc,https://www.uipath.com/resources/automation-case-studies/document-understanding-reduces-thermo-fisher-scientifics-invoice-process,UiPath,vendor,2026-08-27,ok,Thermo Fisher Scientific Document Understanding (us-dc-thermofisher-uipath-01)
+crossdoc,https://claude.com/customers/harvey,Anthropic,platform,2026-08-27,partial,Общее описание Harvey+Claude без конкретных цифр по A&O Shearman
+crossdoc,https://www.tadviser.ru/index.php/Продукт:MTS_AI_ИИ-помощник_для_банковских_сотрудников,TAdviser,media,2026-08-27,error,404 - страница недоступна
+crossdoc,"https://www.bestpractice.ai/ai-case-study-best-practice/unilever_saved_over_50,000_hours_in_candidate_interview_time_and_delivered_over_%C2%A31m_annual_savings_and_improved_candidate_diversity_with_machine_analysis_of_video-based_interviewing.",bestpractice.ai,analyst,2026-08-27,partial,Целевой кейс Unilever не найден на возвращённой странице (общий листинг библиотеки кейсов)
+crossdoc,https://companies.rbc.ru/news/12tUB6DL0J/skrining-rezyume-na-avtomate-kak-ai-sokraschaet-vremya-podbora-kadrov-vdvoe/,РБК Компании,media,2026-08-27,ok,HappyStar Recruiting фintech-стартап (ru-dc-fintech-happystar-01)
+crossdoc,https://legal.thomsonreuters.com/blog/accelerate-business-outcomes-with-cocounsel-legal/,Thomson Reuters Legal,vendor,2026-08-27,partial,"Проверка именного кейса CoCounsel Legal - конкретной юрфирмы с цифрами не найдено, кандидат отклонён"
+crossdoc,https://www.aoshearman.com/en/insights/analyze-is-the-new-contractmatrix-module-making-contract-review-even-more-powerful,A&O Shearman,client,2026-08-27,ok,A&O Shearman ContractMatrix/Harvey (gb-dc-aoshearman-harvey-01)
+crossdoc,https://ukstories.microsoft.com/features/how-ao-shearman-is-reshaping-law-with-trailblazing-ai-tool/,Microsoft UK Stories,platform,2026-08-27,ok,A&O Shearman ContractMatrix независимое подтверждение (gb-dc-aoshearman-harvey-01)
+crossdoc,https://www.tadviser.ru/index.php/Продукт:Content_AI_ContentReader_PDF_(ранее_ABBYY_FineReader_PDF)?cache=no&ptype=decision,TAdviser,media,2026-08-27,error,404 через WebFetch - использован fetch-page.mjs с редиректом (см. ниже)
+crossdoc,https://www.cnews.ru/news/line/2024-10-16_mts_ai_sozdala_ii-pomoshchnika,CNews,media,2026-08-27,ok,"Подтверждение, что MTS AI не называет конкретного банка-клиента - кандидат отклонён (no_client)"
+crossdoc,https://www.tadviser.ru/index.php/Проект:ContentReader_PDF_(ранее_ABBYY_FineReader_PDF),TAdviser,media,2026-08-27,partial,"Открыто через fetch-page.mjs (редирект с предыдущего URL) - Rosselkhozbank/банковский кейс в полученном фрагменте не обнаружен, кандидат Content AI отклонён как unverifiable"
+crossdoc,https://generation-ai.ru/cases/x5-group-i-analitika,generation-ai.ru,media,2026-08-27,ok,X5 Group Jay Copilot (ru-dc-x5-jaycopilot-01)
+crossdoc,https://www.pumpedu.cz/en/news/the-practical-application-of-ai-unilever-reduced-recruitment-time-by-75-112n,pumpedu.cz,media,2026-08-27,ok,Unilever HireVue (gb-dc-unilever-hirevue-01)
+crossdoc,https://www.microsoft.com/en/customers/story/19346-vodafone-microsoft-365-copilot,Microsoft Customer Stories,platform,2026-08-27,ok,Vodafone Microsoft 365 Copilot (gb-dc-vodafone-copilot-01)
+crossdoc,https://www.servicenow.com/community/ceg-ai-coe-articles/ai-agents-are-already-paying-off-here-s-what-keeps-most/ta-p/3508045,ServiceNow,vendor,2026-08-27,ok,ServiceNow внутреннее развёртывание AI-агентов (us-dc-servicenow-internal-01)
+energy,https://www.so-ups.ru/news/press/press-release-view/news/24306/,СО ЕЭС,client,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
+energy,https://www.bigpowernews.ru/markets/document113467.phtml,BigpowerNews,media,2026-08-27,ok,ru-en-so-ups-vre-forecast-01
+energy,https://www.zyfra.com/ru/news/media/t-plius-ziiot/,Zyfra,vendor,2026-08-27,ok,ru-en-tplus-ziiot-pdm-01
+energy,https://www.cnews.ru/news/line/2023-10-24_t_plyus_nachala_ispolzovat,CNews,media,2026-08-27,ok,ru-en-tplus-ziiot-pdm-01
+energy,https://www.company.rt.ru/press/news/d476709/,Ростелеком,vendor,2026-08-27,ok,ru-en-mosenergosbyt-rt-cc-01
+energy,https://www.cnews.ru/news/line/2026-02-05_rostelekom_povysil_effektivnost,CNews,media,2026-08-27,ok,ru-en-mosenergosbyt-rt-cc-01
+energy,https://www.cnews.ru/news/line/2021-03-17_mailru_group_pomogla_rosseti,CNews,media,2026-08-27,ok,ru-en-mailru-predict-rosseti-loss-01
+energy,https://www.vedomosti.ru/technologies/industries_and_markets/news/2025/10/16/1147306-elektroenergii-pomoschyu,Ведомости,media,2026-08-27,ok,ru-en-mts-energytool-rosseti-01
+energy,https://cio.osp.ru/news/200623-Rosseti-Sibir-budut-iskat-hischeniya-elektroenergii-s-pomoschyu-iskusstvennogo-intellekta,CIO/OSP,media,2026-08-27,ok,ru-en-mts-energytool-rosseti-01
+energy,https://strana-rosatom.ru/2026/05/21/vkalyvaet-ii-a-ne-chelovek-kak-iskusstv/,«Страна Росатом»,client,2026-08-27,ok,ru-en-rosatom-kursk-operator-01
+energy,https://www.comnews.ru/digital-economy/content/235312/2024-09-20/2024-w38/1012/cifra-i-sapran-zapustili-sistemu-prognosticheskogo-analiza-i-diagnostiki-oborudovaniya-vosmi-tec,ComNews,media,2026-08-27,ok,ru-en-cifra-sapran-chp8-01
+energy,https://deepmind.google/blog/machine-learning-can-boost-the-value-of-wind-energy/,DeepMind / Google,client,2026-08-27,ok,us-en-deepmind-wind-forecast-01
+energy,https://www.forbes.com/sites/jeffmcmahon/2020/05/31/thanks-to-renewables-and-machine-learning-google-now-forecasts-the-wind/,Forbes,media,2026-08-27,ok,us-en-deepmind-wind-forecast-01
+energy,https://www.globenewswire.com/en/news-release/2018/08/02/1546519/0/en/Enel-Green-Power-North-America-and-Raptor-Maps-Team-Up-for-Cutting-Edge-Solar-Management-Through-Drones-and-AI.html,GlobeNewswire,media,2026-08-27,ok,us-en-enel-raptormaps-solar-01
+energy,https://www.enelgreenpower.com/media/news/2018/8/egp-drones-and-ai-to-boost-solar-plants,Enel Green Power,client,2026-08-27,ok,us-en-enel-raptormaps-solar-01
+energy,https://us.orsted.com/news-archive/2023/11/orsted-deploys-sparkcognitions-ai-solution-to-enhance-wind-solar-and-storage,Ørsted,client,2026-08-27,ok,us-en-orsted-sparkcognition-01
+energy,https://www.prnewswire.com/news-releases/orsted-deploys-sparkcognitions-ai-solution-to-enhance-wind-solar-and-storage-asset-performance-and-increase-energy-production-301980060.html,PR Newswire,media,2026-08-27,ok,us-en-orsted-sparkcognition-01
+energy,https://stories.xcelenergy.com/stories/using-advanced-technology-to-combat-wildfire-risk,Xcel Energy,client,2026-08-27,ok,us-en-xcelenergy-panoai-wildfire-01
+energy,https://newsroom.xcelenergy.com/news/xcel-energy-brings-ai-driven-wildfire-detection-to-minnesota,Xcel Energy Newsroom,client,2026-08-27,ok,us-en-xcelenergy-panoai-wildfire-01
+energy,https://www.tdworld.com/digital-innovations/article/21262976/duke-energys-hybrid-approach-to-ai,T&D World,media,2026-08-27,ok,us-en-dukeenergy-sciml-transformer-01
+energy,https://aws.amazon.com/solutions/case-studies/encored-technologies-case-study/,Amazon Web Services,platform,2026-08-27,ok,kr-en-encored-aws-vpp-01
+finance,https://www.ingos.ru/company/news/2022/fcc7dcba-f385-4cd5-859c-08dafe9f0508,Ингосстрах,client,2026-08-27,ok,ru-fi-ingosstrakh-cv-damage-01
+finance,https://platforms.su/project/2868,Цифровой маркетплейс / Dbrain,vendor,2026-08-27,ok,ru-fi-renaissance-dbrain-docai-01
+finance,https://platforms.su/project/2842,Цифровой маркетплейс / Yandex Cloud,vendor,2026-08-27,ok,ru-fi-renaissance-yandexgpt-dms-01
+finance,https://www.comnews.ru/digital-economy/content/244102/2026-03-05/2026-w10/1012/alfa-bank-i-glowbyte-uprostili-valyutnyy-kontrol-pomoschyu-ii-agenta,ComNews,media,2026-08-27,ok,ru-fi-alfabank-glowbyte-currency-01
+finance,https://abreview.ru/ab/news/alfastrakhovanie_otsenit_ubytki_s_pomoshchyu_ii/,АвтоБизнесРевю,media,2026-08-27,ok,ru-fi-alfastrakhovanie-audatex-cv-01
+finance,https://banks.cnews.ru/news/line/2026-06-16_ii_stal_eshche_umnee_vtb_moi,CNews,media,2026-08-27,ok,ru-fi-vtb-robo-advisor-01
+finance,https://vc.ru/ai/1654138-ii-v-t-banke-reshaet-konkretnye-zadachi-i-ne-konkuriruet-s-chelovekom,vc.ru (материал Т-Банка),client,2026-08-27,ok,ru-fi-tbank-gen-t-01
+finance,https://www.sogaz.ru/sogaz/pressroom/release/850576/,СОГАЗ,client,2026-08-27,ok,ru-fi-sogaz-telegram-claims-01
+finance,https://generation-ai.ru/cases/sovcombank,Generation AI / Just AI,vendor,2026-08-27,ok,ru-fi-sovcombank-sova-01
+finance,https://www.akm.ru/press/v_alfa_lizinge_vnedrili_iskusstvennyy_intellekt_dlya_optimizatsii_prodazh_lizingovykh_uslug/,AKM.RU,media,2026-08-27,ok,ru-fi-alfaleasing-valueai-01
+finance,https://www.speechpro.ru/media/news/06-04-2018,ЦРТ / CNews,vendor,2026-08-27,ok,rejected c25 (announcement_only)
+finance,https://www.kommersant.ru/doc/8798861,Коммерсантъ,media,2026-08-27,ok,ru-fi-moex-ai-surveillance-01
+finance,https://openai.com/index/klarna/,OpenAI,platform,2026-08-27,ok,eu-fi-klarna-openai-assistant-01
+finance,https://www.mastercard.com/global/en/business/cybersecurity-fraud-prevention/risk-decisioning/decision-intelligence.html,Mastercard,platform,2026-08-27,blocked,not used (403 Forbidden)
+finance,https://www.reinsurancene.ws/lemonade-shatters-record-by-using-ai-to-settle-a-claim-in-two-seconds/,Reinsurance News,media,2026-08-27,ok,us-fi-lemonade-ai-jim-01
+finance,https://www.dbs.com/newsroom/Harvard_Business_School_examines_DBS_AI_strategy_and_implementation_in_its_first_case_study_focusing_on_AI_in_an_Asian_bank,DBS Newsroom,client,2026-08-27,ok,sg-fi-dbs-ai-strategy-01
+finance,https://www.mastercard.com/global/en/news-and-trends/Insights/2026/ai-is-helping-banks-save-millions-by-transforming-payment-fraud-prevention.html,Mastercard,platform,2026-08-27,blocked,not used (403 Forbidden)
+finance,https://www.bloomberg.com/news/articles/2017-02-28/jpmorgan-marshals-an-army-of-developers-to-automate-high-finance,Bloomberg,media,2026-08-27,blocked,"not used (403 bot-check,  tried WebFetch and fetch-page.mjs)"
+finance,https://www.cdomagazine.tech/aiml/mastercard-launches-decision-intelligence-pro-new-generative-ai-model-for-fraud-detection,CDO Magazine,media,2026-08-27,ok,us-fi-mastercard-decision-intelligence-01
+finance,https://www.abajournal.com/news/article/jpmorgan_chase_uses_tech_to_save_360000_hours_of_annual_work_by_lawyers_and,ABA Journal,media,2026-08-27,ok,us-fi-jpmorgan-coin-01
+finance,https://www.prnewswire.com/news-releases/google-cloud-launches-ai-powered-anti-money-laundering-product-for-financial-institutions-301856403.html,Google Cloud / PR Newswire,platform,2026-08-27,ok,uk-fi-hsbc-googlecloud-aml-01
+finance,https://newsroom.wf.com/news-releases/news-details/2026/Wells-Fargo-Reaches-Major-Digital-Milestones/default.aspx,Wells Fargo Newsroom,client,2026-08-27,ok,us-fi-wellsfargo-fargo-assistant-01
+finance,https://www.cnews.ru/news/line/2026-05-19_sberbank_tehnologii_generativnogo,CNews,media,2026-08-27,ok,rejected c23 (announcement_only)
+healthcare,https://celsus.ai/blog/sczenarii-skrining/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+healthcare,https://celsus.ai/smi/mammogram/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+healthcare,https://sk.ru/news/botkinai-itogi-2021/,Сколково,vendor,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+healthcare,https://vademec.ru/news/2020/08/19/botkin-ai-integrirovalsya-co-stolichnym-eris-dlya-poiska-raka-legkogo-na-kt-snimkakh/,Vademecum,media,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+healthcare,https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik,CNews,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+healthcare,https://www.ixbt.com/news/2024/12/12/v-sberzdorove-pojavilsja-iipomoshnik-na-baze-gigachat.html,iXBT,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+healthcare,https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/,SL Soft,vendor,2026-08-27,ok,ru-hc-slsoft-medsi-voice-01
+healthcare,https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya,МТС Exolve / vc.ru,vendor,2026-08-27,ok,ru-hc-mtt-alfacenter-voice-01
+healthcare,https://robo-voice.ru/case_bot_dlya_gemotest/,RoboVoice / SL Soft,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+healthcare,https://softline.ru/about/news/gemotest-povysil-effektivnost-koll-tsentra-s-pomoshchyu-golosovogo-bota-robovoice-ot-kompanii-sl-sof,Softline,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+healthcare,https://www.speechpro.ru/media/news/11-11-2020,ЦРТ,vendor,2026-08-27,ok,ru-hc-crt-voice2med-01
+healthcare,https://www.vedomosti.ru/technology/articles/2022/06/05/925209-tehnologiyu-raspoznavaniya-rechi,Ведомости,media,2026-08-27,ok,ru-hc-crt-voice2med-01
+healthcare,https://robotmia.ru/blog/detail/sm_clinic,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+healthcare,https://robotmia.ru/perviy-golosovoy-robot-v-medicine-dlya-sm-clinica,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+healthcare,https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/,Lunit,vendor,2026-08-27,ok,se-hc-lunit-capio-01
+healthcare,https://www.itnonline.com/content/lunit-ai-releases-successful-study-results-breast-cancer-screening-deployment,Imaging Technology News,media,2026-08-27,ok,se-hc-lunit-capio-01
+healthcare,https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/,Sheba Medical Center,client,2026-08-27,ok,il-hc-aidoc-sheba-01
+healthcare,https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care,Viz.ai,vendor,2026-08-27,ok,us-hc-vizai-validate-01
+healthcare,https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health,Digital Health News,media,2026-08-27,ok,ke-hc-pendahealth-openai-01
+healthcare,https://openai.com/index/ai-clinical-copilot-penda-health/,OpenAI,vendor,2026-08-27,ok,ke-hc-pendahealth-openai-01
+healthcare,https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/,Microsoft,vendor,2026-08-27,ok,us-hc-nuance-dax-northwestern-01
+healthcare,https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/,Permanente Medicine,client,2026-08-27,ok,us-hc-kaiserpermanente-scribe-01
+healthcare,https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals,Google Cloud,platform,2026-08-27,ok,in-hc-manipal-googlecloud-01
+healthcare,https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/,Microsoft,vendor,2026-08-27,ok,ch-hc-novartis-azure-01
+healthcare,https://www.novartis.com/stories/art-drug-design-technological-age,Novartis,client,2026-08-27,ok,ch-hc-novartis-azure-01
+logistics,https://sber.pro/cases/sgenerirui-marshrut-kak-v-sdek-avtomatizirovali-upravlenie-kurerami/,СберПро Медиа,media,2026-08-27,ok,ru-lg-sdek-routing-01
+logistics,https://www.cnews.ru/news/line/2025-06-11_sdek_vnedryaet_iskusstvennyj,CNews,media,2026-08-27,ok,ru-lg-sdek-routing-01
+logistics,https://www.mosgortrans.ru/press/news/ispolzuem-iskusstvennyy-intellekt-na-vsekh-ploshchadkakh-mosgortransa/,ГУП Мосгортранс,client,2026-08-27,error,"HTTP 503 через WebFetch, не использован напрямую - взят альтернативный релиз того же источника"
+logistics,https://www.retail.ru/news/ozon-novaya-model-umnoy-sortirovki-i-otgruzki-tovarov-povysit-effektivnost-prots-26-maya-2026-278172/,Retail.ru,media,2026-08-27,ok,ru-lg-ozon-sorting-01
+logistics,https://dprom.online/mining/sistema-kontrolya-ustalosti-voditelya-alrosa/,dprom.online,media,2026-08-27,error,"пустой контент через WebFetch и fetch-page.mjs (JS-рендеринг) - кандидат АЛРОСА не использован, заменён кейсом Полюс Логистика"
+logistics,https://www.tadviser.ru/index.php/Проект:Складские_роботы_в_Wildberries,TAdviser,media,2026-08-27,error,HTTP 404 (декодированный и URL-кодированный варианты) - не использован
+logistics,https://www.cnews.ru/news/line/2026-05-26_ozon_razvivaet_sistemu_umnoj,CNews,media,2026-08-27,ok,ru-lg-ozon-sorting-01
+logistics,https://www.sobyanin.ru/ii-delaet-moskovskii-transport-komfortnee-i-bezopasnee,sobyanin.ru (Мэрия Москвы),government,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+logistics,https://mintrans.gov.ru/press-center/news/12846,Минтранс России,government,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+logistics,https://mosgortrans.ru/press/news/kak-iskusstvennyy-intellekt-uluchshaet-rabotu-nazemnogo-transporta/,ГУП Мосгортранс,client,2026-08-27,ok,ru-lg-mosgortrans-opturan-01
+logistics,"https://www.tadviser.ru/index.php/Компания:Мосгортранс,_ГУП",TAdviser,media,2026-08-27,ok,ru-lg-mosgortrans-antison-01
+logistics,https://robotrends.ru/pub/2503/avtomatizaciya-skladov---opyt-wildberries,RoboTrends,media,2026-08-27,ok,ru-lg-wildberries-robots-01
+logistics,https://www.cnews.ru/articles/2022-11-08_kak_nejroseti_sledyat_za_ustalostyu,CNews,media,2026-08-27,ok,"ru-lg-mosgortrans-antison-01, ru-lg-polyus-logistika-fatigue-01"
+logistics,https://abnews.ru/center/news/mosreg/2026/8/20/v-podmoskove-pochta-rossii-sokratila-sroki-dostavki-blagodarya-ii,АБН 24,media,2026-08-27,ok,ru-lg-pochta-teraplan-01
+logistics,https://ar2024.fesco.ru/strategic-report/digitalisation,FESCO,client,2026-08-27,ok,не использован как основа кейса - not_ai (см. rejected c19)
+logistics,https://www.comnews.ru/digital-economy/content/247002/2026-08-21/2026-w34/1012/ii-vykhodit-puti-rzhd-tirazhiruet-cifrovuyu-model-stanciy-vsey-seti,ComNews,media,2026-08-27,ok,ru-lg-rzd-digital-station-01
+logistics,https://yandex.ru/routing/articles/all,Яндекс,vendor,2026-08-27,ok,обзорная страница - источник ссылок на justfood/askona/sibur/iceberry/apteka-aprel/yandex-market
+logistics,https://yandex.ru/routing/articles/sibur/,Яндекс,vendor,2026-08-27,ok,использован только для отклонённого кандидата c23 (out_of_scope)
+logistics,https://www.supplychaindive.com/news/ups-orion-route-planning-analytics-data-logistics/601673/,Supply Chain Dive,media,2026-08-27,ok,us-lg-ups-orion-01
+logistics,https://www.bsr.org/en/case-studies/center-for-technology-and-sustainability-orion-technology-ups,BSR,analyst,2026-08-27,partial,"HTTP 403 через WebFetch; успешно открыт через fetch-page.mjs - использован как us-lg-ups-orion-01"
+logistics,https://www.aboutamazon.com/news/operations/amazon-robotics-robots-fulfillment-center,Amazon,client,2026-08-27,ok,us-lg-amazon-sequoia-01
+logistics,https://press.siemens.com/global/en/pressrelease/deutsche-bahn-and-siemens-launch-pilot-project-predictive-maintenance,Siemens,vendor,2026-08-27,ok,использован только для отклонённого кандидата c33 (no_result - нет метрик)
+logistics,https://www.engadget.com/amazon-says-its-new-ai-powered-robots-reduce-fulfilment-time-by-25-percent-122517342.html,Engadget,media,2026-08-27,ok,us-lg-amazon-sequoia-01
+logistics,https://www.bestpractice.ai/ai-case-study-best-practice/deutsche_bahn_reduces_maintenance_cost_by_25%25_and_delay-causing_failures_using_machine_learning,Best Practice AI,media,2026-08-27,partial,"страница открылась, но кейс Deutsche Bahn не найден в отображённом содержимом - использован для отклонённого кандидата c34 (unverifiable)"
+logistics,https://www.tandfonline.com/doi/full/10.1080/15228053.2023.2300921,Taylor & Francis,academic,2026-08-27,blocked,"HTTP 403 и через WebFetch, и через fetch-page.mjs (JS-челлендж Cloudflare) - Maersk кандидат c31 отклонён как source_unavailable"
+logistics,https://www.researchgate.net/publication/385039143_Application_of_Artificial_intelligence_in_Logistics_40_DHL_case_study_analysis,ResearchGate,academic,2026-08-27,blocked,"HTTP 403 и через WebFetch, и через fetch-page.mjs - DHL кандидат c30 отклонён как source_unavailable"
+logistics,https://www.aicerts.ai/news/jd-com-scales-ai-warehouse-robots-to-transform-global-logistics/,AI CERTs,media,2026-08-27,ok,"HTTP 403 через WebFetch; успешно открыт через fetch-page.mjs - использован как cn-lg-jd-langzutech-01"
+logistics,https://www.ewadirect.com/proceedings/aemps/article/view/15837,EWA Publishing,academic,2026-08-27,partial,редирект 301 на aemps.ewapub.com - фактически открыт по новому адресу
+logistics,https://aemps.ewapub.com/article/view/15837,EWA Publishing,academic,2026-08-27,ok,cn-lg-jd-langzutech-01
+logistics,https://www.tadviser.ru/index.php/Проект:S7_Airlines_Сибирь_Авиакомпания_(Predictive_Analytics_),TAdviser,media,2026-08-27,ok,ru-lg-s7-datadvance-pm-01
+logistics,https://www.hylios.com/intelligence/dhl-deploys-ai-to-transform-last-mile-delivery-operations,Hylios,media,2026-08-27,ok,"использован для отклонённого кандидата c29 - выявлено, что цифра 15-20% является гипотетическим сценарием, а не результатом"
+logistics,https://digitaldefynd.com/IQ/dhl-using-ai-case-study/,DigitalDefynd,media,2026-08-27,ok,использован для отклонённого кандидата c29 - контент-маркетинговая статья без company-specific цифр
+logistics,https://devsdata.com/case-studies/ai-data-science-maersk-tankers-maritime-logistics/,DevsData LLC,vendor,2026-08-27,ok,использован для отклонённого кандидата c32 (no_result - результаты под NDA)
+logistics,https://www.mobilityinfotechlogistics.com/case-study/dhl-supply-chain-route-optimization,Mobility Infotech Logistics,vendor,2026-08-27,ok,использован для отклонённого кандидата c28 (unverifiable)
+logistics,https://www.pumpedu.cz/en/news/ai-in-practice-dhl-has-accelerated-the-delivery-of-parcels-114n,Pumpedu,media,2026-08-27,ok,использован для отклонённого кандидата c29 (без конкретных цифр)
+logistics,https://yandex.ru/routing/articles/justfood/,Яндекс,vendor,2026-08-27,ok,ru-lg-justfood-yandex-01
+logistics,https://aws.amazon.com/solutions/case-studies/?awsf.customer-references-industry=customer-references-transportation-logistics,AWS,platform,2026-08-27,partial,"фильтр по индустрии не применился (JS-рендеринг) - конкретного logistics-кейса не найдено, не использован"
+logistics,https://yandex.ru/routing/articles/yandex-market/,Яндекс,vendor,2026-08-27,ok,ru-lg-yandex-market-delivery-01
+logistics,https://www.tadviser.ru/index.php/Проект:Мосгортранс_(Антисон),TAdviser,media,2026-08-27,error,"HTTP 404 - публикация недоступна для просмотра, не использован"
+logistics,https://www.tadviser.ru/index.php/Мосгортранс_водители_жалуются_система_борьбы_со_сном,TAdviser,media,2026-08-27,error,"HTTP 404 - страница не существует, не использован"
+manufacturing,https://up-pro.ru/library/information_systems/automation_production/kompyuternoe-zreniei-opyt-severstali/,Up-Pro.ru,media,2026-08-27,ok,ru-mf-severstal-cv-quality-01
+manufacturing,https://platforms.su/project/3022,Цифровой маркетплейс platforms.su,platform,2026-08-27,ok,ru-mf-mmk-temp-forecast-01
+manufacturing,https://lipetsk.nlmk.com/ru/media-center/press-releases/nlmk-vnedril-sistemu-iskusstvennogo-intellekta-v-pomoshch-stalevaru/,НЛМК,client,2026-08-27,ok,ru-mf-nlmk-ferroalloy-advisor-01
+manufacturing,"https://www.tadviser.ru/index.php/Проект:Новолипецкий_металлургический_комбинат,_НЛМК_(Сервис_рекомендаций_по_оптимальному_расходу_ферросплавов)",TAdviser,media,2026-08-27,partial,"ru-mf-nlmk-ferroalloy-advisor-01 (вендор Инфосистемы Джет; URL и заголовок увидены в результатах WebSearch, отдельный WebFetch не выполнялся)"
+manufacturing,https://www.cnews.ru/news/line/2026-08-07_prediktivnaya_diagnostika,CNews,media,2026-08-27,ok,ru-mf-evraz-zsmk-predictive-01
+manufacturing,https://www.comnews.ru/digital-economy/content/246794/2026-08-07/2026-w32/1012/prediktivnaya-diagnostika-evraz-zsmk-sekonomila-270-mln-rubley,ComNews,media,2026-08-27,partial,"ru-mf-evraz-zsmk-predictive-01 (второй источник; URL и содержание увидены в результатах WebSearch, отдельный WebFetch не выполнялся)"
+manufacturing,https://rusal.ru/press-center/press-releases/rusal-nachal-primenyat-iskusstvennyy-intellekt-dlya-analiza-kachestva-alyuminievykh-slitkov/,РУСАЛ,client,2026-08-27,ok,ru-mf-rusal-ingot-cv-01
+manufacturing,https://rusal.ru/press-center/press-releases/rusal-vnedryaet-iskusstvennyy-intellekt-v-globalnuyu-sistemu-monitoringa-alyuminievogo-proizvodstva/,РУСАЛ,client,2026-08-27,ok,ru-mf-rusal-eltm-monitoring-01
+manufacturing,https://rusal.ru/press-center/press-releases/rusal-vnedryaet-iskusstvennyy-intellekt-dlya-kontrolya-za-proizvodstvom-splavov/,РУСАЛ,client,2026-08-27,partial,"rejected: ru-mf-rusal-melt-prep-01 (unverifiable) — URL увиден в результатах WebSearch, отдельный WebFetch не выполнялся"
+manufacturing,https://www.novostiitkanala.ru/news/detail.php?ID=196773,Новости ИТ-канала,media,2026-08-27,ok,rejected: ru-mf-omk-wheelset-01 (not_ai)
+manufacturing,https://www.metalinfo.ru/ru/news/123213,Металлоснабжение и сбыт (metalinfo.ru),media,2026-08-27,error,rejected: ru-mf-tmh-weld-inspection-01 (503 Service Unavailable)
+manufacturing,https://spar.org.ua/news-722987-tmh-vnedryaet-kompleks-kontrolya-svarnyh-shvov-na-osnove-nejroseti.html,spar.org.ua,media,2026-08-27,error,rejected: ru-mf-tmh-weld-inspection-01 (404 Not Found)
+manufacturing,https://www.metalinfo.ru/ru/news/s1022.html,Металлоснабжение и сбыт (metalinfo.ru),media,2026-08-27,error,"rejected: ru-mf-tmh-weld-inspection-01 (503 Service Unavailable, повторная попытка)"
+manufacturing,https://www.comnews.ru/digital-economy/content/245820/2026-06-11/2026-w24/1012/odk-vnedrila-ii-dlya-kontrolya-lopatok-dvigatelya-pd-8,ComNews,media,2026-08-27,ok,ru-mf-odk-saturn-blade-cv-01
+manufacturing,https://rostec.ru/media/news/odk-primenyaet-iskusstvennyy-intellekt-dlya-predikativnoy-diagnostiki-gazoturbinnykh-dvigateley-/,Ростех,media,2026-08-27,partial,"rejected: ru-mf-odk-turbine-predictive-01 (duplicate) — URL увиден в результатах WebSearch, отдельный WebFetch не выполнялся"
+manufacturing,https://www.comnews.ru/digital-economy/content/246400/2026-07-14/2026-w29/1012/sveza-usilila-bezopasnost-proizvodstva-pomoschyu-cifrovykh-tekhnologiy,ComNews,media,2026-08-27,ok,ru-mf-sveza-safety-cv-01
+manufacturing,https://www.cnews.ru/news/line/2026-03-05_segezha_grupp_razrabotala,CNews,media,2026-08-27,partial,rejected: ru-mf-segezha-iot-dispatch-01 (not_ai) — URL увиден в результатах WebSearch
+manufacturing,https://www.sinara-group.com/media/news/sber-i-gruppa-sinara-razrabotali-bolee-40-stsenariev-primeneniya-gigachat-v-promyshlennosti/,Sinara Group,client,2026-08-27,partial,rejected: ru-mf-sinara-sber-hackathon-01 (announcement_only) — URL увиден в результатах WebSearch
+manufacturing,https://kamaz.ru/press/news/kompyuternoe_zrenie_ot_kamaz_digital_dlya_kontrolya_kachestva_na_kamaze/,КАМАЗ,client,2026-08-27,ok,ru-mf-kamaz-paint-cv-01
+manufacturing,https://www.comnews.ru/digital-economy/content/231125/2024-01-22/2024-w04/1012/kamaz-ispolzuet-sistemu-kompyuternogo-zreniya-dlya-kontrolya-kachestva,ComNews,media,2026-08-27,partial,"ru-mf-kamaz-paint-cv-01 (второй источник; URL и содержание увидены в результатах WebSearch, отдельный WebFetch не выполнялся)"
+manufacturing,https://prokazan.ru/novosti-tatarstana/view/kamaz-primenaet-nejroseti-v-proizvodstve-i-razrabotke,prokazan.ru,media,2026-08-27,partial,rejected: ru-mf-kamaz-welding-robots-01 (no_result) — URL увиден в результатах WebSearch
+manufacturing,https://platforms.su/project/3059,Цифровой маркетплейс platforms.su,platform,2026-08-27,ok,ru-mf-sibur-ai-lab-pricing-01
+manufacturing,https://platforms.su/project/2827,Цифровой маркетплейс platforms.su,platform,2026-08-27,partial,rejected: ru-mf-sibur-gigachat-upskilling-01 (out_of_scope) — URL увиден в результатах WebSearch
+manufacturing,https://www.mining-portal.ru/news/company_news/-nornikel--vnedryaet-kompyuternoe-zrenie--avtomaticheskie-algoritmyi-i-tsifrovyie-dvoyniki-/,Союз горных инженеров (mining-portal.ru),media,2026-08-27,partial,rejected: ru-mf-nornickel-cv-mining-01 (out_of_scope) — URL увиден в результатах WebSearch
+manufacturing,https://medium.com/zyfra/predictive-maintenance-and-decision-support-systems-in-heavy-industry-2c587615b9b8,Zyfra (Medium),vendor,2026-08-27,partial,rejected: ru-mf-zyfra-generic-01 (no_client) — URL увиден в результатах WebSearch
+manufacturing,https://www.tadviser.ru/index.php/Статья:TAdviser_SummIT_2026:_секция_Искусственный_интеллект,TAdviser,media,2026-08-27,partial,rejected: ru-mf-mmk-motor-diagnostics-01 (unverifiable) — URL увиден в результатах WebSearch
+manufacturing,https://www.geaerospace.com/news/press-releases/ge-aerospace-waygate-technologies-deliver-new-ai-assisted-commercial-jet-engine,GE Aerospace,client,2026-08-27,ok,us-mf-ge-aerospace-borescope-01
+manufacturing,https://www.geaerospace.com/news/press-releases/ge-aerospace-researchers-demonstrate-ai-child-discovers-meaning-behind-objects-and,GE Aerospace,client,2026-08-27,partial,rejected: us-mf-ge-aerospace-child-ai-01 (no_implementation) — URL увиден в результатах WebSearch
+manufacturing,https://aws.amazon.com/solutions/case-studies/bmw-vsas-case-study/,AWS,platform,2026-08-27,ok,de-mf-bmw-vsas-cv-01
+manufacturing,https://aws.amazon.com/blogs/machine-learning/amazon-lookout-for-vision-now-supports-visual-inspection-of-product-defects-at-the-edge/,AWS,platform,2026-08-27,partial,rejected: us-mf-aws-lookout-vision-generic-01 (no_client) — URL увиден в результатах WebSearch
+manufacturing,https://tractian.com/en/case-studies/bosch,Tractian,vendor,2026-08-27,ok,global-mf-bosch-maintenance-tractian-01
+manufacturing,https://www.researchgate.net/publication/372802236_Predictive_Maintenance_for_Hydraulic_Components_Bosch_Rexroth,ResearchGate,academic,2026-08-27,partial,rejected: global-mf-bosch-rexroth-academic-01 (unverifiable) — URL увиден в результатах WebSearch
+manufacturing,https://www.foxconn.com/en-us/press-center/events/csr-events/533,Hon Hai Technology Group (Foxconn),client,2026-08-27,ok,tw-mf-foxconn-nxvae-cv-01
+manufacturing,https://e.huawei.com/en/case-studies/industries/manufacturing/ai-quality-inspection-2023,Huawei,vendor,2026-08-27,partial,rejected: tw-mf-foxconn-huawei-case-01 (unverifiable) — URL увиден в результатах WebSearch
+manufacturing,https://www.tipranks.com/news/private-companies/industrial-customer-case-highlights-predictive-maintenance-gains-at-augury,TipRanks,media,2026-08-27,ok,ca-mf-canfor-augury-pm-01
+manufacturing,https://www.augury.com/blog/machine-health/,Augury,vendor,2026-08-27,partial,rejected: us-mf-augury-purina-01 (out_of_scope) — URL увиден в результатах WebSearch
+manufacturing,https://www.siemens.com/en-us/company/insights/electronics-digital-enterprise-future-technologies/,Siemens,client,2026-08-27,ok,de-mf-siemens-amberg-ai-01
+manufacturing,https://www.gsdcouncil.org/blogs/next-gen-ai-in-action-siemens-elevates-predictive-maintenance-with-generative-ai,GSD Council,media,2026-08-27,partial,rejected: us-mf-siemens-senseye-generic-01 (grade_d_marketing) — URL увиден в результатах WebSearch
+manufacturing,https://landing.ai/wp-content/uploads/2021/11/LandingAI_CaseStudy_Semiconductors.pdf,Landing AI,vendor,2026-08-27,partial,rejected: us-mf-landing-ai-semiconductor-01 (no_client) — URL увиден в результатах WebSearch
+mining,https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82:%C2%AB%D0%93%D0%B0%D0%B7%D0%BF%D1%80%D0%BE%D0%BC_%D0%BD%D0%B5%D1%84%D1%82%D1%8C%C2%BB_%D0%B2%D0%BD%D0%B5%D0%B4%D1%80%D1%8F%D0%B5%D1%82_%D0%B8%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82_%D0%BF%D1%80%D0%B8_%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B5_%C2%AB%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%D0%B0%C2%BB,TAdviser,media,2026-08-27,error,"попытка проверить кейс Газпром нефть + Яндекс, страница вернула 404"
+mining,https://exkavator.ru/mining/news/inf_news/145316_mashinnoe_zrenie_zashchitit_konveyernoe_oborudovanie_nornikelya.html,Exkavator.ru,media,2026-08-27,partial,"кейс машинного зрения на конвейерах Норникеля - текст статьи не получен, только навигация сайта"
+mining,https://www.cnews.ru/news/line/2026-02-26_sibur_uskoryaet_analiticheskie,CNews,media,2026-08-27,ok,ru-mn-sibur-cv-materials-01
+mining,https://www.alrosa.ru/press-center/news/2025/alrosa-vnedrit-iskusstvennyy-intellekt-v-poisk-mestorozhdeniy-almazov/,АЛРОСА,client,2026-08-27,ok,ru-mn-alrosa-exploration-ai-01
+mining,https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy,CIO/Открытые системы,media,2026-08-27,ok,ru-mn-gazpromneft-era-optima-01
+mining,https://up-pro.ru/library/information_systems/automation_production/iskusstvennyj-intellekt-opyt-tatnefti/,Up-pro.ru,media,2026-08-27,ok,ru-mn-tatneft-video-analytics-01
+mining,https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82:%D0%A0%D1%83%D1%81%D0%B0%D0%BB_(%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D1%82%D0%B5%D0%BB%D0%BB%D0%B5%D0%BA%D1%82_(%D0%98%D0%98,_Artificial_intelligence,_AI)),"TAdviser, media, 2026-08-27",error,"попытка проверить кейсы Русал (электролиз/акустика), страница вернула 404"
+mining,https://www.comnews.ru/digital-economy/content/224564/2023-02-22/2023-w08/rosneft-vnedryaet-neyroseti-obrabotku-dannykh-seysmorazvedki,ComNews,media,2026-08-27,ok,ru-mn-rosneft-seismic-nn-01
+mining,https://bestpractice.ai/ai-case-study-best-practice/bhp_saves_$5.5m_by_predicting_mining_truck_maintenance_requirements_with_machine_learning,Best Practice AI,analyst,2026-08-27,partial,"вернул общий листинг кейсов, не конкретную статью про BHP"
+mining,https://gmggroup.org/wp-content/uploads/2023/12/2021-01-11-Rio-Tintos-Experience-with-Automation-and-People.pdf,GMG Group,analyst,2026-08-27,error,"PDF вернул пустое содержимое, кейс Rio Tinto AHS не подтверждён"
+mining,https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025,JPT / Society of Petroleum Engineers,media,2026-08-27,ok,"no-mn-equinor-predictive-maintenance-01, no-mn-equinor-seismic-ai-02"
+mining,https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/freeport-mcmoran-turns-data-into-value,McKinsey,analyst,2026-08-27,error,"HTTP 503, кейс Freeport-McMoRan flotation не подтверждён (попытка 1 из 2)"
+mining,https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning,Best Practice AI,analyst,2026-08-27,ok,au-mn-bhp-truck-maintenance-01
+mining,https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/freeport-mcmoran-turns-data-into-value,McKinsey,analyst,2026-08-27,error,"HTTP 503, кейс Freeport-McMoRan flotation не подтверждён (попытка 2 из 2)"
+mining,https://www.businesswire.com/news/home/20210914006181/en/,BusinessWire,media,2026-08-27,ok,"открыт, но оказался анонсом MOU Rio Tinto/Caterpillar, а не кейсом работающей системы - отклонён (announcement_only)"
+mining,https://www.slb.com/resource-library/case-study-with-navigation/di/eni-using-digital-ai-and-automation-to-drill-beyond-limits,SLB,vendor,2026-08-27,partial,"вернул только навигацию сайта, текст кейса Eni не получен"
+mining,https://www.riotinto.com/en/news/stories/autonomous-trucks-safety,Rio Tinto,client,2026-08-27,error,"404, страница не существует по данному URL"
+mining,https://c3.ai/customers/shell/,C3.ai,vendor,2026-08-27,ok,uk-mn-shell-c3ai-maintenance-01
+mining,https://up-pro.ru/library/information_systems/automation_production/kak-ii-sledit-za-narusheniyami/,Up-pro.ru,media,2026-08-27,ok,ru-mn-nornickel-kgmk-cv-01
+mining,https://www.comnews.ru/digital-economy/content/202357/2019-10-15/2019-w42/vist-grupp-vnedrit-avtomatizirovannuyu-sistemu-dispetcherizacii-taldinskom-mestorozhdeniya,ComNews,media,2026-08-27,ok,ru-mn-vistgroup-dispatch-01
+mining,https://www.mckinsey.com/industries/metals-and-mining/how-we-help-clients/inside-a-mining-companys-ai-transformation,McKinsey,analyst,2026-08-27,error,"HTTP 503, альтернативная попытка подтвердить кейс Freeport-McMoRan"
+mining,https://www.bakerhughes.com/bhc3/case-study/enterprise-ai-inventory-optimization,Baker Hughes / BHC3,vendor,2026-08-27,ok,us-mn-bakerhughes-inventory-01
+mining,https://www.comnews.ru/content/246307/2026-07-09/2026-w28/1009/gazprom-neft-razrabatyvaet-ii-pomoschnika-dlya-upravleniya-dobychey,ComNews,media,2026-08-27,ok,ru-mn-gazpromneft-ai-assistant-02
+mining,https://dprom.online/mining/byespeelotniye-samosvali-ee-eeskusstvyenniyi-eentyellyekt-v-rosseeyiskeeh-shahtah/,Dprom.online,media,2026-08-27,error,"пустое содержимое страницы, кейс СУЭК беспилотные самосвалы не подтверждён"
+mining,https://www.e-mj.com/departments/processing-solutions/agile-approach-to-process-optimization-pays-off-for-copper-producer/,E&MJ,media,2026-08-27,blocked,"HTTP 403, альтернативная попытка подтвердить кейс Freeport-McMoRan flotation"
+mining,https://www.researchgate.net/publication/369378628_Rio_Tinto_Autonomous_Haulage_System,ResearchGate,academic,2026-08-27,blocked,"HTTP 403, альтернативная попытка подтвердить кейс Rio Tinto AHS"
+mining,https://nornickel.digital/cifra_v_nornikele/nornikel_nachal_ispolzovat_sistemu_videokontrolya_sredstv_individualnojj_zashhity,Nornickel.digital,client,2026-08-27,ok,ru-mn-nornickel-ppe-cv-02
+mining,https://www.comnews.ru/content/238217/2025-03-12/2025-w11/1018/polyus-pereosmyslivaet-buduschee-zolotodobychi-kak-iskusstvennyy-intellekt-cifrovizaciya-i-importozameschenie-menyayut-odnu-konservativnykh-otrasley-rossii,ComNews,media,2026-08-27,ok,"попытка проверить кейс Полюс - недостаточно деталей, отклонён (no_result)"
+public,https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82_%22%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%88%D0%BA%D0%BE%D0%BB%D0%B0%22,TAdviser,media,2026-08-27,error,"404 при WebFetch, не использован"
+public,https://www.mos.ru/news/item/165672073/,mos.ru (Правительство Москвы),government,2026-08-27,ok,"ru-pb-mos-contact-center-01, ru-pb-mos-cv-utilities-01"
+public,https://www.mos.ru/city/projects/contact-center/,mos.ru (Правительство Москвы),government,2026-08-27,ok,ru-pb-mos-contact-center-01
+public,https://www.kommersant.ru/doc/8672168,Коммерсантъ,media,2026-08-27,ok,ru-pb-ntechlab-safecity-nn-01
+public,https://e-kontur.ru/enquiry/2684/iskusstvennyy-intellekt-v-rabote-fns,e-kontur.ru,media,2026-08-27,error,"403 Forbidden, не использован"
+public,https://4rome.ru/projects/nash-chat-bot-privel-chetvert-ot-vsego-nabora-studentov/,Четвёртый Рим,vendor,2026-08-27,ok,отклонён кандидат c15 (not_ai)
+public,https://generation-ai.ru/cases/skyeng-content-pipeline,generation-ai.ru,media,2026-08-27,ok,ru-pb-skyeng-content-01
+public,https://ru-bezh.ru/kompanii-i-ryinki/news/26/05/19/ntechlab-predstavila-na-tsipr-2026-ii-produkty-povedencheskaya-a,RUБЕЖ,media,2026-08-27,ok,ru-pb-ntechlab-safecity-nn-01
+public,https://www.cnews.ru/news/line/2026-03-17_ntechlab_i_netvision_vnedrili_videoanalitiku,CNews,media,2026-08-27,ok,ru-pb-ntechlab-safecity-penza-01
+public,https://habr.com/ru/companies/skyeng/articles/818567/,Skyeng (блог на Habr),client,2026-08-27,ok,ru-pb-skyeng-content-01
+public,https://www.khanacademy.org/schools/case-studies/newark-public-schools,Khan Academy,vendor,2026-08-27,ok,us-pb-khanacademy-newark-01
+public,https://www.tech.gov.sg/technews/how-govtech-uses-ai-to-enhance-digital-public-services/,GovTech Singapore,government,2026-08-27,ok,"sg-pb-govtech-oneservice-01, sg-pb-govtech-maestro-mom-01"
+public,https://ai-hub.host/case-studies/duolingo-gpt4,AIHub,media,2026-08-27,partial,"страница не содержала текста кейса, не использована"
+public,https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_%D0%B2_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9_%D0%BD%D0%B0%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2%D0%BE%D0%B9_%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B5_(%D0%A4%D0%9D%D0%A1),TAdviser,media,2026-08-27,ok,"справочно, отклонён кандидат c29 (no_result), открыт через fetch-page.mjs"
+public,https://www.eastrussia.ru/news/nomera-v-otelyakh-cosmos-budut-slushat-golosa-sber-sberdevices-i-set-oteley-dogovorilis-ob-umnom-bud/,EastRussia,media,2026-08-27,ok,отклонён кандидат c16 (announcement_only)
+public,https://socialprotectionai.org/use-case/EST-001,socialprotectionai.org,analyst,2026-08-27,error,"401 Unauthorized, не использован (кандидат c32 отклонён)"
+public,https://aiexpert.network/case-study-duolingo-transforms-language-learning-through-ai/,AI Expert Network (AIX),media,2026-08-27,ok,us-pb-duolingo-max-01
+public,https://pravo.ru/company_news/258472/,Право.ру,media,2026-08-27,ok,"ru-pb-pravotech-legal-ai-01, отклонены кандидаты c26/c27 (out_of_scope)"
+public,https://platforms.su/project/2913,platforms.su,vendor,2026-08-27,ok,ru-pb-pravotech-legal-ai-01
+public,https://interoperable-europe.ec.europa.eu/collection/open-source-observatory-osor/document/digital-public-services-based-open-source-case-study-burokratt,Interoperable Europe (Европейская комиссия),government,2026-08-27,ok,ee-pb-burokratt-01
+public,https://shkolamoskva.ru/news/trend-na-personalizacziyu-kakie-novye-servisy-i-funkczii-poyavilis-v-moskovskoj-elektronnoj-shkole/,Школа Москвы (shkolamoskva.ru),government,2026-08-27,ok,ru-pb-mesh-ai-tutor-01
+public,https://doczilla.pro/kak_yuristy_ispolzuyut_ai_v_2024,Doczilla,vendor,2026-08-27,ok,отклонён кандидат c21 (no_client)
+public,https://www.comnews.ru/content/235913/2024-10-25/2024-w43/1007/mincifry-dokrutit-maksa-k-novomu-godu,ComNews,media,2026-08-27,ok,ru-pb-gosuslugi-max-01
+public,https://www.naumen.ru/events/news/4315/,Naumen,vendor,2026-08-27,ok,отклонён кандидат c20 (no_client)
+public,https://stratpro.hse.ru/human-success/news/959419313.html,НИУ ВШЭ,academic,2026-08-27,ok,отклонён кандидат c22 (announcement_only)
+public,https://mospravda.ru/2026/06/08/824458/,Московская правда,media,2026-08-27,partial,"получена только навигационная разметка без текста статьи, не использован"
+public,https://travel.yandex.ru/journal/kak-iskusstvennyj-intellekt-oblegchit-planirovanie-puteshestvij/,Яндекс Путешествия,client,2026-08-27,blocked,"CAPTCHA и через WebFetch, и через fetch-page.mjs; отклонён кандидат c18 (source_unavailable)"
+public,https://cosmosgroup.ru/about/press/cosmos-hotel-group-i-t1-stali-pobeditelami-konkursa-1sproekt-goda,Cosmos Hotel Group,client,2026-08-27,ok,отклонён кандидат c17 (not_ai)
+public,https://vc.ru/legal/2809497-fns-i-ii-kak-nalogovaya-kontroliruet-zarubezhnye-scheta,vc.ru,media,2026-08-27,ok,ru-pb-fns-foreign-accounts-01
+public,https://www.rbc.ru/rbcfreenews/65bb95969a794712f178c261,РБК,media,2026-08-27,error,"401 Unauthorized, не использован"
+public,https://horecainsider.ru/hitech/58-it/751-ai,horecainsider.ru,media,2026-08-27,error,"редирект на hotelinsider.ru не выполнялся дальше, не использован"
+public,https://www.cnews.ru/news/line/2026-08-12_ii_stanovitsya_kanalom_prodazh,CNews,media,2026-08-27,ok,отклонён кандидат c19 (not_ai / no_implementation)
+public,https://aws.amazon.com/solutions/case-studies/govtech/,Amazon Web Services,platform,2026-08-27,ok,sg-pb-govtech-maestro-mom-01
+public,https://blog.govnet.co.uk/technology/ai-in-government-case-studies,govnet.co.uk,media,2026-08-27,ok,отклонён кандидат c30 (unverifiable) — не использован как источник кейса
+recovered,"https://www.tadviser.ru/index.php/Проект:Русал_(Искусственный_интеллект_(ИИ,_Artificial_intelligence,_AI))",TAdviser,media,2026-08-27,ok,ru-mf-rusal-machine-hearing-01
+retail,https://www.retail.ru/cases/videoanalitika-m-video-eldorado-30-000-kamer-odin-kompyuter-i-neyroset/,Retail.ru,media,2026-08-27,ok,ru-rt-mvideo-video-analytics-01
+retail,https://www.x5.ru/en/news/x5-introduces-solutions-for-automated-demand-and-replenishment-planning/,X5 Group,client,2026-08-27,error,не использован (404)
+retail,https://sidorinlab.ru/blog/vkusvill-iskusstvennyij-intellekt-v-klientskom-servise,Sidorin Lab,media,2026-08-27,ok,отклонён как no_result (rt-018)
+retail,https://napoleonit.ru/blog/razrabotka-ml-produkta-dlya-riteyla-kak-my-sozdavali-powerprice,Napoleon IT,vendor,2026-08-27,ok,"фон (клиент не назван, в кейсы не включён)"
+retail,https://new-retail.ru/tehnologii/nevidimyy_sotrudnik_kak_iskusstvennyy_intellekt_beret_pod_kontrol_polki_kassy_i_grafiki/,New Retail,media,2026-08-27,ok,ru-rt-magnit-headcount-01
+retail,https://www.tadviser.ru/index.php/Статья:Цифровые_технологии_в_X5_Retail_Group,TAdviser,media,2026-08-27,error,не использован (404)
+retail,https://rb.ru/columns/demand-forecasting-x5/,RB.RU,media,2026-08-27,ok,ru-rt-x5-demand-forecast-01
+retail,https://www.cnews.ru/news/line/2026-06-04_wildberries_dobavit_ii-assistenta,CNews,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+retail,https://www.ixbt.com/news/2026/08/21/429485-v-wildberries-prokacali-ii-tovary-teper-sravnivaiutsia-po-otzyvam-i-realnym-scenariiam.html,iXBT,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+retail,https://navicons.com/case/rigla/,Navicon,vendor,2026-08-27,ok,отклонён как no_result (rt-019)
+retail,https://www.comnews.ru/digital-economy/content/232779/2024-04-18/2024-w16/1012/detskiy-mir-perekhodit-sistemu-upravleniya-rasprodazhami-baze-ii,ComNews,media,2026-08-27,ok,ru-rt-detmir-b1-pricing-01
+retail,https://www.cnews.ru/news/line/2025-06-11_fix_price_masshtabiroval_sistemu,CNews,media,2026-08-27,ok,ru-rt-fixprice-video-analytics-01
+retail,https://tass.ru/ekonomika/25128137,ТАСС,media,2026-08-27,blocked,не использован (403)
+retail,https://vc.ru/marketplace/419931-vsevidyashee-oko-v-riteile-keis-h5-group,vc.ru,media,2026-08-27,ok,ru-rt-x5-video-analytics-01
+retail,https://vc.ru/id6006806/2977263-neyroseti-na-wildberries,vc.ru,media,2026-08-27,ok,ru-rt-wildberries-genai-search-01
+retail,https://www.forbes.ru/newsroom/tehnologii/436107-mvideo-eldorado-vnedrila-neyroset-dlya-otvetov-na-voprosy-pokupateley,Forbes.ru,media,2026-08-27,blocked,"не использован — отдавал только закодированное изображение, без текста (WebFetch и fetch-page.mjs)"
+retail,https://www.tadviser.ru/index.php/Проект:Тандер_Сеть_магазинов_Магнит,TAdviser,media,2026-08-27,error,не использован — открылась другая (несвязанная) статья проекта из-за проблемы кодирования URL
+retail,https://www.instacart.com/company/tech-innovation/building-the-intent-engine-how-instacart-is-revamping-query-understanding-with-llms,Instacart,client,2026-08-27,partial,редирект на company.instacart.com — контент получен по новому URL
+retail,https://engineering.zalando.com/posts/2024/12/gnn-recommendations-zalando.html,Zalando Engineering Blog,client,2026-08-27,ok,de-rt-zalando-gnn-recs-01
+retail,https://company.instacart.com/tech-innovation/building-the-intent-engine-how-instacart-is-revamping-query-understanding-with-llms,Instacart,client,2026-08-27,ok,us-rt-instacart-intent-engine-01
+retail,https://www.cnews.ru/news/line/2025-11-26_magnit_protestiruet_umnye,CNews,media,2026-08-27,ok,ru-rt-magnit-smart-scales-01
+retail,https://retail-loyalty.org/news/m-video-eldorado-zapustila-neyroset-dlya-avtomatizatsii-kommunikatsii-sotrudnikov/,Retail Loyalty,media,2026-08-27,ok,ru-rt-mvideo-autofaq-01
+retail,https://aws.amazon.com/solutions/case-studies/biggo/,AWS Customer Stories,platform,2026-08-27,ok,tw-rt-biggo-genai-content-01
+retail,https://cloud.google.com/customers/bestbuy,Google Cloud,platform,2026-08-27,partial,us-rt-bestbuy-gift-finder-01 (контент получен частично/обрезан)
+retail,https://www.relexsolutions.com/resources/case-one-stop/,RELEX Solutions,vendor,2026-08-27,ok,uk-rt-onestop-relex-forecast-01
+retail,https://aws.amazon.com/solutions/case-studies/tapestry-generative-ai-case-study/,AWS Customer Stories,platform,2026-08-27,ok,us-rt-tapestry-tellrexy-01
+retail,https://bit-tech.io/blog/ntechlab-rossiyskiy-ii-servis-bit-zashchitil-magaziny-ot-krazh-na-2-mlrd-rubley/,BIT / NtechLab,vendor,2026-08-27,ok,ru-rt-bit-ntechlab-antitheft-01
+retail,https://habr.com/ru/companies/fix_price/news/933730/,Fix Price (Habr),client,2026-08-27,ok,ru-rt-fixprice-video-analytics-01
+retail,https://techora.ru/avito-ranker-3-ispolzuet-100-signalov-2026-07-09,Techora,media,2026-08-27,blocked,не использован — антибот-проверка вернула служебную страницу без контента
+retail,https://rostec.ru/media/news/otechestvennyy-ii-predotvratil-krazhi-v-magazinakh-bolee-chem-na-2-mlrd-rubley/,Ростех,media,2026-08-27,error,не использован (через fetch-page.mjs — HTTP 503)
+retail,https://www.tadviser.ru/index.php/Продукт:Avito_Ranker,TAdviser,media,2026-08-27,ok,ru-rt-avito-ranker-01 (получен через fetch-page.mjs)
+retail,"https://zdrav.expert/index.php/Проект:Аптеки_36,6_(Искусственный_интеллект_(ИИ,_Artificial_intelligence,_AI))",Zdrav.Expert (TAdviser),media,2026-08-27,ok,ru-rt-apteka366-ai-agent-01 (получен через fetch-page.mjs)
+telecom,https://www.speechpro.ru/media/news/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoj-analitiki-crt,ЦРТ (speechpro.ru),vendor,2026-08-27,ok,"Кейс ru-tl-megafon-speech-crt-01 — проблема, решение, метрики"
+telecom,https://vc.ru/id553833/154322-vkalyvayut-roboty-kak-rechevaya-analitika-uluchshaet-rabotu-koll-centrov-telekom-kompanii,ЦРТ на vc.ru,vendor,2026-08-27,ok,Кейс ru-tl-megafon-speech-crt-01 — технические детали Smart Logger
+telecom,https://autofaq.ai/case/rostelecom,AutoFAQ,vendor,2026-08-27,ok,"Кейс ru-tl-rostelecom-cdt-autofaq-01 — проблема, решение, метрики"
+telecom,https://blog.rt.ru/b2c/kak-golosovoy-bot-rostelekoma-rabotaet-s-obrashcheniyami-abonentov.htm,Ростелеком (blog.rt.ru),client,2026-08-27,ok,Кейс ru-tl-rostelecom-voicebot-01 — описание работы бота
+telecom,https://www.sostav.ru/publication/kejs-kak-dom-ru-poluchil-prirost-zayavok-i-konversii-blagodarya-mashinnomu-obucheniyu-30936.html,Sostav,media,2026-08-27,ok,"Кейс ru-tl-domru-ml-marketing-01 — проблема, решение, метрики"
+telecom,https://ria.ru/20260319/bilayn-2081653989.html,РИА Новости,media,2026-08-27,ok,"Кандидат tl-cand-08 — отклонён, использован для контекста о платформе ИИ-агентов Билайн"
+telecom,https://www.ixbt.com/news/2026/08/10/427361-odnoi-knopkoi-bilain-naucil-ii-prinimat-reklamnye-zvonki-vmesto-abonentov.html,iXBT,media,2026-08-27,ok,Кандидат tl-cand-09 — отклонён (нет измеримого результата)
+telecom,https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82:Tele2_%D0%93%D0%BE%D0%BB%D0%BE%D1%81%D0%BE%D0%B2%D0%BE%D0%B9_%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B0%D1%81%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BD%D1%82,TAdviser,media,2026-08-27,blocked,"Страница вернула 404, не использована"
+telecom,https://www.ibm.com/case-studies/vodafone-tobi,IBM,vendor,2026-08-27,ok,Кейс gb-tl-vodafone-ibm-tobi-testing-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://claude.com/customers/skt,Anthropic,platform,2026-08-27,ok,Кейс kr-tl-sktelecom-claude-01 — метрики качества ответов
+telecom,https://www.genesys.com/en-gb/customer-stories/vodafone,Genesys,vendor,2026-08-27,ok,Кейс de-tl-vodafone-genesys-tobi-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://www.comnews.ru/content/246159/2026-07-02/2026-w27/1010/opyt-bilayn-biznes-kak-prediktivnyy-obzvon-menyaet-rabotu-kontakt-centrov,ComNews,media,2026-08-27,ok,"Кейс ru-tl-beeline-predictive-dialer-01 — проблема, решение, метрики"
+telecom,https://www.sostav.ru/publication/tele2-58794.html,Sostav,media,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — история продукта (Астра)
+telecom,https://www.cnews.ru/news/line/2025-06-20_t2_vnedrit_golosovogo_assistenta,CNews,media,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — независимое подтверждение
+telecom,https://habr.com/ru/amp/publications/904162,Habr,media,2026-08-27,ok,"Кейс ru-tl-rutube-moderation-01 — проблема, решение, метрики"
+telecom,https://habr.com/ru/amp/publications/1046391,Кинопоиск на Habr,client,2026-08-27,ok,"Кейс ru-tl-kinopoisk-recommender-01 — проблема, решение, технология"
+telecom,https://www.company.rt.ru/press/news/d476715/,Ростелеком,client,2026-08-27,ok,"Кейс ru-tl-rostelecom-voicebot-01 — официальный пресс-релиз, метрики"
+telecom,https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva,Т2,client,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — официальный пресс-релиз
+telecom,https://www.cti.ru/about/success-story/ao-er-telekom-kholding/,CTI,vendor,2026-08-27,blocked,HTTP 503 через WebFetch и через fetch-page.mjs — кандидат tl-cand-20 отклонён
+telecom,https://openai.com/index/deutsche-telekom/,OpenAI,platform,2026-08-27,ok,Кейс de-tl-telekom-openai-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://www.fromtech.ru/cases/voice-robot/,Fromtech,vendor,2026-08-27,ok,"Кейс ru-tl-federal-operator-nbo-voice-01 — проблема, решение, метрики"
+telecom,https://www.ericsson.com/en/news/2026/6/the-ran-gets-smarter-ericsson-puts-ai-where-it-matters,Ericsson,vendor,2026-08-27,ok,"Кандидат tl-cand-34 — отклонён (нет результата, привязанного к одному клиенту)"
+telecom,https://www.bestpractice.ai/ai-case-study-best-practice/verizon_monitors_and_optimises_network_performance_in_real-tim_using_machine_learning_to_analyse_network_interface_data,Best Practice AI,analyst,2026-08-27,partial,"Редирект на общий каталог кейсов, конкретный текст по Verizon не получен — кандидат tl-cand-33 отклонён"
+telecom,https://www.digitalhumans.com/case-studies/deutsche-telekom-case-study,UneeQ,vendor,2026-08-27,ok,"Кейс de-tl-telekom-uneeq-01 — проблема, решение, метрики"
+telecom,https://friendli.ai/customers/sk-telecom,FriendliAI,vendor,2026-08-27,ok,"Кандидат tl-cand-31 — отклонён (другая инициатива, инфраструктурные метрики)"
+telecom,https://www.marketingweek.com/vodafone-chatbot-customer-experience/,Marketing Week,media,2026-08-27,blocked,"HTTP 403 — кандидат tl-cand-24 отклонён, цифры не подтверждены"
+telecom,https://news.sktelecom.com/en/1647,SK Telecom Newsroom,client,2026-08-27,ok,Кейс kr-tl-sktelecom-claude-01 — официальный пресс-релиз клиента
+telecom,https://rasa.community/customers/orange/,Rasa,vendor,2026-08-27,blocked,HTTP 404 — кандидат tl-cand-35 отклонён

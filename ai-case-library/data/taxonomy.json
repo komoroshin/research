@@ -1,0 +1,390 @@
+{
+  "version": "1.1.0",
+  "updated": "2026-08-26",
+  "note": "Единая нормализованная таксономия. Все значения в cases.json обязаны использовать только id из этого файла. Расширять централизованно, а не по инициативе отдельного исследователя.",
+
+  "industries": [
+    { "id": "healthcare", "label_ru": "Здравоохранение", "label_en": "Healthcare",
+      "subindustries": [
+        { "id": "clinics", "label_ru": "Клиники / амбулаторное звено", "label_en": "Clinics" },
+        { "id": "hospitals", "label_ru": "Стационары / больницы", "label_en": "Hospitals" },
+        { "id": "rehabilitation", "label_ru": "Реабилитация", "label_en": "Rehabilitation" },
+        { "id": "pharma", "label_ru": "Фарма", "label_en": "Pharma" },
+        { "id": "diagnostics", "label_ru": "Диагностика / лучевая диагностика", "label_en": "Diagnostics" },
+        { "id": "telemedicine", "label_ru": "Телемедицина", "label_en": "Telemedicine" },
+        { "id": "medtech", "label_ru": "Медтех / оборудование", "label_en": "MedTech" },
+        { "id": "health-insurance", "label_ru": "ОМС / ДМС", "label_en": "Health insurance" }
+      ]
+    },
+    { "id": "construction-realestate", "label_ru": "Строительство и недвижимость", "label_en": "Construction & Real Estate",
+      "subindustries": [
+        { "id": "developers", "label_ru": "Девелоперы", "label_en": "Developers" },
+        { "id": "construction", "label_ru": "Строительный подряд", "label_en": "Construction contracting" },
+        { "id": "facility-management", "label_ru": "Эксплуатация / FM", "label_en": "Facility management" },
+        { "id": "commercial-realestate", "label_ru": "Коммерческая недвижимость", "label_en": "Commercial real estate" },
+        { "id": "design-engineering", "label_ru": "Проектирование / BIM", "label_en": "Design & engineering" },
+        { "id": "building-materials", "label_ru": "Стройматериалы", "label_en": "Building materials" },
+        { "id": "infrastructure", "label_ru": "Инфраструктура / дороги", "label_en": "Infrastructure" }
+      ]
+    },
+    { "id": "energy-utilities", "label_ru": "Энергетика и ЖКХ", "label_en": "Energy & Utilities",
+      "subindustries": [
+        { "id": "electric-grids", "label_ru": "Электросети", "label_en": "Electric grids" },
+        { "id": "generation", "label_ru": "Генерация", "label_en": "Generation" },
+        { "id": "utilities", "label_ru": "ЖКХ / тепло / вода", "label_en": "Utilities" },
+        { "id": "energy-trading", "label_ru": "Энерготрейдинг", "label_en": "Energy trading" },
+        { "id": "renewables", "label_ru": "ВИЭ", "label_en": "Renewables" },
+        { "id": "nuclear", "label_ru": "Атомная энергетика", "label_en": "Nuclear" }
+      ]
+    },
+    { "id": "mining-oil-gas", "label_ru": "Добыча, нефть и газ", "label_en": "Mining / Oil & Gas",
+      "subindustries": [
+        { "id": "mining", "label_ru": "Горная добыча", "label_en": "Mining" },
+        { "id": "oil-extraction", "label_ru": "Нефтедобыча", "label_en": "Oil extraction" },
+        { "id": "gas", "label_ru": "Газ / СПГ", "label_en": "Gas" },
+        { "id": "refining", "label_ru": "Переработка / нефтехимия", "label_en": "Refining & processing" },
+        { "id": "oilfield-services", "label_ru": "Нефтесервис", "label_en": "Oilfield services" }
+      ]
+    },
+    { "id": "manufacturing", "label_ru": "Промышленное производство", "label_en": "Manufacturing",
+      "subindustries": [
+        { "id": "industrial-production", "label_ru": "Дискретное производство", "label_en": "Industrial production" },
+        { "id": "machinery", "label_ru": "Машиностроение", "label_en": "Machinery" },
+        { "id": "metallurgy", "label_ru": "Металлургия", "label_en": "Metallurgy" },
+        { "id": "chemicals", "label_ru": "Химия", "label_en": "Chemicals" },
+        { "id": "automotive", "label_ru": "Автопром", "label_en": "Automotive" },
+        { "id": "electronics", "label_ru": "Электроника", "label_en": "Electronics" },
+        { "id": "pulp-paper", "label_ru": "ЦБП / деревообработка", "label_en": "Pulp & paper" },
+        { "id": "aerospace-defense", "label_ru": "Авиакосмос", "label_en": "Aerospace" }
+      ]
+    },
+    { "id": "retail-ecommerce", "label_ru": "Ритейл, FMCG и e-commerce", "label_en": "Retail / FMCG / E-commerce",
+      "subindustries": [
+        { "id": "grocery-retail", "label_ru": "Продуктовый ритейл", "label_en": "Grocery retail" },
+        { "id": "pharmacy-retail", "label_ru": "Аптечный ритейл", "label_en": "Pharmacy retail" },
+        { "id": "marketplaces", "label_ru": "Маркетплейсы", "label_en": "Marketplaces" },
+        { "id": "fmcg", "label_ru": "FMCG-производители", "label_en": "FMCG" },
+        { "id": "d2c", "label_ru": "D2C / бренды", "label_en": "D2C" },
+        { "id": "fashion-retail", "label_ru": "Fashion-ритейл", "label_en": "Fashion retail" },
+        { "id": "specialty-retail", "label_ru": "Специализированный ритейл", "label_en": "Specialty retail" },
+        { "id": "horeca", "label_ru": "HoReCa / рестораны", "label_en": "HoReCa" }
+      ]
+    },
+    { "id": "finance-insurance", "label_ru": "Финансы и страхование", "label_en": "Finance & Insurance",
+      "subindustries": [
+        { "id": "banking", "label_ru": "Банки", "label_en": "Banking" },
+        { "id": "fintech", "label_ru": "Финтех", "label_en": "Fintech" },
+        { "id": "insurance", "label_ru": "Страхование", "label_en": "Insurance" },
+        { "id": "payments", "label_ru": "Платежи / эквайринг", "label_en": "Payments" },
+        { "id": "asset-management", "label_ru": "Управление активами", "label_en": "Asset management" },
+        { "id": "leasing", "label_ru": "Лизинг / факторинг", "label_en": "Leasing" }
+      ]
+    },
+    { "id": "logistics-transport", "label_ru": "Логистика и транспорт", "label_en": "Logistics & Transport",
+      "subindustries": [
+        { "id": "logistics", "label_ru": "Логистические операторы", "label_en": "Logistics operators" },
+        { "id": "delivery", "label_ru": "Последняя миля / доставка", "label_en": "Last-mile delivery" },
+        { "id": "warehousing", "label_ru": "Складская логистика", "label_en": "Warehousing" },
+        { "id": "aviation", "label_ru": "Авиация", "label_en": "Aviation" },
+        { "id": "railway", "label_ru": "Железные дороги", "label_en": "Railway" },
+        { "id": "maritime", "label_ru": "Морские перевозки / порты", "label_en": "Maritime & ports" },
+        { "id": "fleets", "label_ru": "Автопарки / грузоперевозки", "label_en": "Fleets & trucking" },
+        { "id": "urban-transport", "label_ru": "Городской транспорт", "label_en": "Urban transport" }
+      ]
+    },
+    { "id": "telecom", "label_ru": "Телеком и связь", "label_en": "Telecom",
+      "subindustries": [
+        { "id": "telecom-operators", "label_ru": "Операторы связи", "label_en": "Telecom operators" },
+        { "id": "isp", "label_ru": "Интернет-провайдеры", "label_en": "ISP" },
+        { "id": "contact-centers", "label_ru": "Контакт-центры / BPO", "label_en": "Contact centers & BPO" },
+        { "id": "media-entertainment", "label_ru": "Медиа и развлечения", "label_en": "Media & entertainment" }
+      ]
+    },
+    { "id": "agriculture-food", "label_ru": "АПК, рыболовство и пищепром", "label_en": "Agriculture / Fisheries / Food",
+      "subindustries": [
+        { "id": "crop-farming", "label_ru": "Растениеводство", "label_en": "Crop farming" },
+        { "id": "livestock", "label_ru": "Животноводство", "label_en": "Livestock" },
+        { "id": "fisheries", "label_ru": "Рыболовство", "label_en": "Fisheries" },
+        { "id": "aquaculture", "label_ru": "Аквакультура", "label_en": "Aquaculture" },
+        { "id": "food-processing", "label_ru": "Пищевая переработка", "label_en": "Food processing" },
+        { "id": "agri-inputs", "label_ru": "Агрохимия и семена", "label_en": "Agri inputs" }
+      ]
+    },
+    { "id": "education", "label_ru": "Образование", "label_en": "Education",
+      "subindustries": [
+        { "id": "universities", "label_ru": "Университеты", "label_en": "Universities" },
+        { "id": "edtech", "label_ru": "EdTech", "label_en": "EdTech" },
+        { "id": "corporate-learning", "label_ru": "Корпоративное обучение", "label_en": "Corporate learning" },
+        { "id": "schools", "label_ru": "Школьное образование", "label_en": "Schools" }
+      ]
+    },
+    { "id": "professional-services", "label_ru": "Профессиональные услуги", "label_en": "Professional Services",
+      "subindustries": [
+        { "id": "legal", "label_ru": "Юридические услуги", "label_en": "Legal" },
+        { "id": "consulting", "label_ru": "Консалтинг", "label_en": "Consulting" },
+        { "id": "accounting-audit", "label_ru": "Аудит и бухгалтерия", "label_en": "Accounting & audit" },
+        { "id": "recruiting", "label_ru": "Рекрутинг / HR-услуги", "label_en": "Recruiting" },
+        { "id": "marketing-agencies", "label_ru": "Маркетинговые агентства", "label_en": "Marketing agencies" },
+        { "id": "it-services", "label_ru": "ИТ-услуги и разработка", "label_en": "IT services" }
+      ]
+    },
+    { "id": "public-sector", "label_ru": "Госсектор", "label_en": "Public Sector",
+      "subindustries": [
+        { "id": "government-services", "label_ru": "Госуслуги", "label_en": "Government services" },
+        { "id": "municipal", "label_ru": "Городское управление", "label_en": "Municipal" },
+        { "id": "defense-security", "label_ru": "Безопасность", "label_en": "Security" },
+        { "id": "social-services", "label_ru": "Социальная сфера", "label_en": "Social services" },
+        { "id": "tax-customs", "label_ru": "Налоги и таможня", "label_en": "Tax & customs" }
+      ]
+    },
+    { "id": "technology", "label_ru": "Технологические компании", "label_en": "Technology",
+      "subindustries": [
+        { "id": "software-vendors", "label_ru": "Софтверные вендоры", "label_en": "Software vendors" },
+        { "id": "internet-platforms", "label_ru": "Интернет-платформы", "label_en": "Internet platforms" },
+        { "id": "cloud-providers", "label_ru": "Облачные провайдеры", "label_en": "Cloud providers" },
+        { "id": "cybersecurity", "label_ru": "Кибербезопасность", "label_en": "Cybersecurity" }
+      ]
+    },
+    { "id": "hospitality-travel", "label_ru": "Туризм и гостеприимство", "label_en": "Hospitality & Travel",
+      "subindustries": [
+        { "id": "hotels", "label_ru": "Отели", "label_en": "Hotels" },
+        { "id": "travel-booking", "label_ru": "Тревел / бронирование", "label_en": "Travel & booking" },
+        { "id": "sports-leisure", "label_ru": "Спорт и досуг", "label_en": "Sports & leisure" }
+      ]
+    }
+  ],
+
+  "business_functions": [
+    { "id": "customer-facing", "label_ru": "Работа с клиентом", "label_en": "Customer-facing" },
+    { "id": "commercial", "label_ru": "Коммерция (sales/marketing)", "label_en": "Commercial" },
+    { "id": "operations", "label_ru": "Операционная деятельность", "label_en": "Operations" },
+    { "id": "production", "label_ru": "Производство", "label_en": "Production" },
+    { "id": "supply-chain-function", "label_ru": "Цепочка поставок", "label_en": "Supply chain" },
+    { "id": "back-office", "label_ru": "Бэк-офис", "label_en": "Back office" },
+    { "id": "finance-function", "label_ru": "Финансы", "label_en": "Finance" },
+    { "id": "hr-function", "label_ru": "HR", "label_en": "HR" },
+    { "id": "legal-compliance-function", "label_ru": "Юридическая функция и комплаенс", "label_en": "Legal & compliance" },
+    { "id": "it-function", "label_ru": "ИТ", "label_en": "IT" },
+    { "id": "rnd", "label_ru": "R&D", "label_en": "R&D" },
+    { "id": "asset-management-function", "label_ru": "Управление активами", "label_en": "Asset management" },
+    { "id": "hse", "label_ru": "Охрана труда и безопасность", "label_en": "HSE & safety" },
+    { "id": "clinical", "label_ru": "Клиническая функция", "label_en": "Clinical" }
+  ],
+
+  "business_processes": [
+    { "id": "customer-support", "label_ru": "Поддержка / контакт-центр", "label_en": "Customer Support / Contact Center", "function": "customer-facing" },
+    { "id": "sales", "label_ru": "Продажи", "label_en": "Sales", "function": "commercial" },
+    { "id": "marketing", "label_ru": "Маркетинг", "label_en": "Marketing", "function": "commercial" },
+    { "id": "document-processing", "label_ru": "Обработка документов", "label_en": "Document Processing", "function": "back-office" },
+    { "id": "knowledge-management", "label_ru": "Управление знаниями / RAG", "label_en": "Knowledge Management / RAG", "function": "operations" },
+    { "id": "legal-compliance", "label_ru": "Юридические задачи и комплаенс", "label_en": "Legal / Compliance", "function": "legal-compliance-function" },
+    { "id": "procurement-tenders", "label_ru": "Закупки и тендеры", "label_en": "Procurement / Tenders", "function": "supply-chain-function" },
+    { "id": "finance-accounting", "label_ru": "Финансы и учёт", "label_en": "Finance / Accounting / Back Office", "function": "finance-function" },
+    { "id": "hr-recruitment", "label_ru": "HR и подбор персонала", "label_en": "HR / Recruitment", "function": "hr-function" },
+    { "id": "scheduling-dispatching", "label_ru": "Планирование и диспетчеризация", "label_en": "Scheduling / Dispatching", "function": "operations" },
+    { "id": "supply-chain", "label_ru": "Цепочка поставок", "label_en": "Supply Chain", "function": "supply-chain-function" },
+    { "id": "inventory", "label_ru": "Запасы и ассортимент", "label_en": "Inventory", "function": "supply-chain-function" },
+    { "id": "predictive-maintenance", "label_ru": "Предиктивное обслуживание", "label_en": "Predictive Maintenance", "function": "asset-management-function" },
+    { "id": "quality-control", "label_ru": "Контроль качества", "label_en": "Quality Control", "function": "production" },
+    { "id": "cv-inspection", "label_ru": "Визуальная инспекция (CV)", "label_en": "Computer Vision Inspection", "function": "production" },
+    { "id": "forecasting", "label_ru": "Прогнозирование", "label_en": "Forecasting", "function": "operations" },
+    { "id": "optimization", "label_ru": "Оптимизация процессов", "label_en": "Optimization", "function": "operations" },
+    { "id": "recommendations-search", "label_ru": "Рекомендации и поиск", "label_en": "Recommendations / Search", "function": "commercial" },
+    { "id": "fraud-risk", "label_ru": "Фрод и риски", "label_en": "Fraud / Risk", "function": "finance-function" },
+    { "id": "operations-copilot", "label_ru": "Копилот сотрудника", "label_en": "Operations Copilot", "function": "operations" },
+    { "id": "medical-documentation", "label_ru": "Медицинская документация", "label_en": "Medical Documentation", "function": "clinical" },
+    { "id": "clinical-workflow", "label_ru": "Клинические процессы и диагностика", "label_en": "Clinical Workflow", "function": "clinical" },
+    { "id": "software-engineering", "label_ru": "Разработка ПО", "label_en": "Software Engineering", "function": "it-function" },
+    { "id": "security", "label_ru": "Безопасность и мониторинг", "label_en": "Security", "function": "hse" },
+    { "id": "field-operations", "label_ru": "Полевые и выездные работы", "label_en": "Field Operations", "function": "operations" },
+    { "id": "pricing", "label_ru": "Ценообразование", "label_en": "Pricing", "function": "commercial" },
+    { "id": "training-onboarding", "label_ru": "Обучение и онбординг", "label_en": "Training / Onboarding", "function": "hr-function" },
+    { "id": "design-engineering-process", "label_ru": "Проектирование и инжиниринг", "label_en": "Design & Engineering", "function": "rnd" },
+    { "id": "research-development", "label_ru": "Исследования и разработка продукта", "label_en": "R&D", "function": "rnd" }
+  ],
+
+  "ai_mechanisms": [
+    { "id": "llm", "label_ru": "LLM", "label_en": "LLM" },
+    { "id": "rag", "label_ru": "RAG", "label_en": "RAG" },
+    { "id": "ai-agent", "label_ru": "AI-агент", "label_en": "AI Agent" },
+    { "id": "speech-to-text", "label_ru": "Распознавание речи (STT)", "label_en": "Speech-to-Text" },
+    { "id": "speech-analytics", "label_ru": "Речевая аналитика", "label_en": "Speech Analytics" },
+    { "id": "voice-agent", "label_ru": "Голосовой робот", "label_en": "Voice Agent" },
+    { "id": "tts", "label_ru": "Синтез речи (TTS)", "label_en": "Text-to-Speech" },
+    { "id": "nlp-classification", "label_ru": "NLP / классификация", "label_en": "NLP / Classification" },
+    { "id": "ocr", "label_ru": "OCR", "label_en": "OCR" },
+    { "id": "document-ai", "label_ru": "Document AI", "label_en": "Document AI" },
+    { "id": "computer-vision", "label_ru": "Компьютерное зрение", "label_en": "Computer Vision" },
+    { "id": "multimodal", "label_ru": "Мультимодальные модели", "label_en": "Multimodal AI" },
+    { "id": "classical-ml", "label_ru": "Классический ML", "label_en": "Classical ML" },
+    { "id": "forecasting-ml", "label_ru": "Прогнозные модели", "label_en": "Forecasting" },
+    { "id": "anomaly-detection", "label_ru": "Детекция аномалий", "label_en": "Anomaly Detection" },
+    { "id": "optimization-ml", "label_ru": "Математическая оптимизация", "label_en": "Optimization" },
+    { "id": "recommender", "label_ru": "Рекомендательная система", "label_en": "Recommendation System" },
+    { "id": "semantic-search", "label_ru": "Семантический поиск", "label_en": "Search" },
+    { "id": "generative-ai", "label_ru": "Генеративный AI (изображения/контент)", "label_en": "Generative AI" },
+    { "id": "robotics", "label_ru": "Робототехника", "label_en": "Robotics" },
+    { "id": "digital-twin", "label_ru": "Цифровой двойник", "label_en": "Digital Twin" },
+    { "id": "biometrics", "label_ru": "Биометрия", "label_en": "Biometrics" },
+    { "id": "hybrid-rules-ai", "label_ru": "Гибрид правил и AI", "label_en": "Hybrid Rules + AI" },
+    { "id": "reinforcement-learning", "label_ru": "Обучение с подкреплением", "label_en": "Reinforcement Learning" },
+    { "id": "graph-ml", "label_ru": "Графовые модели", "label_en": "Graph ML" }
+  ],
+
+  "metric_types": [
+    { "id": "processing_time", "group": "time", "label_ru": "Время обработки", "label_en": "Processing time" },
+    { "id": "response_time", "group": "time", "label_ru": "Время отклика", "label_en": "Response time" },
+    { "id": "cycle_time", "group": "time", "label_ru": "Длительность цикла", "label_en": "Cycle time" },
+    { "id": "hours_saved", "group": "time", "label_ru": "Сэкономленные человеко-часы", "label_en": "Human hours saved" },
+    { "id": "operational_cost", "group": "cost", "label_ru": "Операционные затраты", "label_en": "Operational cost" },
+    { "id": "cost_per_transaction", "group": "cost", "label_ru": "Стоимость операции", "label_en": "Cost per transaction" },
+    { "id": "labor_cost", "group": "cost", "label_ru": "Затраты на персонал", "label_en": "Labor cost" },
+    { "id": "economic_effect", "group": "cost", "label_ru": "Экономический эффект", "label_en": "Economic effect" },
+    { "id": "conversion", "group": "revenue", "label_ru": "Конверсия", "label_en": "Conversion" },
+    { "id": "sales", "group": "revenue", "label_ru": "Продажи / выручка", "label_en": "Sales" },
+    { "id": "average_check", "group": "revenue", "label_ru": "Средний чек", "label_en": "Average check" },
+    { "id": "retention", "group": "revenue", "label_ru": "Удержание / отток", "label_en": "Retention" },
+    { "id": "automation_rate", "group": "automation", "label_ru": "Доля автоматизации", "label_en": "Automation rate" },
+    { "id": "cases_handled", "group": "automation", "label_ru": "Доля автоматически обработанных обращений", "label_en": "Share handled automatically" },
+    { "id": "accuracy", "group": "quality", "label_ru": "Точность", "label_en": "Accuracy" },
+    { "id": "error_rate", "group": "quality", "label_ru": "Уровень ошибок", "label_en": "Error rate" },
+    { "id": "fcr", "group": "quality", "label_ru": "FCR", "label_en": "First contact resolution" },
+    { "id": "sla", "group": "quality", "label_ru": "SLA", "label_en": "SLA" },
+    { "id": "precision_recall", "group": "quality", "label_ru": "Precision / Recall", "label_en": "Precision / Recall" },
+    { "id": "csat", "group": "quality", "label_ru": "Удовлетворённость (CSAT/NPS)", "label_en": "CSAT / NPS" },
+    { "id": "users", "group": "scale", "label_ru": "Пользователи", "label_en": "Users" },
+    { "id": "documents", "group": "scale", "label_ru": "Документы", "label_en": "Documents" },
+    { "id": "calls", "group": "scale", "label_ru": "Звонки / обращения", "label_en": "Calls" },
+    { "id": "sites", "group": "scale", "label_ru": "Объекты / магазины / площадки", "label_en": "Sites" },
+    { "id": "operations_volume", "group": "scale", "label_ru": "Объём операций", "label_en": "Operations volume" },
+    { "id": "uptime", "group": "infrastructure", "label_ru": "Доступность / uptime", "label_en": "Uptime" },
+    { "id": "downtime", "group": "infrastructure", "label_ru": "Простои", "label_en": "Downtime" },
+    { "id": "energy_efficiency", "group": "infrastructure", "label_ru": "Энергоэффективность", "label_en": "Energy efficiency" },
+    { "id": "resource_utilization", "group": "infrastructure", "label_ru": "Утилизация ресурсов", "label_en": "Resource utilization" },
+    { "id": "yield", "group": "infrastructure", "label_ru": "Выход годного / урожайность", "label_en": "Yield" },
+    { "id": "safety_incidents", "group": "quality", "label_ru": "Инциденты безопасности", "label_en": "Safety incidents" }
+  ],
+
+  "metric_groups": [
+    { "id": "time", "label_ru": "Время", "label_en": "Time" },
+    { "id": "cost", "label_ru": "Затраты", "label_en": "Cost" },
+    { "id": "revenue", "label_ru": "Выручка", "label_en": "Revenue" },
+    { "id": "automation", "label_ru": "Автоматизация", "label_en": "Automation" },
+    { "id": "quality", "label_ru": "Качество", "label_en": "Quality" },
+    { "id": "scale", "label_ru": "Масштаб", "label_en": "Scale" },
+    { "id": "infrastructure", "label_ru": "Инфраструктура", "label_en": "Infrastructure" }
+  ],
+
+  "metric_status": [
+    { "id": "measured", "label_ru": "Измерено", "label_en": "Measured", "note": "Источник сообщает о фактически достигнутом результате" },
+    { "id": "reported", "label_ru": "Заявлено", "label_en": "Reported", "note": "Цифра заявлена стороной проекта без описания методики измерения" },
+    { "id": "projected", "label_ru": "Ожидаемый эффект", "label_en": "Projected", "note": "Источник говорит об ожидаемом/плановом эффекте" }
+  ],
+
+  "source_types": [
+    { "id": "client", "label_ru": "Клиент", "label_en": "Client" },
+    { "id": "vendor", "label_ru": "Подрядчик / вендор", "label_en": "Vendor" },
+    { "id": "platform", "label_ru": "Технологическая платформа", "label_en": "Technology platform" },
+    { "id": "media", "label_ru": "СМИ", "label_en": "Media" },
+    { "id": "analyst", "label_ru": "Аналитика / отраслевой отчёт", "label_en": "Analyst report" },
+    { "id": "conference", "label_ru": "Конференция / презентация", "label_en": "Conference" },
+    { "id": "annual-report", "label_ru": "Годовой отчёт", "label_en": "Annual report" },
+    { "id": "interview", "label_ru": "Интервью", "label_en": "Interview" },
+    { "id": "academic", "label_ru": "Научная публикация", "label_en": "Academic" },
+    { "id": "government", "label_ru": "Государственный источник", "label_en": "Government" }
+  ],
+
+  "evidence_grades": [
+    { "id": "A", "label_ru": "A · Сильные доказательства", "label_en": "A · Strong evidence",
+      "criteria_ru": "Назван клиент, конкретное внедрение, измеримый результат, первичный источник и, как правило, независимое подтверждение." },
+    { "id": "B", "label_ru": "B · Хорошие доказательства", "label_en": "B · Good evidence",
+      "criteria_ru": "Назван клиент и конкретное внедрение, результат понятен, но цифр мало или информация преимущественно со стороны подрядчика." },
+    { "id": "C", "label_ru": "C · Ограниченные доказательства", "label_en": "C · Limited evidence",
+      "criteria_ru": "Клиент под NDA либо мало деталей и нет измеримых результатов; единственный vendor-источник." },
+    { "id": "D", "label_ru": "D · Маркетинговое заявление", "label_en": "D · Marketing claim",
+      "criteria_ru": "Описание возможности, generic use case или продуктовая страница без клиента. В основную библиотеку не включается." }
+  ],
+
+  "stages": [
+    { "id": "experiment", "label_ru": "Эксперимент", "label_en": "Experiment", "order": 1 },
+    { "id": "poc", "label_ru": "PoC", "label_en": "PoC", "order": 2 },
+    { "id": "pilot", "label_ru": "Пилот", "label_en": "Pilot", "order": 3 },
+    { "id": "production", "label_ru": "Промышленная эксплуатация", "label_en": "Production", "order": 4 },
+    { "id": "scaled-production", "label_ru": "Масштабированное производство", "label_en": "Scaled Production", "order": 5 },
+    { "id": "unknown", "label_ru": "Неизвестно", "label_en": "Unknown", "order": 0 }
+  ],
+
+  "deployments": [
+    { "id": "cloud", "label_ru": "Облако", "label_en": "Cloud" },
+    { "id": "private-cloud", "label_ru": "Частное облако", "label_en": "Private Cloud" },
+    { "id": "on-prem", "label_ru": "On-premise", "label_en": "On-prem" },
+    { "id": "hybrid", "label_ru": "Гибрид", "label_en": "Hybrid" },
+    { "id": "edge", "label_ru": "Edge", "label_en": "Edge" },
+    { "id": "mobile", "label_ru": "Мобильное приложение", "label_en": "Mobile" },
+    { "id": "unknown", "label_ru": "Неизвестно", "label_en": "Unknown" }
+  ],
+
+  "vendor_types": [
+    { "id": "integrator", "label_ru": "Интегратор / ИТ-подрядчик", "label_en": "Integrator" },
+    { "id": "ai-studio", "label_ru": "AI/ML-студия", "label_en": "AI studio" },
+    { "id": "product-vendor", "label_ru": "Продуктовый вендор", "label_en": "Product vendor" },
+    { "id": "cloud-provider", "label_ru": "Облачный провайдер", "label_en": "Cloud provider" },
+    { "id": "in-house", "label_ru": "Внутренняя команда клиента", "label_en": "In-house team" },
+    { "id": "consulting", "label_ru": "Консалтинг", "label_en": "Consulting" },
+    { "id": "research-institution", "label_ru": "НИИ / университет", "label_en": "Research institution" },
+    { "id": "mixed", "label_ru": "Смешанная команда", "label_en": "Mixed" },
+    { "id": "unknown", "label_ru": "Неизвестно", "label_en": "Unknown" }
+  ],
+
+  "regions": [
+    { "id": "russia-cis", "label_ru": "Россия и СНГ", "label_en": "Russia / CIS" },
+    { "id": "europe", "label_ru": "Европа", "label_en": "Europe" },
+    { "id": "north-america", "label_ru": "Северная Америка", "label_en": "North America" },
+    { "id": "latam", "label_ru": "Латинская Америка", "label_en": "Latin America" },
+    { "id": "middle-east", "label_ru": "Ближний Восток", "label_en": "Middle East" },
+    { "id": "africa", "label_ru": "Африка", "label_en": "Africa" },
+    { "id": "asia-pacific", "label_ru": "Азия и Тихоокеанский регион", "label_en": "Asia-Pacific" },
+    { "id": "global", "label_ru": "Глобальный / несколько регионов", "label_en": "Global / multi-region" }
+  ],
+
+  "likely_buyers": [
+    { "id": "ceo", "label_ru": "CEO / Генеральный директор", "label_en": "CEO" },
+    { "id": "coo", "label_ru": "COO / Операционный директор", "label_en": "COO" },
+    { "id": "cio", "label_ru": "CIO / ИТ-директор", "label_en": "CIO" },
+    { "id": "cdo", "label_ru": "CDO / Директор по данным и цифровизации", "label_en": "CDO" },
+    { "id": "cfo", "label_ru": "CFO / Финансовый директор", "label_en": "CFO" },
+    { "id": "cto", "label_ru": "CTO / Технический директор", "label_en": "CTO" },
+    { "id": "head-of-operations", "label_ru": "Директор по операциям / производству", "label_en": "Head of Operations" },
+    { "id": "head-of-contact-center", "label_ru": "Руководитель контакт-центра", "label_en": "Head of Contact Center" },
+    { "id": "head-of-procurement", "label_ru": "Директор по закупкам", "label_en": "Head of Procurement" },
+    { "id": "medical-director", "label_ru": "Главный врач / медицинский директор", "label_en": "Medical Director" },
+    { "id": "commercial-director", "label_ru": "Коммерческий директор", "label_en": "Commercial Director" },
+    { "id": "hr-director", "label_ru": "HR-директор", "label_en": "HR Director" },
+    { "id": "legal-director", "label_ru": "Директор юридического департамента", "label_en": "Legal Director" },
+    { "id": "head-of-rnd", "label_ru": "Директор по R&D / научным исследованиям", "label_en": "Head of R&D" },
+    { "id": "chief-engineer", "label_ru": "Главный инженер / технический директор актива", "label_en": "Chief Engineer" },
+    { "id": "supply-chain-director", "label_ru": "Директор по цепочке поставок", "label_en": "Supply Chain Director" },
+    { "id": "marketing-director", "label_ru": "Директор по маркетингу", "label_en": "Marketing Director" },
+    { "id": "risk-director", "label_ru": "Директор по рискам", "label_en": "Chief Risk Officer" },
+    { "id": "hse-director", "label_ru": "Директор по охране труда и промбезопасности", "label_en": "HSE Director" },
+    { "id": "quality-director", "label_ru": "Директор по качеству", "label_en": "Quality Director" }
+  ],
+
+  "collections": [
+    { "id": "best-sales", "label_ru": "Лучшие sales-кейсы", "label_en": "Best Sales Cases",
+      "filter": { "evidence_grade": ["A", "B"], "sales_relevance_min": 4, "has_metrics": true, "client_disclosed": true } },
+    { "id": "russian-cases", "label_ru": "Российские AI-кейсы", "label_en": "Russian AI Cases", "filter": { "region": ["russia-cis"] } },
+    { "id": "global-benchmarks", "label_ru": "Глобальные бенчмарки", "label_en": "Global Benchmarks",
+      "filter": { "region_not": ["russia-cis"] } },
+    { "id": "healthcare", "label_ru": "Здравоохранение", "label_en": "Healthcare", "filter": { "industry": ["healthcare"] } },
+    { "id": "construction", "label_ru": "Строительство", "label_en": "Construction", "filter": { "industry": ["construction-realestate"] } },
+    { "id": "energy-mining", "label_ru": "Энергетика и добыча", "label_en": "Energy & Mining", "filter": { "industry": ["energy-utilities", "mining-oil-gas"] } },
+    { "id": "retail", "label_ru": "Ритейл", "label_en": "Retail", "filter": { "industry": ["retail-ecommerce"] } },
+    { "id": "finance", "label_ru": "Финансы", "label_en": "Finance", "filter": { "industry": ["finance-insurance"] } },
+    { "id": "document-ai", "label_ru": "Document AI", "label_en": "Document AI", "filter": { "ai_mechanisms": ["document-ai", "ocr"] } },
+    { "id": "contact-center-ai", "label_ru": "AI в контакт-центре", "label_en": "Contact Center AI", "filter": { "business_process": ["customer-support"] } },
+    { "id": "knowledge-rag", "label_ru": "Знания и RAG", "label_en": "Knowledge / RAG", "filter": { "ai_mechanisms": ["rag"] } },
+    { "id": "predictive-maintenance", "label_ru": "Предиктивное обслуживание", "label_en": "Predictive Maintenance", "filter": { "business_process": ["predictive-maintenance"] } },
+    { "id": "computer-vision", "label_ru": "Компьютерное зрение", "label_en": "Computer Vision", "filter": { "ai_mechanisms": ["computer-vision"] } }
+  ]
+}

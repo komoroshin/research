@@ -1,0 +1,26 @@
+url,publisher,source_type,accessed,status,used_for
+https://celsus.ai/blog/sczenarii-skrining/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+https://celsus.ai/smi/mammogram/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
+https://sk.ru/news/botkinai-itogi-2021/,Сколково,vendor,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+https://vademec.ru/news/2020/08/19/botkin-ai-integrirovalsya-co-stolichnym-eris-dlya-poiska-raka-legkogo-na-kt-snimkakh/,Vademecum,media,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
+https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik,CNews,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+https://www.ixbt.com/news/2024/12/12/v-sberzdorove-pojavilsja-iipomoshnik-na-baze-gigachat.html,iXBT,media,2026-08-27,ok,ru-hc-sberzdorovie-gigachat-01
+https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/,SL Soft,vendor,2026-08-27,ok,ru-hc-slsoft-medsi-voice-01
+https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya,МТС Exolve / vc.ru,vendor,2026-08-27,ok,ru-hc-mtt-alfacenter-voice-01
+https://robo-voice.ru/case_bot_dlya_gemotest/,RoboVoice / SL Soft,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+https://softline.ru/about/news/gemotest-povysil-effektivnost-koll-tsentra-s-pomoshchyu-golosovogo-bota-robovoice-ot-kompanii-sl-sof,Softline,vendor,2026-08-27,ok,ru-hc-robovoice-gemotest-voice-01
+https://www.speechpro.ru/media/news/11-11-2020,ЦРТ,vendor,2026-08-27,ok,ru-hc-crt-voice2med-01
+https://www.vedomosti.ru/technology/articles/2022/06/05/925209-tehnologiyu-raspoznavaniya-rechi,Ведомости,media,2026-08-27,ok,ru-hc-crt-voice2med-01
+https://robotmia.ru/blog/detail/sm_clinic,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+https://robotmia.ru/perviy-golosovoy-robot-v-medicine-dlya-sm-clinica,MIA,vendor,2026-08-27,ok,ru-hc-mia-smclinic-voice-01
+https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/,Lunit,vendor,2026-08-27,ok,se-hc-lunit-capio-01
+https://www.itnonline.com/content/lunit-ai-releases-successful-study-results-breast-cancer-screening-deployment,Imaging Technology News,media,2026-08-27,ok,se-hc-lunit-capio-01
+https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/,Sheba Medical Center,client,2026-08-27,ok,il-hc-aidoc-sheba-01
+https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care,Viz.ai,vendor,2026-08-27,ok,us-hc-vizai-validate-01
+https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health,Digital Health News,media,2026-08-27,ok,ke-hc-pendahealth-openai-01
+https://openai.com/index/ai-clinical-copilot-penda-health/,OpenAI,vendor,2026-08-27,ok,ke-hc-pendahealth-openai-01
+https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/,Microsoft,vendor,2026-08-27,ok,us-hc-nuance-dax-northwestern-01
+https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/,Permanente Medicine,client,2026-08-27,ok,us-hc-kaiserpermanente-scribe-01
+https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals,Google Cloud,platform,2026-08-27,ok,in-hc-manipal-googlecloud-01
+https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/,Microsoft,vendor,2026-08-27,ok,ch-hc-novartis-azure-01
+https://www.novartis.com/stories/art-drug-design-technological-age,Novartis,client,2026-08-27,ok,ch-hc-novartis-azure-01

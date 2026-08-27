@@ -1,0 +1,33 @@
+{
+  "name": "ai-case-library",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Интерактивная библиотека реальных AI-кейсов: research + sales intelligence",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "validate-data": "node scripts/validate-data.mjs",
+    "build-csv": "node scripts/build-csv.mjs",
+    "check-links": "node scripts/check-links.mjs",
+    "merge-research": "node scripts/repair-csv.mjs && node scripts/merge-research.mjs",
+    "report": "node scripts/build-report.mjs",
+    "summary": "node scripts/build-summary.mjs",
+    "pipeline": "npm run merge-research && npm run validate-data && npm run build-csv && npm run report && npm run summary",
+    "deploy-pages": "node scripts/deploy-pages.mjs",
+    "repair-csv": "node scripts/repair-csv.mjs",
+    "test-ui": "node tests/ui-checklist.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  }
+}

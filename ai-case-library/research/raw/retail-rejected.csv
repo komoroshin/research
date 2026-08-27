@@ -1,0 +1,26 @@
+candidate_id,client,vendor,url,reason_code,reason
+rt-003,X5 Group,не назван,https://generation-ai.ru/cases/x5-group-i-analitika,source_unavailable,"source_unavailable — страница не открывалась через WebFetch, вторичный агрегатор"
+rt-007,Магнит,не назван,https://shoppers.media/news/28310_magnit-nacal-primeniat-neirotexnologii-dlia-analiza-raboty-kass-samoobsluzivaniia,no_result,no_result — старый тест 2021 года без опубликованных результатов
+rt-008,Магнит,не назван,new-retail.ru (агрегатор),no_result,"no_result — метрика указана расплывчато («существенный рост»), без конкретной цифры"
+rt-009,Магнит,не назван,new-retail.ru (агрегатор),no_result,no_result — упоминание без опубликованного результата пилота
+rt-013,Ozon,разные (сторонние сервисы),https://seller.ozon.ru/media/boost/7-nejrosetej-dlya-prodavcov-na-marketplejsah/,grade_d_marketing,grade_d_marketing — обзор сторонних инструментов без единого клиентского кейса
+rt-014,Ozon,личный проект автора,https://vc.ru/id5255038/2740640-avtomatizatsiya-otvetov-na-otzyvy-dlya-ozon-s-pomoshchyu-ai-assistenta,out_of_scope,"out_of_scope — история одного продавца, не корпоративный кейс площадки"
+rt-015,Яндекс Маркет,собственная разработка (YandexGPT 5 Pro),https://adindex.ru/news/digital/2025/04/30/333241.phtml,announcement_only,"announcement_only — анонс запуска, измеримых результатов не найдено"
+rt-017,Avito,собственная разработка,pikabu/techora (не открылись),not_ai,"not_ai — анонс модели/бенчмарка, не внедрение с клиентским результатом"
+rt-018,ВкусВилл,не назван,https://sidorinlab.ru/blog/vkusvill-iskusstvennyij-intellekt-v-klientskom-servise,no_result,"no_result — качественные формулировки без измеримых цифр, материал award-агентства"
+rt-019,Ригла,Navicon,https://navicons.com/case/rigla/,no_result,no_result — нет измеримого результата («100% прозрачность данных» не метрика эффекта)
+rt-022,Детский мир,не назван,ComNews (2023),duplicate,duplicate — пересекается с темой rt-021 по клиенту; отдельная страница не открывалась для проверки цифр
+rt-025,BIT / NtechLab,NtechLab,https://tass.ru/ekonomika/25128137,duplicate,"Тот же кейс, что и rt-024; страница не открылась (403), не использована как источник"
+rt-028,М.Видео-Эльдорадо,собственная разработка,https://www.forbes.ru/newsroom/tehnologii/436107-mvideo-eldorado-vnedrila-neyroset-dlya-otvetov-na-voprosy-pokupateley,source_unavailable,source_unavailable — страница отдавала только закодированное изображение без текста при WebFetch и fetch-page.mjs
+rt-029,М.Видео-Эльдорадо,не назван,https://www.retail.ru/cases/m-video-eldorado-kak-zarabotat-trillion-na-oneretail/,unverifiable,unverifiable — страница не открывалась через WebFetch в этой сессии
+rt-030,Спортмастер,-,https://www.retail.ru/interviews/maksim-permyakov-sportmaster-ii-otlichnyy-pomoshchnik-no-prinyatie-otvetstvennykh-resheniy-ostaetsya/,no_implementation,"no_implementation — общие рассуждения о процессе пилотирования, без конкретного внедрения и результата"
+rt-031,Fix Price,не назван,https://www.tadviser.ru/index.php/Проект:Fix_Price_(Бэст_Прайс)_(Видеоаналитика_(проекты)),duplicate,"Более ранняя стадия того же проекта, что и rt-023"
+rt-032,Золотое яблоко,YandexART,adindex.ru (не открывалась),unverifiable,unverifiable — страница не открывалась через WebFetch в этой сессии
+rt-033,Золотое яблоко,-,selsup.ru (не открывалась),unverifiable,unverifiable — страница не открывалась через WebFetch в этой сессии
+rt-034,Ашан,не назван,поисковый сниппет (не открывалась),unverifiable,"unverifiable — только сниппет поиска, страница не открывалась"
+rt-035,О'КЕЙ,не назван,поисковый сниппет (не открывалась),unverifiable,"unverifiable — только сниппет поиска, страница не открывалась"
+rt-042,Walmart,разные (вторичные источники),digitaldefynd.com / scribd / aiproductivelab (не открывались напрямую),unverifiable,"unverifiable — только вторичные неавторитетные агрегаторы, надёжного первичного источника не найдено"
+rt-043,Sephora,разные (вторичные источники),cosupport.ai / digitaldefynd.com (не открывались напрямую),unverifiable,"unverifiable — только вторичные блоги, первичный источник Sephora не найден и не открывался"
+rt-044,IKEA,разные (вторичные источники),forbes.com / aiexpert.network (не открывались напрямую),unverifiable,"unverifiable — только вторичные обзорные статьи, страницы не открывались через WebFetch"
+rt-045,Kroger,New Retail (агрегатор),https://new-retail.ru/tehnologii/nevidimyy_sotrudnik_kak_iskusstvennyy_intellekt_beret_pod_kontrol_polki_kassy_i_grafiki/,unverifiable,"unverifiable — только упоминание во вторичном агрегаторе, первичный источник Kroger не найден"
+de-rt-zalando-gnn-recs-01,Zalando,,https://engineering.zalando.com/posts/2024/12/gnn-recommendations-zalando.html,no_result,"Исключён при финальном отборе: Grade C с минимальной доказательной базой (единственный источник, нет или почти нет количественных метрик, sales relevance 2). Лимит Grade C — максимум 30 по п.17 ТЗ."

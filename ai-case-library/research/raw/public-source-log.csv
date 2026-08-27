@@ -1,0 +1,35 @@
+url,publisher,source_type,accessed,status,used_for
+https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82_%22%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D1%8D%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%88%D0%BA%D0%BE%D0%BB%D0%B0%22,TAdviser,media,2026-08-27,error,"404 при WebFetch, не использован"
+https://www.mos.ru/news/item/165672073/,mos.ru (Правительство Москвы),government,2026-08-27,ok,"ru-pb-mos-contact-center-01, ru-pb-mos-cv-utilities-01"
+https://www.mos.ru/city/projects/contact-center/,mos.ru (Правительство Москвы),government,2026-08-27,ok,ru-pb-mos-contact-center-01
+https://www.kommersant.ru/doc/8672168,Коммерсантъ,media,2026-08-27,ok,ru-pb-ntechlab-safecity-nn-01
+https://e-kontur.ru/enquiry/2684/iskusstvennyy-intellekt-v-rabote-fns,e-kontur.ru,media,2026-08-27,error,"403 Forbidden, не использован"
+https://4rome.ru/projects/nash-chat-bot-privel-chetvert-ot-vsego-nabora-studentov/,Четвёртый Рим,vendor,2026-08-27,ok,"отклонён кандидат c15 (not_ai)"
+https://generation-ai.ru/cases/skyeng-content-pipeline,generation-ai.ru,media,2026-08-27,ok,ru-pb-skyeng-content-01
+https://ru-bezh.ru/kompanii-i-ryinki/news/26/05/19/ntechlab-predstavila-na-tsipr-2026-ii-produkty-povedencheskaya-a,RUБЕЖ,media,2026-08-27,ok,ru-pb-ntechlab-safecity-nn-01
+https://www.cnews.ru/news/line/2026-03-17_ntechlab_i_netvision_vnedrili_videoanalitiku,CNews,media,2026-08-27,ok,ru-pb-ntechlab-safecity-penza-01
+https://habr.com/ru/companies/skyeng/articles/818567/,Skyeng (блог на Habr),client,2026-08-27,ok,ru-pb-skyeng-content-01
+https://www.khanacademy.org/schools/case-studies/newark-public-schools,Khan Academy,vendor,2026-08-27,ok,us-pb-khanacademy-newark-01
+https://www.tech.gov.sg/technews/how-govtech-uses-ai-to-enhance-digital-public-services/,GovTech Singapore,government,2026-08-27,ok,"sg-pb-govtech-oneservice-01, sg-pb-govtech-maestro-mom-01"
+https://ai-hub.host/case-studies/duolingo-gpt4,AIHub,media,2026-08-27,partial,"страница не содержала текста кейса, не использована"
+https://www.tadviser.ru/index.php/%D0%A1%D1%82%D0%B0%D1%82%D1%8C%D1%8F:%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_%D0%B2_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9_%D0%BD%D0%B0%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2%D0%BE%D0%B9_%D1%81%D0%BB%D1%83%D0%B6%D0%B1%D0%B5_(%D0%A4%D0%9D%D0%A1),TAdviser,media,2026-08-27,ok,"справочно, отклонён кандидат c29 (no_result), открыт через fetch-page.mjs"
+https://www.eastrussia.ru/news/nomera-v-otelyakh-cosmos-budut-slushat-golosa-sber-sberdevices-i-set-oteley-dogovorilis-ob-umnom-bud/,EastRussia,media,2026-08-27,ok,"отклонён кандидат c16 (announcement_only)"
+https://socialprotectionai.org/use-case/EST-001,socialprotectionai.org,analyst,2026-08-27,error,"401 Unauthorized, не использован (кандидат c32 отклонён)"
+https://aiexpert.network/case-study-duolingo-transforms-language-learning-through-ai/,AI Expert Network (AIX),media,2026-08-27,ok,us-pb-duolingo-max-01
+https://pravo.ru/company_news/258472/,Право.ру,media,2026-08-27,ok,"ru-pb-pravotech-legal-ai-01, отклонены кандидаты c26/c27 (out_of_scope)"
+https://platforms.su/project/2913,platforms.su,vendor,2026-08-27,ok,ru-pb-pravotech-legal-ai-01
+https://interoperable-europe.ec.europa.eu/collection/open-source-observatory-osor/document/digital-public-services-based-open-source-case-study-burokratt,Interoperable Europe (Европейская комиссия),government,2026-08-27,ok,ee-pb-burokratt-01
+https://shkolamoskva.ru/news/trend-na-personalizacziyu-kakie-novye-servisy-i-funkczii-poyavilis-v-moskovskoj-elektronnoj-shkole/,Школа Москвы (shkolamoskva.ru),government,2026-08-27,ok,ru-pb-mesh-ai-tutor-01
+https://doczilla.pro/kak_yuristy_ispolzuyut_ai_v_2024,Doczilla,vendor,2026-08-27,ok,"отклонён кандидат c21 (no_client)"
+https://www.comnews.ru/content/235913/2024-10-25/2024-w43/1007/mincifry-dokrutit-maksa-k-novomu-godu,ComNews,media,2026-08-27,ok,ru-pb-gosuslugi-max-01
+https://www.naumen.ru/events/news/4315/,Naumen,vendor,2026-08-27,ok,"отклонён кандидат c20 (no_client)"
+https://stratpro.hse.ru/human-success/news/959419313.html,НИУ ВШЭ,academic,2026-08-27,ok,"отклонён кандидат c22 (announcement_only)"
+https://mospravda.ru/2026/06/08/824458/,Московская правда,media,2026-08-27,partial,"получена только навигационная разметка без текста статьи, не использован"
+https://travel.yandex.ru/journal/kak-iskusstvennyj-intellekt-oblegchit-planirovanie-puteshestvij/,Яндекс Путешествия,client,2026-08-27,blocked,"CAPTCHA и через WebFetch, и через fetch-page.mjs; отклонён кандидат c18 (source_unavailable)"
+https://cosmosgroup.ru/about/press/cosmos-hotel-group-i-t1-stali-pobeditelami-konkursa-1sproekt-goda,Cosmos Hotel Group,client,2026-08-27,ok,"отклонён кандидат c17 (not_ai)"
+https://vc.ru/legal/2809497-fns-i-ii-kak-nalogovaya-kontroliruet-zarubezhnye-scheta,vc.ru,media,2026-08-27,ok,ru-pb-fns-foreign-accounts-01
+https://www.rbc.ru/rbcfreenews/65bb95969a794712f178c261,РБК,media,2026-08-27,error,"401 Unauthorized, не использован"
+https://horecainsider.ru/hitech/58-it/751-ai,horecainsider.ru,media,2026-08-27,error,"редирект на hotelinsider.ru не выполнялся дальше, не использован"
+https://www.cnews.ru/news/line/2026-08-12_ii_stanovitsya_kanalom_prodazh,CNews,media,2026-08-27,ok,"отклонён кандидат c19 (not_ai / no_implementation)"
+https://aws.amazon.com/solutions/case-studies/govtech/,Amazon Web Services,platform,2026-08-27,ok,sg-pb-govtech-maestro-mom-01
+https://blog.govnet.co.uk/technology/ai-in-government-case-studies,govnet.co.uk,media,2026-08-27,ok,"отклонён кандидат c30 (unverifiable) — не использован как источник кейса"
