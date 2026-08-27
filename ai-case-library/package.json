@@ -12,7 +12,9 @@
     "build-csv": "node scripts/build-csv.mjs",
     "check-links": "node scripts/check-links.mjs",
     "merge-research": "node scripts/merge-research.mjs",
-    "report": "node scripts/build-report.mjs"
+    "report": "node scripts/build-report.mjs",
+    "summary": "node scripts/build-summary.mjs",
+    "pipeline": "npm run merge-research && npm run validate-data && npm run build-csv && npm run report && npm run summary"
   },
   "dependencies": {
     "react": "^18.3.1",
