@@ -54,6 +54,7 @@ npm run summary         # пересобрать research/executive-summary.md
 
 ```bash
 npm run merge-research  # research/raw/*.json -> data/cases.json + сводные журналы
+npm run repair-csv      # починить CSV с незакавыченными запятыми (входит в merge-research)
 npm run pipeline        # merge + validate + csv + report + summary одной командой
 ```
 
