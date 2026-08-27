@@ -52,26 +52,49 @@ const candidateRows = cases.map((c) => [
   `evidence ${c.evidence_grade}, sales_relevance ${c.sales_relevance}`,
 ]);
 
-fs.writeFileSync(
-  path.join(RAW, `${slug}-source-log.csv`),
-  toCsv(['url', 'publisher', 'source_type', 'accessed', 'status', 'used_for'], sourceRows),
-  'utf8',
-);
-fs.writeFileSync(
-  path.join(RAW, `${slug}-candidates.csv`),
-  toCsv(
-    ['candidate_id', 'client', 'vendor', 'url', 'short_description', 'assumed_industry', 'assumed_process', 'decision', 'reason'],
-    candidateRows,
-  ),
-  'utf8',
-);
-// Реконструировать rejected честно нельзя — агент оборвался до записи лога отклонений.
-fs.writeFileSync(
-  path.join(RAW, `${slug}-rejected.csv`),
-  toCsv(['candidate_id', 'client', 'vendor', 'url', 'reason_code', 'reason'], []),
-  'utf8',
-);
+/**
+ * Настоящий лог исследователя всегда богаче реконструкции: в нём есть отклонённые
+ * кандидаты с причинами и источники, которые смотрели, но не использовали.
+ * Поэтому существующий файл не перезаписываем — только сообщаем и пропускаем.
+ * (Ровно так реконструкция однажды затёрла работу ещё не завершившегося агента.)
+ */
+function writeIfAbsent(name, headers, rows, description) {
+  const file = path.join(RAW, name);
+  if (fs.existsSync(file)) {
+    console.log(COLORS.dim(`  ${name}: уже есть настоящий лог — не трогаем`));
+    return false;
+  }
+  fs.writeFileSync(file, toCsv(headers, rows), 'utf8');
+  console.log(COLORS.green(`  ${name}: восстановлено ${description}`));
+  return true;
+}
 
-console.log(
-  COLORS.green(`${slug}: восстановлено ${sourceRows.length} источников и ${candidateRows.length} кандидатов (только included; rejected пуст — лог был утрачен при обрыве сессии).`),
+const force = process.argv.includes('--force');
+if (force) {
+  console.log(COLORS.yellow('--force: существующие CSV будут перезаписаны реконструкцией'));
+  for (const suffix of ['-source-log.csv', '-candidates.csv', '-rejected.csv']) {
+    const f = path.join(RAW, `${slug}${suffix}`);
+    if (fs.existsSync(f)) fs.rmSync(f);
+  }
+}
+
+console.log(`${slug}:`);
+writeIfAbsent(
+  `${slug}-source-log.csv`,
+  ['url', 'publisher', 'source_type', 'accessed', 'status', 'used_for'],
+  sourceRows,
+  `${sourceRows.length} источников (только те, что попали во включённые кейсы)`,
+);
+writeIfAbsent(
+  `${slug}-candidates.csv`,
+  ['candidate_id', 'client', 'vendor', 'url', 'short_description', 'assumed_industry', 'assumed_process', 'decision', 'reason'],
+  candidateRows,
+  `${candidateRows.length} кандидатов (только included)`,
+);
+// Реконструировать rejected честно нельзя: кто и почему был отклонён, знает только исследователь.
+writeIfAbsent(
+  `${slug}-rejected.csv`,
+  ['candidate_id', 'client', 'vendor', 'url', 'reason_code', 'reason'],
+  [],
+  'пустой файл — список отклонённых восстановить невозможно',
 );
