@@ -20,7 +20,7 @@ const OUT_DIR = path.join(ROOT, 'scale-app', 'src', 'generated');
 // Клиентская страница не показывает служебные поля (confidence, происхождение,
 // стадия) — их нет и в бандле: доказательность живёт во внутренней базе.
 const CASE_WHITELIST = new Set([
-  'id', 'title', 'region', 'geo', 'industry', 'business_process', 'ai_mechanisms',
+  'id', 'title', 'headline', 'region', 'geo', 'industry', 'business_process', 'ai_mechanisms',
   'client_profile', 'pain', 'problem', 'solution', 'result_summary', 'metrics',
   'budget_band', 'budget_note', 'duration_months', 'year',
 ]);

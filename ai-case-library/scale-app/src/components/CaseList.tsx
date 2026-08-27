@@ -108,7 +108,7 @@ export default function CaseList({
                 {metric ? (
                   <div className="card-headline">
                     <span className="chl-value">{metric.result}</span>
-                    <span className="chl-name">{metric.name}</span>
+                    <span className="chl-name">{c.headline ?? metric.name}</span>
                   </div>
                 ) : (
                   <div className="card-title" style={{ fontSize: 16 }}>{c.title}</div>
@@ -117,8 +117,6 @@ export default function CaseList({
                 <div className="card-geo" style={{ marginBottom: 6 }}>
                   {c.client_profile} · {label(c.industry)}
                 </div>
-
-                {metric && <div className="card-title">{c.title}</div>}
 
                 <div className="card-field">
                   <span className="lbl">Боль</span>
