@@ -26,11 +26,17 @@ export default function App() {
   );
 
   // Состояние в URL: менеджер отправляет клиенту ссылку сразу на его отрасль или кейс.
+  // Открытие и закрытие кейса создаёт запись в истории — кейс ведёт себя как страница,
+  // и браузерная кнопка «назад» возвращает к списку, а не выбрасывает с сайта.
+  const prevCaseId = useRef(caseId);
   useEffect(() => {
     const qs = stateToParams(filters, view, caseId, compare);
     const next = `${window.location.pathname}${qs}`;
+    const caseChanged = prevCaseId.current !== caseId;
+    prevCaseId.current = caseId;
     if (next !== window.location.pathname + window.location.search) {
-      window.history.replaceState(null, '', next);
+      if (caseChanged) window.history.pushState(null, '', next);
+      else window.history.replaceState(null, '', next);
     }
   }, [filters, view, caseId, compare]);
 
@@ -101,7 +107,7 @@ export default function App() {
 
       <div className="body">
         <main className="main" style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
-          {view === 'home' && (
+          {view === 'home' && !openItem && (
             <Home
               onPickIndustry={(id) => {
                 setFiltersState({ ...emptyFilters, industry: [id] });
@@ -109,6 +115,10 @@ export default function App() {
               }}
             />
           )}
+          {openItem ? (
+            <CaseDetail item={openItem} onBack={() => setCaseId(null)} />
+          ) : (
+            <>
           {view === 'cases' && (
             <CaseList
               list={filtered}
@@ -127,6 +137,8 @@ export default function App() {
               onOpen={setCaseId}
             />
           )}
+            </>
+          )}
         </main>
       </div>
 
@@ -139,7 +151,6 @@ export default function App() {
         .
       </footer>
 
-      {openItem && <CaseDetail item={openItem} onClose={() => setCaseId(null)} />}
     </div>
   );
 }

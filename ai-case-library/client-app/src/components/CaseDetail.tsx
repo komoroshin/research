@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
 import type { ClientCase } from '../types';
 import { label, labels } from '../lib/data';
 import { ConfidenceBadge, CtaButton, Ext, MetricStatusBadge } from './Shared';
 
 interface Props {
   item: ClientCase;
-  onClose: () => void;
+  onBack: () => void;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -17,44 +16,54 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export default function CaseDetail({ item: c, onClose }: Props) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
+/**
+ * Кейс — целевой контент всей воронты «отрасль → кейс → заявка», поэтому он
+ * рендерится полноценной страницей, а не выезжающей панелью: результат виден
+ * первым экраном, CTA — в липкой боковой колонке, кнопка «назад» браузера работает.
+ */
+export default function CaseDetail({ item: c, onBack }: Props) {
   const primary = c.sources.find((s) => s.url === c.primary_source) ?? c.sources[0];
   const others = c.sources.filter((s) => s !== primary);
   const needs = [...(c.data_used ?? []), ...(c.integrations ?? [])];
 
   return (
-    <div className="drawer-backdrop" onClick={onClose} role="presentation">
-      <div
-        className="drawer"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Кейс: ${c.client}`}
-      >
-        <header className="drawer-head">
-          <div style={{ minWidth: 0 }}>
-            <h2>{c.client}</h2>
-            <div className="sub">{c.title}</div>
-            <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <ConfidenceBadge c={c.confidence} />
-              <span className="tag">{label(c.stage)}</span>
-              <span className="tag">{c.country}</span>
-            </div>
-          </div>
-          <button className="drawer-close" onClick={onClose} aria-label="Закрыть">
-            ✕
-          </button>
-        </header>
+    <article className="case-page">
+      <button className="backlink" onClick={onBack}>
+        ← К списку кейсов
+      </button>
 
-        <div className="drawer-body">
+      <header className="case-head">
+        <h2>{c.client}</h2>
+        <div className="sub">{c.title}</div>
+        <div className="case-badges">
+          <ConfidenceBadge c={c.confidence} />
+          <span className="tag">{label(c.stage)}</span>
+          <span className="tag">{c.country}</span>
+          <span className="tag">{label(c.industry)}</span>
+        </div>
+      </header>
+
+      {/* Результат — причина, по которой человек открыл кейс. Показываем его первым. */}
+      {c.metrics.length > 0 && (
+        <div className="metrics-hero">
+          {c.metrics.map((m, i) => (
+            <div className={`metric-tile ${m.status}`} key={i}>
+              <div className="mt-value">
+                {m.baseline && <span className="mt-from">{m.baseline} →</span>}
+                <span className="mt-to">{m.result}</span>
+              </div>
+              <div className="mt-name">{m.metric_name}</div>
+              <div className="mt-meta">
+                <MetricStatusBadge status={m.status} />
+                <Ext href={m.source_url}>источник</Ext>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="case-grid">
+        <div className="case-main">
           <Section title="Какая была задача">
             <p>{c.problem}</p>
           </Section>
@@ -74,46 +83,13 @@ export default function CaseDetail({ item: c, onClose }: Props) {
             </div>
           </Section>
 
-          <Section title="Что изменилось">
-            {c.metrics.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)' }}>
-                Количественных показателей в открытых источниках нет. Итог: {c.result_summary}
+          <Section title="Итог">
+            <p>{c.result_summary}</p>
+            {c.metrics.length === 0 && (
+              <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                Количественные показатели в открытых источниках не раскрыты.
               </p>
-            ) : (
-              <>
-                <div className="metric-list">
-                  {c.metrics.map((m, i) => (
-                    <div className={`metric ${m.status}`} key={i}>
-                      <div className="nm">
-                        {m.metric_name} <MetricStatusBadge status={m.status} />
-                      </div>
-                      <div className="vals">
-                        {m.baseline && <span className="from">{m.baseline}</span>}
-                        <span className="to">{m.result}</span>
-                        {m.delta && <span className="delta">{m.delta}</span>}
-                      </div>
-                      <div className="src">
-                        <Ext href={m.source_url}>источник цифры</Ext>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ marginTop: 10 }}>{c.result_summary}</p>
-              </>
             )}
-          </Section>
-
-          <Section title="Масштаб и статус">
-            <dl className="kv">
-              <dt>Масштаб</dt>
-              <dd>{c.scale || 'не раскрыт'}</dd>
-              <dt>Стадия</dt>
-              <dd>{label(c.stage)}</dd>
-              <dt>Сроки оригинального проекта</dt>
-              <dd>{c.timeline || 'не раскрыты'}</dd>
-              <dt>Бизнес-процесс</dt>
-              <dd>{labels(c.business_process)}</dd>
-            </dl>
           </Section>
 
           {(c.first_step || c.growth_paths?.length) && (
@@ -163,17 +139,38 @@ export default function CaseDetail({ item: c, onClose }: Props) {
               ))}
             </div>
           </Section>
+        </div>
 
+        <aside className="case-aside">
           <div className="cta-block">
             <div className="cta-title">Похожая задача есть и у вас?</div>
             <div className="cta-sub">
-              Обсудим, как этот результат воспроизвести на ваших процессах и данных —
+              Обсудим, как воспроизвести этот результат на ваших процессах и данных —
               начиная с небольшого пилота.
             </div>
             <CtaButton item={c} />
           </div>
-        </div>
+
+          <div className="section" style={{ marginTop: 12 }}>
+            <h3>Коротко о проекте</h3>
+            <dl className="kv aside-kv">
+              <dt>Масштаб</dt>
+              <dd>{c.scale || 'не раскрыт'}</dd>
+              <dt>Стадия</dt>
+              <dd>{label(c.stage)}</dd>
+              <dt>Сроки оригинала</dt>
+              <dd>{c.timeline || 'не раскрыты'}</dd>
+              <dt>Бизнес-процесс</dt>
+              <dd>{labels(c.business_process)}</dd>
+            </dl>
+          </div>
+        </aside>
       </div>
-    </div>
+
+      {/* На узком экране липкой колонки нет — CTA закреплена снизу и всегда под пальцем. */}
+      <div className="cta-mobile-bar">
+        <CtaButton item={c} compact />
+      </div>
+    </article>
   );
 }
