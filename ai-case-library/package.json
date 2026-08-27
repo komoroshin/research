@@ -17,7 +17,11 @@
     "pipeline": "npm run merge-research && npm run validate-data && npm run build-csv && npm run report && npm run summary",
     "deploy-pages": "node scripts/deploy-pages.mjs",
     "repair-csv": "node scripts/repair-csv.mjs",
-    "test-ui": "node tests/ui-checklist.mjs"
+    "test-ui": "node tests/ui-checklist.mjs",
+    "build-client-data": "node scripts/build-client-data.mjs",
+    "build-client": "npm run build-client-data && tsc -p client-app && vite build client-app",
+    "deploy-catalog": "node scripts/deploy-catalog.mjs",
+    "test-client-ui": "node tests/client-ui-checklist.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
