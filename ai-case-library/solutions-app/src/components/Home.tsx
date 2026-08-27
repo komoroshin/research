@@ -1,4 +1,5 @@
-import { CASES_CATALOG, byCategory, categories, headline, offers } from '../lib/data';
+import { CASES_CATALOG, byCategory, categories, offers } from '../lib/data';
+import { OfferCard } from './Shared';
 
 interface Props {
   onOpen: (id: string) => void;
@@ -32,34 +33,7 @@ export default function Home({ onOpen }: Props) {
             <h2 className="offer-group-title">{cat.name}</h2>
             <div className="cards">
               {list.map((o) => (
-                <article
-                  key={o.id}
-                  className="card"
-                  onClick={() => onOpen(o.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onOpen(o.id);
-                    }
-                  }}
-                >
-                  <div className="card-title" style={{ fontSize: 16 }}>{o.title}</div>
-                  <div className="card-field">{o.pain}</div>
-                  <div className="card-result">
-                    <span className="lbl" style={{ marginRight: 6 }}>
-                      {o.proof.length ? 'Реальный проект' : 'Что вы получите'}
-                    </span>
-                    {headline(o)}
-                  </div>
-                  <div className="card-foot">
-                    <span className="tag budget">{o.budget}</span>
-                    <span className="tag">{o.timeline}</span>
-                    <span className="spacer" />
-                    <span className="pickbtn">подробнее →</span>
-                  </div>
-                </article>
+                <OfferCard key={o.id} offer={o} onOpen={onOpen} />
               ))}
             </div>
           </section>

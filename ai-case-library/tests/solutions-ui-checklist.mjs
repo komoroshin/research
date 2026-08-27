@@ -90,7 +90,47 @@ check('прямая ссылка ?offer= открывает направлени
 const proofText = (await page.locator('.case-page').innerText()).toLowerCase();
 check('блок «реальные проекты» с цифрами', proofText.includes('реальные проекты') && proofText.includes('2 млн'), '');
 
-// --- 5. Мобильная вёрстка ---
+// --- 5. Разрез по отраслям ---
+await page.goto(BASE, { waitUntil: 'networkidle' });
+await page.click('.tabs button:has-text("По отраслям")');
+await page.waitForTimeout(300);
+const indTiles = await page.locator('.tile').count();
+check('вкладка «По отраслям»: плитки отраслей', indTiles >= 8, `${indTiles} плиток`);
+
+await page.locator('.tile', { hasText: 'Производство' }).first().click();
+await page.waitForTimeout(400);
+const indText = (await page.locator('main').innerText()).toLowerCase();
+check(
+  'страница отрасли: реальные результаты и направления',
+  indText.includes('реальные результаты в отрасли') &&
+    indText.includes('2 млн ₽') &&
+    (await page.locator('.card').count()) >= 4,
+  '',
+);
+
+// Направление открывается со страницы отрасли, «назад» возвращает в отрасль.
+await page.locator('.card').first().click();
+await page.waitForTimeout(400);
+check('направление открывается из отрасли', await page.locator('.case-page').isVisible(), '');
+await page.goBack();
+await page.waitForTimeout(400);
+check(
+  '«назад» возвращает на страницу отрасли',
+  (await page.locator('.case-page').count()) === 0 &&
+    // innerText отдаёт текст после text-transform: uppercase — сравниваем без регистра
+    (await page.locator('main').innerText()).toLowerCase().includes('реальные результаты в отрасли'),
+  '',
+);
+
+// Прямая ссылка на отрасль.
+await page.goto(BASE + '?view=industries&industry=healthcare', { waitUntil: 'networkidle' });
+check(
+  'прямая ссылка ?industry= открывает отрасль',
+  (await page.locator('main h2').innerText()).includes('Медицина'),
+  '',
+);
+
+// --- 6. Мобильная вёрстка ---
 const mobile = await context.newPage();
 await mobile.setViewportSize({ width: 390, height: 844 });
 await mobile.goto(BASE, { waitUntil: 'networkidle' });
