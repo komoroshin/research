@@ -1610,3 +1610,25 @@ table.compare thead th {
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
+
+/* ============ Клиентская подача: результат — заголовок карточки ============ */
+.card-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+.card-headline .chl-value {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--measured);
+  white-space: nowrap;
+}
+.card-headline .chl-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}

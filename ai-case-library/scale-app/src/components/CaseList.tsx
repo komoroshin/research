@@ -1,6 +1,6 @@
 import type { ScaleCase, ScaleFilters } from '../types';
-import { BUDGET_LABEL, label, processesFor } from '../lib/data';
-import { BudgetBadge, ConfidenceBadge, ReportedBadge, headlineMetric } from './Shared';
+import { BUDGET_LABEL, durationLabel, label, processesFor } from '../lib/data';
+import { BudgetBadge, headlineMetric } from './Shared';
 
 interface Props {
   list: readonly ScaleCase[];
@@ -34,8 +34,8 @@ export default function CaseList({
       </button>
       <h2 style={{ margin: '0 0 4px', letterSpacing: '-0.01em' }}>{industryTitle}</h2>
       <p style={{ margin: '0 0 14px', color: 'var(--text-muted)', fontSize: 13.5 }}>
-        Выберите задачу, похожую на вашу, — внутри карточки видно, что внедрили,
-        что изменилось, в каком бюджете и в какие сроки это уложилось.
+        Выберите задачу, похожую на вашу, — внутри видно, что сделали,
+        что изменилось, в каком бюджете и в какие сроки.
       </p>
 
       <div className="proc-chips">
@@ -50,7 +50,6 @@ export default function CaseList({
                 budget: f.budget.includes(b) ? f.budget.filter((x) => x !== b) : [...f.budget, b],
               }))
             }
-            title="Бюджетная вилка, раскрытая источником кейса"
           >
             бюджет {BUDGET_LABEL[b]}
           </button>
@@ -59,7 +58,6 @@ export default function CaseList({
           className="chip"
           data-on={filters.with_numbers}
           onClick={() => setFilters((f) => ({ ...f, with_numbers: !f.with_numbers }))}
-          title="Только кейсы, где источник называет численный результат"
         >
           только с цифрами результата
         </button>
@@ -106,46 +104,30 @@ export default function CaseList({
                   }
                 }}
               >
-                <div className="card-top">
-                  <div style={{ minWidth: 0 }}>
-                    <div className="card-client">{c.client_profile}</div>
-                    <div className="card-geo">
-                      {label(c.industry)} · {c.year}
-                    </div>
+                {/* Результат — первым, это причина открыть кейс */}
+                {metric ? (
+                  <div className="card-headline">
+                    <span className="chl-value">{metric.result}</span>
+                    <span className="chl-name">{metric.name}</span>
                   </div>
+                ) : (
+                  <div className="card-title" style={{ fontSize: 16 }}>{c.title}</div>
+                )}
+
+                <div className="card-geo" style={{ marginBottom: 6 }}>
+                  {c.client_profile} · {label(c.industry)}
                 </div>
 
-                <div className="card-title">{c.title}</div>
-
-                <div className="card-meta">
-                  <BudgetBadge item={c} />
-                  {c.business_process.slice(0, 2).map((p) => (
-                    <span className="tag" key={p}>{label(p)}</span>
-                  ))}
-                  {c.ai_mechanisms.slice(0, 1).map((m) => (
-                    <span className="tag mech" key={m}>{label(m)}</span>
-                  ))}
-                </div>
+                {metric && <div className="card-title">{c.title}</div>}
 
                 <div className="card-field">
                   <span className="lbl">Боль</span>
                   {clamp(c.pain, 140)}
                 </div>
 
-                <div className="card-result">
-                  {metric ? (
-                    <div className="card-metric">
-                      <span>{metric.name}:</span>
-                      <span className="val">{metric.result}</span>
-                      <ReportedBadge c={c.confidence} />
-                    </div>
-                  ) : (
-                    <span style={{ color: 'var(--text-muted)' }}>{clamp(c.result_summary, 150)}</span>
-                  )}
-                </div>
-
                 <div className="card-foot">
-                  <ConfidenceBadge c={c.confidence} />
+                  <BudgetBadge item={c} />
+                  {c.duration_months ? <span className="tag">{durationLabel(c.duration_months)}</span> : null}
                   <span className="spacer" />
                   <button
                     className="pickbtn"

@@ -1,6 +1,6 @@
 import type { ScaleCase } from '../types';
 import { budgetLabel, durationLabel, label, labels } from '../lib/data';
-import { BudgetBadge, ConfidenceBadge, CtaButton, ReportedBadge } from './Shared';
+import { BudgetBadge, CtaButton, resultHeadline } from './Shared';
 
 interface Props {
   item: ScaleCase;
@@ -17,12 +17,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 /**
- * Кейс — полноценная страница (как в клиентском каталоге): результат первым экраном,
- * CTA в липкой колонке, браузерный «назад» работает. Отличие этого каталога:
- * вместо ссылок на источники — текстовая плашка о происхождении кейса, потому что
- * каталог намеренно обезличен.
+ * Страница кейса для заказчика: заголовок — сразу результат, дальше история
+ * «боль → что сделали → что изменилось» и рамки проекта. Служебной информации
+ * о происхождении кейса здесь нет намеренно — читателю она не нужна.
  */
 export default function CaseDetail({ item: c, onBack }: Props) {
+  const { head, sub } = resultHeadline(c);
+
   return (
     <article className="case-page">
       <button className="backlink" onClick={onBack}>
@@ -30,17 +31,18 @@ export default function CaseDetail({ item: c, onBack }: Props) {
       </button>
 
       <header className="case-head">
-        <h2>{c.title}</h2>
-        <div className="sub">{c.client_profile}</div>
+        <h2>{head}</h2>
+        <div className="sub">
+          {sub} — {c.client_profile}
+        </div>
         <div className="case-badges">
-          <ConfidenceBadge c={c.confidence} />
           <BudgetBadge item={c} />
-          <span className="tag">{label(c.stage)}</span>
+          {c.duration_months ? <span className="tag">{durationLabel(c.duration_months)}</span> : null}
           <span className="tag">{label(c.industry)}</span>
         </div>
       </header>
 
-      {/* Результат — причина, по которой человек открыл кейс. Показываем его первым. */}
+      {/* Все результаты кейса — первым экраном */}
       {c.metrics.length > 0 && (
         <div className="metrics-hero">
           {c.metrics.map((m, i) => (
@@ -49,9 +51,6 @@ export default function CaseDetail({ item: c, onBack }: Props) {
                 <span className="mt-to">{m.result}</span>
               </div>
               <div className="mt-name">{m.name}</div>
-              <div className="mt-meta">
-                <ReportedBadge c={c.confidence} />
-              </div>
             </div>
           ))}
         </div>
@@ -61,13 +60,10 @@ export default function CaseDetail({ item: c, onBack }: Props) {
         <div className="case-main">
           <Section title="В чём была боль">
             <p>{c.pain}</p>
-          </Section>
-
-          <Section title="Какая была задача">
             <p>{c.problem}</p>
           </Section>
 
-          <Section title="Что внедрили и как это работает">
+          <Section title="Что сделали">
             <p>{c.solution}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
               {c.ai_mechanisms.map((m) => (
@@ -76,24 +72,8 @@ export default function CaseDetail({ item: c, onBack }: Props) {
             </div>
           </Section>
 
-          <Section title="Итог">
+          <Section title="Что изменилось">
             <p>{c.result_summary}</p>
-            {c.metrics.length === 0 && (
-              <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                Численные показатели источником не раскрыты.
-              </p>
-            )}
-          </Section>
-
-          <Section title="Откуда этот кейс">
-            <p>{c.source_label}.</p>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-              Каталог намеренно обезличен: имена заказчика и команды-исполнителя скрыты.
-              Кейс здесь — доказательство, что задача решаема в этом бюджете и в эти
-              сроки, а не реклама конкретного подрядчика. Секция «В чём была боль» —
-              наша реконструкция бизнес-ситуации за проектом; факты о решении и
-              результатах — из источника.
-            </p>
           </Section>
         </div>
 
@@ -108,7 +88,7 @@ export default function CaseDetail({ item: c, onBack }: Props) {
           </div>
 
           <div className="section" style={{ marginTop: 12 }}>
-            <h3>Паспорт проекта</h3>
+            <h3>Рамки проекта</h3>
             <dl className="kv aside-kv">
               <dt>Бюджет</dt>
               <dd>{budgetLabel(c)}</dd>
@@ -116,11 +96,13 @@ export default function CaseDetail({ item: c, onBack }: Props) {
               <dd>{durationLabel(c.duration_months)}</dd>
               <dt>Год</dt>
               <dd>{c.year}</dd>
-              <dt>География</dt>
-              <dd>{c.geo}</dd>
-              <dt>Стадия</dt>
-              <dd>{label(c.stage)}</dd>
-              <dt>Бизнес-процесс</dt>
+              {c.geo !== 'не раскрыто' && (
+                <>
+                  <dt>География</dt>
+                  <dd>{c.geo}</dd>
+                </>
+              )}
+              <dt>Процессы</dt>
               <dd>{labels(c.business_process)}</dd>
             </dl>
           </div>
