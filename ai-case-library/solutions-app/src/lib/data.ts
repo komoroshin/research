@@ -1,10 +1,19 @@
 import offersJson from '../../../data/offers.json';
-import type { Category, Offer, OffersData } from '../types';
+import type { Category, Industry, Offer, OffersData } from '../types';
 
 const data = offersJson as OffersData;
 
 export const categories: Category[] = data.categories;
 export const offers: Offer[] = data.offers;
+export const industries: Industry[] = data.industries;
+
+export const findIndustry = (id: string | null): Industry | null =>
+  industries.find((i) => i.id === id) ?? null;
+
+export const offersOf = (ind: Industry): Offer[] =>
+  ind.offers
+    .map((id) => offers.find((o) => o.id === id))
+    .filter((o): o is Offer => Boolean(o));
 
 export const byCategory = (catId: string): Offer[] =>
   offers.filter((o) => o.category === catId);

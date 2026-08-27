@@ -26,7 +26,19 @@ export interface Offer {
   first_step: string;
 }
 
+export interface Industry {
+  id: string;
+  name: string;
+  /** Типичные боли отрасли одной фразой. */
+  intro: string;
+  /** Реальные результаты проектов в отрасли (обезличенные, из базы кейсов). */
+  highlights: string[];
+  /** Релевантные направления в порядке приоритета. */
+  offers: string[];
+}
+
 export interface OffersData {
+  industries: Industry[];
   categories: Category[];
   offers: Offer[];
 }
