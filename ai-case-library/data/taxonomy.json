@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-08-26",
   "note": "Единая нормализованная таксономия. Все значения в cases.json обязаны использовать только id из этого файла. Расширять централизованно, а не по инициативе отдельного исследователя.",
 
@@ -361,6 +361,7 @@
     { "id": "commercial-director", "label_ru": "Коммерческий директор", "label_en": "Commercial Director" },
     { "id": "hr-director", "label_ru": "HR-директор", "label_en": "HR Director" },
     { "id": "legal-director", "label_ru": "Директор юридического департамента", "label_en": "Legal Director" },
+    { "id": "head-of-rnd", "label_ru": "Директор по R&D / научным исследованиям", "label_en": "Head of R&D" },
     { "id": "chief-engineer", "label_ru": "Главный инженер / технический директор актива", "label_en": "Chief Engineer" },
     { "id": "supply-chain-director", "label_ru": "Директор по цепочке поставок", "label_en": "Supply Chain Director" },
     { "id": "marketing-director", "label_ru": "Директор по маркетингу", "label_en": "Marketing Director" },

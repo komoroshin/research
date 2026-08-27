@@ -164,7 +164,7 @@
       {
         "metric_type": "cycle_time",
         "metric_name": "Сокращение сроков строительства",
-        "baseline": "до внедрения",
+        "baseline": "",
         "result": "-5%",
         "delta": "-5%",
         "status": "measured",
@@ -174,7 +174,7 @@
       {
         "metric_type": "operational_cost",
         "metric_name": "Снижение себестоимости строительства",
-        "baseline": "до внедрения",
+        "baseline": "",
         "result": "-1.5%",
         "delta": "-1.5%",
         "status": "measured",
@@ -184,7 +184,7 @@
       {
         "metric_type": "safety_incidents",
         "metric_name": "Сокращение штрафов за отсутствие ограждений",
-        "baseline": "до внедрения",
+        "baseline": "",
         "result": "в 3 раза меньше",
         "delta": "-66%",
         "status": "measured",
@@ -617,7 +617,7 @@
         "metric_type": "processing_time",
         "metric_name": "Время чтения маммограммы",
         "baseline": "",
-        "result": "",
+        "result": "-36%",
         "delta": "-36%",
         "status": "measured",
         "source_url": "https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/",
@@ -919,7 +919,7 @@
         "metric_type": "processing_time",
         "metric_name": "Сокращение времени на ведение заметок",
         "baseline": "",
-        "result": "",
+        "result": "-24%",
         "delta": "-24%",
         "status": "reported",
         "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
@@ -929,7 +929,7 @@
         "metric_type": "hours_saved",
         "metric_name": "Снижение «pajama time» (работы над документами вне рабочего времени)",
         "baseline": "",
-        "result": "",
+        "result": "-17%",
         "delta": "-17%",
         "status": "reported",
         "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
@@ -1139,7 +1139,7 @@
         "metric_type": "safety_incidents",
         "metric_name": "Относительное снижение абсолютной смертности в группе с ИИ-анализом",
         "baseline": "",
-        "result": "",
+        "result": "-30% (относительно)",
         "delta": "-30% (относительно)",
         "status": "measured",
         "source_url": "https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/",
@@ -1729,7 +1729,7 @@
     "business_process": [
       "predictive-maintenance"
     ],
-    "problem": "",
+    "problem": "Источник прямо не детализирует исходную проблему; результат описан как «предотвращение простоев, снижение затрат», что подразумевает риск незапланированных простоев оборудования и разрозненную оптимизацию процессов на нескольких площадках ТВЭЛ до внедрения единой платформы.",
     "before_state": "",
     "solution": "Отраслевая платформа «Атоммайнд» ТВЭЛ используется для планирования технического обслуживания, оптимизации технологических процессов и контроля качества продукции на предприятиях компании.",
     "ai_mechanisms": [
@@ -1792,7 +1792,7 @@
       "предиктивное обслуживание",
       "оптимизация"
     ],
-    "research_notes": "Методика расчёта эффекта >2,5 млрд руб. не раскрыта источником; не удалось найти отдельный первичный пресс-релиз ТВЭЛ или «Атоммайнд» с детализацией. Единственный источник — корпоративное издание «Страна Росатом»."
+    "research_notes": "Методика расчёта эффекта >2,5 млрд руб. не раскрыта источником; не удалось найти отдельный первичный пресс-релиз ТВЭЛ или «Атоммайнд» с детализацией. Единственный источник — корпоративное издание «Страна Росатом». Формулировка problem — интерпретация по контексту результата (предотвращение простоев), источник не описывает состояние «до» напрямую."
   },
   {
     "id": "ru-cn-fsk-redmadrobot-rag-01",
@@ -4561,7 +4561,7 @@
     "entry_hypothesis": "У фармацевтических R&D-подразделений может накапливаться большой объём неструктурированных исторических данных экспериментов, которые не используются системно при проектировании новых молекул; стоит оценить, как организована данная база знаний и востребован ли инструмент её анализа.",
     "likely_buyer": [
       "cto",
-      "rnd"
+      "head-of-rnd"
     ],
     "land_opportunity": "Пилот ИИ-инструмента поиска по историческим данным экспериментов для одной исследовательской группы.",
     "expand_opportunities": [

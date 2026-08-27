@@ -2,38 +2,44 @@
   {
     "id": "ru-hc-celsus-mammography-01",
     "title": "Компьютерное зрение для анализа маммограмм в скрининге рака груди",
-
     "client": "Система здравоохранения Москвы (в рамках городского эксперимента) и региональные пилоты в Республике Дагестан, Брянской и Тамбовской областях",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Celsus (ООО «Медицинские скрининг системы»)"],
+    "vendor": [
+      "Celsus (ООО «Медицинские скрининг системы»)"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Celsus"],
-
+    "technology_providers": [
+      "Celsus"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "diagnostics"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Врачам-рентгенологам требуется анализировать большой поток маммографических исследований в рамках скрининга рака молочной железы; есть риск пропуска патологии человеком при ручном чтении снимков.",
     "before_state": "Анализ одной маммограммы без ИИ занимал в среднем 7 минут 15 секунд.",
-
     "solution": "Сервис Celsus на основе компьютерного зрения анализирует цифровые маммографические изображения, выявляет признаки патологии (включая ранние стадии онкологии) и помогает врачу приоритизировать случаи. Сервис зарегистрирован Росздравнадзором (РЗН 2021/14449) и имеет маркировку CE.",
-    "ai_mechanisms": ["computer-vision"],
-
-    "data_used": ["маммографические изображения"],
-    "integrations": ["медицинские информационные системы", "ЕРИС (в рамках эксперимента Москвы)"],
-
+    "ai_mechanisms": [
+      "computer-vision"
+    ],
+    "data_used": [
+      "маммографические изображения"
+    ],
+    "integrations": [
+      "медицинские информационные системы",
+      "ЕРИС (в рамках эксперимента Москвы)"
+    ],
     "deployment": "cloud",
     "stage": "pilot",
-
     "scale": "Свыше 7000 обработанных маммографических исследований; пилотные проекты завершены в трёх регионах РФ (Дагестан, Брянская и Тамбовская области); сервис используется в 13 субъектах РФ в рамках пилотов.",
-
     "metrics": [
       {
         "metric_type": "processing_time",
@@ -56,70 +62,90 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "2020–2023",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Сервис Celsus сократил время анализа маммограммы почти на треть (с 7 мин 15 сек до 4 мин 50 сек) и, по данным вендора, выявил 29 случаев патологии, изначально не замеченных рентгенологом, по итогам пилотов в нескольких регионах РФ.",
-
     "sources": [
-      { "url": "https://celsus.ai/blog/sczenarii-skrining/", "title": "Сценарии применения ИИ в медицине: скрининг и диагностика", "type": "vendor", "publisher": "Celsus", "date": "2020-2023" },
-      { "url": "https://celsus.ai/smi/mammogram/", "title": "Анализ маммограм с применением искусственного интеллекта CELSUS", "type": "vendor", "publisher": "Celsus", "date": "2020-12-21" }
+      {
+        "url": "https://celsus.ai/blog/sczenarii-skrining/",
+        "title": "Сценарии применения ИИ в медицине: скрининг и диагностика",
+        "type": "vendor",
+        "publisher": "Celsus",
+        "date": "2020-2023"
+      },
+      {
+        "url": "https://celsus.ai/smi/mammogram/",
+        "title": "Анализ маммограм с применением искусственного интеллекта CELSUS",
+        "type": "vendor",
+        "publisher": "Celsus",
+        "date": "2020-12-21"
+      }
     ],
     "primary_source": "https://celsus.ai/blog/sczenarii-skrining/",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Показывает, как отечественный CV-сервис для скрининга рака груди прошёл регуляторную регистрацию и вышел в мультирегиональное пилотирование с измеримым сокращением времени анализа и находкой пропущенных случаев патологии.",
     "entry_hypothesis": "У региональных минздравов и крупных диагностических центров может накапливаться очередь на анализ маммографий и существует риск пропуска ранних стадий рака при ручном чтении; стоит проверить текущую загрузку рентгенологов и объём повторных чтений.",
-    "likely_buyer": ["medical-director", "cio"],
-
+    "likely_buyer": [
+      "medical-director",
+      "cio"
+    ],
     "land_opportunity": "Пилот CV-анализа маммографий на потоке одного диагностического центра с оценкой сокращения времени чтения и числа находок.",
-    "expand_opportunities": ["Расширение на флюорографию и КТ лёгких", "Патоморфология", "Второе чтение для региональных скрининговых программ"],
-
-    "tags": ["маммография", "компьютерное зрение", "скрининг рака груди", "лучевая диагностика"],
+    "expand_opportunities": [
+      "Расширение на флюорографию и КТ лёгких",
+      "Патоморфология",
+      "Второе чтение для региональных скрининговых программ"
+    ],
+    "tags": [
+      "маммография",
+      "компьютерное зрение",
+      "скрининг рака груди",
+      "лучевая диагностика"
+    ],
     "research_notes": "Основной источник — сайт вендора Celsus; независимое (немедийное) подтверждение цифр (29 случаев, сокращение времени) в рамках сессии не найдено, поэтому грейд ограничен B несмотря на регуляторную регистрацию. Стадия отмечена как pilot, так как источник описывает пилотные проекты в регионах; для Москвы декларируется допуск к промышленной эксплуатации, но отдельных цифр по Москве не подтверждено."
   },
-
   {
     "id": "ru-hc-botkinai-oncodispanser-01",
     "title": "Компьютерное зрение Botkin.AI для поиска узловых образований на КТ грудной клетки",
-
     "client": "Нижегородский областной клинический онкологический диспансер",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Botkin.AI"],
+    "vendor": [
+      "Botkin.AI"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Botkin.AI"],
-
+    "technology_providers": [
+      "Botkin.AI"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "diagnostics"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Необходимость быстро и точно анализировать большой поток КТ-исследований органов грудной клетки для выявления узловых образований и рака лёгкого.",
     "before_state": "",
-
     "solution": "Платформа Botkin.AI на основе компьютерного зрения анализирует КТ-исследования органов грудной клетки, определяет узловые образования, оценивающиеся как подозрительные, и помогает приоритизировать случаи для врача-рентгенолога.",
-    "ai_mechanisms": ["computer-vision"],
-
-    "data_used": ["КТ-исследования органов грудной клетки"],
-    "integrations": ["ЕРИС"],
-
+    "ai_mechanisms": [
+      "computer-vision"
+    ],
+    "data_used": [
+      "КТ-исследования органов грудной клетки"
+    ],
+    "integrations": [
+      "ЕРИС"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Почти 10 000 КТ-исследований органов грудной клетки обработано в течение 2021 года.",
-
     "metrics": [
       {
         "metric_type": "cases_handled",
@@ -142,70 +168,93 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "2021",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "За 2021 год система Botkin.AI обработала почти 10 000 КТ грудной клетки в Нижегородском областном онкодиспансере, выявив узловые образования у 185 пациентов, из которых 127 случаев были обнаружены впервые. Главный врач диспансера подтвердил ценность решения в интервью «Интерфаксу».",
-
     "sources": [
-      { "url": "https://sk.ru/news/botkinai-itogi-2021/", "title": "Botkin.AI в 2021: 24 проекта, рост команды в два раза", "type": "vendor", "publisher": "Сколково", "date": "2021-12-28" },
-      { "url": "https://vademec.ru/news/2020/08/19/botkin-ai-integrirovalsya-co-stolichnym-eris-dlya-poiska-raka-legkogo-na-kt-snimkakh/", "title": "Botkin.AI интегрировали с ЕРИС для поиска рака легкого на КТ-снимках", "type": "media", "publisher": "Vademecum", "date": "2020-08-19" }
+      {
+        "url": "https://sk.ru/news/botkinai-itogi-2021/",
+        "title": "Botkin.AI в 2021: 24 проекта, рост команды в два раза",
+        "type": "vendor",
+        "publisher": "Сколково",
+        "date": "2021-12-28"
+      },
+      {
+        "url": "https://vademec.ru/news/2020/08/19/botkin-ai-integrirovalsya-co-stolichnym-eris-dlya-poiska-raka-legkogo-na-kt-snimkakh/",
+        "title": "Botkin.AI интегрировали с ЕРИС для поиска рака легкого на КТ-снимках",
+        "type": "media",
+        "publisher": "Vademecum",
+        "date": "2020-08-19"
+      }
     ],
     "primary_source": "https://sk.ru/news/botkinai-itogi-2021/",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Конкретный региональный онкодиспансер, названный клиент, измеримое число впервые выявленных случаев и независимая (через Интерфакс) цитата главного врача — хороший бенчмарк для регионального внедрения CV-диагностики онкопатологий.",
     "entry_hypothesis": "У региональных онкодиспансеров и многопрофильных стационаров может быть поток КТ грудной клетки, который врачи не успевают полностью просматривать повторно на предмет случайных находок; стоит оценить долю повторных находок при ручном чтении.",
-    "likely_buyer": ["medical-director", "head-of-operations"],
-
+    "likely_buyer": [
+      "medical-director",
+      "head-of-operations"
+    ],
     "land_opportunity": "Пилот CV-анализа КТ грудной клетки на потоке одного онкологического или многопрофильного диспансера с фиксацией числа впервые выявленных находок.",
-    "expand_opportunities": ["Маммография и флюорография", "Патоморфология", "Второе чтение для скрининга рака лёгкого"],
-
-    "tags": ["КТ лёгких", "компьютерное зрение", "онкоскрининг", "лучевая диагностика"],
+    "expand_opportunities": [
+      "Маммография и флюорография",
+      "Патоморфология",
+      "Второе чтение для скрининга рака лёгкого"
+    ],
+    "tags": [
+      "КТ лёгких",
+      "компьютерное зрение",
+      "онкоскрининг",
+      "лучевая диагностика"
+    ],
     "research_notes": "Grade A на основании независимой цитаты главного врача через Интерфакс и публикации через Сколково; отдельного клиентского источника (сайт диспансера) не найдено."
   },
-
   {
     "id": "ru-hc-sberzdorovie-gigachat-01",
     "title": "ИИ-помощник на базе GigaChat для сбора анамнеза и подсказки диагноза",
-
     "client": "СберЗдоровье",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["AIRI", "СберМедИИ"],
+    "vendor": [
+      "AIRI",
+      "СберМедИИ"
+    ],
     "vendor_type": "mixed",
-    "technology_providers": ["GigaChat"],
-
+    "technology_providers": [
+      "GigaChat"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["telemedicine"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "telemedicine"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Пациентам, обращающимся в телемедицинский сервис, сложно самостоятельно описать симптомы и понять, к какому специалисту обратиться при первичном обращении.",
     "before_state": "",
-
     "solution": "ИИ-помощник на базе модели GigaChat, встроенный в приложение «СберЗдоровье», собирает анамнез в диалоге с пациентом, анализирует симптомы, предлагает наиболее вероятные диагнозы и рекомендует нужного специалиста.",
-    "ai_mechanisms": ["llm", "nlp-classification"],
-
-    "data_used": ["диалоги с пациентами", "симптомы, введённые пользователем"],
-    "integrations": ["мобильное приложение СберЗдоровье"],
-
+    "ai_mechanisms": [
+      "llm",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "диалоги с пациентами",
+      "симптомы, введённые пользователем"
+    ],
+    "integrations": [
+      "мобильное приложение СберЗдоровье"
+    ],
     "deployment": "cloud",
     "stage": "pilot",
-
     "scale": "Свыше 160 000 консультаций проведено на момент публикации (июль 2025).",
-
     "metrics": [
       {
         "metric_type": "accuracy",
@@ -218,70 +267,96 @@
         "source_type": "media"
       }
     ],
-
     "timeline": "2024–2025",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "ИИ-помощник СберЗдоровья на базе GigaChat провёл свыше 160 000 консультаций и показал 93% точности (28 из 30 верных заключений) при тестировании на реальных клинических случаях из New England Journal of Medicine, включая распознавание редких патологий.",
-
     "sources": [
-      { "url": "https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik", "title": "Медицинский ИИ-помощник «СберЗдоровья» на базе GigaChat продемонстрировал высокую точность постановки диагнозов", "type": "media", "publisher": "CNews", "date": "2025-07-31" },
-      { "url": "https://www.ixbt.com/news/2024/12/12/v-sberzdorove-pojavilsja-iipomoshnik-na-baze-gigachat.html", "title": "В «СберЗдоровье» появился ИИ-помощник на базе GigaChat", "type": "media", "publisher": "iXBT", "date": "2024-12-12" }
+      {
+        "url": "https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik",
+        "title": "Медицинский ИИ-помощник «СберЗдоровья» на базе GigaChat продемонстрировал высокую точность постановки диагнозов",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2025-07-31"
+      },
+      {
+        "url": "https://www.ixbt.com/news/2024/12/12/v-sberzdorove-pojavilsja-iipomoshnik-na-baze-gigachat.html",
+        "title": "В «СберЗдоровье» появился ИИ-помощник на базе GigaChat",
+        "type": "media",
+        "publisher": "iXBT",
+        "date": "2024-12-12"
+      }
     ],
     "primary_source": "https://www.cnews.ru/news/line/2025-07-31_meditsinskij_ii-pomoshchnik",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Показывает применение отечественной LLM (GigaChat) для клинического триажа с проверкой на реальных клинических случаях из авторитетного медицинского журнала — редкий для РФ пример измеренной диагностической точности LLM.",
     "entry_hypothesis": "У телемедицинских сервисов и call-центров клиник может не хватать инструмента предварительного сбора анамнеза и маршрутизации к нужному специалисту; стоит оценить долю обращений, требующих повторного уточнения профиля специалиста.",
-    "likely_buyer": ["medical-director", "coo"],
-
+    "likely_buyer": [
+      "medical-director",
+      "coo"
+    ],
     "land_opportunity": "Пилот LLM-ассистента для предварительного сбора жалоб и маршрутизации к специалисту в одном телемедицинском канале.",
-    "expand_opportunities": ["Дистанционный мониторинг хронических пациентов", "Проверка эпикризов", "Ассистент для колл-центра клиники"],
-
-    "tags": ["GigaChat", "LLM", "телемедицина", "диагностика", "триаж"],
+    "expand_opportunities": [
+      "Дистанционный мониторинг хронических пациентов",
+      "Проверка эпикризов",
+      "Ассистент для колл-центра клиники"
+    ],
+    "tags": [
+      "GigaChat",
+      "LLM",
+      "телемедицина",
+      "диагностика",
+      "триаж"
+    ],
     "research_notes": "В более ранней выдаче WebSearch фигурировала цифра 350 000 консультаций, но при открытии первичного источника (CNews) подтверждённая цифра — свыше 160 000; используется только подтверждённое значение. Стадия отмечена как pilot, так как источник описывает тестовую фазу с расширением выборки."
   },
-
   {
     "id": "ru-hc-slsoft-medsi-voice-01",
     "title": "Голосовой ИИ-агент контакт-центра для сети клиник МЕДСИ",
-
     "client": "МЕДСИ",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["SL Soft"],
+    "vendor": [
+      "SL Soft"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["SL Soft AI"],
-
+    "technology_providers": [
+      "SL Soft AI"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["clinics"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support", "scheduling-dispatching"],
-
+    "subindustry": [
+      "clinics"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support",
+      "scheduling-dispatching"
+    ],
     "problem": "Высокая нагрузка на операторов контакт-центра, длительное время ожидания ответа, неудобное взаимодействие через тональное меню при записи на приём.",
     "before_state": "",
-
     "solution": "Голосовой ИИ-агент SL Soft AI автоматизирует обработку входящих звонков: запись, перенос и отмену визитов к врачу, а также обрабатывает вопросы по ДМС, платным услугам, налоговому вычету, адресам и времени работы клиник.",
-    "ai_mechanisms": ["voice-agent", "speech-to-text", "nlp-classification"],
-
-    "data_used": ["записи звонков", "база расписания врачей"],
-    "integrations": ["МИС", "телефония"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "speech-to-text",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "записи звонков",
+      "база расписания врачей"
+    ],
+    "integrations": [
+      "МИС",
+      "телефония"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Более 3,5 млн звонков в год автоматизировано.",
-
     "metrics": [
       {
         "metric_type": "calls",
@@ -304,69 +379,87 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "5+ лет эксплуатации, функции маршрутизации расширены в 2025 году",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Голосовой ИИ-агент SL Soft для МЕДСИ автоматизирует свыше 3,5 млн звонков в год, снижает нагрузку на операторов и время ожидания; 95% клиентов положительно оценивают работу агента.",
-
     "sources": [
-      { "url": "https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/", "title": "Голосовой ИИ-агент для «МЕДСИ» – кейс", "type": "vendor", "publisher": "SL Soft", "date": "2025" }
+      {
+        "url": "https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/",
+        "title": "Голосовой ИИ-агент для «МЕДСИ» – кейс",
+        "type": "vendor",
+        "publisher": "SL Soft",
+        "date": "2025"
+      }
     ],
     "primary_source": "https://slsoft.ru/cases/golosovoy-ii-agent-dlya-medsi/",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Крупная узнаваемая частная сеть клиник, большой измеримый масштаб (3,5 млн звонков в год) и долгий срок эксплуатации — хороший ориентир по объёму автоматизации контакт-центра клиники.",
     "entry_hypothesis": "У крупных сетей клиник может быть большая доля рутинных звонков (запись, перенос, отмена, типовые вопросы), которые перегружают контакт-центр; стоит оценить структуру звонков и долю типовых обращений.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот голосового робота на одном типовом сценарии (подтверждение записи/перенос визита) для одной локации сети.",
-    "expand_opportunities": ["Расширение на исходящий обзвон (напоминания)", "Речевая аналитика контакт-центра", "ИИ-скрайб для документации"],
-
-    "tags": ["голосовой робот", "контакт-центр", "запись к врачу", "МЕДСИ"],
+    "expand_opportunities": [
+      "Расширение на исходящий обзвон (напоминания)",
+      "Речевая аналитика контакт-центра",
+      "ИИ-скрайб для документации"
+    ],
+    "tags": [
+      "голосовой робот",
+      "контакт-центр",
+      "запись к врачу",
+      "МЕДСИ"
+    ],
     "research_notes": "Единственный найденный источник — сайт вендора SL Soft; независимого клиентского или медийного подтверждения цифр в рамках сессии не найдено."
   },
-
   {
     "id": "ru-hc-mtt-alfacenter-voice-01",
     "title": "Голосовой робот VoiceBox для снижения неявок пациентов",
-
     "client": "Сеть многопрофильных клиник «Альфа-Центр Здоровья»",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["МТТ (МТС Exolve)"],
+    "vendor": [
+      "МТТ (МТС Exolve)"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["VoiceBox"],
-
+    "technology_providers": [
+      "VoiceBox"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["clinics"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["scheduling-dispatching", "customer-support"],
-
+    "subindustry": [
+      "clinics"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "scheduling-dispatching",
+      "customer-support"
+    ],
     "problem": "Минимум 6% пациентов не являлись на приём и не отменяли запись заранее, из-за чего образовывались пустые слоты в расписании врачей.",
     "before_state": "Подтверждение записи и обзвон пациентов вручную занимали время сотрудников контакт-центра.",
-
     "solution": "Голосовой робот VoiceBox обзванивает пациентов накануне визита, напоминает о записи к врачу, подтверждает или отменяет её при изменении планов и формирует отчёты о свободных слотах для повторной записи.",
-    "ai_mechanisms": ["voice-agent", "speech-to-text"],
-
-    "data_used": ["расписание приёмов", "контактные данные пациентов"],
-    "integrations": ["МИС клиники", "телефония"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "speech-to-text"
+    ],
+    "data_used": [
+      "расписание приёмов",
+      "контактные данные пациентов"
+    ],
+    "integrations": [
+      "МИС клиники",
+      "телефония"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Сеть клиник «Альфа-Центр Здоровья» в 12 городах России.",
-
     "metrics": [
       {
         "metric_type": "automation_rate",
@@ -389,69 +482,86 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "с апреля 2022",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Голосовой робот VoiceBox для сети «Альфа-Центр Здоровья» обзванивает пациентов перед визитом; только 3% звонков требуют подключения оператора, а 60% освободившихся слотов перезаписываются новыми пациентами.",
-
     "sources": [
-      { "url": "https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya", "title": "Голосовой помощник VoiceBox от МТТ поможет сети клиник «Альфа-Центр Здоровья»", "type": "vendor", "publisher": "МТС Exolve / vc.ru", "date": "2022-04-20" }
+      {
+        "url": "https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya",
+        "title": "Голосовой помощник VoiceBox от МТТ поможет сети клиник «Альфа-Центр Здоровья»",
+        "type": "vendor",
+        "publisher": "МТС Exolve / vc.ru",
+        "date": "2022-04-20"
+      }
     ],
     "primary_source": "https://vc.ru/exolve/406795-golosovoi-pomoshnik-voicebox-ot-mtt-pomozhet-seti-klinik-alfa-centr-zdorovya",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Понятная и измеримая боль (неявки пациентов, пустые слоты) и конкретный процент автоматизации без участия оператора — простой и убедительный сценарий для сетей клиник.",
     "entry_hypothesis": "У сетей клиник с большим числом ежедневных записей может быть заметная доля неявок и пустых слотов в расписании врачей; стоит оценить текущий % неявок и загрузку контакт-центра на обзвон.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот голосового обзвона-напоминания для одной клиники сети с измерением снижения неявок.",
-    "expand_opportunities": ["Входящая линия записи", "NPS-опросы после приёма", "Речевая аналитика"],
-
-    "tags": ["голосовой робот", "неявки пациентов", "напоминания", "запись к врачу"],
+    "expand_opportunities": [
+      "Входящая линия записи",
+      "NPS-опросы после приёма",
+      "Речевая аналитика"
+    ],
+    "tags": [
+      "голосовой робот",
+      "неявки пациентов",
+      "напоминания",
+      "запись к врачу"
+    ],
     "research_notes": "Источник только вендорский (vc.ru колонка МТС Exolve); отдельной независимой цифры по снижению неявок (в процентных пунктах) не найдено, приведены только доли автоматизации звонков и повторного заполнения слотов."
   },
-
   {
     "id": "ru-hc-robovoice-gemotest-voice-01",
     "title": "Голосовой бот Robovoice для контакт-центра лабораторной сети «Гемотест»",
-
     "client": "Гемотест",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["SL Soft (Robovoice)"],
+    "vendor": [
+      "SL Soft (Robovoice)"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Robovoice"],
-
+    "technology_providers": [
+      "Robovoice"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support"],
-
+    "subindustry": [
+      "diagnostics"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support"
+    ],
     "problem": "Операторы контакт-центра перегружены типовыми запросами (статус анализов, подтверждение выезда специалиста на дом), пациенты сталкиваются с долгим ожиданием ответа, масштабирование КЦ требует высоких затрат.",
     "before_state": "",
-
     "solution": "Голосовой бот Robovoice автоматизирует три процесса: обработку входящих запросов о статусе анализов, исходящий обзвон для подтверждения записи на выезд специалиста и триггерные опросы при негативных оценках сервиса; интегрирован с медицинской информационной системой.",
-    "ai_mechanisms": ["voice-agent", "speech-to-text", "nlp-classification"],
-
-    "data_used": ["записи звонков", "данные МИС о статусе заказов"],
-    "integrations": ["МИС"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "speech-to-text",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "записи звонков",
+      "данные МИС о статусе заказов"
+    ],
+    "integrations": [
+      "МИС"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Федеральная сеть из ~2000 лабораторных филиалов в 500 городах России, Киргизии, Таджикистана и Казахстана; около 12 млн пациентов в год.",
-
     "metrics": [
       {
         "metric_type": "automation_rate",
@@ -474,70 +584,91 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "с 2021",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Голосовой бот Robovoice для «Гемотест» снизил нагрузку на операторов контакт-центра на 40%, при этом 35% обращений решаются ботом полностью без участия оператора.",
-
     "sources": [
-      { "url": "https://robo-voice.ru/case_bot_dlya_gemotest/", "title": "Кейс Гемотест | голосовой бот RoboVoice", "type": "vendor", "publisher": "RoboVoice / SL Soft", "date": "2021" },
-      { "url": "https://softline.ru/about/news/gemotest-povysil-effektivnost-koll-tsentra-s-pomoshchyu-golosovogo-bota-robovoice-ot-kompanii-sl-sof", "title": "«Гемотест» повысил эффективность колл-центра с помощью голосового бота Robovoice", "type": "vendor", "publisher": "Softline", "date": "2021" }
+      {
+        "url": "https://robo-voice.ru/case_bot_dlya_gemotest/",
+        "title": "Кейс Гемотест | голосовой бот RoboVoice",
+        "type": "vendor",
+        "publisher": "RoboVoice / SL Soft",
+        "date": "2021"
+      },
+      {
+        "url": "https://softline.ru/about/news/gemotest-povysil-effektivnost-koll-tsentra-s-pomoshchyu-golosovogo-bota-robovoice-ot-kompanii-sl-sof",
+        "title": "«Гемотест» повысил эффективность колл-центра с помощью голосового бота Robovoice",
+        "type": "vendor",
+        "publisher": "Softline",
+        "date": "2021"
+      }
     ],
     "primary_source": "https://robo-voice.ru/case_bot_dlya_gemotest/",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Крупная федеральная лабораторная сеть с большим потоком типовых обращений (статус анализов) — понятный и повторяемый сценарий автоматизации для лабораторного бизнеса.",
     "entry_hypothesis": "У лабораторных сетей с большим потоком звонков о статусе анализов может быть высокая доля рутинных, легко автоматизируемых обращений; стоит оценить их долю в общем объёме звонков контакт-центра.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот голосового бота на одном сценарии (информирование о статусе анализа) для части филиалов сети.",
-    "expand_opportunities": ["Исходящий обзвон по итогам приёма", "Опросы удовлетворённости", "Запись на выезд специалиста"],
-
-    "tags": ["голосовой робот", "лаборатория", "контакт-центр", "Гемотест"],
+    "expand_opportunities": [
+      "Исходящий обзвон по итогам приёма",
+      "Опросы удовлетворённости",
+      "Запись на выезд специалиста"
+    ],
+    "tags": [
+      "голосовой робот",
+      "лаборатория",
+      "контакт-центр",
+      "Гемотест"
+    ],
     "research_notes": "Оба источника — вендорские (RoboVoice/SL Soft и Softline, дистрибьютор SL Soft), независимого медийного подтверждения цифр не найдено."
   },
-
   {
     "id": "ru-hc-crt-voice2med-01",
     "title": "Voice2Med — голосовой ввод медицинских протоколов для врачей лучевой диагностики",
-
     "client": "Центр диагностики и телемедицины (Москва)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Группа компаний ЦРТ"],
+    "vendor": [
+      "Группа компаний ЦРТ"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Voice2Med"],
-
+    "technology_providers": [
+      "Voice2Med"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics"],
-
-    "business_function": ["clinical"],
-    "business_process": ["medical-documentation"],
-
+    "subindustry": [
+      "diagnostics"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
     "problem": "Врачи лучевой диагностики тратят значительную часть времени приёма на оформление протоколов исследований вручную; по оценке источника, документирование занимает более 30% времени врача-педиатра и более 40% времени врача общей практики.",
     "before_state": "Протоколы исследований оформлялись вручную после анализа снимков.",
-
     "solution": "Voice2Med — сервис распознавания речи врача для голосового заполнения протоколов исследований в реальном времени, с поддержкой медицинской терминологии по нескольким специальностям.",
-    "ai_mechanisms": ["speech-to-text", "nlp-classification"],
-
-    "data_used": ["голосовые записи врачей"],
-    "integrations": ["медицинская информационная система центра"],
-
+    "ai_mechanisms": [
+      "speech-to-text",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "голосовые записи врачей"
+    ],
+    "integrations": [
+      "медицинская информационная система центра"
+    ],
     "deployment": "on-prem",
     "stage": "production",
-
     "scale": "Внедрение в одном диагностическом центре; кейс включён в библиотеку успешных ИИ-проектов AI Russia Альянса в сфере искусственного интеллекта. Пилоты речевого ввода для врачей также запускались в Приморском крае, Ярославской, Мурманской, Кемеровской, Иркутской областях, Мордовии и Удмуртии.",
-
     "metrics": [
       {
         "metric_type": "processing_time",
@@ -560,70 +691,96 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "2020",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Voice2Med сократил время подготовки протоколов на 22% и повысил число пациентов, обслуживаемых врачом за смену, на 17% в одном диагностическом центре; кейс включён в отраслевую библиотеку AI Russia.",
-
     "sources": [
-      { "url": "https://www.speechpro.ru/media/news/11-11-2020", "title": "Кейс по голосовому заполнению медицинской документации с помощью технологий ЦРТ вошел в AI Russia", "type": "vendor", "publisher": "ЦРТ", "date": "2020-11-11" },
-      { "url": "https://www.vedomosti.ru/technology/articles/2022/06/05/925209-tehnologiyu-raspoznavaniya-rechi", "title": "Технологию распознавания речи врачей могут внедрить по всем клиникам", "type": "media", "publisher": "Ведомости", "date": "2022-06-05" }
+      {
+        "url": "https://www.speechpro.ru/media/news/11-11-2020",
+        "title": "Кейс по голосовому заполнению медицинской документации с помощью технологий ЦРТ вошел в AI Russia",
+        "type": "vendor",
+        "publisher": "ЦРТ",
+        "date": "2020-11-11"
+      },
+      {
+        "url": "https://www.vedomosti.ru/technology/articles/2022/06/05/925209-tehnologiyu-raspoznavaniya-rechi",
+        "title": "Технологию распознавания речи врачей могут внедрить по всем клиникам",
+        "type": "media",
+        "publisher": "Ведомости",
+        "date": "2022-06-05"
+      }
     ],
     "primary_source": "https://www.speechpro.ru/media/news/11-11-2020",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Показывает конкретный измеримый эффект голосового ввода протоколов для врачей лучевой диагностики, но независимая пресса (Ведомости) приводит и скептические оценки эффективности подобных решений в целом по рынку — важно для реалистичной оценки внедрения.",
     "entry_hypothesis": "У центров лучевой диагностики может уходить значительная доля времени врача на оформление протоколов вручную; стоит проверить долю времени приёма, уходящую на документирование, и качество распознавания медицинской терминологии на реальных данных.",
-    "likely_buyer": ["medical-director", "cio"],
-
+    "likely_buyer": [
+      "medical-director",
+      "cio"
+    ],
     "land_opportunity": "Пилот голосового ввода протоколов для одной специальности (например, рентгенология) с измерением времени на документирование до/после.",
-    "expand_opportunities": ["Расширение на другие врачебные специальности", "Интеграция с МИС для автозаполнения полей", "Голосовой ввод для стационара"],
-
-    "tags": ["голосовой ввод", "медицинская документация", "распознавание речи", "лучевая диагностика"],
+    "expand_opportunities": [
+      "Расширение на другие врачебные специальности",
+      "Интеграция с МИС для автозаполнения полей",
+      "Голосовой ввод для стационара"
+    ],
+    "tags": [
+      "голосовой ввод",
+      "медицинская документация",
+      "распознавание речи",
+      "лучевая диагностика"
+    ],
     "research_notes": "Ведомости (05.06.2022) приводят скептические оценки экспертов рынка о практическом использовании речевого ввода врачами в целом («экономит время лишь кажется, на практике тормозит работу»); конкретные цифры (-22%, +17%) относятся к отдельному вендорскому кейсу и не имеют независимого подтверждения именно для этого внедрения. Клиент в разных источниках упоминается по-разному (Центр диагностики и телемедицины vs УГМК-Здоровье/ЕМС) — в кейс включена версия, подтверждённая открытым по WebFetch источником speechpro.ru."
   },
-
   {
     "id": "ru-hc-mia-smclinic-voice-01",
     "title": "Голосовой робот «Мия» на первой линии контакт-центра СМ-Клиники",
-
     "client": "СМ-Клиника",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["ООО «Робот Мия»"],
+    "vendor": [
+      "ООО «Робот Мия»"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["MIA"],
-
+    "technology_providers": [
+      "MIA"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "healthcare",
-    "subindustry": ["clinics"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support", "scheduling-dispatching"],
-
+    "subindustry": [
+      "clinics"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support",
+      "scheduling-dispatching"
+    ],
     "problem": "Контакт-центр сети клиник не справлялся с большим потоком звонков по узкоспециализированным медицинским вопросам (анализы, симптомы, термины), что приводило к потерям линий и высоким затратам на ФОТ операторов.",
     "before_state": "Обработка запросов на отмену записи занимала около 50 секунд на звонок при участии оператора.",
-
     "solution": "Голосовой робот «Мия» на первой линии контакт-центра самостоятельно записывает пациентов на приём с учётом расположения клиник и доступности специалистов, консультирует по вопросам сдачи анализов (база из более чем 7000 терминов), звонит с напоминаниями о приёме и обрабатывает отмены записи.",
-    "ai_mechanisms": ["voice-agent", "speech-to-text", "nlp-classification"],
-
-    "data_used": ["записи звонков", "база анализов и медицинских терминов", "расписание врачей"],
-    "integrations": ["МИС", "телефония"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "speech-to-text",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "записи звонков",
+      "база анализов и медицинских терминов",
+      "расписание врачей"
+    ],
+    "integrations": [
+      "МИС",
+      "телефония"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "10 000–12 000 звонков в день.",
-
     "metrics": [
       {
         "metric_type": "labor_cost",
@@ -656,70 +813,90 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "unknown",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Голосовой робот «Мия» обрабатывает 10-12 тысяч звонков в день для СМ-Клиники с точностью распознавания выше 90% и нулевой потерей линий, сократил ФОТ контакт-центра на 35%, снизил неявки пациентов на 5 п.п. и ускорил обработку отмен записи с 50 до 10 секунд.",
-
     "sources": [
-      { "url": "https://robotmia.ru/blog/detail/sm_clinic", "title": "СМ-Клиника значительно сократила ФОТ", "type": "vendor", "publisher": "MIA", "date": "unknown" },
-      { "url": "https://robotmia.ru/perviy-golosovoy-robot-v-medicine-dlya-sm-clinica", "title": "Робот MIA - первый голосовой робот в медицине", "type": "vendor", "publisher": "MIA", "date": "unknown" }
+      {
+        "url": "https://robotmia.ru/blog/detail/sm_clinic",
+        "title": "СМ-Клиника значительно сократила ФОТ",
+        "type": "vendor",
+        "publisher": "MIA",
+        "date": "unknown"
+      },
+      {
+        "url": "https://robotmia.ru/perviy-golosovoy-robot-v-medicine-dlya-sm-clinica",
+        "title": "Робот MIA - первый голосовой робот в медицине",
+        "type": "vendor",
+        "publisher": "MIA",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://robotmia.ru/blog/detail/sm_clinic",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Крупная узнаваемая частная сеть клиник, конкретные операционные метрики (ФОТ, неявки, время обработки), высокая точность распознавания в узкоспециализированной медицинской тематике — убедительный пример зрелого голосового бота в здравоохранении.",
     "entry_hypothesis": "У крупных многопрофильных сетей клиник с высоким потоком звонков может быть значительная доля ФОТ контакт-центра, уходящая на типовые запросы (запись, отмена, вопросы по анализам); стоит оценить объём звонков и текущий ФОТ КЦ.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот голосового робота на одном частом сценарии (например, обработка отмен записи) в одной локации сети.",
-    "expand_opportunities": ["Расширение на исходящие напоминания", "Консультации по анализам", "Речевая аналитика КЦ"],
-
-    "tags": ["голосовой робот", "контакт-центр", "запись к врачу", "СМ-Клиника"],
+    "expand_opportunities": [
+      "Расширение на исходящие напоминания",
+      "Консультации по анализам",
+      "Речевая аналитика КЦ"
+    ],
+    "tags": [
+      "голосовой робот",
+      "контакт-центр",
+      "запись к врачу",
+      "СМ-Клиника"
+    ],
     "research_notes": "WebFetch страницы robotmia.ru завершался ошибкой редиректа (too many redirects) при прямом обращении; цифры взяты из содержимого страниц, показанного в результатах WebSearch (сниппеты по этим же URL). Юридическое название вендора — ООО «Робот Мия» — подтверждено отдельным поиском."
   },
-
   {
     "id": "se-hc-lunit-capio-01",
     "title": "ИИ как независимый второй читатель маммограмм в госпитале Capio S:t Göran",
-
     "client": "Capio S:t Göran Hospital (Стокгольм, Швеция)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Lunit"],
+    "vendor": [
+      "Lunit"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Lunit INSIGHT MMG"],
-
+    "technology_providers": [
+      "Lunit INSIGHT MMG"
+    ],
     "country": "Швеция",
     "region": "europe",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "diagnostics"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Дефицит рентгенологов и ограниченная пропускная способность программы скрининга рака груди при протоколе двойного чтения маммограмм.",
     "before_state": "Каждую маммограмму читали два врача-рентгенолога (double reading).",
-
     "solution": "Lunit INSIGHT MMG внедрён как независимый ИИ-читатель, заменяющий одного из двух рентгенологов в протоколе двойного чтения маммограмм — первый в мире случай подобного использования ИИ в клинической практике.",
-    "ai_mechanisms": ["computer-vision"],
-
-    "data_used": ["маммографические изображения"],
-    "integrations": ["система скрининга госпиталя"],
-
+    "ai_mechanisms": [
+      "computer-vision"
+    ],
+    "data_used": [
+      "маммографические изображения"
+    ],
+    "integrations": [
+      "система скрининга госпиталя"
+    ],
     "deployment": "cloud",
     "stage": "scaled-production",
-
     "scale": "Программа скрининга рака груди госпиталя Capio S:t Göran; период оценки после интеграции ИИ — июль 2023 – март 2024 (после исследования ScreenTrustCAD 2021–2022).",
-
     "metrics": [
       {
         "metric_type": "precision_recall",
@@ -735,7 +912,7 @@
         "metric_type": "processing_time",
         "metric_name": "Время чтения маммограммы",
         "baseline": "",
-        "result": "",
+        "result": "-36%",
         "delta": "-36%",
         "status": "measured",
         "source_url": "https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/",
@@ -752,145 +929,182 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "2021–2024",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "После года эксплуатации ИИ как независимого второго читателя маммограмм в Capio S:t Göran Hospital выявляемость рака груди выросла на 15% (с 4,8 до 5,5 на 1000 обследованных), время чтения сократилось более чем на треть, а положительная прогностическая ценность выросла с 16,9% до 22,1%.",
-
     "sources": [
-      { "url": "https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/", "title": "Real-World Validation: Lunit AI Proven Successful in 1-Year Breast Cancer Screening Deployment", "type": "vendor", "publisher": "Lunit", "date": "2024-12-02" },
-      { "url": "https://www.itnonline.com/content/lunit-ai-releases-successful-study-results-breast-cancer-screening-deployment", "title": "Lunit AI Releases Successful Study Results on Breast Cancer Screening Deployment", "type": "media", "publisher": "Imaging Technology News", "date": "2024-12" }
+      {
+        "url": "https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/",
+        "title": "Real-World Validation: Lunit AI Proven Successful in 1-Year Breast Cancer Screening Deployment",
+        "type": "vendor",
+        "publisher": "Lunit",
+        "date": "2024-12-02"
+      },
+      {
+        "url": "https://www.itnonline.com/content/lunit-ai-releases-successful-study-results-breast-cancer-screening-deployment",
+        "title": "Lunit AI Releases Successful Study Results on Breast Cancer Screening Deployment",
+        "type": "media",
+        "publisher": "Imaging Technology News",
+        "date": "2024-12"
+      }
     ],
     "primary_source": "https://www.lunit.io/en/media-hub/real-world-validation-lunit-ai-proven-successful-in-1-year-breast-cancer-screening-deployment/",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Первый в мире госпиталь, полностью заменивший одного из двух рентгенологов в протоколе скрининга на ИИ, с годовым проспективным наблюдением реальных клинических результатов — сильнейший бенчмарк для замены части двойного чтения ИИ.",
     "entry_hypothesis": "У систем скрининга рака груди с протоколом двойного чтения может не хватать рентгенологов для поддержания текущих объёмов при растущем спросе; стоит оценить текущую загрузку рентгенологов и очередь на второе чтение.",
-    "likely_buyer": ["medical-director", "cio"],
-
+    "likely_buyer": [
+      "medical-director",
+      "cio"
+    ],
     "land_opportunity": "Пилот ИИ как параллельного (не заменяющего) второго читателя на части потока маммографий с сравнением результатов.",
-    "expand_opportunities": ["Расширение на КТ грудной клетки", "Патоморфология", "Другие скрининговые программы"],
-
-    "tags": ["маммография", "компьютерное зрение", "скрининг рака груди", "Швеция"],
+    "expand_opportunities": [
+      "Расширение на КТ грудной клетки",
+      "Патоморфология",
+      "Другие скрининговые программы"
+    ],
+    "tags": [
+      "маммография",
+      "компьютерное зрение",
+      "скрининг рака груди",
+      "Швеция"
+    ],
     "research_notes": ""
   },
-
   {
     "id": "il-hc-aidoc-sheba-01",
     "title": "ИИ-триаж внутричерепных кровоизлияний в приёмном покое Sheba Medical Center",
-
     "client": "Sheba Medical Center (Израиль)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Aidoc"],
+    "vendor": [
+      "Aidoc"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Aidoc"],
-
+    "technology_providers": [
+      "Aidoc"
+    ],
     "country": "Израиль",
     "region": "middle-east",
-
     "industry": "healthcare",
-    "subindustry": ["diagnostics", "hospitals"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "diagnostics",
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Задержки в обнаружении внутричерепного кровоизлияния (ICH) на КТ головы в приёмном покое приводят к предотвратимой смертности из-за позднего начала терапии.",
     "before_state": "КТ головы анализировались без приоритизации по подозрению на кровоизлияние.",
-
     "solution": "Алгоритм Aidoc анализирует КТ головы сразу при поступлении в приёмный покой и автоматически выявляет и приоритизирует случаи с подозрением на внутричерепное кровоизлияние для срочного review врачом.",
-    "ai_mechanisms": ["computer-vision"],
-
-    "data_used": ["КТ головы без контраста"],
-    "integrations": ["система приёмного покоя госпиталя"],
-
+    "ai_mechanisms": [
+      "computer-vision"
+    ],
+    "data_used": [
+      "КТ головы без контраста"
+    ],
+    "integrations": [
+      "система приёмного покоя госпиталя"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Ретроспективное когортное исследование 587 пациентов уровня 1 травматологического центра (289 пациентов до внедрения ИИ, 298 — после).",
-
     "metrics": [
       {
         "metric_type": "safety_incidents",
         "metric_name": "Относительное снижение абсолютной смертности в группе с ИИ-анализом",
         "baseline": "",
-        "result": "",
+        "result": "-30% (относительно)",
         "delta": "-30% (относительно)",
         "status": "measured",
         "source_url": "https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/",
         "source_type": "client"
       }
     ],
-
     "timeline": "Сравнение когорт январь 2017 – январь 2018 (без ИИ) и январь 2019 – январь 2020 (с ИИ); публикация исследования — сентябрь 2023",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Ретроспективное исследование Sheba Medical Center показало более чем 30%-е относительное снижение смертности от внутричерепного кровоизлияния в когорте, где КТ головы анализировались алгоритмом Aidoc, за счёт более раннего выявления и начала терапии.",
-
     "sources": [
-      { "url": "https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/", "title": "New Research from Sheba Medical Center Demonstrates Success of Aidoc Algorithm", "type": "client", "publisher": "Sheba Medical Center", "date": "2023-09-19" }
+      {
+        "url": "https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/",
+        "title": "New Research from Sheba Medical Center Demonstrates Success of Aidoc Algorithm",
+        "type": "client",
+        "publisher": "Sheba Medical Center",
+        "date": "2023-09-19"
+      }
     ],
     "primary_source": "https://sheba-global.com/new-research-from-sheba-medical-center-demonstrates-success-of-aidoc-algorithm-in-early-detection-of-critical-brain-hemorrhages/",
-
     "evidence_grade": "A",
     "vendor_claim": false,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Крупный узнаваемый израильский медицинский центр, пиринг-ревьюированное клиническое исследование, драматичный и понятный результат — снижение смертности, а не просто ускорение процесса.",
     "entry_hypothesis": "У стационаров с приёмным покоем и большим потоком КТ головы может не хватать быстрой приоритизации срочных случаев кровоизлияния среди общего потока исследований; стоит оценить среднее время от КТ до начала терапии для таких случаев.",
-    "likely_buyer": ["medical-director", "chief-engineer"],
-
+    "likely_buyer": [
+      "medical-director",
+      "chief-engineer"
+    ],
     "land_opportunity": "Пилот ИИ-триажа КТ головы на потоке приёмного покоя одного стационара с измерением времени от снимка до начала терапии.",
-    "expand_opportunities": ["Расширение на инсульт (LVO)", "Онкологические находки на КТ", "Травмы позвоночника"],
-
-    "tags": ["компьютерное зрение", "инсульт", "приёмный покой", "Израиль"],
+    "expand_opportunities": [
+      "Расширение на инсульт (LVO)",
+      "Онкологические находки на КТ",
+      "Травмы позвоночника"
+    ],
+    "tags": [
+      "компьютерное зрение",
+      "инсульт",
+      "приёмный покой",
+      "Израиль"
+    ],
     "research_notes": "metric_type 'safety_incidents' использован как ближайший подходящий id из таксономии для показателя смертности — точного metric_type «mortality» в taxonomy.json нет."
   },
-
   {
     "id": "us-hc-vizai-validate-01",
     "title": "Платформа Viz.ai для ускорения оповещения о крупнососудистой окклюзии при инсульте",
-
     "client": "Сеть из 166 медицинских учреждений в 17 штатах США (партнёрство TeleSpecialists и Viz.ai)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Viz.ai"],
+    "vendor": [
+      "Viz.ai"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Viz.ai Platform"],
-
+    "technology_providers": [
+      "Viz.ai Platform"
+    ],
     "country": "США",
     "region": "north-america",
-
     "industry": "healthcare",
-    "subindustry": ["hospitals"],
-
-    "business_function": ["clinical"],
-    "business_process": ["scheduling-dispatching", "clinical-workflow"],
-
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "scheduling-dispatching",
+      "clinical-workflow"
+    ],
     "problem": "Задержки в уведомлении нейроинтервенционалиста при подозрении на инсульт из-за крупнососудистой окклюзии (LVO) снижают шансы на своевременное эндоваскулярное лечение.",
     "before_state": "Уведомление нейроинтервенционалиста происходило после стандартного процесса просмотра и передачи снимков без автоматической приоритизации.",
-
     "solution": "Платформа Viz.ai автоматически анализирует КТ-ангиографию, выявляет признаки LVO и мгновенно уведомляет команду нейроинтервенционалистов, ускоряя координацию помощи при остром инсульте.",
-    "ai_mechanisms": ["computer-vision", "ai-agent"],
-
-    "data_used": ["КТ-ангиография головного мозга"],
-    "integrations": ["мобильные уведомления клинической команды"],
-
+    "ai_mechanisms": [
+      "computer-vision",
+      "ai-agent"
+    ],
+    "data_used": [
+      "КТ-ангиография головного мозга"
+    ],
+    "integrations": [
+      "мобильные уведомления клинической команды"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "14 116 пациентов в исследовании VALIDATE: 8557 в учреждениях с ИИ, 5559 — без ИИ, 166 учреждений в 17 штатах.",
-
     "metrics": [
       {
         "metric_type": "response_time",
@@ -903,69 +1117,85 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "Исследование VALIDATE представлено 8 февраля 2023 на International Stroke Conference",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Многоцентровое исследование VALIDATE на 14 116 пациентах показало, что использование платформы Viz.ai сокращает медианное время от поступления до уведомления нейроинтервенционалиста с 89,5 до 50 минут (на 39,5 минуты, статистически значимо, p<0.001).",
-
     "sources": [
-      { "url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care", "title": "Large real-world, multi-center study demonstrates Viz.ai Platform saves critical minutes in stroke care", "type": "vendor", "publisher": "Viz.ai", "date": "2023-02-08" }
+      {
+        "url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
+        "title": "Large real-world, multi-center study demonstrates Viz.ai Platform saves critical minutes in stroke care",
+        "type": "vendor",
+        "publisher": "Viz.ai",
+        "date": "2023-02-08"
+      }
     ],
     "primary_source": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Крупное многоцентровое сравнительное исследование (14 тыс. пациентов, 166 учреждений) с сильной статистической значимостью и понятным клиническим результатом — минуты решают исходы при инсульте.",
     "entry_hypothesis": "У сетей стационаров с телемедицинской неврологической поддержкой может быть заметная задержка между поступлением пациента с подозрением на инсульт и подключением нейроинтервенционалиста; стоит оценить текущее медианное время такой передачи.",
-    "likely_buyer": ["medical-director", "coo"],
-
+    "likely_buyer": [
+      "medical-director",
+      "coo"
+    ],
     "land_opportunity": "Пилот платформы автоматического выявления LVO и уведомления команды на потоке одного инсультного центра.",
-    "expand_opportunities": ["Расширение на внутричерепные кровоизлияния", "Координация межгоспитальных переводов", "Аналитика по исходам лечения"],
-
-    "tags": ["инсульт", "компьютерное зрение", "координация помощи", "нейрохирургия"],
+    "expand_opportunities": [
+      "Расширение на внутричерепные кровоизлияния",
+      "Координация межгоспитальных переводов",
+      "Аналитика по исходам лечения"
+    ],
+    "tags": [
+      "инсульт",
+      "компьютерное зрение",
+      "координация помощи",
+      "нейрохирургия"
+    ],
     "research_notes": ""
   },
-
   {
     "id": "ke-hc-pendahealth-openai-01",
     "title": "AI Consult — клинический ко-пилот на GPT-4o в сети клиник Penda Health",
-
     "client": "Penda Health",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["OpenAI"],
+    "vendor": [
+      "OpenAI"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["GPT-4o"],
-
+    "technology_providers": [
+      "GPT-4o"
+    ],
     "country": "Кения",
     "region": "africa",
-
     "industry": "healthcare",
-    "subindustry": ["clinics"],
-
-    "business_function": ["clinical"],
-    "business_process": ["clinical-workflow"],
-
+    "subindustry": [
+      "clinics"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "clinical-workflow"
+    ],
     "problem": "Диагностические и лечебные ошибки среди врачей первичного звена в условиях высокой нагрузки и ограниченных ресурсов в клиниках первичной помощи.",
     "before_state": "",
-
     "solution": "AI Consult — клинический ко-пилот на базе GPT-4o, встроенный в электронную медкарту, даёт врачу рекомендации в реальном времени в ключевые моменты приёма, используя цветовую сигнализацию (зелёный/жёлтый/красный) для обозначения уровня опасений; учитывает распространённость заболеваний и национальные клинические рекомендации Кении.",
-    "ai_mechanisms": ["llm", "ai-agent"],
-
-    "data_used": ["электронные медицинские карты", "данные приёма пациента"],
-    "integrations": ["электронная медкарта Penda Health"],
-
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent"
+    ],
+    "data_used": [
+      "электронные медицинские карты",
+      "данные приёма пациента"
+    ],
+    "integrations": [
+      "электронная медкарта Penda Health"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "15 клиник в Найроби; изучено около 40 000 визитов пациентов (из 500 000+ визитов в год во всей сети).",
-
     "metrics": [
       {
         "metric_type": "error_rate",
@@ -988,76 +1218,99 @@
         "source_type": "media"
       }
     ],
-
     "timeline": "с августа 2024 (на базе GPT-4o)",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Исследование на почти 40 000 визитов в 15 клиниках Penda Health в Найроби показало, что клиницисты, использующие AI Consult, допускали на 16% меньше диагностических ошибок и на 13% меньше ошибок лечения по сравнению с врачами без ко-пилота.",
-
     "sources": [
-      { "url": "https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health", "title": "AI Copilot Reduces Clinical Errors in 40,000-Patient Study at Penda Health", "type": "media", "publisher": "Digital Health News", "date": "2025" },
-      { "url": "https://openai.com/index/ai-clinical-copilot-penda-health/", "title": "Pioneering an AI clinical copilot with Penda Health", "type": "vendor", "publisher": "OpenAI", "date": "2025" }
+      {
+        "url": "https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health",
+        "title": "AI Copilot Reduces Clinical Errors in 40,000-Patient Study at Penda Health",
+        "type": "media",
+        "publisher": "Digital Health News",
+        "date": "2025"
+      },
+      {
+        "url": "https://openai.com/index/ai-clinical-copilot-penda-health/",
+        "title": "Pioneering an AI clinical copilot with Penda Health",
+        "type": "vendor",
+        "publisher": "OpenAI",
+        "date": "2025"
+      }
     ],
     "primary_source": "https://www.digitalhealthnews.com/ai-copilot-reduces-clinical-errors-in-40-000-patient-study-at-penda-health",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Один из немногих крупных реальных (не лабораторных) исследований LLM-ко-пилота в первичной медицинской помощи с измеримым снижением клинических ошибок на десятках тысяч визитов — сильный универсальный бенчмарк применимости LLM в клинической практике за пределами радиологии.",
     "entry_hypothesis": "У сетей клиник первичной помощи с высокой нагрузкой на врачей может быть измеримая доля диагностических и лечебных ошибок, которые можно снизить с помощью ИИ-подсказок в момент приёма; стоит оценить готовность внедрить такой инструмент как «страховочную сетку», а не заменитель врача.",
-    "likely_buyer": ["medical-director", "coo"],
-
+    "likely_buyer": [
+      "medical-director",
+      "coo"
+    ],
     "land_opportunity": "Пилот LLM-ко-пилота с ограниченным набором сценариев (например, только «красные флаги») на потоке одной клиники сети.",
-    "expand_opportunities": ["Расширение на все клиники сети", "Адаптация под локальные клинические протоколы", "Аналитика по типам ошибок"],
-
-    "tags": ["LLM", "клинический ко-пилот", "первичная помощь", "GPT-4o", "Кения"],
+    "expand_opportunities": [
+      "Расширение на все клиники сети",
+      "Адаптация под локальные клинические протоколы",
+      "Аналитика по типам ошибок"
+    ],
+    "tags": [
+      "LLM",
+      "клинический ко-пилот",
+      "первичная помощь",
+      "GPT-4o",
+      "Кения"
+    ],
     "research_notes": ""
   },
-
   {
     "id": "us-hc-nuance-dax-northwestern-01",
     "title": "DAX Copilot сокращает время документирования и «pajama time» в Northwestern Medicine",
-
     "client": "Northwestern Medicine",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Microsoft (Nuance)"],
+    "vendor": [
+      "Microsoft (Nuance)"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["DAX Copilot"],
-
+    "technology_providers": [
+      "DAX Copilot"
+    ],
     "country": "США",
     "region": "north-america",
-
     "industry": "healthcare",
-    "subindustry": ["hospitals"],
-
-    "business_function": ["clinical"],
-    "business_process": ["medical-documentation"],
-
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
     "problem": "Административная нагрузка по ведению клинической документации приводит к «pajama time» — работе врачей над записями по вечерам — и ограничивает число пациентов, которых врач может принять.",
     "before_state": "",
-
     "solution": "DAX Copilot — амбиентный ИИ-ассистент, который слушает разговор врача с пациентом и автоматически генерирует черновик клинической записи для проверки врачом.",
-    "ai_mechanisms": ["speech-to-text", "llm", "generative-ai"],
-
-    "data_used": ["аудиозапись приёма врача с пациентом"],
-    "integrations": ["электронная медицинская карта"],
-
+    "ai_mechanisms": [
+      "speech-to-text",
+      "llm",
+      "generative-ai"
+    ],
+    "data_used": [
+      "аудиозапись приёма врача с пациентом"
+    ],
+    "integrations": [
+      "электронная медицинская карта"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Более 400 организаций используют DAX Copilot; платформа Dragon Medical в целом используется более чем 600 000 врачами по всему миру.",
-
     "metrics": [
       {
         "metric_type": "processing_time",
         "metric_name": "Сокращение времени на ведение заметок",
         "baseline": "",
-        "result": "",
+        "result": "-24%",
         "delta": "-24%",
         "status": "reported",
         "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
@@ -1067,7 +1320,7 @@
         "metric_type": "hours_saved",
         "metric_name": "Снижение «pajama time» (работы над документами вне рабочего времени)",
         "baseline": "",
-        "result": "",
+        "result": "-17%",
         "delta": "-17%",
         "status": "reported",
         "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
@@ -1084,69 +1337,85 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "по состоянию на сентябрь 2024 (год с момента общедоступности DAX Copilot)",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "В Northwestern Medicine применение DAX Copilot снизило время на ведение заметок на 24% и «pajama time» на 17%, при этом врачи стали принимать в среднем на 11,3 дополнительных пациента в месяц.",
-
     "sources": [
-      { "url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/", "title": "A year of DAX Copilot: Healthcare innovation that refocuses on the clinician-patient connection", "type": "vendor", "publisher": "Microsoft", "date": "2024-09-26" }
+      {
+        "url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+        "title": "A year of DAX Copilot: Healthcare innovation that refocuses on the clinician-patient connection",
+        "type": "vendor",
+        "publisher": "Microsoft",
+        "date": "2024-09-26"
+      }
     ],
     "primary_source": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Крупная узнаваемая академическая система здравоохранения США, конкретные и разнообразные метрики (время документирования, внерабочее время, доступность приёма) от платформенного вендора (Microsoft) — один из самых цитируемых кейсов ambient AI scribe.",
     "entry_hypothesis": "У врачебных практик с электронной медкартой может быть значительная доля рабочего и внерабочего времени, уходящая на ручное ведение заметок после приёма; стоит оценить текущее «pajama time» и его влияние на доступность записи к врачу.",
-    "likely_buyer": ["medical-director", "cio", "coo"],
-
+    "likely_buyer": [
+      "medical-director",
+      "cio",
+      "coo"
+    ],
     "land_opportunity": "Пилот ambient AI-скрайба на нескольких врачах одной специальности с измерением времени документирования до/после.",
-    "expand_opportunities": ["Расширение на все специальности системы", "Интеграция с кодированием диагнозов (billing)", "Аналитика качества документации"],
-
-    "tags": ["ambient AI", "медицинская документация", "DAX Copilot", "выгорание врачей"],
+    "expand_opportunities": [
+      "Расширение на все специальности системы",
+      "Интеграция с кодированием диагнозов (billing)",
+      "Аналитика качества документации"
+    ],
+    "tags": [
+      "ambient AI",
+      "медицинская документация",
+      "DAX Copilot",
+      "выгорание врачей"
+    ],
     "research_notes": "Числа по Northwestern Medicine взяты из общего обзорного поста Microsoft о годовщине DAX Copilot, где перечислены несколько систем здравоохранения; для Northwestern Medicine это единственный найденный источник."
   },
-
   {
     "id": "us-hc-kaiserpermanente-scribe-01",
     "title": "Амбиентный ИИ-скрайб в масштабе The Permanente Medical Group",
-
     "client": "The Permanente Medical Group (TPMG) / Kaiser Permanente",
     "client_disclosed": true,
     "client_url": "https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/",
-
     "vendor": [],
     "vendor_type": "unknown",
-    "technology_providers": ["не указано в открытом источнике"],
-
+    "technology_providers": [
+      "не указано в открытом источнике"
+    ],
     "country": "США",
     "region": "north-america",
-
     "industry": "healthcare",
-    "subindustry": ["hospitals"],
-
-    "business_function": ["clinical"],
-    "business_process": ["medical-documentation"],
-
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
     "problem": "Растущая административная нагрузка и выгорание врачей из-за большого объёма ручного ведения медицинской документации.",
     "before_state": "",
-
     "solution": "Внедрение амбиентного ИИ для клинической документации (голосовая транскрипция приёма и автоматическая генерация черновика записи) в масштабе всей организации после структурированного пилота и системы контроля качества (QA) с участием мультидисциплинарной команды.",
-    "ai_mechanisms": ["speech-to-text", "llm", "generative-ai"],
-
-    "data_used": ["аудиозаписи приёмов", "3600+ комментариев врачей в рамках QA"],
-    "integrations": ["электронная медицинская карта"],
-
+    "ai_mechanisms": [
+      "speech-to-text",
+      "llm",
+      "generative-ai"
+    ],
+    "data_used": [
+      "аудиозаписи приёмов",
+      "3600+ комментариев врачей в рамках QA"
+    ],
+    "integrations": [
+      "электронная медицинская карта"
+    ],
     "deployment": "cloud",
     "stage": "scaled-production",
-
     "scale": "8 регионов, 600 медицинских офисов, 40 больниц; 10-недельный пилот в начале 2024 года с участием 1000+ врачей и 63 000 приёмов; после раскатки — более 4 млн приёмов.",
-
     "metrics": [
       {
         "metric_type": "csat",
@@ -1159,69 +1428,90 @@
         "source_type": "client"
       }
     ],
-
     "timeline": "Пилот — начало 2024; публикация в NEJM AI — март 2025",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "The Permanente Medical Group развернула амбиентный ИИ-скрайб в масштабе 8 регионов и 4+ млн приёмов после структурированной программы контроля качества; 47% оценённых приёмов получили высшую оценку по опроснику PDQI, что легло в основу публикации в NEJM AI.",
-
     "sources": [
-      { "url": "https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/", "title": "Quality assurance informs large-scale use of ambient AI clinical documentation", "type": "client", "publisher": "Permanente Medicine", "date": "2025" }
+      {
+        "url": "https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/",
+        "title": "Quality assurance informs large-scale use of ambient AI clinical documentation",
+        "type": "client",
+        "publisher": "Permanente Medicine",
+        "date": "2025"
+      }
     ],
     "primary_source": "https://permanente.org/quality-assurance-informs-large-scale-use-of-ambient-ai-clinical-documentation/",
-
     "evidence_grade": "A",
     "vendor_claim": false,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Один из крупнейших в мире по масштабу (4+ млн приёмов) реальных внедрений ambient AI-документации с собственной публикацией клиента в рецензируемом журнале NEJM AI — образец методичного QA-подхода к масштабированию ИИ в клинике.",
     "entry_hypothesis": "У крупных многопрофильных систем здравоохранения при развёртывании ambient AI-скрайба в масштабе может потребоваться отдельная программа контроля качества документации до полного роллаута; стоит оценить, есть ли у клиента такой процесс QA.",
-    "likely_buyer": ["medical-director", "cio", "coo"],
-
+    "likely_buyer": [
+      "medical-director",
+      "cio",
+      "coo"
+    ],
     "land_opportunity": "Структурированный QA-пилот ambient AI-документации на ограниченной группе врачей перед организационным роллаутом.",
-    "expand_opportunities": ["Полный роллаут на все регионы", "Специализированные шаблоны по профилям", "Аналитика качества нот по специальностям"],
-
-    "tags": ["ambient AI", "медицинская документация", "Kaiser Permanente", "QA"],
+    "expand_opportunities": [
+      "Полный роллаут на все регионы",
+      "Специализированные шаблоны по профилям",
+      "Аналитика качества нот по специальностям"
+    ],
+    "tags": [
+      "ambient AI",
+      "медицинская документация",
+      "Kaiser Permanente",
+      "QA"
+    ],
     "research_notes": "Название конкретного вендора ИИ-скрайба не указано в открытом фрагменте permanente.org, доступном в рамках этой сессии, поэтому поле vendor оставлено пустым, а не приписано конкретному поставщику по догадке."
   },
-
   {
     "id": "in-hc-manipal-googlecloud-01",
     "title": "Генеративный ИИ Gemini ускоряет пересменку медсестёр в сети Manipal Hospitals",
-
     "client": "Manipal Hospitals",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Google Cloud Consulting"],
+    "vendor": [
+      "Google Cloud Consulting"
+    ],
     "vendor_type": "cloud-provider",
-    "technology_providers": ["Gemini", "Vertex AI", "Google Cloud Run"],
-
+    "technology_providers": [
+      "Gemini",
+      "Vertex AI",
+      "Google Cloud Run"
+    ],
     "country": "Индия",
     "region": "asia-pacific",
-
     "industry": "healthcare",
-    "subindustry": ["hospitals"],
-
-    "business_function": ["clinical"],
-    "business_process": ["medical-documentation"],
-
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
     "problem": "Медсёстры тратили дополнительные 90 минут за смену на подготовку и приём отчётов при пересменке (handoff), что вызывало усталость и повышало риск ошибок из-за ручных рукописных записей.",
     "before_state": "Пересменка занимала около 90 минут на создание и приём отчётов.",
-
     "solution": "Генеративный ИИ на базе Gemini на Vertex AI формирует структурированные ISBAR-отчёты (Identify, Situation, Background, Assessment, Recommendation) для пересменки медсестёр на основе данных из системы TrakCare, передаваемых через озеро данных Google Cloud с интеллектуальной фильтрацией по времени смены.",
-    "ai_mechanisms": ["llm", "generative-ai"],
-
-    "data_used": ["данные из МИС TrakCare", "клинические записи по пациентам"],
-    "integrations": ["TrakCare", "Google Cloud data lake", "Google Cloud Run"],
-
+    "ai_mechanisms": [
+      "llm",
+      "generative-ai"
+    ],
+    "data_used": [
+      "данные из МИС TrakCare",
+      "клинические записи по пациентам"
+    ],
+    "integrations": [
+      "TrakCare",
+      "Google Cloud data lake",
+      "Google Cloud Run"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "37 больниц сети (23 уже подключены), 10 500+ коек, более 5000 медсестёр ежедневно используют систему, около 7 млн пациентов в год.",
-
     "metrics": [
       {
         "metric_type": "processing_time",
@@ -1234,69 +1524,87 @@
         "source_type": "platform"
       }
     ],
-
     "timeline": "Поэтапное внедрение 2024–2025, публикация 11 июля 2025",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Генеративный ИИ на базе Gemini сократил время пересменки медсестёр в сети Manipal Hospitals с 90 до 20 минут (на 70%), система используется более чем 5000 медсёстрами ежедневно в 23 из 37 больниц сети.",
-
     "sources": [
-      { "url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals", "title": "How Manipal Hospitals sped up nurse handoffs across 37 hospitals", "type": "platform", "publisher": "Google Cloud", "date": "2025-07-11" }
+      {
+        "url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
+        "title": "How Manipal Hospitals sped up nurse handoffs across 37 hospitals",
+        "type": "platform",
+        "publisher": "Google Cloud",
+        "date": "2025-07-11"
+      }
     ],
     "primary_source": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Один из крупнейших госпитальных операторов Индии, чёткая понятная боль (ручная пересменка медсестёр), измеримое сокращение времени на 70% в масштабе десятков больниц — редкий пример генеративного ИИ вне врачебной документации.",
     "entry_hypothesis": "У крупных больничных сетей может уходить значительное время медсестринского персонала на подготовку отчётов о пересменке вручную, с риском ошибок из-за усталости; стоит оценить текущие затраты времени на пересменку и качество передачи информации.",
-    "likely_buyer": ["medical-director", "coo", "cio"],
-
+    "likely_buyer": [
+      "medical-director",
+      "coo",
+      "cio"
+    ],
     "land_opportunity": "Пилот генеративного ИИ для одного вида клинической документации (например, пересменка медсестёр) в одной больнице сети.",
-    "expand_opportunities": ["Расширение на врачебную документацию", "Клинические саммари для консилиумов", "Интеграция с другими МИС"],
-
-    "tags": ["генеративный ИИ", "Gemini", "пересменка", "медсёстры", "Индия"],
+    "expand_opportunities": [
+      "Расширение на врачебную документацию",
+      "Клинические саммари для консилиумов",
+      "Интеграция с другими МИС"
+    ],
+    "tags": [
+      "генеративный ИИ",
+      "Gemini",
+      "пересменка",
+      "медсёстры",
+      "Индия"
+    ],
     "research_notes": ""
   },
-
   {
     "id": "ch-hc-novartis-azure-01",
     "title": "ИИ-система поддержки принятия решений для дизайна молекул в Novartis",
-
     "client": "Novartis",
     "client_disclosed": true,
     "client_url": "https://www.novartis.com/stories/art-drug-design-technological-age",
-
-    "vendor": ["Microsoft"],
+    "vendor": [
+      "Microsoft"
+    ],
     "vendor_type": "cloud-provider",
-    "technology_providers": ["Microsoft Azure", "Microsoft Research (MoLeR)"],
-
+    "technology_providers": [
+      "Microsoft Azure",
+      "Microsoft Research (MoLeR)"
+    ],
     "country": "Швейцария",
     "region": "europe",
-
     "industry": "healthcare",
-    "subindustry": ["pharma"],
-
-    "business_function": ["rnd"],
-    "business_process": ["research-development"],
-
+    "subindustry": [
+      "pharma"
+    ],
+    "business_function": [
+      "rnd"
+    ],
+    "business_process": [
+      "research-development"
+    ],
     "problem": "Разработка новых лекарственных формул традиционно занимает годы и обходится в миллиарды долларов из-за большого числа неудачных итераций при подборе молекулярных кандидатов.",
     "before_state": "Данные из тысяч прошлых экспериментов хранились разрозненно в PDF и Excel-файлах и не использовались системно для проектирования новых кандидатов.",
-
     "solution": "ИИ-система поддержки принятия решений на базе Microsoft Azure, встроенная в рабочий процесс химиков-разработчиков Novartis, анализирует данные многолетних лабораторных экспериментов и предлагает оптимизированные молекулярные кандидаты для дальнейшей разработки лекарств.",
-    "ai_mechanisms": ["classical-ml", "generative-ai"],
-
-    "data_used": ["данные прошлых лабораторных экспериментов (десятилетия наблюдений)"],
-    "integrations": ["внутренние системы R&D Novartis"],
-
+    "ai_mechanisms": [
+      "classical-ml",
+      "generative-ai"
+    ],
+    "data_used": [
+      "данные прошлых лабораторных экспериментов (десятилетия наблюдений)"
+    ],
+    "integrations": [
+      "внутренние системы R&D Novartis"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Внедрено в рабочий процесс химиков-разработчиков по всей организации; охватывает направления макулярной дегенерации, клеточной и генной терапии, дизайна лекарств.",
-
     "metrics": [
       {
         "metric_type": "cycle_time",
@@ -1309,32 +1617,49 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "Партнёрство с Microsoft заключено в 2019 году; описание кейса опубликовано в ноябре 2021",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Novartis интегрировала ИИ-инструмент на базе Microsoft Azure в процесс работы химиков-разработчиков, позволяющий параллельно анализировать результаты тысяч экспериментов и проектировать следующие итерации молекул; по заявлению участников проекта, это потенциально сокращает время разработки формулы с лет до недель.",
-
     "sources": [
-      { "url": "https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/", "title": "Novartis empowers scientists with AI to speed the discovery and development of breakthrough medicines", "type": "vendor", "publisher": "Microsoft", "date": "2021-11-18" },
-      { "url": "https://www.novartis.com/stories/art-drug-design-technological-age", "title": "The art of drug design in a technological age", "type": "client", "publisher": "Novartis", "date": "unknown" }
+      {
+        "url": "https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/",
+        "title": "Novartis empowers scientists with AI to speed the discovery and development of breakthrough medicines",
+        "type": "vendor",
+        "publisher": "Microsoft",
+        "date": "2021-11-18"
+      },
+      {
+        "url": "https://www.novartis.com/stories/art-drug-design-technological-age",
+        "title": "The art of drug design in a technological age",
+        "type": "client",
+        "publisher": "Novartis",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://news.microsoft.com/source/features/digital-transformation/novartis-empowers-scientists-ai-speed-discovery-development-breakthrough-medicines/",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Крупнейшая фармкомпания и облачный гигант демонстрируют применение ИИ непосредственно в R&D-процессе разработки лекарств — хороший качественный бенчмарк для фармы, хотя конкретных измеренных результатов (число ускоренных проектов, точная экономия времени) не раскрыто.",
     "entry_hypothesis": "У фармацевтических R&D-подразделений может накапливаться большой объём неструктурированных исторических данных экспериментов, которые не используются системно при проектировании новых молекул; стоит оценить, как организована данная база знаний и востребован ли инструмент её анализа.",
-    "likely_buyer": ["cto", "rnd"],
-
+    "likely_buyer": [
+      "cto",
+      "head-of-rnd"
+    ],
     "land_opportunity": "Пилот ИИ-инструмента поиска по историческим данным экспериментов для одной исследовательской группы.",
-    "expand_opportunities": ["Клинические испытания — предиктивная аналитика", "Генеративный дизайн молекул", "Автоматизация регуляторной документации"],
-
-    "tags": ["фарма", "R&D", "дизайн лекарств", "Novartis", "Microsoft Azure"],
+    "expand_opportunities": [
+      "Клинические испытания — предиктивная аналитика",
+      "Генеративный дизайн молекул",
+      "Автоматизация регуляторной документации"
+    ],
+    "tags": [
+      "фарма",
+      "R&D",
+      "дизайн лекарств",
+      "Novartis",
+      "Microsoft Azure"
+    ],
     "research_notes": "Результаты в основном качественные/прогнозные («потенциально сократит с лет до недель»), измеренных цифр (число проектов, точная экономия времени/денег) в открытых источниках в рамках сессии не найдено — метрика помечена как projected, грейд ограничен B."
   }
 ]
