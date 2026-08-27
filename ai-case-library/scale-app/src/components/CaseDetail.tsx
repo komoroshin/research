@@ -59,6 +59,10 @@ export default function CaseDetail({ item: c, onBack }: Props) {
 
       <div className="case-grid">
         <div className="case-main">
+          <Section title="В чём была боль">
+            <p>{c.pain}</p>
+          </Section>
+
           <Section title="Какая была задача">
             <p>{c.problem}</p>
           </Section>
@@ -86,7 +90,9 @@ export default function CaseDetail({ item: c, onBack }: Props) {
             <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>
               Каталог намеренно обезличен: имена заказчика и команды-исполнителя скрыты.
               Кейс здесь — доказательство, что задача решаема в этом бюджете и в эти
-              сроки, а не реклама конкретного подрядчика.
+              сроки, а не реклама конкретного подрядчика. Секция «В чём была боль» —
+              наша реконструкция бизнес-ситуации за проектом; факты о решении и
+              результатах — из источника.
             </p>
           </Section>
         </div>

@@ -101,7 +101,7 @@ function haystack(c: ScaleCase): string {
   if (h === undefined) {
     h = normalize(
       [
-        c.title, c.client_profile, c.geo, c.problem, c.solution, c.result_summary,
+        c.title, c.client_profile, c.geo, c.pain, c.problem, c.solution, c.result_summary,
         ...c.business_process.map(label), ...c.ai_mechanisms.map(label),
         label(c.industry),
         ...c.metrics.map((m) => `${m.name} ${m.result}`),

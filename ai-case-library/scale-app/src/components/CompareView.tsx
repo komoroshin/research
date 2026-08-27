@@ -11,6 +11,7 @@ interface Props {
 const ROWS: { title: string; render: (c: ScaleCase) => React.ReactNode }[] = [
   { title: 'Отрасль', render: (c) => label(c.industry) },
   { title: 'Кто заказчик', render: (c) => c.client_profile },
+  { title: 'Боль', render: (c) => c.pain },
   { title: 'Задача', render: (c) => c.problem },
   { title: 'Что внедрили', render: (c) => c.solution },
   { title: 'Технология', render: (c) => labels(c.ai_mechanisms) },
