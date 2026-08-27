@@ -17,6 +17,7 @@ export const emptyFilters: Filters = {
   metric_group: [],
   sales_relevance_min: 0,
   has_metrics: false,
+  measured_only: false,
   named_client: false,
 };
 
@@ -89,6 +90,7 @@ export function applyFilters(all: readonly AiCase[], f: Filters): AiCase[] {
 
     if (f.sales_relevance_min > 0 && c.sales_relevance < f.sales_relevance_min) return false;
     if (f.has_metrics && c.metrics.length === 0) return false;
+    if (f.measured_only && !c.metrics.some((m) => m.status === 'measured')) return false;
     if (f.named_client && !c.client_disclosed) return false;
 
     if (terms.length) {
@@ -120,6 +122,7 @@ export function activeFilterCount(f: Filters): number {
   for (const key of ARRAY_KEYS) n += f[key].length ? 1 : 0;
   if (f.sales_relevance_min > 0) n++;
   if (f.has_metrics) n++;
+  if (f.measured_only) n++;
   if (f.named_client) n++;
   return n;
 }
@@ -139,6 +142,7 @@ export function filtersToParams(
   }
   if (f.sales_relevance_min > 0) p.set('sales_min', String(f.sales_relevance_min));
   if (f.has_metrics) p.set('metrics', '1');
+  if (f.measured_only) p.set('measured', '1');
   if (f.named_client) p.set('named', '1');
   if (selected.length) p.set('compare', selected.join('~'));
   if (caseId) p.set('case', caseId);
@@ -163,6 +167,7 @@ export function parseParams(search: string): ParsedState {
   const min = Number(p.get('sales_min'));
   filters.sales_relevance_min = Number.isFinite(min) && min > 0 ? Math.min(5, Math.trunc(min)) : 0;
   filters.has_metrics = p.get('metrics') === '1';
+  filters.measured_only = p.get('measured') === '1';
   filters.named_client = p.get('named') === '1';
 
   return {

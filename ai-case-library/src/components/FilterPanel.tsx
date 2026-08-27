@@ -167,6 +167,14 @@ export default function FilterPanel({ filters, setFilters, all, visible, onReset
             />
             <span>Только с измеримым результатом</span>
           </label>
+          <label className="check" title="Источник сообщает о фактически достигнутом результате, а не о заявленном или плановом эффекте">
+            <input
+              type="checkbox"
+              checked={filters.measured_only}
+              onChange={() => setFilters((f) => ({ ...f, measured_only: !f.measured_only }))}
+            />
+            <span>Только с измеренным (measured) результатом</span>
+          </label>
           <label className="check">
             <input
               type="checkbox"

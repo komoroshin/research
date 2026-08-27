@@ -151,6 +151,8 @@ export interface Filters {
   metric_group: string[];
   sales_relevance_min: number;
   has_metrics: boolean;
+  /** Только кейсы, где источник сообщает о фактически измеренном результате (пп. 58–59 ТЗ). */
+  measured_only: boolean;
   named_client: boolean;
 }
 
