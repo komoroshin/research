@@ -60,49 +60,67 @@ await page.waitForTimeout(300);
 const measured = await page.locator('.card').count();
 check('фильтр measured сужает выборку', measured > 0 && measured <= before, `${before} -> ${measured}`);
 
-// --- 5. Карточка кейса: структура для заказчика, без внутренних полей ---
+// --- 5. Кейс — полноценная страница, результат первым экраном ---
 await page.locator('.card').first().click();
 await page.waitForTimeout(400);
-// innerText возвращает текст после CSS text-transform: uppercase — сравниваем без регистра.
-const drawerText = (await page.locator('.drawer').innerText()).toLowerCase();
+const isPage = await page.locator('.case-page').isVisible();
+const noDrawer = (await page.locator('.drawer').count()) === 0;
+check('кейс открывается страницей, а не панелью', isPage && noDrawer, '');
+
+const heroTile = page.locator('.metrics-hero .metric-tile').first();
+const heroBox = (await heroTile.count()) ? await heroTile.boundingBox() : null;
 check(
-  'карточка: секции пути клиента',
-  drawerText.includes('какая была задача') &&
-    drawerText.includes('что изменилось') &&
-    drawerText.includes('оригинальный проект'),
+  'результат виден без скролла (metrics-hero в первом экране)',
+  heroBox !== null && heroBox.y < 800,
+  heroBox ? `y=${Math.round(heroBox.y)}` : 'метрик нет у первого кейса',
+);
+
+// innerText возвращает текст после CSS text-transform: uppercase — сравниваем без регистра.
+const pageText = (await page.locator('.case-page').innerText()).toLowerCase();
+check(
+  'страница кейса: секции пути клиента',
+  pageText.includes('какая была задача') &&
+    pageText.includes('как это может выглядеть у вас') &&
+    pageText.includes('оригинальный проект'),
   '',
 );
 check(
-  'карточка: нет внутренней терминологии',
-  !/sales relevance|entry|гипотеза входа|evidence grade|vendor_claim/i.test(drawerText),
+  'страница кейса: нет внутренней терминологии',
+  !/sales relevance|entry|гипотеза входа|evidence grade|vendor_claim/i.test(pageText),
   '',
 );
 
-// --- 6. CTA: ссылка на Telegram и текст заявки в буфере ---
-const cta = page.locator('.cta-block .cta-btn');
+// --- 6. CTA в липкой колонке видна сразу; ссылка на Telegram и заявка в буфере ---
+const cta = page.locator('.case-aside .cta-btn');
+const ctaBox = await cta.boundingBox();
+check('CTA видна без скролла (липкая колонка)', ctaBox !== null && ctaBox.y < 900, ctaBox ? `y=${Math.round(ctaBox.y)}` : '');
 const ctaHref = await cta.getAttribute('href');
 const ctaTarget = await cta.getAttribute('target');
-// Клик уводит на t.me — навигацию давим, проверяем side effect (clipboard).
 await page.evaluate(() => {
   document.querySelectorAll('.cta-btn').forEach((a) => a.addEventListener('click', (e) => e.preventDefault()));
 });
 await cta.click();
 await page.waitForTimeout(300);
 const clip = await page.evaluate(() => navigator.clipboard.readText());
-const hint = await page.locator('.cta-block .cta-hint').innerText();
 check('CTA ведёт на t.me/kmoroshin в новой вкладке', ctaHref === 'https://t.me/kmoroshin' && ctaTarget === '_blank', ctaHref ?? '');
 check('CTA кладёт заявку в буфер', clip.startsWith('Хочу так же:') && clip.includes('отрасль'), clip.slice(0, 60) + '…');
-check('CTA сообщает о копировании', hint.includes('скопирован'), '');
 
-// --- 7. Ссылки на источники: новая вкладка ---
-const srcLink = page.locator('.drawer .sources a').first();
+// --- 7. Ссылки на источники и навигация назад ---
+const srcLink = page.locator('.case-page .sources a').first();
 check(
   'источники: target=_blank + noopener',
   (await srcLink.getAttribute('target')) === '_blank' &&
     ((await srcLink.getAttribute('rel')) ?? '').includes('noopener'),
   '',
 );
-await page.keyboard.press('Escape');
+// Браузерная кнопка «назад» возвращает к списку — кейс ведёт себя как страница.
+await page.goBack();
+await page.waitForTimeout(400);
+check(
+  'браузерный «назад» закрывает кейс и возвращает список',
+  (await page.locator('.case-page').count()) === 0 && (await page.locator('.card').count()) > 0,
+  '',
+);
 
 // --- 8. Сравнение ---
 for (let i = 0; i < 2; i++) {
