@@ -189,6 +189,19 @@ for (const c of cases) {
         'по определению шкалы это Grade B (информация в основном со стороны подрядчика)',
     );
   }
+  // Первичный источник — сторона проекта: клиент, подрядчик, техпартнёр, годовой отчёт,
+  // конференция, интервью. СМИ и аналитика первичными не являются, поэтому Grade A,
+  // стоящий на единственной публикации СМИ, не выполняет требование о первичном источнике
+  // и не имеет независимого подтверждения.
+  const PRIMARY_TYPES = ['client', 'vendor', 'platform', 'annual-report', 'conference', 'interview', 'government', 'academic'];
+  const hasPrimary = (c.sources ?? []).some((s) => PRIMARY_TYPES.includes(s.type));
+  if (c.evidence_grade === 'A' && !hasPrimary && (c.sources?.length ?? 0) < 2) {
+    err(
+      id,
+      'Grade A на единственном источнике-СМИ: нет ни первичного источника (сторона проекта), ' +
+        'ни независимого подтверждения — это Grade B',
+    );
+  }
   if (c.client_disclosed === false && c.evidence_grade === 'A') {
     warn(id, 'клиент не назван при Grade A — обычно это уровень C');
   }

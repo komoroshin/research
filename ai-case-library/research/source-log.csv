@@ -46,6 +46,29 @@ energy,https://stories.xcelenergy.com/stories/using-advanced-technology-to-comba
 energy,https://newsroom.xcelenergy.com/news/xcel-energy-brings-ai-driven-wildfire-detection-to-minnesota,Xcel Energy Newsroom,client,2026-08-27,ok,us-en-xcelenergy-panoai-wildfire-01
 energy,https://www.tdworld.com/digital-innovations/article/21262976/duke-energys-hybrid-approach-to-ai,T&D World,media,2026-08-27,ok,us-en-dukeenergy-sciml-transformer-01
 energy,https://aws.amazon.com/solutions/case-studies/encored-technologies-case-study/,Amazon Web Services,platform,2026-08-27,ok,kr-en-encored-aws-vpp-01
+finance,https://www.ingos.ru/company/news/2022/fcc7dcba-f385-4cd5-859c-08dafe9f0508,Ингосстрах,client,2026-08-27,ok,ru-fi-ingosstrakh-cv-damage-01
+finance,https://platforms.su/project/2868,Цифровой маркетплейс / Dbrain,vendor,2026-08-27,ok,ru-fi-renaissance-dbrain-docai-01
+finance,https://platforms.su/project/2842,Цифровой маркетплейс / Yandex Cloud,vendor,2026-08-27,ok,ru-fi-renaissance-yandexgpt-dms-01
+finance,https://www.comnews.ru/digital-economy/content/244102/2026-03-05/2026-w10/1012/alfa-bank-i-glowbyte-uprostili-valyutnyy-kontrol-pomoschyu-ii-agenta,ComNews,media,2026-08-27,ok,ru-fi-alfabank-glowbyte-currency-01
+finance,https://abreview.ru/ab/news/alfastrakhovanie_otsenit_ubytki_s_pomoshchyu_ii/,АвтоБизнесРевю,media,2026-08-27,ok,ru-fi-alfastrakhovanie-audatex-cv-01
+finance,https://banks.cnews.ru/news/line/2026-06-16_ii_stal_eshche_umnee_vtb_moi,CNews,media,2026-08-27,ok,ru-fi-vtb-robo-advisor-01
+finance,https://vc.ru/ai/1654138-ii-v-t-banke-reshaet-konkretnye-zadachi-i-ne-konkuriruet-s-chelovekom,vc.ru (материал Т-Банка),client,2026-08-27,ok,ru-fi-tbank-gen-t-01
+finance,https://www.sogaz.ru/sogaz/pressroom/release/850576/,СОГАЗ,client,2026-08-27,ok,ru-fi-sogaz-telegram-claims-01
+finance,https://generation-ai.ru/cases/sovcombank,Generation AI / Just AI,vendor,2026-08-27,ok,ru-fi-sovcombank-sova-01
+finance,https://www.akm.ru/press/v_alfa_lizinge_vnedrili_iskusstvennyy_intellekt_dlya_optimizatsii_prodazh_lizingovykh_uslug/,AKM.RU,media,2026-08-27,ok,ru-fi-alfaleasing-valueai-01
+finance,https://www.speechpro.ru/media/news/06-04-2018,ЦРТ / CNews,vendor,2026-08-27,ok,rejected c25 (announcement_only)
+finance,https://www.kommersant.ru/doc/8798861,Коммерсантъ,media,2026-08-27,ok,ru-fi-moex-ai-surveillance-01
+finance,https://openai.com/index/klarna/,OpenAI,platform,2026-08-27,ok,eu-fi-klarna-openai-assistant-01
+finance,https://www.mastercard.com/global/en/business/cybersecurity-fraud-prevention/risk-decisioning/decision-intelligence.html,Mastercard,platform,2026-08-27,blocked,not used (403 Forbidden)
+finance,https://www.reinsurancene.ws/lemonade-shatters-record-by-using-ai-to-settle-a-claim-in-two-seconds/,Reinsurance News,media,2026-08-27,ok,us-fi-lemonade-ai-jim-01
+finance,https://www.dbs.com/newsroom/Harvard_Business_School_examines_DBS_AI_strategy_and_implementation_in_its_first_case_study_focusing_on_AI_in_an_Asian_bank,DBS Newsroom,client,2026-08-27,ok,sg-fi-dbs-ai-strategy-01
+finance,https://www.mastercard.com/global/en/news-and-trends/Insights/2026/ai-is-helping-banks-save-millions-by-transforming-payment-fraud-prevention.html,Mastercard,platform,2026-08-27,blocked,not used (403 Forbidden)
+finance,https://www.bloomberg.com/news/articles/2017-02-28/jpmorgan-marshals-an-army-of-developers-to-automate-high-finance,Bloomberg,media,2026-08-27,blocked,"not used (403 bot-check,  tried WebFetch and fetch-page.mjs)"
+finance,https://www.cdomagazine.tech/aiml/mastercard-launches-decision-intelligence-pro-new-generative-ai-model-for-fraud-detection,CDO Magazine,media,2026-08-27,ok,us-fi-mastercard-decision-intelligence-01
+finance,https://www.abajournal.com/news/article/jpmorgan_chase_uses_tech_to_save_360000_hours_of_annual_work_by_lawyers_and,ABA Journal,media,2026-08-27,ok,us-fi-jpmorgan-coin-01
+finance,https://www.prnewswire.com/news-releases/google-cloud-launches-ai-powered-anti-money-laundering-product-for-financial-institutions-301856403.html,Google Cloud / PR Newswire,platform,2026-08-27,ok,uk-fi-hsbc-googlecloud-aml-01
+finance,https://newsroom.wf.com/news-releases/news-details/2026/Wells-Fargo-Reaches-Major-Digital-Milestones/default.aspx,Wells Fargo Newsroom,client,2026-08-27,ok,us-fi-wellsfargo-fargo-assistant-01
+finance,https://www.cnews.ru/news/line/2026-05-19_sberbank_tehnologii_generativnogo,CNews,media,2026-08-27,ok,rejected c23 (announcement_only)
 healthcare,https://celsus.ai/blog/sczenarii-skrining/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
 healthcare,https://celsus.ai/smi/mammogram/,Celsus,vendor,2026-08-27,ok,ru-hc-celsus-mammography-01
 healthcare,https://sk.ru/news/botkinai-itogi-2021/,Сколково,vendor,2026-08-27,ok,ru-hc-botkinai-oncodispanser-01
