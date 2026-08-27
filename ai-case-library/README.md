@@ -62,9 +62,25 @@ npm run pipeline        # merge + validate + csv + report + summary одной �
 Публикация:
 
 ```bash
-npm run build           # сборка в dist/
+npm run build           # сборка внутренней версии в dist/
 npm run deploy-pages    # скопировать dist/ в <repo>/cases/ для GitHub Pages
 ```
+
+Клиентская версия (каталог для заказчиков, «Хочу так же» → Telegram):
+
+```bash
+npm run build-client-data  # проекция cases.json по белому списку -> client-app/src/generated/
+npm run build-client       # данные + tsc + vite build клиентского приложения
+npm run test-client-ui     # чек-лист клиентской версии в браузере (preview на :4174)
+npm run deploy-catalog     # скопировать client-app/dist -> <repo>/catalog/
+```
+
+Клиентская версия собирается **только** из `client-app/src/generated/client-cases.json`,
+который строится по белому списку полей: Sales Lens (гипотезы входа, likely buyer,
+sales relevance), research_notes и evidence-грейды в клиентский бандл не попадают
+физически. `scripts/build-client-data.mjs` падает при любой утечке ключа вне списка
+и отдельно фильтрует «голос продавца» в текстах «С чего начать» (отчёт —
+`seller-voice-report.json`). Опубликована по адресу `/research/catalog/`.
 
 ---
 

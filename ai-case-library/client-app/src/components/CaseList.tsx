@@ -1,0 +1,153 @@
+import type { ClientCase, ClientFilters } from '../types';
+import { label, processesFor } from '../lib/data';
+import { ConfidenceBadge, MetricStatusBadge, headlineMetric } from './Shared';
+
+interface Props {
+  list: readonly ClientCase[];
+  filters: ClientFilters;
+  setFilters: (updater: (f: ClientFilters) => ClientFilters) => void;
+  onOpen: (id: string) => void;
+  compare: readonly string[];
+  onToggleCompare: (id: string) => void;
+  onBackHome: () => void;
+}
+
+function clamp(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  return cut.slice(0, Math.max(cut.lastIndexOf(' '), max - 24)).trimEnd() + '…';
+}
+
+export default function CaseList({
+  list, filters, setFilters, onOpen, compare, onToggleCompare, onBackHome,
+}: Props) {
+  const procs = processesFor(filters.industry);
+  const industryTitle =
+    filters.industry.length === 1 ? label(filters.industry[0]) : 'Все отрасли';
+
+  return (
+    <>
+      <button className="backlink" onClick={onBackHome}>
+        ← Все отрасли
+      </button>
+      <h2 style={{ margin: '0 0 4px', letterSpacing: '-0.01em' }}>{industryTitle}</h2>
+      <p style={{ margin: '0 0 14px', color: 'var(--text-muted)', fontSize: 13.5 }}>
+        Выберите задачу, похожую на вашу, — внутри карточки видно, что именно внедрили,
+        что изменилось и с чего можно начать у вас.
+      </p>
+
+      <div className="proc-chips">
+        {procs.map((p) => (
+          <button
+            className="chip"
+            key={p.id}
+            data-on={filters.business_process.includes(p.id)}
+            onClick={() =>
+              setFilters((f) => ({
+                ...f,
+                business_process: f.business_process.includes(p.id)
+                  ? f.business_process.filter((x) => x !== p.id)
+                  : [...f.business_process, p.id],
+              }))
+            }
+          >
+            {p.name} <b className="num">{p.count}</b>
+          </button>
+        ))}
+        <button
+          className="chip"
+          data-on={filters.measured_only}
+          onClick={() => setFilters((f) => ({ ...f, measured_only: !f.measured_only }))}
+          title="Только кейсы, где источник сообщает о фактически измеренном результате"
+        >
+          только с измеренным результатом
+        </button>
+      </div>
+
+      {list.length === 0 ? (
+        <div className="empty">
+          <h3>По этим условиям кейсов нет</h3>
+          <p>Снимите часть фильтров — или напишите нам: возможно, похожий проект уже есть, просто ещё не опубликован.</p>
+        </div>
+      ) : (
+        <div className="cards">
+          {list.map((c) => {
+            const metric = headlineMetric(c);
+            const picked = compare.includes(c.id);
+            return (
+              <article
+                key={c.id}
+                className={`card${picked ? ' picked' : ''}`}
+                onClick={() => onOpen(c.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onOpen(c.id);
+                  }
+                }}
+              >
+                <div className="card-top">
+                  <div style={{ minWidth: 0 }}>
+                    <div className="card-client">{c.client}</div>
+                    <div className="card-geo">
+                      {c.country} · {label(c.industry)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-title">{c.title}</div>
+
+                <div className="card-meta">
+                  {c.business_process.slice(0, 2).map((p) => (
+                    <span className="tag" key={p}>{label(p)}</span>
+                  ))}
+                  {c.ai_mechanisms.slice(0, 2).map((m) => (
+                    <span className="tag mech" key={m}>{label(m)}</span>
+                  ))}
+                </div>
+
+                <div className="card-field">
+                  <span className="lbl">Задача</span>
+                  {clamp(c.problem, 140)}
+                </div>
+
+                <div className="card-result">
+                  {metric ? (
+                    <div className="card-metric">
+                      <span>{metric.metric_name}:</span>
+                      {metric.baseline && (
+                        <span style={{ color: 'var(--text-faint)' }}>{metric.baseline} →</span>
+                      )}
+                      <span className="val">{metric.result}</span>
+                      <MetricStatusBadge status={metric.status} />
+                    </div>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)' }}>{clamp(c.result_summary, 150)}</span>
+                  )}
+                </div>
+
+                <div className="card-foot">
+                  <ConfidenceBadge c={c.confidence} />
+                  <span className="spacer" />
+                  <button
+                    className="pickbtn"
+                    data-on={picked}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleCompare(c.id);
+                    }}
+                    title="Положить рядом для сравнения (до 4 кейсов)"
+                  >
+                    {picked ? '✓ в сравнении' : '+ сравнить'}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+}
