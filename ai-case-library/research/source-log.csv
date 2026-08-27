@@ -234,3 +234,31 @@ retail,https://techora.ru/avito-ranker-3-ispolzuet-100-signalov-2026-07-09,Techo
 retail,https://rostec.ru/media/news/otechestvennyy-ii-predotvratil-krazhi-v-magazinakh-bolee-chem-na-2-mlrd-rubley/,Ростех,media,2026-08-27,error,не использован (через fetch-page.mjs — HTTP 503)
 retail,https://www.tadviser.ru/index.php/Продукт:Avito_Ranker,TAdviser,media,2026-08-27,ok,ru-rt-avito-ranker-01 (получен через fetch-page.mjs)
 retail,"https://zdrav.expert/index.php/Проект:Аптеки_36,6_(Искусственный_интеллект_(ИИ,_Artificial_intelligence,_AI))",Zdrav.Expert (TAdviser),media,2026-08-27,ok,ru-rt-apteka366-ai-agent-01 (получен через fetch-page.mjs)
+telecom,https://www.speechpro.ru/media/news/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoj-analitiki-crt,ЦРТ (speechpro.ru),vendor,2026-08-27,ok,"Кейс ru-tl-megafon-speech-crt-01 — проблема, решение, метрики"
+telecom,https://vc.ru/id553833/154322-vkalyvayut-roboty-kak-rechevaya-analitika-uluchshaet-rabotu-koll-centrov-telekom-kompanii,ЦРТ на vc.ru,vendor,2026-08-27,ok,Кейс ru-tl-megafon-speech-crt-01 — технические детали Smart Logger
+telecom,https://autofaq.ai/case/rostelecom,AutoFAQ,vendor,2026-08-27,ok,"Кейс ru-tl-rostelecom-cdt-autofaq-01 — проблема, решение, метрики"
+telecom,https://blog.rt.ru/b2c/kak-golosovoy-bot-rostelekoma-rabotaet-s-obrashcheniyami-abonentov.htm,Ростелеком (blog.rt.ru),client,2026-08-27,ok,Кейс ru-tl-rostelecom-voicebot-01 — описание работы бота
+telecom,https://www.sostav.ru/publication/kejs-kak-dom-ru-poluchil-prirost-zayavok-i-konversii-blagodarya-mashinnomu-obucheniyu-30936.html,Sostav,media,2026-08-27,ok,"Кейс ru-tl-domru-ml-marketing-01 — проблема, решение, метрики"
+telecom,https://ria.ru/20260319/bilayn-2081653989.html,РИА Новости,media,2026-08-27,ok,"Кандидат tl-cand-08 — отклонён, использован для контекста о платформе ИИ-агентов Билайн"
+telecom,https://www.ixbt.com/news/2026/08/10/427361-odnoi-knopkoi-bilain-naucil-ii-prinimat-reklamnye-zvonki-vmesto-abonentov.html,iXBT,media,2026-08-27,ok,Кандидат tl-cand-09 — отклонён (нет измеримого результата)
+telecom,https://www.tadviser.ru/index.php/%D0%9F%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82:Tele2_%D0%93%D0%BE%D0%BB%D0%BE%D1%81%D0%BE%D0%B2%D0%BE%D0%B9_%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B0%D1%81%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BD%D1%82,TAdviser,media,2026-08-27,blocked,"Страница вернула 404, не использована"
+telecom,https://www.ibm.com/case-studies/vodafone-tobi,IBM,vendor,2026-08-27,ok,Кейс gb-tl-vodafone-ibm-tobi-testing-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://claude.com/customers/skt,Anthropic,platform,2026-08-27,ok,Кейс kr-tl-sktelecom-claude-01 — метрики качества ответов
+telecom,https://www.genesys.com/en-gb/customer-stories/vodafone,Genesys,vendor,2026-08-27,ok,Кейс de-tl-vodafone-genesys-tobi-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://www.comnews.ru/content/246159/2026-07-02/2026-w27/1010/opyt-bilayn-biznes-kak-prediktivnyy-obzvon-menyaet-rabotu-kontakt-centrov,ComNews,media,2026-08-27,ok,"Кейс ru-tl-beeline-predictive-dialer-01 — проблема, решение, метрики"
+telecom,https://www.sostav.ru/publication/tele2-58794.html,Sostav,media,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — история продукта (Астра)
+telecom,https://www.cnews.ru/news/line/2025-06-20_t2_vnedrit_golosovogo_assistenta,CNews,media,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — независимое подтверждение
+telecom,https://habr.com/ru/amp/publications/904162,Habr,media,2026-08-27,ok,"Кейс ru-tl-rutube-moderation-01 — проблема, решение, метрики"
+telecom,https://habr.com/ru/amp/publications/1046391,Кинопоиск на Habr,client,2026-08-27,ok,"Кейс ru-tl-kinopoisk-recommender-01 — проблема, решение, технология"
+telecom,https://www.company.rt.ru/press/news/d476715/,Ростелеком,client,2026-08-27,ok,"Кейс ru-tl-rostelecom-voicebot-01 — официальный пресс-релиз, метрики"
+telecom,https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva,Т2,client,2026-08-27,ok,Кейс ru-tl-t2-voice-assistant-01 — официальный пресс-релиз
+telecom,https://www.cti.ru/about/success-story/ao-er-telekom-kholding/,CTI,vendor,2026-08-27,blocked,HTTP 503 через WebFetch и через fetch-page.mjs — кандидат tl-cand-20 отклонён
+telecom,https://openai.com/index/deutsche-telekom/,OpenAI,platform,2026-08-27,ok,Кейс de-tl-telekom-openai-01 — открыта через fetch-page.mjs после 403 у WebFetch
+telecom,https://www.fromtech.ru/cases/voice-robot/,Fromtech,vendor,2026-08-27,ok,"Кейс ru-tl-federal-operator-nbo-voice-01 — проблема, решение, метрики"
+telecom,https://www.ericsson.com/en/news/2026/6/the-ran-gets-smarter-ericsson-puts-ai-where-it-matters,Ericsson,vendor,2026-08-27,ok,"Кандидат tl-cand-34 — отклонён (нет результата, привязанного к одному клиенту)"
+telecom,https://www.bestpractice.ai/ai-case-study-best-practice/verizon_monitors_and_optimises_network_performance_in_real-tim_using_machine_learning_to_analyse_network_interface_data,Best Practice AI,analyst,2026-08-27,partial,"Редирект на общий каталог кейсов, конкретный текст по Verizon не получен — кандидат tl-cand-33 отклонён"
+telecom,https://www.digitalhumans.com/case-studies/deutsche-telekom-case-study,UneeQ,vendor,2026-08-27,ok,"Кейс de-tl-telekom-uneeq-01 — проблема, решение, метрики"
+telecom,https://friendli.ai/customers/sk-telecom,FriendliAI,vendor,2026-08-27,ok,"Кандидат tl-cand-31 — отклонён (другая инициатива, инфраструктурные метрики)"
+telecom,https://www.marketingweek.com/vodafone-chatbot-customer-experience/,Marketing Week,media,2026-08-27,blocked,"HTTP 403 — кандидат tl-cand-24 отклонён, цифры не подтверждены"
+telecom,https://news.sktelecom.com/en/1647,SK Telecom Newsroom,client,2026-08-27,ok,Кейс kr-tl-sktelecom-claude-01 — официальный пресс-релиз клиента
+telecom,https://rasa.community/customers/orange/,Rasa,vendor,2026-08-27,blocked,HTTP 404 — кандидат tl-cand-35 отклонён
