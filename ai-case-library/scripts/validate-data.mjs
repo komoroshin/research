@@ -38,6 +38,23 @@ const REQUIRED_ARRAYS = ['business_process', 'ai_mechanisms', 'subindustry'];
 const NUMERIC_CLAIM =
   /(\d[\d\s.,]*)\s*(%|проц|п\.п|раз|x\b|×|мин|час|сут|дн|недел|мес|год|лет|руб|₽|\$|млн|млрд|тыс|шт)/i;
 
+const MONTHS =
+  'январ|феврал|март|апрел|мая|мае|июн|июл|август|сентябр|октябр|ноябр|декабр';
+
+/**
+ * Даты и годы — не количественные утверждения о результате: «2 сентября 2025 года»
+ * и «в 2024 году» не требуют метрики. Вырезаем их перед проверкой, иначе поля
+ * scale и timeline дают шум на каждом кейсе.
+ */
+function stripDates(text) {
+  return String(text ?? '')
+    .replace(new RegExp(`\\d{1,2}\\s*(${MONTHS})\\w*\\s*\\d{4}?\\s*(года|г\\.)?`, 'gi'), ' ')
+    .replace(new RegExp(`(${MONTHS})\\w*\\s*\\d{4}`, 'gi'), ' ')
+    .replace(/\b(в|с|до|по|за)?\s*\d{4}\s*(году|год|года|г\.|гг\.)/gi, ' ')
+    .replace(/\b(19|20)\d{2}\s*[–—-]\s*(19|20)\d{2}\b/g, ' ')
+    .replace(/\b(19|20)\d{2}\b/g, ' ');
+}
+
 const seenIds = new Set();
 const urlOwners = new Map();
 
@@ -144,7 +161,7 @@ for (const c of cases) {
     // Цифра в прозе, но пустой metrics — типичный признак незакрытого источника.
     if (c.metrics.length === 0) {
       for (const field of ['result_summary', 'scale', 'solution']) {
-        if (NUMERIC_CLAIM.test(c[field] ?? '')) {
+        if (NUMERIC_CLAIM.test(stripDates(c[field]))) {
           warn(id, `quantitative metric without source: в поле "${field}" есть число, но metrics пуст`);
           break;
         }
@@ -180,7 +197,10 @@ for (let i = 0; i < cases.length; i++) {
       const solSim = similarity(a.solution, b.solution);
       const titleSim = similarity(a.title, b.title);
       const sameVendor = (a.vendor ?? []).some((v) => (b.vendor ?? []).includes(v));
-      if (solSim > 0.45 || titleSim > 0.55) {
+      // Порог предупреждения намеренно ниже порога автослияния в merge-research:
+      // склейка необратимо теряет данные, а предупреждение стоит одной ручной проверки.
+      // Один проект, описанный подрядчиком и клиентом разными словами, даёт Жаккар ~0.3.
+      if (solSim > 0.3 || titleSim > 0.4) {
         warnings.push(`возможный дубль ${pair}: один клиент, похожее решение (solution ${solSim.toFixed(2)}, title ${titleSim.toFixed(2)})`);
       } else if (sameVendor && (a.business_process ?? []).some((p) => (b.business_process ?? []).includes(p))) {
         warnings.push(`проверьте ${pair}: один клиент, один подрядчик и общий процесс — возможно, это один проект`);

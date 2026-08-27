@@ -61,8 +61,12 @@ function isDuplicate(a, b) {
   if (clientA !== clientB) return false;
   if (similarity(a.solution, b.solution) > 0.4) return true;
   if (similarity(a.title, b.title) > 0.5) return true;
+  // Общего источника с совпадающим процессом НЕ достаточно: обзорные и агрегирующие
+  // страницы (карточка компании в TAdviser, годовой отчёт, статья «весь AI в компании X»)
+  // описывают несколько РАЗНЫХ проектов одного клиента, а склеивать их запрещено
+  // (п.45 ТЗ). Требуем ещё и содержательного сходства решений.
   const sameProcess = (a.business_process ?? []).some((p) => (b.business_process ?? []).includes(p));
-  return sharedUrl && sameProcess;
+  return sharedUrl && sameProcess && similarity(a.solution, b.solution) > 0.25;
 }
 
 function mergeInto(base, extra) {
