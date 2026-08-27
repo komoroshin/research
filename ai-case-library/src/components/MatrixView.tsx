@@ -97,7 +97,7 @@ export default function MatrixView({ list, onPick }: Props) {
         </table>
       </div>
 
-      <div className="matrix-legend">
+      <div className="matrix-legend matrix-legend-table">
         <span>Плотность:</span>
         <i style={{ background: shade(1) }} />
         <i style={{ background: shade(Math.round(max / 2)) }} />
