@@ -134,6 +134,26 @@ console.log(`Проверка ${urls.length} уникальных ссылок�
 await Promise.all(Array.from({ length: Math.min(CONCURRENCY, urls.length) }, () => worker(queue)));
 process.stdout.write('\n');
 
+/**
+ * Второй проход по недоступным ссылкам — по одной и с паузой.
+ * Часть хостов троттлит параллельные запросы и отдаёт отказ живой странице:
+ * при массовой проверке это давало ложные «unavailable» у работающих источников.
+ */
+const retryable = results.filter((r) => r.status === 'unavailable');
+if (retryable.length) {
+  console.log(`Повторная проверка ${retryable.length} недоступных ссылок по одной…`);
+  let recovered = 0;
+  for (const r of retryable) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const again = await probe(r.url);
+    if (again.status === 'working' || again.status === 'redirect') {
+      Object.assign(r, again, { note: 'ответила со второй попытки (троттлинг при массовой проверке)' });
+      recovered++;
+    }
+  }
+  console.log(`  подтвердились как рабочие: ${recovered} из ${retryable.length}`);
+}
+
 const byStatus = results.reduce((m, r) => m.set(r.status, (m.get(r.status) ?? 0) + 1), new Map());
 
 results.sort((a, b) => a.status.localeCompare(b.status) || a.url.localeCompare(b.url));

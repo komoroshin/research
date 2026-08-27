@@ -2,38 +2,47 @@
   {
     "id": "ru-tl-megafon-speech-crt-01",
     "title": "Речевая аналитика 100% звонков в контакт-центре МегаФона",
-
     "client": "МегаФон",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Группа компаний ЦРТ (Speech Technology Center)"],
+    "vendor": [
+      "Группа компаний ЦРТ (Speech Technology Center)"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["ЦРТ Smart Logger"],
-
+    "technology_providers": [
+      "ЦРТ Smart Logger"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support", "quality-control"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support",
+      "quality-control"
+    ],
     "problem": "Контакт-центр МегаФона обрабатывает сотни тысяч звонков в день силами нескольких тысяч операторов; оценка качества обслуживания вручную покрывала лишь 1-3% диалогов, что не позволяло комплексно контролировать соблюдение скриптов и качество обслуживания.",
     "before_state": "Контроль качества строился на выборочном прослушивании 1-3% звонков; менеджмент не имел полной картины по нарушениям, продажам и удовлетворённости клиентов.",
-
     "solution": "Внедрена комплексная система речевой аналитики ЦРТ (Smart Logger): автоматическое распознавание речи и анализ более 40 параметров диалогов (тишина, перебивания, длительность реплик и др.), выявление нарушений скриптов продаж, интеграция с хранилищами данных МегаФона для обогащения бизнес-параметрами.",
-    "ai_mechanisms": ["speech-to-text", "speech-analytics", "nlp-classification"],
-
-    "data_used": ["записи звонков контакт-центра", "хранилища данных МегаФона (бизнес-параметры)"],
-    "integrations": ["хранилища данных МегаФона"],
-
+    "ai_mechanisms": [
+      "speech-to-text",
+      "speech-analytics",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "записи звонков контакт-центра",
+      "хранилища данных МегаФона (бизнес-параметры)"
+    ],
+    "integrations": [
+      "хранилища данных МегаФона"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "Контакт-центр МегаФона: несколько тысяч операторов, сотни тысяч звонков в день, анализ 100% диалогов вместо выборки 1-3%.",
-
     "metrics": [
       {
         "metric_type": "error_rate",
@@ -66,71 +75,100 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "внедрение до 2020, награда CX Awards - апрель 2023",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Речевая аналитика ЦРТ Smart Logger позволила МегаФону перейти от выборочного контроля (1-3% звонков) к анализу 100% диалогов контакт-центра, снизить долю нарушений с 6% до 0,3%, поднять tNPS на 10+ п.п. и сократить число претензий на 40% за год. Проект получил награду CX Awards 2023 в номинации «Эффективное применение технологий».",
-
     "sources": [
-      { "url": "https://www.speechpro.ru/media/news/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoj-analitiki-crt", "title": "МегаФон получил награду CX Awards за проект внедрения речевой аналитики ЦРТ", "type": "vendor", "publisher": "ЦРТ (speechpro.ru)", "date": "2023-04-21" },
-      { "url": "https://vc.ru/id553833/154322-vkalyvayut-roboty-kak-rechevaya-analitika-uluchshaet-rabotu-koll-centrov-telekom-kompanii", "title": "Вкалывают роботы. Как речевая аналитика улучшает работу колл-центров телеком-компаний", "type": "vendor", "publisher": "ЦРТ на vc.ru", "date": "2020-08-31" },
-      { "url": "https://www.comnews.ru/content/225691/2023-04-21/2023-w16/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoy-analitiki-crt", "title": "МегаФон получил награду CX Awards за проект внедрения речевой аналитики ЦРТ", "type": "media", "publisher": "ComNews", "date": "2023-04-21" }
+      {
+        "url": "https://www.speechpro.ru/media/news/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoj-analitiki-crt",
+        "title": "МегаФон получил награду CX Awards за проект внедрения речевой аналитики ЦРТ",
+        "type": "vendor",
+        "publisher": "ЦРТ (speechpro.ru)",
+        "date": "2023-04-21"
+      },
+      {
+        "url": "https://vc.ru/id553833/154322-vkalyvayut-roboty-kak-rechevaya-analitika-uluchshaet-rabotu-koll-centrov-telekom-kompanii",
+        "title": "Вкалывают роботы. Как речевая аналитика улучшает работу колл-центров телеком-компаний",
+        "type": "vendor",
+        "publisher": "ЦРТ на vc.ru",
+        "date": "2020-08-31"
+      },
+      {
+        "url": "https://www.comnews.ru/content/225691/2023-04-21/2023-w16/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoy-analitiki-crt",
+        "title": "МегаФон получил награду CX Awards за проект внедрения речевой аналитики ЦРТ",
+        "type": "media",
+        "publisher": "ComNews",
+        "date": "2023-04-21"
+      }
     ],
     "primary_source": "https://www.speechpro.ru/media/news/megafon-poluchil-nagradu-cx-awards-za-proekt-vnedreniya-rechevoj-analitiki-crt",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Крупный федеральный оператор перешёл от выборочного контроля качества к сплошной речевой аналитике — понятный количественный эффект (снижение нарушений, рост NPS, снижение претензий), независимо подтверждённый отраслевой наградой и СМИ.",
     "entry_hypothesis": "У операторов и крупных контакт-центров с ручным выборочным контролем качества может накапливаться существенный объём необнаруженных нарушений скриптов и точек недовольства клиентов — стоит проверить, какую долю звонков они реально прослушивают сегодня.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот речевой аналитики на одном направлении контакт-центра (например, только линия расторжений или жалоб) с последующим расширением на 100% звонков.",
-    "expand_opportunities": ["копилот оператора контакт-центра", "суммаризация обращений", "прогноз оттока на основе речевых сигналов"],
-
-    "tags": ["речевая аналитика", "контакт-центр", "контроль качества", "телеком"],
+    "expand_opportunities": [
+      "копилот оператора контакт-центра",
+      "суммаризация обращений",
+      "прогноз оттока на основе речевых сигналов"
+    ],
+    "tags": [
+      "речевая аналитика",
+      "контакт-центр",
+      "контроль качества",
+      "телеком"
+    ],
     "research_notes": "Есть два источника со стороны подрядчика ЦРТ (speechpro.ru, vc.ru) плюс независимое СМИ-подтверждение (ComNews) о самой награде CX Awards — это позволяет поставить A, а не B, несмотря на vendor_claim=true."
   },
-
   {
     "id": "ru-tl-rostelecom-voicebot-01",
     "title": "Голосовой бот Ростелекома с предиктивной моделью предугадывания темы обращения",
-
     "client": "Ростелеком",
     "client_disclosed": true,
     "client_url": "https://www.company.rt.ru/press/news/d476715/",
-
     "vendor": [],
     "vendor_type": "in-house",
-    "technology_providers": ["собственная предиктивная модель Ростелекома"],
-
+    "technology_providers": [
+      "собственная предиктивная модель Ростелекома"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support"
+    ],
     "problem": "Нужно было сократить время обработки входящих звонков в контакт-центре и снизить ошибки, связанные с распознаванием речи и неверной интерпретацией запросов в диалоговом режиме.",
     "before_state": "",
-
     "solution": "В голосового бота Ростелекома внедрена предиктивная модель на основе ИИ, которая до ответа анализирует данные лицевого счёта клиента (баланс, сроки платежей, движение средств) и прогнозирует вероятную тему обращения, сразу предлагая решение; при необходимости диалог продолжается с ботом или переключается на оператора.",
-    "ai_mechanisms": ["voice-agent", "classical-ml", "speech-to-text"],
-
-    "data_used": ["данные лицевого счёта клиента", "история платежей", "активные подписки"],
-    "integrations": ["биллинговая система", "контакт-центр"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "classical-ml",
+      "speech-to-text"
+    ],
+    "data_used": [
+      "данные лицевого счёта клиента",
+      "история платежей",
+      "активные подписки"
+    ],
+    "integrations": [
+      "биллинговая система",
+      "контакт-центр"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "Решение применяется во всём контакт-центре Ростелекома.",
-
     "metrics": [
       {
         "metric_type": "accuracy",
@@ -153,138 +191,194 @@
         "source_type": "client"
       }
     ],
-
     "timeline": "февраль 2026",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Предиктивная модель в голосовом боте Ростелекома в 4 из 5 случаев правильно предугадывает тему обращения клиента и предлагает решение до начала диалога; в целом бот самостоятельно обслуживает почти 60% всех входящих звонков контакт-центра, освобождая операторов для сложных случаев.",
-
     "sources": [
-      { "url": "https://www.company.rt.ru/press/news/d476715/", "title": "На шаг впереди: голосовой бот решает более 80% вопросов клиентов «Ростелекома» с помощью предиктивной модели", "type": "client", "publisher": "Ростелеком (company.rt.ru)", "date": "2026-02-06" },
-      { "url": "https://www.cnews.ru/news/line/2026-02-06_golosovoj_bot_reshaet_bolee", "title": "Голосовой бот решает более 80% вопросов клиентов «Ростелекома» с помощью предиктивной модели", "type": "media", "publisher": "CNews", "date": "2026-02-06" },
-      { "url": "https://habr.com/ru/news/993554/", "title": "Голосовой бот «Ростелекома» с помощью предиктивной модели решает более 80% вопросов клиентов", "type": "media", "publisher": "Habr", "date": "2026-02-06" },
-      { "url": "https://blog.rt.ru/b2c/kak-golosovoy-bot-rostelekoma-rabotaet-s-obrashcheniyami-abonentov.htm", "title": "Как голосовой бот Ростелекома работает с обращениями абонентов", "type": "client", "publisher": "Ростелеком (blog.rt.ru)", "date": "unknown" }
+      {
+        "url": "https://www.company.rt.ru/press/news/d476715/",
+        "title": "На шаг впереди: голосовой бот решает более 80% вопросов клиентов «Ростелекома» с помощью предиктивной модели",
+        "type": "client",
+        "publisher": "Ростелеком (company.rt.ru)",
+        "date": "2026-02-06"
+      },
+      {
+        "url": "https://www.cnews.ru/news/line/2026-02-06_golosovoj_bot_reshaet_bolee",
+        "title": "Голосовой бот решает более 80% вопросов клиентов «Ростелекома» с помощью предиктивной модели",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2026-02-06"
+      },
+      {
+        "url": "https://habr.com/ru/news/993554/",
+        "title": "Голосовой бот «Ростелекома» с помощью предиктивной модели решает более 80% вопросов клиентов",
+        "type": "media",
+        "publisher": "Habr",
+        "date": "2026-02-06"
+      },
+      {
+        "url": "https://blog.rt.ru/b2c/kak-golosovoy-bot-rostelekoma-rabotaet-s-obrashcheniyami-abonentov.htm",
+        "title": "Как голосовой бот Ростелекома работает с обращениями абонентов",
+        "type": "client",
+        "publisher": "Ростелеком (blog.rt.ru)",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://www.company.rt.ru/press/news/d476715/",
-
     "evidence_grade": "A",
     "vendor_claim": false,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Понятный, измеримый и узнаваемый кейс: крупнейший оператор фиксированной связи в РФ использует предиктивную модель для персонализации ответа ещё до того, как клиент договорил, с конкретными цифрами точности и доли автоматизации, подтверждёнными независимыми СМИ.",
     "entry_hypothesis": "У операторов и крупных сервисных компаний с биллингом часто есть данные (баланс, история платежей), которые можно использовать для предсказания темы обращения ещё до разговора с оператором — стоит проверить, используются ли эти данные в текущем IVR/боте.",
-    "likely_buyer": ["head-of-contact-center", "cio"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "cio"
+    ],
     "land_opportunity": "Пилот предиктивной модели на одном сценарии обращений (например, вопросы по балансу и платежам) с использованием уже имеющихся данных биллинга.",
-    "expand_opportunities": ["речевая аналитика 100% звонков", "прогноз оттока абонентов", "next-best-offer в момент обращения"],
-
-    "tags": ["голосовой робот", "предиктивная модель", "контакт-центр", "телеком"],
+    "expand_opportunities": [
+      "речевая аналитика 100% звонков",
+      "прогноз оттока абонентов",
+      "next-best-offer в момент обращения"
+    ],
+    "tags": [
+      "голосовой робот",
+      "предиктивная модель",
+      "контакт-центр",
+      "телеком"
+    ],
     "research_notes": "Конкретный вендор технологии не назван в источниках — вероятно, разработка внутренняя или силами системного интегратора, имя которого не раскрывается."
   },
-
   {
     "id": "ru-tl-t2-voice-assistant-01",
     "title": "Голосовой ассистент Т2 против спам-звонков и телефонного мошенничества",
-
     "client": "Т2 (бывш. Tele2 Россия)",
     "client_disclosed": true,
     "client_url": "https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva",
-
     "vendor": [],
     "vendor_type": "in-house",
     "technology_providers": [],
-
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support"
+    ],
     "problem": "Абоненты страдают от спам-звонков и телефонного мошенничества, пропускают важные звонки, когда недоступны, заняты или не хотят отвечать на номер, которому не доверяют.",
     "before_state": "",
-
     "solution": "Голосовой ассистент Т2 (ранее «Астра», «Алекса», «Юлия», голоса «Мия»/«Марк») автоматически отвечает на входящие звонки вместо абонента, если тот недоступен, не берёт трубку или отклоняет вызов, фильтрует подозрительные звонки, а клиент получает аудиозапись и текстовую расшифровку разговора в приложении Т2, SMS или push.",
-    "ai_mechanisms": ["voice-agent", "speech-to-text", "nlp-classification"],
-
-    "data_used": ["записи входящих звонков"],
-    "integrations": ["мобильное приложение Т2", "Telegram/SMS/push-уведомления"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "speech-to-text",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "записи входящих звонков"
+    ],
+    "integrations": [
+      "мобильное приложение Т2",
+      "Telegram/SMS/push-уведомления"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "Пилотный запуск в Псковской и Волгоградской областях (июнь-август 2025), к концу 2025 года — развёртывание во всех регионах присутствия Т2; сервис бесплатный, включается по умолчанию для всех абонентов.",
-
     "metrics": [],
-
     "timeline": "2022 (первые ассистенты «Алекса», «Юлия») — 2023 («Астра») — 2025 (массовый бесплатный запуск «Голосового ассистента»)",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Т2 сделал голосового ассистента, отвечающего на звонки за абонента и фильтрующего спам/мошенников, бесплатной функцией по умолчанию для всех клиентов, разворачивая её по всем регионам присутствия оператора к концу 2025 года. Измеримых бизнес-результатов (доля отфильтрованного спама, снижение жалоб и т.п.) в источниках не приводится.",
-
     "sources": [
-      { "url": "https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva", "title": "T2 внедрила голосового ассистента для защиты от спама и телефонного мошенничества", "type": "client", "publisher": "Т2 (spb.t2.ru)", "date": "2025-08-06" },
-      { "url": "https://www.cnews.ru/news/line/2025-06-20_t2_vnedrit_golosovogo_assistenta", "title": "Т2 внедрит голосового ассистента бесплатно всем абонентам для защиты от спама и телефонного мошенничества", "type": "media", "publisher": "CNews", "date": "2025-06-20" },
-      { "url": "https://www.sostav.ru/publication/tele2-58794.html", "title": "Tele2 представил голосового помощника «Астру»", "type": "media", "publisher": "Sostav", "date": "2023-01-27" }
+      {
+        "url": "https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva",
+        "title": "T2 внедрила голосового ассистента для защиты от спама и телефонного мошенничества",
+        "type": "client",
+        "publisher": "Т2 (spb.t2.ru)",
+        "date": "2025-08-06"
+      },
+      {
+        "url": "https://www.cnews.ru/news/line/2025-06-20_t2_vnedrit_golosovogo_assistenta",
+        "title": "Т2 внедрит голосового ассистента бесплатно всем абонентам для защиты от спама и телефонного мошенничества",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2025-06-20"
+      },
+      {
+        "url": "https://www.sostav.ru/publication/tele2-58794.html",
+        "title": "Tele2 представил голосового помощника «Астру»",
+        "type": "media",
+        "publisher": "Sostav",
+        "date": "2023-01-27"
+      }
     ],
     "primary_source": "https://spb.t2.ru/about/news-list/2025/08/06/t2-vnedrila-golosovogo-assistenta-dlya-zashchity-ot-spama-i-telefonnogo-moshennichestva",
-
     "evidence_grade": "B",
     "vendor_claim": false,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Показывает, как оператор превращает голосового ИИ-ассистента в массовую бесплатную функцию защиты абонентов, а не в нишевой corporate-инструмент — хороший пример продуктизации voice-agent для B2C.",
     "entry_hypothesis": "У операторов может расти нагрузка от жалоб на спам/мошеннические звонки и связанные с этим репутационные и регуляторные риски — стоит проверить, насколько заметна эта проблема для абонентской базы и есть ли данные по объёму спам-звонков.",
-    "likely_buyer": ["cio", "head-of-contact-center"],
-
+    "likely_buyer": [
+      "cio",
+      "head-of-contact-center"
+    ],
     "land_opportunity": "Пилот голосового автоответчика на выделенном сегменте абонентов с последующим измерением снижения обращений по спаму/мошенничеству.",
-    "expand_opportunities": ["антифрод в телекоме", "речевая аналитика звонков", "персонализация тарифов"],
-
-    "tags": ["голосовой робот", "антиспам", "антифрод", "телеком"],
+    "expand_opportunities": [
+      "антифрод в телекоме",
+      "речевая аналитика звонков",
+      "персонализация тарифов"
+    ],
+    "tags": [
+      "голосовой робот",
+      "антиспам",
+      "антифрод",
+      "телеком"
+    ],
     "research_notes": "Измеримых метрик эффекта (например, % отфильтрованных звонков) в открытых источниках не найдено — оценка грейда B из-за отсутствия количественного результата, при этом факт внедрения и масштаб подтверждены и клиентом, и независимыми СМИ."
   },
-
   {
     "id": "ru-tl-beeline-predictive-dialer-01",
     "title": "Предиктивный обзвон в контакт-центрах «Билайн бизнес»",
-
     "client": "Билайн (ПАО «ВымпелКом»)",
     "client_disclosed": true,
     "client_url": "",
-
     "vendor": [],
     "vendor_type": "in-house",
     "technology_providers": [],
-
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["sales", "customer-support"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "sales",
+      "customer-support"
+    ],
     "problem": "Операторы контакт-центров теряли эффективность из-за непродуктивных режимов работы и времени ожидания при дозвоне до абонентов вручную.",
     "before_state": "Ручной набор номеров операторами с простоями между звонками и высокой долей непродуктивного времени.",
-
     "solution": "В собственных контакт-центрах «Билайн бизнес» внедрён предиктивный обзвон «Колл-центр ПРО» в составе «Облачной АТС»: система рассчитывает момент освобождения оператора, автоматически набирает следующий номер, отсеивает автоответчики и голосовые помощники и соединяет оператора только с ответившим клиентом. Опыт затем масштабирован как коммерческое предложение для корпоративных клиентов.",
-    "ai_mechanisms": ["optimization-ml", "hybrid-rules-ai"],
-
-    "data_used": ["данные о занятости операторов", "база номеров для обзвона"],
-    "integrations": ["Облачная АТС билайн бизнес"],
-
+    "ai_mechanisms": [
+      "optimization-ml",
+      "hybrid-rules-ai"
+    ],
+    "data_used": [
+      "данные о занятости операторов",
+      "база номеров для обзвона"
+    ],
+    "integrations": [
+      "Облачная АТС билайн бизнес"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "Внедрено в собственных контакт-центрах «Билайн бизнес»; каждый сотрудник может совершать более 100 звонков в день.",
-
     "metrics": [
       {
         "metric_type": "operations_volume",
@@ -307,69 +401,87 @@
         "source_type": "media"
       }
     ],
-
     "timeline": "внедрено во внутренних КЦ до 2026, публично описано в июле 2026",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Предиктивный обзвон в собственных контакт-центрах «Билайн бизнес» повысил число контактов с клиентами в час в 1,5 раза и снизил долю непродуктивных режимов операторов на 15%; каждый оператор способен совершать более 100 звонков в день. Компания масштабирует этот внутренний опыт как продукт «Колл-центр ПРО» для корпоративных клиентов.",
-
     "sources": [
-      { "url": "https://www.comnews.ru/content/246159/2026-07-02/2026-w27/1010/opyt-bilayn-biznes-kak-prediktivnyy-obzvon-menyaet-rabotu-kontakt-centrov", "title": "Опыт «билайн бизнес»: как предиктивный обзвон меняет работу контакт-центров", "type": "media", "publisher": "ComNews", "date": "2026-07-02" }
+      {
+        "url": "https://www.comnews.ru/content/246159/2026-07-02/2026-w27/1010/opyt-bilayn-biznes-kak-prediktivnyy-obzvon-menyaet-rabotu-kontakt-centrov",
+        "title": "Опыт «билайн бизнес»: как предиктивный обзвон меняет работу контакт-центров",
+        "type": "media",
+        "publisher": "ComNews",
+        "date": "2026-07-02"
+      }
     ],
     "primary_source": "https://www.comnews.ru/content/246159/2026-07-02/2026-w27/1010/opyt-bilayn-biznes-kak-prediktivnyy-obzvon-menyaet-rabotu-kontakt-centrov",
-
     "evidence_grade": "B",
     "vendor_claim": false,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Понятный внутренний ROI-кейс автоматизации исходящего обзвона (рост контактов, снижение простоев) от крупного оператора, который затем стал основой коммерческого продукта — хороший ориентир для оценки эффекта на аналогичных контакт-центрах.",
     "entry_hypothesis": "В контакт-центрах с ручным исходящим обзвоном (продажи, взыскание, информирование) может простаивать значительная часть рабочего времени операторов между звонками — стоит измерить фактическую долю непродуктивных режимов.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот предиктивного обзвона на одном исходящем сценарии (например, информирование о тарифах) с измерением роста контактов в час.",
-    "expand_opportunities": ["копилот оператора контакт-центра", "речевая аналитика звонков", "next-best-offer при исходящем контакте"],
-
-    "tags": ["предиктивный обзвон", "контакт-центр", "исходящие продажи", "телеком"],
+    "expand_opportunities": [
+      "копилот оператора контакт-центра",
+      "речевая аналитика звонков",
+      "next-best-offer при исходящем контакте"
+    ],
+    "tags": [
+      "предиктивный обзвон",
+      "контакт-центр",
+      "исходящие продажи",
+      "телеком"
+    ],
     "research_notes": "Источник один (ComNews, интервью с представителями «Билайн бизнес»), CNews публиковал ту же новость синдицированно — независимого второго расследования не найдено, поэтому грейд B."
   },
-
   {
     "id": "ru-tl-rostelecom-cdt-autofaq-01",
     "title": "AutoFAQ в омниканальной поддержке «Ростелеком-ЦОД»",
-
     "client": "Ростелеком-ЦОД (Rostelecom-CDT, дочерняя компания Ростелекома)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["AutoFAQ"],
+    "vendor": [
+      "AutoFAQ"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["AutoFAQ (собственная NLP-платформа)"],
-
+    "technology_providers": [
+      "AutoFAQ (собственная NLP-платформа)"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators", "isp"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support"],
-
+    "subindustry": [
+      "telecom-operators",
+      "isp"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support"
+    ],
     "problem": "Рост числа обращений в техподдержку из-за увеличения пользователей цифровых сервисов и запуска новых продуктов перегружал линию поддержки первого уровня; обучение нового оператора занимало около 3 месяцев.",
     "before_state": "Поддержка сервисов «Умный дом», «Виртуальная АТС», Национальная облачная платформа, «Ключ» обрабатывалась раздельно по каналам (виджеты сайта, личный кабинет, мобильное приложение, Telegram) без единой платформы.",
-
     "solution": "Внедрена омниканальная платформа AutoFAQ со встроенным ИИ, интегрированная с ITSM-системой BMC Remedy и API сервисов; создан единый чат-центр, объединяющий обращения из всех каналов для нескольких сервисов «Ростелекома».",
-    "ai_mechanisms": ["nlp-classification", "hybrid-rules-ai"],
-
-    "data_used": ["база знаний поддержки", "история обращений клиентов"],
-    "integrations": ["BMC Remedy ITSM", "API сервисов Умный дом/Виртуальная АТС/Ключ"],
-
+    "ai_mechanisms": [
+      "nlp-classification",
+      "hybrid-rules-ai"
+    ],
+    "data_used": [
+      "база знаний поддержки",
+      "история обращений клиентов"
+    ],
+    "integrations": [
+      "BMC Remedy ITSM",
+      "API сервисов Умный дом/Виртуальная АТС/Ключ"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "Развёртывание заняло 6 месяцев (2020); охвачены сервисы «Умный дом», «Виртуальная АТС», Национальная облачная платформа, приложение «Ключ»; каналы — сайт, личный кабинет, мобильное приложение, Telegram.",
-
     "metrics": [
       {
         "metric_type": "automation_rate",
@@ -412,69 +524,85 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "2020 (внедрение за 6 месяцев), премия «Проект ITSM года» — 2021",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Внедрение AutoFAQ позволило «Ростелеком-ЦОД» автоматически закрывать до 80% обращений по отдельным сервисам, сократить время ответа в 10 раз, сэкономить более 20 млн руб. в год на ФОТ поддержки и поднять NPS с -4 до 30 за полгода. Проект признан лучшим цифровым интеллектуальным ассистентом на конкурсе «Проект ITSM года» 2021.",
-
     "sources": [
-      { "url": "https://autofaq.ai/case/rostelecom", "title": "Кейс Ростелеком-ЦОД: как сэкономить более 20 млн рублей в год на техподдержке благодаря искусственному интеллекту", "type": "vendor", "publisher": "AutoFAQ", "date": "unknown" }
+      {
+        "url": "https://autofaq.ai/case/rostelecom",
+        "title": "Кейс Ростелеком-ЦОД: как сэкономить более 20 млн рублей в год на техподдержке благодаря искусственному интеллекту",
+        "type": "vendor",
+        "publisher": "AutoFAQ",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://autofaq.ai/case/rostelecom",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Показывает конкретный финансовый эффект (экономия на ФОТ) и рост NPS от внедрения ИИ-платформы поддержки у крупного оператора/дочерней структуры — удобный ориентир по порядку величин экономии для похожих контакт-центров.",
     "entry_hypothesis": "Быстрый рост числа цифровых сервисов у оператора связи часто опережает рост штата поддержки первой линии — стоит проверить текущие сроки закрытия обращений и стоимость найма/обучения новых операторов.",
-    "likely_buyer": ["head-of-contact-center", "cio"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "cio"
+    ],
     "land_opportunity": "Пилот омниканального ИИ-ассистента на одном цифровом сервисе техподдержки с измерением доли автоматически закрытых обращений.",
-    "expand_opportunities": ["речевая аналитика", "копилот оператора", "суммаризация обращений"],
-
-    "tags": ["чат-бот", "техподдержка", "омниканальность", "телеком"],
+    "expand_opportunities": [
+      "речевая аналитика",
+      "копилот оператора",
+      "суммаризация обращений"
+    ],
+    "tags": [
+      "чат-бот",
+      "техподдержка",
+      "омниканальность",
+      "телеком"
+    ],
     "research_notes": "Единственный найденный источник — сайт вендора AutoFAQ (vendor_claim=true), независимого подтверждения со стороны «Ростелекома» не найдено, поэтому грейд B, а не A."
   },
-
   {
     "id": "ru-tl-domru-ml-marketing-01",
     "title": "Машинное обучение в перформанс-маркетинге Дом.ru",
-
     "client": "Дом.ru (ЭР-Телеком Холдинг)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["iProspect (Dentsu Aegis Network)", "171Meridian"],
+    "vendor": [
+      "iProspect (Dentsu Aegis Network)",
+      "171Meridian"
+    ],
     "vendor_type": "consulting",
-    "technology_providers": ["Google Smart Campaigns (Google AdWords)"],
-
+    "technology_providers": [
+      "Google Smart Campaigns (Google AdWords)"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["isp"],
-
-    "business_function": ["commercial"],
-    "business_process": ["marketing"],
-
+    "subindustry": [
+      "isp"
+    ],
+    "business_function": [
+      "commercial"
+    ],
+    "business_process": [
+      "marketing"
+    ],
     "problem": "Нужно было привлечь новых клиентов интернет-провайдера, снизить стоимость заявки (CPL) и повысить конверсию рекламных кампаний в контекстно-медийной сети.",
     "before_state": "",
-
     "solution": "Запущены умные кампании Google AdWords с машинным обучением в контекстно-медийной сети: система автоматически формировала объявления и подбирала эффективные комбинации заголовков, описаний, изображений и логотипов под аудиторию.",
-    "ai_mechanisms": ["classical-ml"],
-
-    "data_used": ["данные рекламных кампаний", "поведение пользователей в КМС"],
-    "integrations": ["Google Ads"],
-
+    "ai_mechanisms": [
+      "classical-ml"
+    ],
+    "data_used": [
+      "данные рекламных кампаний",
+      "поведение пользователей в КМС"
+    ],
+    "integrations": [
+      "Google Ads"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Запуск в 5 регионах (август 2017), расширение на все регионы присутствия Дом.ru (ноябрь 2017), итоги подведены в январе 2018.",
-
     "metrics": [
       {
         "metric_type": "cost_per_transaction",
@@ -507,133 +635,156 @@
         "source_type": "media"
       }
     ],
-
     "timeline": "август 2017 — январь 2018",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Умные кампании Google AdWords с машинным обучением снизили стоимость заявки для Дом.ru на 61% (к январю 2018 относительно августа 2017), обеспечили прирост заявок на 30% во всех регионах и дополнительный рост конверсии на 13%; доля новых пользователей составила 80%.",
-
     "sources": [
-      { "url": "https://www.sostav.ru/publication/kejs-kak-dom-ru-poluchil-prirost-zayavok-i-konversii-blagodarya-mashinnomu-obucheniyu-30936.html", "title": "Кейс: Как Дом.ru получил прирост заявок и конверсии благодаря машинному обучению", "type": "media", "publisher": "Sostav", "date": "2018" }
+      {
+        "url": "https://www.sostav.ru/publication/kejs-kak-dom-ru-poluchil-prirost-zayavok-i-konversii-blagodarya-mashinnomu-obucheniyu-30936.html",
+        "title": "Кейс: Как Дом.ru получил прирост заявок и конверсии благодаря машинному обучению",
+        "type": "media",
+        "publisher": "Sostav",
+        "date": "2018"
+      }
     ],
     "primary_source": "https://www.sostav.ru/publication/kejs-kak-dom-ru-poluchil-prirost-zayavok-i-konversii-blagodarya-mashinnomu-obucheniyu-30936.html",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Показывает применение AI/ML в маркетинге телеком-оператора (не только в контакт-центре) с конкретными измеримыми показателями CPL и конверсии — полезный бенчмарк для директоров по маркетингу операторов и провайдеров.",
     "entry_hypothesis": "Провайдеры/операторы, использующие ручную настройку рекламных кампаний без автоматического подбора креативов, могут переплачивать за привлечение — стоит сверить текущий CPL с рыночными результатами применения ML-кампаний.",
-    "likely_buyer": ["marketing-director", "commercial-director"],
-
+    "likely_buyer": [
+      "marketing-director",
+      "commercial-director"
+    ],
     "land_opportunity": "Пилот умных/автоматизированных рекламных кампаний на одном регионе с сравнением CPL до/после.",
-    "expand_opportunities": ["персонализация тарифов", "next-best-offer", "прогноз оттока абонентов"],
-
-    "tags": ["перформанс-маркетинг", "машинное обучение", "интернет-провайдер"],
+    "expand_opportunities": [
+      "персонализация тарифов",
+      "next-best-offer",
+      "прогноз оттока абонентов"
+    ],
+    "tags": [
+      "перформанс-маркетинг",
+      "машинное обучение",
+      "интернет-провайдер"
+    ],
     "research_notes": "Единственный источник — статья на Sostav, по содержанию похожая на кейс, подготовленный агентством iProspect для продвижения; независимого второго подтверждения не найдено, поэтому грейд B."
   },
-
   {
     "id": "ru-tl-kinopoisk-recommender-01",
     "title": "Кросс-стриминговые рекомендации «Кинопоиска» (алгоритм «Мнемоник»)",
-
     "client": "Кинопоиск (Яндекс)",
     "client_disclosed": true,
     "client_url": "",
-
     "vendor": [],
     "vendor_type": "in-house",
-    "technology_providers": ["CatBoost"],
-
+    "technology_providers": [
+      "CatBoost"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["media-entertainment"],
-
-    "business_function": ["commercial"],
-    "business_process": ["recommendations-search"],
-
+    "subindustry": [
+      "media-entertainment"
+    ],
+    "business_function": [
+      "commercial"
+    ],
+    "business_process": [
+      "recommendations-search"
+    ],
     "problem": "Пользователи были ограничены рекомендациями в пределах библиотеки одного сервиса и не могли удобно находить контент, доступный на других стриминговых платформах.",
     "before_state": "Рекомендации формировались только внутри каталога Кинопоиска, без учёта контента других стриминг-сервисов.",
-
     "solution": "Алгоритм «Мнемоник» строит кросс-стриминговые рекомендации на основе машинного обучения (CatBoost), анализируя более 1000 сигналов пользовательского поведения (просмотр трейлера, клики, оценки, добавление в «Буду смотреть»); рекомендации объединяют контент Амедиатеки, START, Иви, Kion, Okko, Wink, Premier, Netflix, Apple TV и российских ТВ-каналов.",
-    "ai_mechanisms": ["recommender", "classical-ml"],
-
-    "data_used": ["история просмотров и оценок пользователя", "поведенческие сигналы (просмотр трейлеров, клики)"],
-    "integrations": ["каталоги партнёрских стриминг-сервисов"],
-
+    "ai_mechanisms": [
+      "recommender",
+      "classical-ml"
+    ],
+    "data_used": [
+      "история просмотров и оценок пользователя",
+      "поведенческие сигналы (просмотр трейлеров, клики)"
+    ],
+    "integrations": [
+      "каталоги партнёрских стриминг-сервисов"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Раздел «Что смотреть» мобильного приложения Кинопоиска (дебютировал в ноябре 2025, алгоритм обновлён в июне 2026); объединяет рекомендации 9+ стриминговых сервисов.",
-
     "metrics": [],
-
     "timeline": "ноябрь 2025 — июнь 2026",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Кинопоиск запустил кросс-стриминговый рекомендательный алгоритм «Мнемоник» на CatBoost, который формирует персонализированную ленту трейлеров и советует контент сразу из 9+ стриминговых сервисов на основе более 1000 поведенческих сигналов пользователя. Количественных бизнес-результатов (рост просмотров, удержания) в источнике не приведено.",
-
     "sources": [
-      { "url": "https://habr.com/ru/amp/publications/1046391", "title": "«Кинопоиск» обновил кросс-стриминговые рекомендации: новый алгоритм подбирает кино из разных онлайн-кинотеатров", "type": "client", "publisher": "Кинопоиск на Habr", "date": "2026-06-11" }
+      {
+        "url": "https://habr.com/ru/amp/publications/1046391",
+        "title": "«Кинопоиск» обновил кросс-стриминговые рекомендации: новый алгоритм подбирает кино из разных онлайн-кинотеатров",
+        "type": "client",
+        "publisher": "Кинопоиск на Habr",
+        "date": "2026-06-11"
+      }
     ],
     "primary_source": "https://habr.com/ru/amp/publications/1046391",
-
     "evidence_grade": "B",
     "vendor_claim": false,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Пример продуктовой рекомендательной системы в медиа/стриминге, где ИИ используется не для удержания внутри одного каталога, а для сквозной персонализации между несколькими сервисами — интересный ориентир для агрегаторов и медиахолдингов.",
     "entry_hypothesis": "Стриминговые платформы и медиахолдинги с несколькими сервисами/брендами могут терять вовлечённость там, где рекомендации ограничены одним каталогом — стоит проверить, насколько сейчас связаны рекомендательные системы разных продуктов внутри группы.",
-    "likely_buyer": ["cdo", "commercial-director"],
-
+    "likely_buyer": [
+      "cdo",
+      "commercial-director"
+    ],
     "land_opportunity": "Аудит существующей рекомендательной системы и пилот кросс-каталожных рекомендаций на одном сегменте контента.",
-    "expand_opportunities": ["персонализация тарифов", "прогноз оттока подписчиков", "модерация контента"],
-
-    "tags": ["рекомендательная система", "стриминг", "CatBoost", "медиа"],
+    "expand_opportunities": [
+      "персонализация тарифов",
+      "прогноз оттока подписчиков",
+      "модерация контента"
+    ],
+    "tags": [
+      "рекомендательная система",
+      "стриминг",
+      "CatBoost",
+      "медиа"
+    ],
     "research_notes": "Единственный источник — публикация самой команды Кинопоиска на Habr; количественных метрик эффекта (рост просмотров/удержания) не раскрыто, поэтому метрики оставлены пустыми, а не выдуманы."
   },
-
   {
     "id": "ru-tl-rutube-moderation-01",
     "title": "ИИ-премодерация видеоконтента на Rutube",
-
     "client": "Rutube (Газпром-Медиа Холдинг)",
     "client_disclosed": true,
     "client_url": "",
-
     "vendor": [],
     "vendor_type": "in-house",
     "technology_providers": [],
-
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["media-entertainment"],
-
-    "business_function": ["operations"],
-    "business_process": ["legal-compliance"],
-
+    "subindustry": [
+      "media-entertainment"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "legal-compliance"
+    ],
     "problem": "На платформу ежедневно загружается до 350 тыс. часов видео, которые нужно проверять на соответствие требованиям Роскомнадзора; ручная премодерация такого объёма потребовала бы порядка 15 тыс. человек.",
     "before_state": "",
-
     "solution": "Внедрена система ИИ-премодерации, автоматически проверяющая загружаемые видео на соответствие регуляторным требованиям без участия человека на большей части потока.",
-    "ai_mechanisms": ["computer-vision", "nlp-classification", "multimodal"],
-
-    "data_used": ["видеоконтент, загружаемый пользователями"],
+    "ai_mechanisms": [
+      "computer-vision",
+      "nlp-classification",
+      "multimodal"
+    ],
+    "data_used": [
+      "видеоконтент, загружаемый пользователями"
+    ],
     "integrations": [],
-
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "До 1 млн видео загружается на платформу ежедневно благодаря премодерации на базе ИИ.",
-
     "metrics": [
       {
         "metric_type": "automation_rate",
@@ -666,69 +817,85 @@
         "source_type": "media"
       }
     ],
-
     "timeline": "по состоянию на апрель 2025",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "ИИ-премодерация на Rutube справляется примерно с 99% объёма ежедневной загрузки (до 1 млн видео в день), заменяя потребность в порядка 15 тыс. модераторов-людей; по данным публикации, это сопровождалось ростом времени просмотра и частоты показа рекламы на 30%.",
-
     "sources": [
-      { "url": "https://habr.com/ru/amp/publications/904162", "title": "Ежедневно на Rutube загружается до миллиона видео благодаря премодерации на базе ИИ", "type": "media", "publisher": "Habr (по интервью Коммерсанту)", "date": "2025-04-24" }
+      {
+        "url": "https://habr.com/ru/amp/publications/904162",
+        "title": "Ежедневно на Rutube загружается до миллиона видео благодаря премодерации на базе ИИ",
+        "type": "media",
+        "publisher": "Habr (по интервью Коммерсанту)",
+        "date": "2025-04-24"
+      }
     ],
     "primary_source": "https://habr.com/ru/amp/publications/904162",
-
     "evidence_grade": "B",
     "vendor_claim": false,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Показывает применение компьютерного зрения и NLP для комплаенс-модерации на видеоплатформе в масштабе, недостижимом вручную — релевантно для любых UGC-платформ и медиахолдингов с регуляторными требованиями к контенту.",
     "entry_hypothesis": "Видеоплатформы и медиасервисы с быстрорастущим объёмом пользовательского контента могут не успевать с ручной модерацией под требования регулятора — стоит оценить текущий объём загрузок и штат модераторов.",
-    "likely_buyer": ["coo", "legal-director"],
-
+    "likely_buyer": [
+      "coo",
+      "legal-director"
+    ],
     "land_opportunity": "Пилот ИИ-премодерации на одной категории контента с измерением доли автоматически обработанных материалов.",
-    "expand_opportunities": ["антифрод/детекция мошеннического контента", "рекомендательные системы", "ИИ-ассистент для авторов контента"],
-
-    "tags": ["модерация контента", "компьютерное зрение", "видеоплатформа", "медиа"],
+    "expand_opportunities": [
+      "антифрод/детекция мошеннического контента",
+      "рекомендательные системы",
+      "ИИ-ассистент для авторов контента"
+    ],
+    "tags": [
+      "модерация контента",
+      "компьютерное зрение",
+      "видеоплатформа",
+      "медиа"
+    ],
     "research_notes": "Источник — материал Habr, основанный на интервью зампреда «Газпром-Медиа Холдинга» изданию «Коммерсантъ»; прямого заявления самого Rutube не найдено, независимого второго источника с теми же цифрами не найдено — грейд B."
   },
-
   {
     "id": "ru-tl-federal-operator-nbo-voice-01",
     "title": "Голосовой робот для миграции абонентов на новый тариф (анонимный федеральный оператор)",
-
     "client": "Федеральный оператор сотовой связи (название не раскрыто)",
     "client_disclosed": false,
     "client_url": "",
-
-    "vendor": ["Fromtech"],
+    "vendor": [
+      "Fromtech"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["Fromtech Contact Center AI"],
-
+    "technology_providers": [
+      "Fromtech Contact Center AI"
+    ],
     "country": "Россия",
     "region": "russia-cis",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["commercial"],
-    "business_process": ["sales"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "commercial"
+    ],
+    "business_process": [
+      "sales"
+    ],
     "problem": "Оператору требовалось массово информировать абонентскую базу о выгодных условиях нового тарифа без увеличения штата колл-центра; ручная модель обзвона не позволяла быстро охватить всю базу.",
     "before_state": "Информирование о тарифах велось силами операторов колл-центра вручную, что ограничивало охват базы.",
-
     "solution": "Голосовой робот на платформе Fromtech сегментирует клиентскую базу, информирует абонентов об условиях нового тарифа, отвечает на вопросы и фиксирует согласие клиента в биллинговой системе.",
-    "ai_mechanisms": ["voice-agent", "tts"],
-
-    "data_used": ["база абонентов", "сегментация по тарифному профилю"],
-    "integrations": ["биллинговая система"],
-
+    "ai_mechanisms": [
+      "voice-agent",
+      "tts"
+    ],
+    "data_used": [
+      "база абонентов",
+      "сегментация по тарифному профилю"
+    ],
+    "integrations": [
+      "биллинговая система"
+    ],
     "deployment": "unknown",
     "stage": "production",
-
     "scale": "100 000 звонков еженедельно.",
-
     "metrics": [
       {
         "metric_type": "calls",
@@ -751,69 +918,88 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "unknown",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Голосовой робот Fromtech еженедельно обзванивает 100 000 абонентов федерального оператора с предложением перейти на новый тариф; более 10% контактов конвертируются в переход на новый тариф, при этом штат колл-центра не увеличивается.",
-
     "sources": [
-      { "url": "https://www.fromtech.ru/cases/voice-robot/", "title": "Голосовой робот для обзвона: кейс сотового оператора", "type": "vendor", "publisher": "Fromtech", "date": "unknown" }
+      {
+        "url": "https://www.fromtech.ru/cases/voice-robot/",
+        "title": "Голосовой робот для обзвона: кейс сотового оператора",
+        "type": "vendor",
+        "publisher": "Fromtech",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://www.fromtech.ru/cases/voice-robot/",
-
     "evidence_grade": "C",
     "vendor_claim": true,
-
     "sales_relevance": 2,
-
     "why_it_matters": "Простой и понятный NBO-подобный сценарий (информирование о выгодном тарифе через голосового робота) с конкретной конверсией — может служить нижней оценкой эффекта, хотя клиент анонимен и подтверждён только вендором.",
     "entry_hypothesis": "Операторы, продвигающие новые тарифные предложения через колл-центр вручную, могут не успевать охватить всю базу — стоит оценить текущий охват и конверсию ручного информирования.",
-    "likely_buyer": ["commercial-director", "head-of-contact-center"],
-
+    "likely_buyer": [
+      "commercial-director",
+      "head-of-contact-center"
+    ],
     "land_opportunity": "Пилот голосового обзвона на ограниченном сегменте базы с новым тарифным предложением и измерением конверсии.",
-    "expand_opportunities": ["персонализация тарифов", "прогноз оттока абонентов", "речевая аналитика ответов клиентов"],
-
-    "tags": ["голосовой робот", "next best offer", "тарифы", "телеком"],
+    "expand_opportunities": [
+      "персонализация тарифов",
+      "прогноз оттока абонентов",
+      "речевая аналитика ответов клиентов"
+    ],
+    "tags": [
+      "голосовой робот",
+      "next best offer",
+      "тарифы",
+      "телеком"
+    ],
     "research_notes": "Клиент не назван («федеральный оператор связи»), источник единственный и вендорский — оценено как грейд C. Дата публикации кейса не указана на странице."
   },
-
   {
     "id": "de-tl-vodafone-genesys-tobi-01",
     "title": "Чат-бот TOBi объединяет мессенджинг-каналы Vodafone Германия",
-
     "client": "Vodafone Германия (Vodafone GmbH)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["Genesys"],
+    "vendor": [
+      "Genesys"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["IBM Watson"],
-
+    "technology_providers": [
+      "IBM Watson"
+    ],
     "country": "Германия",
     "region": "europe",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["customer-support"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "customer-support"
+    ],
     "problem": "Vodafone Германия хотела стандартизировать и объединить работу с разрозненными пулами операторов по WhatsApp, Apple Business Chat и SMS, обеспечив быстрые и качественные ответы клиентам в мессенджинг-каналах.",
     "before_state": "Отдельные изолированные группы операторов обслуживали каждый мессенджинг-канал (WhatsApp, Apple Business Chat, SMS) без единой команды и инструментов.",
-
     "solution": "Создана единая команда специалистов по мессенджингу и запущен интеллектуальный чат-бот TOBi (на основе IBM Watson), интегрированный через Genesys Bot Gateways с WhatsApp, Apple Business Chat и SMS; при невозможности решить запрос бот передаёт диалог живому агенту в едином интерфейсе.",
-    "ai_mechanisms": ["ai-agent", "nlp-classification"],
-
-    "data_used": ["история переписки клиента", "вложения (фото, видео, документы)"],
-    "integrations": ["WhatsApp", "Apple Business Chat", "SMS", "Genesys Cloud"],
-
+    "ai_mechanisms": [
+      "ai-agent",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "история переписки клиента",
+      "вложения (фото, видео, документы)"
+    ],
+    "integrations": [
+      "WhatsApp",
+      "Apple Business Chat",
+      "SMS",
+      "Genesys Cloud"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Более 10 000 агентов в едином виртуальном контакт-центре, 1500 агентов выделены на мессенджинг-канал; TOBi понимает более 230 клиентских интентов; в IV квартале 2019 клиенты Vodafone отправили 120 000 изображений/видео/голосовых сообщений/документов через WhatsApp.",
-
     "metrics": [
       {
         "metric_type": "cases_handled",
@@ -836,69 +1022,89 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "запуск TOBi в мессенджинге — до 2020, данные по IV кв. 2019",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "После внедрения TOBi (на базе IBM Watson) через платформу Genesys, чат-бот стал обрабатывать 100% сообщений мессенджинг-каналов Vodafone Германия и распознаёт свыше 230 интентов; доля обращений, решаемых с первого контакта, выросла с 16% на старте до 44%. По словам представителя Vodafone Германия, контакт-центр компании занял первое место среди контакт-центров Vodafone в мире.",
-
     "sources": [
-      { "url": "https://www.genesys.com/en-gb/customer-stories/vodafone", "title": "AI-based unified digital messaging amplifies the customer experience — Vodafone", "type": "vendor", "publisher": "Genesys", "date": "unknown" }
+      {
+        "url": "https://www.genesys.com/en-gb/customer-stories/vodafone",
+        "title": "AI-based unified digital messaging amplifies the customer experience — Vodafone",
+        "type": "vendor",
+        "publisher": "Genesys",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://www.genesys.com/en-gb/customer-stories/vodafone",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 4,
-
     "why_it_matters": "Крупный узнаваемый международный оператор с конкретным ростом доли решений с первого контакта (16% → 44%) в мессенджинг-каналах — понятный ориентир по эффекту чат-бота на self-service в омниканальном контакт-центре.",
     "entry_hypothesis": "Операторы, обслуживающие мессенджинг-каналы (WhatsApp, Apple Business Chat) отдельными изолированными командами, вероятно теряют в скорости и консистентности ответов — стоит сравнить текущую долю решений с первого контакта в этих каналах.",
-    "likely_buyer": ["head-of-contact-center", "coo"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "coo"
+    ],
     "land_opportunity": "Пилот единого чат-бота на одном мессенджинг-канале с измерением доли обращений, решённых без передачи агенту.",
-    "expand_opportunities": ["голосовой ассистент", "речевая аналитика", "next-best-offer в чате"],
-
-    "tags": ["чат-бот", "мессенджинг", "контакт-центр", "телеком"],
-    "research_notes": "Единственный источник — customer story Genesys (vendor_claim=true), несмотря на цитату представителя Vodafone внутри материала это формально один источник — грейд B, не A. Дата публикации на странице не указана явно, но упоминаемые данные относятся к IV кварталу 2019."
+    "expand_opportunities": [
+      "голосовой ассистент",
+      "речевая аналитика",
+      "next-best-offer в чате"
+    ],
+    "tags": [
+      "чат-бот",
+      "мессенджинг",
+      "контакт-центр",
+      "телеком"
+    ],
+    "research_notes": "Единственный источник — customer story Genesys (vendor_claim=true), несмотря на цитату представителя Vodafone внутри материала это формально один источник — грейд B, не A. Дата публикации на странице не указана явно, но упоминаемые данные относятся к IV кварталу 2019. ИЗВЕСТНАЯ БЛОКИРОВКА: genesys.com отдаёт 403 автоматическим запросам из дата-центров, поэтому check-links помечает источник как unavailable. Страница живая и читается в браузере — кейс не удалять по результатам автопроверки ссылок (п.42 ТЗ)."
   },
-
   {
     "id": "gb-tl-vodafone-ibm-tobi-testing-01",
     "title": "Генеративный ИИ ускоряет тестирование диалоговых сценариев TOBi (Vodafone + IBM)",
-
     "client": "Vodafone (группа)",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["IBM"],
+    "vendor": [
+      "IBM"
+    ],
     "vendor_type": "consulting",
-    "technology_providers": ["IBM watsonx.ai", "IBM watsonx Assistant", "IBM Cloud Code Engine"],
-
+    "technology_providers": [
+      "IBM watsonx.ai",
+      "IBM watsonx Assistant",
+      "IBM Cloud Code Engine"
+    ],
     "country": "Великобритания",
     "region": "europe",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["operations"],
-    "business_process": ["operations-copilot"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "operations-copilot"
+    ],
     "problem": "Команда специалистов по диалоговому дизайну и тестировщиков TOBi тратила около 6,5 часов на тестирование каждого нового диалогового сценария перед выводом в продакшн, а сопоставление сценариев между центральной библиотекой Vodafone и локальными рынками (gap-анализ) не проводилось из-за нехватки ресурсов.",
     "before_state": "Тестирование одного сценария занимало около 6,5 часов вручную; gap-анализ между Central Library и рынками не выполнялся.",
-
     "solution": "IBM Client Engineering и IBM Consulting за пять недель построили сервис оркестрации на IBM Cloud Code Engine, который прогоняет множественные тестовые сценарии в Voice Flow и использует IBM watsonx.ai для симуляции диалогов с TOBi, анализа транскриптов (тональность, эмоции) и автоматического сопоставления сценариев между Central Library и локальными рынками.",
-    "ai_mechanisms": ["generative-ai", "llm", "nlp-classification"],
-
-    "data_used": ["транскрипты диалогов TOBi", "сценарии из Central Library и локальных рынков"],
-    "integrations": ["Voice Flow", "IBM watsonx Assistant"],
-
+    "ai_mechanisms": [
+      "generative-ai",
+      "llm",
+      "nlp-classification"
+    ],
+    "data_used": [
+      "транскрипты диалогов TOBi",
+      "сценарии из Central Library и локальных рынков"
+    ],
+    "integrations": [
+      "Voice Flow",
+      "IBM watsonx Assistant"
+    ],
     "deployment": "cloud",
     "stage": "pilot",
-
     "scale": "Пилотный проект длительностью 5 недель, приоритизированы 2 из 5 выявленных сценариев использования (тестирование сценариев и gap-анализ).",
-
     "metrics": [
       {
         "metric_type": "processing_time",
@@ -921,69 +1127,88 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "пилот описан в материале от марта 2024",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Генеративный ИИ на базе IBM watsonx.ai сократил время тестирования одного диалогового сценария TOBi с 6,5 часов до менее чем 1 минуты и впервые сделал возможным gap-анализ между центральной библиотекой сценариев Vodafone и локальными рынками — менее 5 минут на сценарий вместо отсутствия такой возможности. Проект на момент публикации был пилотом.",
-
     "sources": [
-      { "url": "https://www.ibm.com/case-studies/vodafone-tobi", "title": "Vodafone - TOBi | Enhancing digital assistant TOBi with generative AI", "type": "vendor", "publisher": "IBM", "date": "2024-03" }
+      {
+        "url": "https://www.ibm.com/case-studies/vodafone-tobi",
+        "title": "Vodafone - TOBi | Enhancing digital assistant TOBi with generative AI",
+        "type": "vendor",
+        "publisher": "IBM",
+        "date": "2024-03"
+      }
     ],
     "primary_source": "https://www.ibm.com/case-studies/vodafone-tobi",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Показывает применение генеративного ИИ не в клиентском канале, а во внутреннем процессе поддержки диалогового ассистента (тестирование и QA) — отдельный от классического customer-facing кейса тип ценности с очень наглядным сокращением времени.",
     "entry_hypothesis": "Компании с крупными диалоговыми/голосовыми ассистентами, развёрнутыми на нескольких рынках, вероятно тратят значительное время команды на ручное тестирование и сверку сценариев между рынками — стоит оценить текущие трудозатраты на этот процесс.",
-    "likely_buyer": ["cio", "head-of-contact-center"],
-
+    "likely_buyer": [
+      "cio",
+      "head-of-contact-center"
+    ],
     "land_opportunity": "Пилот генеративного ИИ для автоматического тестирования диалоговых сценариев на одном продукте/рынке.",
-    "expand_opportunities": ["автоматический gap-анализ контента", "копилот для conversation-дизайнеров", "sentiment-анализ диалогов"],
-
-    "tags": ["генеративный ИИ", "тестирование диалогов", "чат-бот", "телеком"],
+    "expand_opportunities": [
+      "автоматический gap-анализ контента",
+      "копилот для conversation-дизайнеров",
+      "sentiment-анализ диалогов"
+    ],
+    "tags": [
+      "генеративный ИИ",
+      "тестирование диалогов",
+      "чат-бот",
+      "телеком"
+    ],
     "research_notes": "Единственный источник — customer story IBM (vendor_claim=true); проект отдельный от кейса TOBi+Genesys (другой период, другая задача — внутреннее тестирование, а не клиентские мессенджинг-каналы), поэтому оформлен как отдельный кейс, а не объединён."
   },
-
   {
     "id": "kr-tl-sktelecom-claude-01",
     "title": "AI Customer Service Support System: копилот оператора и пост-обработка на Claude в SK Telecom",
-
     "client": "SK Telecom",
     "client_disclosed": true,
     "client_url": "https://news.sktelecom.com/en/1647",
-
     "vendor": [],
     "vendor_type": "in-house",
-    "technology_providers": ["Claude (Anthropic)", "Amazon Bedrock"],
-
+    "technology_providers": [
+      "Claude (Anthropic)",
+      "Amazon Bedrock"
+    ],
     "country": "Республика Корея",
     "region": "asia-pacific",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["customer-facing"],
-    "business_process": ["operations-copilot", "customer-support"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "customer-facing"
+    ],
+    "business_process": [
+      "operations-copilot",
+      "customer-support"
+    ],
     "problem": "Традиционные колл-центры SK Telecom работают по будням в ограниченное время, старшие клиенты предпочитают телефонные обращения, а более молодые — чат; растущие ожидания клиентов требуют всё более быстрых и качественных ответов.",
     "before_state": "",
-
     "solution": "SK Telecom развернула собственную AI Customer Service Support System на основе телеком-специализированной LLM/LMM с RAG: In-Call Assist даёт оператору поиск информации и ответы в реальном времени во время звонка, а Post-Call Processing автоматизирует суммаризацию, классификацию темы обращения, формирование списка задач и анализ тональности; часть моделей (Claude через Amazon Bedrock) используется для повышения качества ответов.",
-    "ai_mechanisms": ["llm", "rag", "ai-agent"],
-
-    "data_used": ["база знаний компании", "история консультаций", "документы, поданные клиентами"],
-    "integrations": ["Amazon Bedrock", "внутренняя база знаний SK Telecom"],
-
+    "ai_mechanisms": [
+      "llm",
+      "rag",
+      "ai-agent"
+    ],
+    "data_used": [
+      "база знаний компании",
+      "история консультаций",
+      "документы, поданные клиентами"
+    ],
+    "integrations": [
+      "Amazon Bedrock",
+      "внутренняя база знаний SK Telecom"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Бета-запуск с середины октября (AI Knowledge Search Assistant — 21 октября, Intelligent Document Processing — 23 октября, Automated Post-Processing — декабрь); полное развёртывание по всем операциям клиентского сервиса запланировано на 2025 год.",
-
     "metrics": [
       {
         "metric_type": "accuracy",
@@ -1026,70 +1251,94 @@
         "source_type": "platform"
       }
     ],
-
     "timeline": "бета — октябрь-декабрь 2024, полное развёртывание — 2025",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "SK Telecom развернула ИИ-систему поддержки консультаций с копилотом оператора в реальном времени и автоматической пост-обработкой звонков; при использовании Claude через Amazon Bedrock оценка качества ответов ИИ выросла на 34%, доля низкокачественных ответов снизилась на 68%, а качество автоматической пост-обработки достигло около 89% от уровня оператора-человека. Собственный пресс-релиз SK Telecom подтверждает запуск системы и положительные отзывы операторов в бета-тесте.",
-
     "sources": [
-      { "url": "https://news.sktelecom.com/en/1647", "title": "SK Telecom to Introduce AI-Powered Customer Service Utilizing Proprietary Telco LLM and LMM", "type": "client", "publisher": "SK Telecom Newsroom", "date": "2024-11-18" },
-      { "url": "https://claude.com/customers/skt", "title": "SK Telecom Claude Platform (API) case study", "type": "platform", "publisher": "Anthropic", "date": "unknown" }
+      {
+        "url": "https://news.sktelecom.com/en/1647",
+        "title": "SK Telecom to Introduce AI-Powered Customer Service Utilizing Proprietary Telco LLM and LMM",
+        "type": "client",
+        "publisher": "SK Telecom Newsroom",
+        "date": "2024-11-18"
+      },
+      {
+        "url": "https://claude.com/customers/skt",
+        "title": "SK Telecom Claude Platform (API) case study",
+        "type": "platform",
+        "publisher": "Anthropic",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://news.sktelecom.com/en/1647",
-
     "evidence_grade": "A",
     "vendor_claim": true,
-
     "sales_relevance": 5,
-
     "why_it_matters": "Крупный международный оператор с прозрачными количественными метриками качества ИИ-ответов (не только эффективности), подтверждённый и собственным пресс-релизом клиента, и техпартнёром — сильный ориентир по эффекту LLM-копилота для операторов контакт-центра.",
     "entry_hypothesis": "У операторов с большим объёмом консультаций и пост-обработки звонков может накапливаться существенное время на ручную суммаризацию и поиск информации во время разговора — стоит оценить текущие затраты времени операторов на эти задачи.",
-    "likely_buyer": ["head-of-contact-center", "cio"],
-
+    "likely_buyer": [
+      "head-of-contact-center",
+      "cio"
+    ],
     "land_opportunity": "Пилот копилота оператора (поиск информации в реальном времени) на одном типе обращений с измерением роста качества ответов.",
-    "expand_opportunities": ["суммаризация обращений", "речевая аналитика", "прогноз оттока абонентов"],
-
-    "tags": ["копилот оператора", "LLM", "RAG", "контакт-центр", "телеком"],
+    "expand_opportunities": [
+      "суммаризация обращений",
+      "речевая аналитика",
+      "прогноз оттока абонентов"
+    ],
+    "tags": [
+      "копилот оператора",
+      "LLM",
+      "RAG",
+      "контакт-центр",
+      "телеком"
+    ],
     "research_notes": "Собственный пресс-релиз SK Telecom описывает систему под названием «Telco LLM/LMM» без явного упоминания Claude; количественные метрики (34%, 68%, 89%, рост оценки с 3.3) взяты из отдельного материала Anthropic о том же проекте — оба источника описывают один и тот же продукт (AI Customer Service Support System), поэтому объединены в один кейс."
   },
-
   {
     "id": "de-tl-telekom-uneeq-01",
     "title": "Цифровые ИИ-люди Deutsche Telekom повышают конверсию продаж",
-
     "client": "Deutsche Telekom",
     "client_disclosed": true,
     "client_url": "",
-
-    "vendor": ["UneeQ"],
+    "vendor": [
+      "UneeQ"
+    ],
     "vendor_type": "product-vendor",
-    "technology_providers": ["UneeQ Digital Human OS"],
-
+    "technology_providers": [
+      "UneeQ Digital Human OS"
+    ],
     "country": "Германия",
     "region": "europe",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["commercial"],
-    "business_process": ["sales"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "commercial"
+    ],
+    "business_process": [
+      "sales"
+    ],
     "problem": "Телеком-продукты и услуги технически сложны для понимания рядовыми клиентами, которые часто стесняются задавать вопросы живому консультанту и по умолчанию выбирают самый дешёвый тарифный вариант, оставаясь неудовлетворёнными результатом.",
     "before_state": "Клиенты самостоятельно искали информацию о тарифах онлайн без персонального сопровождения.",
-
     "solution": "Deutsche Telekom развернула семейство ИИ-цифровых людей (Selena, Max, Mia) на платформе UneeQ: они отвечают на вопросы, дают персональные рекомендации по тарифам и услугам широкополосного доступа и ведут диалог на естественном немецком языке в режиме 24/7 на сайте и в приложении.",
-    "ai_mechanisms": ["generative-ai", "multimodal", "ai-agent"],
-
-    "data_used": ["информация о продуктах и тарифах", "ответы клиента о домашней конфигурации/образе жизни"],
-    "integrations": ["сайт и приложение Deutsche Telekom"],
-
+    "ai_mechanisms": [
+      "generative-ai",
+      "multimodal",
+      "ai-agent"
+    ],
+    "data_used": [
+      "информация о продуктах и тарифах",
+      "ответы клиента о домашней конфигурации/образе жизни"
+    ],
+    "integrations": [
+      "сайт и приложение Deutsche Telekom"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Цифровые ассистенты интегрированы на сайте/в приложении Deutsche Telekom; Mia представлена на выставке MWC Barcelona.",
-
     "metrics": [
       {
         "metric_type": "conversion",
@@ -1122,69 +1371,82 @@
         "source_type": "vendor"
       }
     ],
-
     "timeline": "unknown",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Семейство ИИ-цифровых людей Deutsche Telekom (Selena, Max, Mia) на платформе UneeQ помогает клиентам разобраться в сложных тарифных предложениях; по данным вендора, это привело к росту конверсии в 5,6 раза, снижению отказа от оформления на 9% и общей оценке клиентов 4,2 из 5.",
-
     "sources": [
-      { "url": "https://www.digitalhumans.com/case-studies/deutsche-telekom-case-study", "title": "UneeQ Case Study | Deutsche Telekom", "type": "vendor", "publisher": "UneeQ", "date": "unknown" }
+      {
+        "url": "https://www.digitalhumans.com/case-studies/deutsche-telekom-case-study",
+        "title": "UneeQ Case Study | Deutsche Telekom",
+        "type": "vendor",
+        "publisher": "UneeQ",
+        "date": "unknown"
+      }
     ],
     "primary_source": "https://www.digitalhumans.com/case-studies/deutsche-telekom-case-study",
-
     "evidence_grade": "B",
     "vendor_claim": true,
-
     "sales_relevance": 3,
-
     "why_it_matters": "Иллюстрирует применение генеративного ИИ и цифровых аватаров для повышения продаж/конверсии в сложном продуктовом каталоге телеком-оператора, а не только для решения обращений в поддержку.",
     "entry_hypothesis": "У операторов со сложным тарифным каталогом клиенты, не понимающие все опции, вероятно чаще выбирают минимальный тариф или отказываются от оформления — стоит проверить текущую конверсию онлайн-оформления тарифов.",
-    "likely_buyer": ["commercial-director", "marketing-director"],
-
+    "likely_buyer": [
+      "commercial-director",
+      "marketing-director"
+    ],
     "land_opportunity": "Пилот ИИ-ассистента для подбора тарифа на одном продуктовом направлении (например, домашний интернет) с измерением конверсии.",
-    "expand_opportunities": ["персонализация тарифов", "next-best-offer", "копилот оператора продаж"],
-
-    "tags": ["цифровой человек", "генеративный ИИ", "продажи", "телеком"],
+    "expand_opportunities": [
+      "персонализация тарифов",
+      "next-best-offer",
+      "копилот оператора продаж"
+    ],
+    "tags": [
+      "цифровой человек",
+      "генеративный ИИ",
+      "продажи",
+      "телеком"
+    ],
     "research_notes": "Единственный источник — customer story вендора UneeQ (vendor_claim=true); независимого подтверждения цифр от Deutsche Telekom не найдено, поэтому грейд B. Период измерения (до/после) на странице не указан явно."
   },
-
   {
     "id": "de-tl-telekom-openai-01",
     "title": "AI-native трансформация Deutsche Telekom с ChatGPT Enterprise и API",
-
     "client": "Deutsche Telekom",
     "client_disclosed": true,
     "client_url": "",
-
     "vendor": [],
     "vendor_type": "in-house",
-    "technology_providers": ["OpenAI ChatGPT Enterprise", "OpenAI API"],
-
+    "technology_providers": [
+      "OpenAI ChatGPT Enterprise",
+      "OpenAI API"
+    ],
     "country": "Германия",
     "region": "europe",
-
     "industry": "telecom",
-    "subindustry": ["telecom-operators"],
-
-    "business_function": ["operations"],
-    "business_process": ["operations-copilot"],
-
+    "subindustry": [
+      "telecom-operators"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "operations-copilot"
+    ],
     "problem": "Deutsche Telekom поставила цель стать одним из первых в мире «AI-native» телеком-операторов, переосмыслив работу сотрудников, клиентские сценарии обслуживания и сетевые операции, а не просто добавив ИИ поверх существующих процессов.",
     "before_state": "",
-
     "solution": "Компания развернула ChatGPT Enterprise и API-инструменты для сотрудников (первая фаза трансформации), параллельно перестраивая клиентские сценарии обслуживания (в работе — перевод в реальном времени, ассистенты во время звонка, авто-саммари после звонка) и используя ИИ с партнёрами для динамической оптимизации сетевой производительности в реальном времени.",
-    "ai_mechanisms": ["llm", "generative-ai"],
-
+    "ai_mechanisms": [
+      "llm",
+      "generative-ai"
+    ],
     "data_used": [],
-    "integrations": ["ChatGPT Enterprise", "OpenAI API"],
-
+    "integrations": [
+      "ChatGPT Enterprise",
+      "OpenAI API"
+    ],
     "deployment": "cloud",
     "stage": "production",
-
     "scale": "Более 300 млн клиентов и более 200 000 сотрудников группы Deutsche Telekom по всему миру.",
-
     "metrics": [
       {
         "metric_type": "users",
@@ -1207,31 +1469,40 @@
         "source_type": "platform"
       }
     ],
-
     "timeline": "с начала 2026 года, материал опубликован в июле 2026",
     "budget_disclosed": null,
     "budget_note": "",
-
     "result_summary": "Deutsche Telekom развернула ChatGPT Enterprise и API-инструменты OpenAI по всей организации в рамках стратегии стать «AI-native» телеком-оператором: свыше 50 000 активных пользователей в месяц, рост использования ИИ-инструментов на 546% с начала 2026 года. Конкретные бизнес-результаты для отдельных процессов (клиентский сервис, сеть) в материале описаны как направления работы, но без привязанных к ним измеримых показателей.",
-
     "sources": [
-      { "url": "https://openai.com/index/deutsche-telekom/", "title": "How Deutsche Telekom is rewiring telecommunications with AI", "type": "platform", "publisher": "OpenAI", "date": "2026-07-10" }
+      {
+        "url": "https://openai.com/index/deutsche-telekom/",
+        "title": "How Deutsche Telekom is rewiring telecommunications with AI",
+        "type": "platform",
+        "publisher": "OpenAI",
+        "date": "2026-07-10"
+      }
     ],
     "primary_source": "https://openai.com/index/deutsche-telekom/",
-
     "evidence_grade": "C",
     "vendor_claim": true,
-
     "sales_relevance": 2,
-
     "why_it_matters": "Показывает масштаб общекорпоративного внедрения генеративного ИИ у одного из крупнейших мировых операторов, но без привязки эффекта к конкретному процессу — полезно как контекст, а не как точный ROI-бенчмарк.",
     "entry_hypothesis": "Крупные операторы, декларирующие AI-native стратегию, вероятно проходят похожий путь — сначала массовое внедрение LLM-инструментов для сотрудников, затем точечные клиентские и сетевые сценарии — стоит уточнить, на какой стадии находится конкретная компания.",
-    "likely_buyer": ["cio", "coo"],
-
+    "likely_buyer": [
+      "cio",
+      "coo"
+    ],
     "land_opportunity": "Пилот корпоративного доступа к LLM-инструментам для одной функции (например, customer care) с измерением адаптации и влияния на конкретные KPI.",
-    "expand_opportunities": ["клиентский сервис с переводом в реальном времени", "копилот оператора", "оптимизация сети в реальном времени"],
-
-    "tags": ["генеративный ИИ", "корпоративная трансформация", "телеком"],
+    "expand_opportunities": [
+      "клиентский сервис с переводом в реальном времени",
+      "копилот оператора",
+      "оптимизация сети в реальном времени"
+    ],
+    "tags": [
+      "генеративный ИИ",
+      "корпоративная трансформация",
+      "телеком"
+    ],
     "research_notes": "Метрики (50 000+ MAU, рост на 546%) — это агрегированные показатели использования ИИ-инструментов по всей компании, а не результат одного конкретного процесса/кейса; согласно правилу о периметре цифры, эффект не приписан ни одному отдельному внедрению, только контекст. Единственный источник — материал техпартнёра OpenAI, независимого подтверждения не найдено, поэтому грейд C, а не B/A."
   }
 ]
