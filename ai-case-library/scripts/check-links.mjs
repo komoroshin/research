@@ -13,6 +13,11 @@ import { DATA, RESEARCH, readJson, toCsv, COLORS } from './lib.mjs';
 const CONCURRENCY = 6;
 const TIMEOUT_MS = 15000;
 
+// Часть российских изданий (TAdviser и др.) отдаёт 404 на явно роботный User-Agent,
+// но 200 на браузерный. Представляемся браузером, иначе получаем ложные "broken".
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+
 const cases = readJson(path.join(DATA, 'cases.json'));
 
 const targets = new Map();
@@ -45,10 +50,7 @@ async function probe(url) {
         method,
         redirect: 'follow',
         signal: controller.signal,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; AICaseLibraryLinkCheck/1.0)',
-          'Accept-Language': 'ru,en;q=0.8',
-        },
+        headers: { 'User-Agent': BROWSER_UA, 'Accept-Language': 'ru,en;q=0.8' },
       });
       clearTimeout(timer);
       const redirected = res.redirected || res.url.replace(/\/$/, '') !== url.replace(/\/$/, '');
@@ -66,12 +68,48 @@ async function probe(url) {
     } catch (e) {
       clearTimeout(timer);
       if (method === 'GET') {
-        const note = e.name === 'AbortError' ? 'таймаут' : e.cause?.code || e.message;
-        return { status: 'unavailable', code: 0, final: '', note };
+        if (e.name === 'AbortError') return { status: 'unavailable', code: 0, final: '', note: 'таймаут' };
+        // Часть сайтов ставит cookie редиректом на самих себя: браузер проходит, robot-fetch
+        // упирается в петлю. Такой URL живой — проверяем это одиночным manual-запросом.
+        const loop = await probeRedirectLoop(url);
+        if (loop) return loop;
+        return { status: 'unavailable', code: 0, final: '', note: e.cause?.code || e.message };
       }
     }
   }
   return { status: 'unavailable', code: 0, final: '', note: 'нет ответа' };
+}
+
+/** Одиночный запрос без следования редиректам: отличает cookie-стену от реально мёртвой ссылки. */
+async function probeRedirectLoop(url) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      redirect: 'manual',
+      signal: controller.signal,
+      headers: { 'User-Agent': BROWSER_UA, 'Accept-Language': 'ru,en;q=0.8' },
+    });
+    clearTimeout(timer);
+    const location = res.headers.get('location') ?? '';
+    if (res.status >= 300 && res.status < 400) {
+      const selfRedirect = location.replace(/\/$/, '') === url.replace(/\/$/, '');
+      return {
+        status: 'redirect',
+        code: res.status,
+        final: location || url,
+        note: selfRedirect ? 'редирект на себя (cookie-стена), в браузере открывается' : 'цепочка редиректов',
+      };
+    }
+    if (res.status >= 200 && res.status < 300) {
+      return { status: 'working', code: res.status, final: res.url, note: '' };
+    }
+    return null;
+  } catch {
+    clearTimeout(timer);
+    return null;
+  }
 }
 
 const results = [];
