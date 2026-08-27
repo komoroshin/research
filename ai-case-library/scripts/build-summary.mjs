@@ -27,6 +27,19 @@ for (const group of [
 }
 const L = (id) => labels.get(id) ?? id;
 
+/**
+ * Согласование существительного с числительным по-русски: 1 кейс, 2 кейса, 5 кейсов.
+ * Исключение — вторая десятка (11–14), где всегда родительный множественного.
+ */
+function plural(n, one, few, many) {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return many;
+  const mod10 = n % 10;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
+}
+
 const isProd = (c) => c.stage === 'production' || c.stage === 'scaled-production';
 const isStrong = (c) => c.evidence_grade === 'A' || c.evidence_grade === 'B';
 const hasMeasured = (c) => c.metrics.some((m) => m.status === 'measured');
@@ -106,7 +119,7 @@ const md = `# Executive Summary
 Все числа — подсчёт по базе. Формулировки выводов, помеченные *интерпретация*, —
 суждение исследователя, а не утверждение источников.
 
-**Состав базы:** ${cases.length} подтверждённых кейсов, из них Россия/СНГ — ${ru.length}
+**Состав базы:** ${cases.length} ${plural(cases.length, 'подтверждённый кейс', 'подтверждённых кейса', 'подтверждённых кейсов')}, из них Россия/СНГ — ${ru.length}
 (${share(ru.length, cases.length)}%), остальной мир — ${cases.length - ru.length}.
 Evidence A — ${grades.get('A') ?? 0}, B — ${grades.get('B') ?? 0}, C — ${grades.get('C') ?? 0}, D — 0.
 Кейсов с измеренным (не заявленным и не плановым) результатом — ${cases.filter(hasMeasured).length}.
@@ -120,8 +133,8 @@ ${table(
   byIndustry.map((i) => [L(i.id), i.total, i.ru, i.strong, i.prod]),
 )}
 
-Лидер по объёму подтверждённых внедрений — **${L(byIndustry[0].id)}** (${byIndustry[0].total} кейсов,
-${byIndustry[0].prod} в промышленной эксплуатации).
+Лидер по объёму подтверждённых внедрений — **${L(byIndustry[0].id)}**: ${byIndustry[0].total} ${plural(byIndustry[0].total, 'кейс', 'кейса', 'кейсов')},
+из них ${byIndustry[0].prod} в промышленной эксплуатации.
 
 ## 2. Какие процессы наиболее зрелые
 
