@@ -21,7 +21,11 @@
     "build-client-data": "node scripts/build-client-data.mjs",
     "build-client": "npm run build-client-data && tsc -p client-app && vite build client-app",
     "deploy-catalog": "node scripts/deploy-catalog.mjs",
-    "test-client-ui": "node tests/client-ui-checklist.mjs"
+    "test-client-ui": "node tests/client-ui-checklist.mjs",
+    "build-scale-data": "node scripts/build-scale-data.mjs",
+    "build-scale": "npm run build-scale-data && tsc -p scale-app && vite build scale-app",
+    "deploy-projects": "node scripts/deploy-projects.mjs",
+    "test-scale-ui": "node tests/scale-ui-checklist.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
