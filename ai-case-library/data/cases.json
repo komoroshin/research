@@ -472,97 +472,6 @@
     "research_notes": "Единственный найденный источник — статья CNews (со ссылкой на попадание кейса в библиотеку AI Russia Works); отдельного пресс-релиза Mail.ru Group или «Россети Центр» с этими же цифрами не обнаружено, но детализация и цифры выглядят достоверными и непротиворечивыми."
   },
   {
-    "id": "us-hc-vizai-validate-01",
-    "title": "Платформа Viz.ai для ускорения оповещения о крупнососудистой окклюзии при инсульте",
-    "client": "Сеть из 166 медицинских учреждений в 17 штатах США (партнёрство TeleSpecialists и Viz.ai)",
-    "client_disclosed": true,
-    "client_url": "",
-    "vendor": [
-      "Viz.ai"
-    ],
-    "vendor_type": "product-vendor",
-    "technology_providers": [
-      "Viz.ai Platform"
-    ],
-    "country": "США",
-    "region": "north-america",
-    "industry": "healthcare",
-    "subindustry": [
-      "hospitals"
-    ],
-    "business_function": [
-      "clinical"
-    ],
-    "business_process": [
-      "scheduling-dispatching",
-      "clinical-workflow"
-    ],
-    "problem": "Задержки в уведомлении нейроинтервенционалиста при подозрении на инсульт из-за крупнососудистой окклюзии (LVO) снижают шансы на своевременное эндоваскулярное лечение.",
-    "before_state": "Уведомление нейроинтервенционалиста происходило после стандартного процесса просмотра и передачи снимков без автоматической приоритизации.",
-    "solution": "Платформа Viz.ai автоматически анализирует КТ-ангиографию, выявляет признаки LVO и мгновенно уведомляет команду нейроинтервенционалистов, ускоряя координацию помощи при остром инсульте.",
-    "ai_mechanisms": [
-      "computer-vision",
-      "ai-agent"
-    ],
-    "data_used": [
-      "КТ-ангиография головного мозга"
-    ],
-    "integrations": [
-      "мобильные уведомления клинической команды"
-    ],
-    "deployment": "cloud",
-    "stage": "production",
-    "scale": "14 116 пациентов в исследовании VALIDATE: 8557 в учреждениях с ИИ, 5559 — без ИИ, 166 учреждений в 17 штатах.",
-    "metrics": [
-      {
-        "metric_type": "response_time",
-        "metric_name": "Медианное время от поступления до уведомления нейроинтервенционалиста",
-        "baseline": "89.5 минут",
-        "result": "50 минут",
-        "delta": "-39.5 минут (-44%)",
-        "status": "measured",
-        "source_url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
-        "source_type": "vendor"
-      }
-    ],
-    "timeline": "Исследование VALIDATE представлено 8 февраля 2023 на International Stroke Conference",
-    "budget_disclosed": null,
-    "budget_note": "",
-    "result_summary": "Многоцентровое исследование VALIDATE на 14 116 пациентах показало, что использование платформы Viz.ai сокращает медианное время от поступления до уведомления нейроинтервенционалиста с 89,5 до 50 минут (на 39,5 минуты, статистически значимо, p<0.001).",
-    "sources": [
-      {
-        "url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
-        "title": "Large real-world, multi-center study demonstrates Viz.ai Platform saves critical minutes in stroke care",
-        "type": "vendor",
-        "publisher": "Viz.ai",
-        "date": "2023-02-08"
-      }
-    ],
-    "primary_source": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
-    "evidence_grade": "A",
-    "vendor_claim": true,
-    "sales_relevance": 5,
-    "why_it_matters": "Крупное многоцентровое сравнительное исследование (14 тыс. пациентов, 166 учреждений) с сильной статистической значимостью и понятным клиническим результатом — минуты решают исходы при инсульте.",
-    "entry_hypothesis": "У сетей стационаров с телемедицинской неврологической поддержкой может быть заметная задержка между поступлением пациента с подозрением на инсульт и подключением нейроинтервенционалиста; стоит оценить текущее медианное время такой передачи.",
-    "likely_buyer": [
-      "medical-director",
-      "coo"
-    ],
-    "land_opportunity": "Пилот платформы автоматического выявления LVO и уведомления команды на потоке одного инсультного центра.",
-    "expand_opportunities": [
-      "Расширение на внутричерепные кровоизлияния",
-      "Координация межгоспитальных переводов",
-      "Аналитика по исходам лечения"
-    ],
-    "tags": [
-      "инсульт",
-      "компьютерное зрение",
-      "координация помощи",
-      "нейрохирургия"
-    ],
-    "research_notes": ""
-  },
-  {
     "id": "se-hc-lunit-capio-01",
     "title": "ИИ как независимый второй читатель маммограмм в госпитале Capio S:t Göran",
     "client": "Capio S:t Göran Hospital (Стокгольм, Швеция)",
@@ -774,215 +683,6 @@
       "энерготрейдинг"
     ],
     "research_notes": "Оператор конкретных ветропарков (сторонний оператор ферм, продающий Google электроэнергию по PPA) в статье прямо не назван; Google выступает как покупатель/бенефициар прогноза."
-  },
-  {
-    "id": "in-hc-manipal-googlecloud-01",
-    "title": "Генеративный ИИ Gemini ускоряет пересменку медсестёр в сети Manipal Hospitals",
-    "client": "Manipal Hospitals",
-    "client_disclosed": true,
-    "client_url": "",
-    "vendor": [
-      "Google Cloud Consulting"
-    ],
-    "vendor_type": "cloud-provider",
-    "technology_providers": [
-      "Gemini",
-      "Vertex AI",
-      "Google Cloud Run"
-    ],
-    "country": "Индия",
-    "region": "asia-pacific",
-    "industry": "healthcare",
-    "subindustry": [
-      "hospitals"
-    ],
-    "business_function": [
-      "clinical"
-    ],
-    "business_process": [
-      "medical-documentation"
-    ],
-    "problem": "Медсёстры тратили дополнительные 90 минут за смену на подготовку и приём отчётов при пересменке (handoff), что вызывало усталость и повышало риск ошибок из-за ручных рукописных записей.",
-    "before_state": "Пересменка занимала около 90 минут на создание и приём отчётов.",
-    "solution": "Генеративный ИИ на базе Gemini на Vertex AI формирует структурированные ISBAR-отчёты (Identify, Situation, Background, Assessment, Recommendation) для пересменки медсестёр на основе данных из системы TrakCare, передаваемых через озеро данных Google Cloud с интеллектуальной фильтрацией по времени смены.",
-    "ai_mechanisms": [
-      "llm",
-      "generative-ai"
-    ],
-    "data_used": [
-      "данные из МИС TrakCare",
-      "клинические записи по пациентам"
-    ],
-    "integrations": [
-      "TrakCare",
-      "Google Cloud data lake",
-      "Google Cloud Run"
-    ],
-    "deployment": "cloud",
-    "stage": "production",
-    "scale": "37 больниц сети (23 уже подключены), 10 500+ коек, более 5000 медсестёр ежедневно используют систему, около 7 млн пациентов в год.",
-    "metrics": [
-      {
-        "metric_type": "processing_time",
-        "metric_name": "Время пересменки медсестёр",
-        "baseline": "90 минут",
-        "result": "20 минут",
-        "delta": "-70%",
-        "status": "measured",
-        "source_url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
-        "source_type": "platform"
-      }
-    ],
-    "timeline": "Поэтапное внедрение 2024–2025, публикация 11 июля 2025",
-    "budget_disclosed": null,
-    "budget_note": "",
-    "result_summary": "Генеративный ИИ на базе Gemini сократил время пересменки медсестёр в сети Manipal Hospitals с 90 до 20 минут (на 70%), система используется более чем 5000 медсёстрами ежедневно в 23 из 37 больниц сети.",
-    "sources": [
-      {
-        "url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
-        "title": "How Manipal Hospitals sped up nurse handoffs across 37 hospitals",
-        "type": "platform",
-        "publisher": "Google Cloud",
-        "date": "2025-07-11"
-      }
-    ],
-    "primary_source": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
-    "evidence_grade": "A",
-    "vendor_claim": true,
-    "sales_relevance": 5,
-    "why_it_matters": "Один из крупнейших госпитальных операторов Индии, чёткая понятная боль (ручная пересменка медсестёр), измеримое сокращение времени на 70% в масштабе десятков больниц — редкий пример генеративного ИИ вне врачебной документации.",
-    "entry_hypothesis": "У крупных больничных сетей может уходить значительное время медсестринского персонала на подготовку отчётов о пересменке вручную, с риском ошибок из-за усталости; стоит оценить текущие затраты времени на пересменку и качество передачи информации.",
-    "likely_buyer": [
-      "medical-director",
-      "coo",
-      "cio"
-    ],
-    "land_opportunity": "Пилот генеративного ИИ для одного вида клинической документации (например, пересменка медсестёр) в одной больнице сети.",
-    "expand_opportunities": [
-      "Расширение на врачебную документацию",
-      "Клинические саммари для консилиумов",
-      "Интеграция с другими МИС"
-    ],
-    "tags": [
-      "генеративный ИИ",
-      "Gemini",
-      "пересменка",
-      "медсёстры",
-      "Индия"
-    ],
-    "research_notes": ""
-  },
-  {
-    "id": "us-hc-nuance-dax-northwestern-01",
-    "title": "DAX Copilot сокращает время документирования и «pajama time» в Northwestern Medicine",
-    "client": "Northwestern Medicine",
-    "client_disclosed": true,
-    "client_url": "",
-    "vendor": [
-      "Microsoft (Nuance)"
-    ],
-    "vendor_type": "product-vendor",
-    "technology_providers": [
-      "DAX Copilot"
-    ],
-    "country": "США",
-    "region": "north-america",
-    "industry": "healthcare",
-    "subindustry": [
-      "hospitals"
-    ],
-    "business_function": [
-      "clinical"
-    ],
-    "business_process": [
-      "medical-documentation"
-    ],
-    "problem": "Административная нагрузка по ведению клинической документации приводит к «pajama time» — работе врачей над записями по вечерам — и ограничивает число пациентов, которых врач может принять.",
-    "before_state": "",
-    "solution": "DAX Copilot — амбиентный ИИ-ассистент, который слушает разговор врача с пациентом и автоматически генерирует черновик клинической записи для проверки врачом.",
-    "ai_mechanisms": [
-      "speech-to-text",
-      "llm",
-      "generative-ai"
-    ],
-    "data_used": [
-      "аудиозапись приёма врача с пациентом"
-    ],
-    "integrations": [
-      "электронная медицинская карта"
-    ],
-    "deployment": "cloud",
-    "stage": "production",
-    "scale": "Более 400 организаций используют DAX Copilot; платформа Dragon Medical в целом используется более чем 600 000 врачами по всему миру.",
-    "metrics": [
-      {
-        "metric_type": "processing_time",
-        "metric_name": "Сокращение времени на ведение заметок",
-        "baseline": "",
-        "result": "-24%",
-        "delta": "-24%",
-        "status": "reported",
-        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-        "source_type": "vendor"
-      },
-      {
-        "metric_type": "hours_saved",
-        "metric_name": "Снижение «pajama time» (работы над документами вне рабочего времени)",
-        "baseline": "",
-        "result": "-17%",
-        "delta": "-17%",
-        "status": "reported",
-        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-        "source_type": "vendor"
-      },
-      {
-        "metric_type": "operations_volume",
-        "metric_name": "Дополнительные пациенты, принятые врачом в месяц",
-        "baseline": "",
-        "result": "11.3",
-        "delta": "+11.3",
-        "status": "reported",
-        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-        "source_type": "vendor"
-      }
-    ],
-    "timeline": "по состоянию на сентябрь 2024 (год с момента общедоступности DAX Copilot)",
-    "budget_disclosed": null,
-    "budget_note": "",
-    "result_summary": "В Northwestern Medicine применение DAX Copilot снизило время на ведение заметок на 24% и «pajama time» на 17%, при этом врачи стали принимать в среднем на 11,3 дополнительных пациента в месяц.",
-    "sources": [
-      {
-        "url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-        "title": "A year of DAX Copilot: Healthcare innovation that refocuses on the clinician-patient connection",
-        "type": "vendor",
-        "publisher": "Microsoft",
-        "date": "2024-09-26"
-      }
-    ],
-    "primary_source": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-    "evidence_grade": "A",
-    "vendor_claim": true,
-    "sales_relevance": 5,
-    "why_it_matters": "Крупная узнаваемая академическая система здравоохранения США, конкретные и разнообразные метрики (время документирования, внерабочее время, доступность приёма) от платформенного вендора (Microsoft) — один из самых цитируемых кейсов ambient AI scribe.",
-    "entry_hypothesis": "У врачебных практик с электронной медкартой может быть значительная доля рабочего и внерабочего времени, уходящая на ручное ведение заметок после приёма; стоит оценить текущее «pajama time» и его влияние на доступность записи к врачу.",
-    "likely_buyer": [
-      "medical-director",
-      "cio",
-      "coo"
-    ],
-    "land_opportunity": "Пилот ambient AI-скрайба на нескольких врачах одной специальности с измерением времени документирования до/после.",
-    "expand_opportunities": [
-      "Расширение на все специальности системы",
-      "Интеграция с кодированием диагнозов (billing)",
-      "Аналитика качества документации"
-    ],
-    "tags": [
-      "ambient AI",
-      "медицинская документация",
-      "DAX Copilot",
-      "выгорание врачей"
-    ],
-    "research_notes": "Числа по Northwestern Medicine взяты из общего обзорного поста Microsoft о годовщине DAX Copilot, где перечислены несколько систем здравоохранения; для Northwestern Medicine это единственный найденный источник."
   },
   {
     "id": "ke-hc-pendahealth-openai-01",
@@ -1275,6 +975,125 @@
     "research_notes": "Название конкретного вендора ИИ-скрайба не указано в открытом фрагменте permanente.org, доступном в рамках этой сессии, поэтому поле vendor оставлено пустым, а не приписано конкретному поставщику по догадке."
   },
   {
+    "id": "ru-mn-gazpromneft-era-optima-01",
+    "title": "ЭРА:ОптимА — ИИ для оптимизации разработки нефтяных месторождений",
+    "client": "Газпром нефть",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "ЭРА:ОптимА (собственная разработка НТЦ «Газпром нефти»)"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction"
+    ],
+    "business_function": [
+      "production",
+      "rnd"
+    ],
+    "business_process": [
+      "optimization"
+    ],
+    "problem": "Компании требовалось повысить эффективность разработки месторождений — выбор геометрии новых скважин и режимов работы существующих традиционно опирается на экспертную оценку и требует значительного времени специалистов.",
+    "before_state": "",
+    "solution": "НТЦ «Газпром нефти» разработал интеллектуальную систему «ЭРА:ОптимА», которая на основе трёхмерного моделирования пласта комплексно оптимизирует разработку месторождения: подбирает эффективную геометрию новых скважин и режимы работы уже пробуренных, формируя варианты для сравнения с экспертными решениями.",
+    "ai_mechanisms": [
+      "optimization-ml",
+      "digital-twin",
+      "classical-ml"
+    ],
+    "data_used": [
+      "геологические данные месторождений",
+      "данные бурения",
+      "трёхмерные модели пласта"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "pilot",
+    "scale": "Пилотные испытания на двух месторождениях: Крапивинском («Газпромнефть-Восток») и Ачимовском («Славнефть-Мегионнефтегаз»)",
+    "metrics": [
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Рост доходности на Крапивинском месторождении",
+        "baseline": "",
+        "result": "300 млн руб. в среднесрочной перспективе",
+        "delta": "",
+        "status": "projected",
+        "source_url": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Прирост добычи на Ачимовском месторождении",
+        "baseline": "",
+        "result": "+8%",
+        "delta": "+8%",
+        "status": "reported",
+        "source_url": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Рост прибыли на Ачимовском месторождении",
+        "baseline": "",
+        "result": "+11%",
+        "delta": "+11%",
+        "status": "reported",
+        "source_url": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Снижение объёма рутинных операций специалистов",
+        "baseline": "",
+        "result": "-80%",
+        "delta": "-80%",
+        "status": "reported",
+        "source_url": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2019 (пилот)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "На пилотных месторождениях система ЭРА:ОптимА обеспечила прирост добычи на Ачимовском месторождении более чем на 8% и рост прибыли на 11%, а на Крапивинском — ожидаемый рост доходности на 300 млн руб.; предложенные системой варианты превосходят экспертные решения на 20-30% по экономической эффективности и на 80% снижают объём рутинных операций специалистов.",
+    "sources": [
+      {
+        "url": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+        "title": "«Газпром нефть» использует искусственный интеллект в разработке месторождений",
+        "type": "media",
+        "publisher": "CIO/Открытые системы",
+        "date": "2019-03"
+      }
+    ],
+    "primary_source": "https://cio.osp.ru/news/260319-Gazprom-neft-ispolzuet-iskusstvennyy-intellekt-v-razrabotke-mestorozhdeniy",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 5,
+    "why_it_matters": "Крупный вертикально-интегрированный нефтедобытчик показывает измеримый прирост добычи и прибыли от ИИ-оптимизации разработки месторождений на реальных пилотных активах — сильный референс для профильных ВИНК.",
+    "entry_hypothesis": "У нефтедобывающих компаний с зрелым фондом скважин может уходить значительное время геологов и разработчиков на ручной подбор геометрии новых скважин и режимов работы фонда. Стоит проверить, насколько формализован этот процесс и есть ли уже накопленные 3D-модели пласта для быстрого пилота.",
+    "likely_buyer": [
+      "chief-engineer",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот по оптимизации режимов работы фонда скважин на одном зрелом месторождении с готовой геологической моделью.",
+    "expand_opportunities": [
+      "проектирование бурения новых скважин",
+      "цифровой двойник месторождения",
+      "ИИ-помощник для инженеров разработки"
+    ],
+    "tags": [
+      "оптимизация разработки месторождений",
+      "нефтедобыча",
+      "цифровой двойник пласта"
+    ],
+    "research_notes": "Основной источник — медиа (cio.osp.ru), пересказывающий официальные данные компании; второй независимый источник (страница TAdviser) не открылась (404) в рамках сессии, поэтому грейд ограничен B, а не A."
+  },
+  {
     "id": "ru-en-tplus-ziiot-pdm-01",
     "title": "Предиктивная аналитика на платформе ZIIoT предотвратила аварийные простои на ТЭЦ «Т Плюс»",
     "client": "ПАО «Т Плюс»",
@@ -1393,6 +1212,289 @@
     "research_notes": "Источник — пресс-релиз вендора (Zyfra), продублированный CNews без новых цифр; независимого подтверждения со стороны «Т Плюс» не найдено. Причины трёх инцидентов не детализированы."
   },
   {
+    "id": "us-hc-vizai-validate-01",
+    "title": "Платформа Viz.ai для ускорения оповещения о крупнососудистой окклюзии при инсульте",
+    "client": "Сеть из 166 медицинских учреждений в 17 штатах США (партнёрство TeleSpecialists и Viz.ai)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Viz.ai"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "Viz.ai Platform"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "healthcare",
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "scheduling-dispatching",
+      "clinical-workflow"
+    ],
+    "problem": "Задержки в уведомлении нейроинтервенционалиста при подозрении на инсульт из-за крупнососудистой окклюзии (LVO) снижают шансы на своевременное эндоваскулярное лечение.",
+    "before_state": "Уведомление нейроинтервенционалиста происходило после стандартного процесса просмотра и передачи снимков без автоматической приоритизации.",
+    "solution": "Платформа Viz.ai автоматически анализирует КТ-ангиографию, выявляет признаки LVO и мгновенно уведомляет команду нейроинтервенционалистов, ускоряя координацию помощи при остром инсульте.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "ai-agent"
+    ],
+    "data_used": [
+      "КТ-ангиография головного мозга"
+    ],
+    "integrations": [
+      "мобильные уведомления клинической команды"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "14 116 пациентов в исследовании VALIDATE: 8557 в учреждениях с ИИ, 5559 — без ИИ, 166 учреждений в 17 штатах.",
+    "metrics": [
+      {
+        "metric_type": "response_time",
+        "metric_name": "Медианное время от поступления до уведомления нейроинтервенционалиста",
+        "baseline": "89.5 минут",
+        "result": "50 минут",
+        "delta": "-39.5 минут (-44%)",
+        "status": "measured",
+        "source_url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "Исследование VALIDATE представлено 8 февраля 2023 на International Stroke Conference",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Многоцентровое исследование VALIDATE на 14 116 пациентах показало, что использование платформы Viz.ai сокращает медианное время от поступления до уведомления нейроинтервенционалиста с 89,5 до 50 минут (на 39,5 минуты, статистически значимо, p<0.001).",
+    "sources": [
+      {
+        "url": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
+        "title": "Large real-world, multi-center study demonstrates Viz.ai Platform saves critical minutes in stroke care",
+        "type": "vendor",
+        "publisher": "Viz.ai",
+        "date": "2023-02-08"
+      }
+    ],
+    "primary_source": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Крупное многоцентровое сравнительное исследование (14 тыс. пациентов, 166 учреждений) с сильной статистической значимостью и понятным клиническим результатом — минуты решают исходы при инсульте.",
+    "entry_hypothesis": "У сетей стационаров с телемедицинской неврологической поддержкой может быть заметная задержка между поступлением пациента с подозрением на инсульт и подключением нейроинтервенционалиста; стоит оценить текущее медианное время такой передачи.",
+    "likely_buyer": [
+      "medical-director",
+      "coo"
+    ],
+    "land_opportunity": "Пилот платформы автоматического выявления LVO и уведомления команды на потоке одного инсультного центра.",
+    "expand_opportunities": [
+      "Расширение на внутричерепные кровоизлияния",
+      "Координация межгоспитальных переводов",
+      "Аналитика по исходам лечения"
+    ],
+    "tags": [
+      "инсульт",
+      "компьютерное зрение",
+      "координация помощи",
+      "нейрохирургия"
+    ],
+    "research_notes": "Единственный источник — публикация вендора (Viz.ai), подтверждения со стороны клиники или независимого издания не найдено, поэтому грейд B, а не A."
+  },
+  {
+    "id": "au-mn-bhp-truck-maintenance-01",
+    "title": "Машинное обучение для предиктивного обслуживания карьерных самосвалов",
+    "client": "BHP",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "Maintenance Centre of Excellence (BHP, собственная разработка)"
+    ],
+    "country": "Австралия",
+    "region": "asia-pacific",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "mining"
+    ],
+    "business_function": [
+      "asset-management-function"
+    ],
+    "business_process": [
+      "predictive-maintenance"
+    ],
+    "problem": "Парк карьерных самосвалов Caterpillar 793F показывал непостоянный ресурс компонентов двигателя на разных рудниках, что делало планирование обслуживания неэффективным и дорогим, а точность долгосрочного планирования ремонтов была низкой.",
+    "before_state": "Точность планирования обслуживания самосвалов на срок от 2 недель вперёд составляла лишь 10%.",
+    "solution": "BHP создала Центр компетенций по обслуживанию (Maintenance Centre of Excellence), применяющий алгоритмы машинного обучения для анализа истории отказов компонентов и данных износа двигателя в реальном времени, что позволило точнее предсказывать отказы и планировать обслуживание заранее.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "история отказов компонентов",
+      "данные износа двигателей в реальном времени"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Рудник Yandi, Западная Австралия; парк самосвалов Caterpillar 793F (часть общего парка BHP из 3000+ единиц техники)",
+    "metrics": [
+      {
+        "metric_type": "operational_cost",
+        "metric_name": "Экономия затрат на руднике Yandi в FY17",
+        "baseline": "",
+        "result": "5,5 млн долларов США",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning",
+        "source_type": "analyst"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность планирования обслуживания на срок от 2 недель вперёд",
+        "baseline": "10%",
+        "result": "85%",
+        "delta": "+75 п.п.",
+        "status": "measured",
+        "source_url": "https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning",
+        "source_type": "analyst"
+      },
+      {
+        "metric_type": "resource_utilization",
+        "metric_name": "Доступность самосвалов на руднике",
+        "baseline": "",
+        "result": "выше 90%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning",
+        "source_type": "analyst"
+      }
+    ],
+    "timeline": "2017 (FY17)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "На руднике Yandi применение машинного обучения для предиктивного обслуживания самосвалов Caterpillar 793F дало 5,5 млн долларов экономии за FY17, подняло точность планирования ремонтов на срок от 2 недель вперёд с 10% до 85% и обеспечило доступность самосвалов выше 90%.",
+    "sources": [
+      {
+        "url": "https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning",
+        "title": "BHP saves $5.5M by predicting mining truck maintenance requirements with machine learning",
+        "type": "analyst",
+        "publisher": "Best Practice AI",
+        "date": "2017"
+      }
+    ],
+    "primary_source": "https://bestpractice.ai/ai-use-cases/case-studies/manufacturing-industrials/bhp-saves-5-5m-by-predicting-mining-truck-maintenance-requirements-with-machine-learning",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из самых конкретных количественных кейсов предиктивного обслуживания карьерной техники в отрасли: точная сумма экономии и резкий рост точности планирования на конкретном руднике крупнейшего в мире горнодобытчика.",
+    "entry_hypothesis": "У горнодобывающих компаний с однотипным парком карьерной техники (самосвалы одной модели на разных рудниках) может отсутствовать централизованный анализ истории отказов компонентов между площадками, что снижает точность планирования ремонтов. Стоит оценить, собираются ли такие данные централизованно.",
+    "likely_buyer": [
+      "chief-engineer",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот централизованного анализа истории отказов одного типа техники (например, одна модель самосвала) на одном руднике.",
+    "expand_opportunities": [
+      "масштабирование на другие типы техники",
+      "тиражирование на другие рудники",
+      "оптимизация запасов запчастей"
+    ],
+    "tags": [
+      "предиктивное обслуживание",
+      "карьерные самосвалы",
+      "горнодобыча"
+    ],
+    "research_notes": "Источник — агрегатор кейсов Best Practice AI, ссылающийся на данные BHP за FY17 (bhp.com, декабрь 2017); прямую страницу bhp.com в рамках сессии не открывал, поэтому грейд ограничен B."
+  },
+  {
+    "id": "no-mn-equinor-predictive-maintenance-01",
+    "title": "Предиктивное обслуживание вращающегося оборудования на базе ИИ",
+    "client": "Equinor",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "собственная разработка Equinor"
+    ],
+    "country": "Норвегия",
+    "region": "europe",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction",
+      "gas"
+    ],
+    "business_function": [
+      "asset-management-function"
+    ],
+    "business_process": [
+      "predictive-maintenance"
+    ],
+    "problem": "Необходимость предсказывать отказы и потребность в обслуживании большого парка вращающегося оборудования (насосы, компрессоры) на морских и наземных объектах, чтобы предотвращать незапланированные простои.",
+    "before_state": "",
+    "solution": "Equinor применяет классическое машинное обучение на операционных данных для мониторинга более 700 вращающихся машин с использованием 24 000 датчиков, предсказывая отказы и потребности в обслуживании.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "данные 24 000 датчиков на вращающемся оборудовании"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "Более 700 вращающихся машин, 24 000 датчиков",
+    "metrics": [
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Накопленная экономия от предиктивного обслуживания с 2020 года",
+        "baseline": "",
+        "result": "120 млн долларов США",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2020–2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Предиктивное обслуживание на основе машинного обучения, охватывающее более 700 вращающихся машин и 24 000 датчиков, принесло Equinor совокупную экономию 120 млн долларов США с 2020 года.",
+    "sources": [
+      {
+        "url": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+        "title": "Equinor Says AI Saved It $130M in 2025",
+        "type": "media",
+        "publisher": "JPT / Society of Petroleum Engineers",
+        "date": "2026"
+      }
+    ],
+    "primary_source": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 5,
+    "why_it_matters": "Крупная международная нефтегазовая компания раскрывает совокупную денежную экономию ($120М за 5 лет) от предиктивного обслуживания в масштабе более 700 единиц оборудования — сильный количественный бенчмарк.",
+    "entry_hypothesis": "У операторов морских и наземных нефтегазовых активов с большим парком вращающегося оборудования (насосы, компрессоры) обслуживание может строиться преимущественно по регламенту, а не по фактическому состоянию. Стоит оценить долю оборудования, уже оснащённого датчиками вибрации/температуры.",
+    "likely_buyer": [
+      "chief-engineer",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот предиктивного обслуживания на одном классе критичного оборудования (например, компрессоры) на объектах с уже установленными датчиками.",
+    "expand_opportunities": [
+      "расширение на другие классы оборудования",
+      "интеграция с системами планирования ТОиР",
+      "предиктивное обслуживание для подрядчиков сервиса"
+    ],
+    "tags": [
+      "предиктивное обслуживание",
+      "нефтегаз",
+      "IIoT"
+    ],
+    "research_notes": "Единственный источник — отраслевое издание JPT/SPE, пересказывающее заявления компании; независимого второго источника в рамках сессии не найдено, грейд B. Это отдельный от сейсморазведочного (no-mn-equinor-seismic-ai-02) проект Equinor."
+  },
+  {
     "id": "us-cn-intel-buildots-cv-01",
     "title": "Компьютерное зрение для контроля прогресса на фабриках Intel (Buildots)",
     "client": "Intel Corporation",
@@ -1501,6 +1603,215 @@
       "BIM"
     ],
     "research_notes": "Источники — только вендорские (сайт и лендинг Buildots); независимого клиентского или медийного подтверждения цифр не найдено, поэтому грейд B, а не A, несмотря на масштаб и детализацию."
+  },
+  {
+    "id": "in-hc-manipal-googlecloud-01",
+    "title": "Генеративный ИИ Gemini ускоряет пересменку медсестёр в сети Manipal Hospitals",
+    "client": "Manipal Hospitals",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Google Cloud Consulting"
+    ],
+    "vendor_type": "cloud-provider",
+    "technology_providers": [
+      "Gemini",
+      "Vertex AI",
+      "Google Cloud Run"
+    ],
+    "country": "Индия",
+    "region": "asia-pacific",
+    "industry": "healthcare",
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
+    "problem": "Медсёстры тратили дополнительные 90 минут за смену на подготовку и приём отчётов при пересменке (handoff), что вызывало усталость и повышало риск ошибок из-за ручных рукописных записей.",
+    "before_state": "Пересменка занимала около 90 минут на создание и приём отчётов.",
+    "solution": "Генеративный ИИ на базе Gemini на Vertex AI формирует структурированные ISBAR-отчёты (Identify, Situation, Background, Assessment, Recommendation) для пересменки медсестёр на основе данных из системы TrakCare, передаваемых через озеро данных Google Cloud с интеллектуальной фильтрацией по времени смены.",
+    "ai_mechanisms": [
+      "llm",
+      "generative-ai"
+    ],
+    "data_used": [
+      "данные из МИС TrakCare",
+      "клинические записи по пациентам"
+    ],
+    "integrations": [
+      "TrakCare",
+      "Google Cloud data lake",
+      "Google Cloud Run"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "37 больниц сети (23 уже подключены), 10 500+ коек, более 5000 медсестёр ежедневно используют систему, около 7 млн пациентов в год.",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Время пересменки медсестёр",
+        "baseline": "90 минут",
+        "result": "20 минут",
+        "delta": "-70%",
+        "status": "measured",
+        "source_url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
+        "source_type": "platform"
+      }
+    ],
+    "timeline": "Поэтапное внедрение 2024–2025, публикация 11 июля 2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Генеративный ИИ на базе Gemini сократил время пересменки медсестёр в сети Manipal Hospitals с 90 до 20 минут (на 70%), система используется более чем 5000 медсёстрами ежедневно в 23 из 37 больниц сети.",
+    "sources": [
+      {
+        "url": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
+        "title": "How Manipal Hospitals sped up nurse handoffs across 37 hospitals",
+        "type": "platform",
+        "publisher": "Google Cloud",
+        "date": "2025-07-11"
+      }
+    ],
+    "primary_source": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Один из крупнейших госпитальных операторов Индии, чёткая понятная боль (ручная пересменка медсестёр), измеримое сокращение времени на 70% в масштабе десятков больниц — редкий пример генеративного ИИ вне врачебной документации.",
+    "entry_hypothesis": "У крупных больничных сетей может уходить значительное время медсестринского персонала на подготовку отчётов о пересменке вручную, с риском ошибок из-за усталости; стоит оценить текущие затраты времени на пересменку и качество передачи информации.",
+    "likely_buyer": [
+      "medical-director",
+      "coo",
+      "cio"
+    ],
+    "land_opportunity": "Пилот генеративного ИИ для одного вида клинической документации (например, пересменка медсестёр) в одной больнице сети.",
+    "expand_opportunities": [
+      "Расширение на врачебную документацию",
+      "Клинические саммари для консилиумов",
+      "Интеграция с другими МИС"
+    ],
+    "tags": [
+      "генеративный ИИ",
+      "Gemini",
+      "пересменка",
+      "медсёстры",
+      "Индия"
+    ],
+    "research_notes": "Единственный источник — customer story облачной платформы (Google Cloud), независимого подтверждения со стороны Manipal не найдено, поэтому грейд B."
+  },
+  {
+    "id": "us-hc-nuance-dax-northwestern-01",
+    "title": "DAX Copilot сокращает время документирования и «pajama time» в Northwestern Medicine",
+    "client": "Northwestern Medicine",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "Microsoft (Nuance)"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "DAX Copilot"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "healthcare",
+    "subindustry": [
+      "hospitals"
+    ],
+    "business_function": [
+      "clinical"
+    ],
+    "business_process": [
+      "medical-documentation"
+    ],
+    "problem": "Административная нагрузка по ведению клинической документации приводит к «pajama time» — работе врачей над записями по вечерам — и ограничивает число пациентов, которых врач может принять.",
+    "before_state": "",
+    "solution": "DAX Copilot — амбиентный ИИ-ассистент, который слушает разговор врача с пациентом и автоматически генерирует черновик клинической записи для проверки врачом.",
+    "ai_mechanisms": [
+      "speech-to-text",
+      "llm",
+      "generative-ai"
+    ],
+    "data_used": [
+      "аудиозапись приёма врача с пациентом"
+    ],
+    "integrations": [
+      "электронная медицинская карта"
+    ],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "Более 400 организаций используют DAX Copilot; платформа Dragon Medical в целом используется более чем 600 000 врачами по всему миру.",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Сокращение времени на ведение заметок",
+        "baseline": "",
+        "result": "-24%",
+        "delta": "-24%",
+        "status": "reported",
+        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "hours_saved",
+        "metric_name": "Снижение «pajama time» (работы над документами вне рабочего времени)",
+        "baseline": "",
+        "result": "-17%",
+        "delta": "-17%",
+        "status": "reported",
+        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "operations_volume",
+        "metric_name": "Дополнительные пациенты, принятые врачом в месяц",
+        "baseline": "",
+        "result": "11.3",
+        "delta": "+11.3",
+        "status": "reported",
+        "source_url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "по состоянию на сентябрь 2024 (год с момента общедоступности DAX Copilot)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "В Northwestern Medicine применение DAX Copilot снизило время на ведение заметок на 24% и «pajama time» на 17%, при этом врачи стали принимать в среднем на 11,3 дополнительных пациента в месяц.",
+    "sources": [
+      {
+        "url": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+        "title": "A year of DAX Copilot: Healthcare innovation that refocuses on the clinician-patient connection",
+        "type": "vendor",
+        "publisher": "Microsoft",
+        "date": "2024-09-26"
+      }
+    ],
+    "primary_source": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 5,
+    "why_it_matters": "Крупная узнаваемая академическая система здравоохранения США, конкретные и разнообразные метрики (время документирования, внерабочее время, доступность приёма) от платформенного вендора (Microsoft) — один из самых цитируемых кейсов ambient AI scribe.",
+    "entry_hypothesis": "У врачебных практик с электронной медкартой может быть значительная доля рабочего и внерабочего времени, уходящая на ручное ведение заметок после приёма; стоит оценить текущее «pajama time» и его влияние на доступность записи к врачу.",
+    "likely_buyer": [
+      "medical-director",
+      "cio",
+      "coo"
+    ],
+    "land_opportunity": "Пилот ambient AI-скрайба на нескольких врачах одной специальности с измерением времени документирования до/после.",
+    "expand_opportunities": [
+      "Расширение на все специальности системы",
+      "Интеграция с кодированием диагнозов (billing)",
+      "Аналитика качества документации"
+    ],
+    "tags": [
+      "ambient AI",
+      "медицинская документация",
+      "DAX Copilot",
+      "выгорание врачей"
+    ],
+    "research_notes": "Числа по Northwestern Medicine взяты из общего обзорного поста Microsoft о годовщине DAX Copilot, где перечислены несколько систем здравоохранения; для Northwestern Medicine это единственный найденный источник. Единственный источник — блог Microsoft; метрики имеют статус reported (методика измерения не раскрыта), поэтому грейд B."
   },
   {
     "id": "ru-hc-botkinai-oncodispanser-01",
@@ -1705,6 +2016,91 @@
       "архитектурное проектирование"
     ],
     "research_notes": "Клиентская публикация (bsbdesign.com) подтверждает проект и подход качественно, но не называет точную цифру «2 недели → 2 дня» — эта метрика взята из первичного источника вендора (testfit.io); учитывая независимое клиентское подтверждение самого факта внедрения, грейд повышен до A."
+  },
+  {
+    "id": "ru-mn-alrosa-exploration-ai-01",
+    "title": "ИИ для поиска новых месторождений алмазов",
+    "client": "АЛРОСА",
+    "client_disclosed": true,
+    "client_url": "https://www.alrosa.ru/press-center/news/2025/alrosa-vnedrit-iskusstvennyy-intellekt-v-poisk-mestorozhdeniy-almazov/",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "Цифровая лаборатория АЛРОСА"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "mining"
+    ],
+    "business_function": [
+      "rnd"
+    ],
+    "business_process": [
+      "research-development"
+    ],
+    "problem": "Поиск новых месторождений алмазов со слабыми индикационными свойствами на территориях со сложным геологическим строением требует обработки больших массивов геолого-геофизических данных, накопленных более чем за 50 лет алмазопоисковых работ.",
+    "before_state": "",
+    "solution": "Цифровая лаборатория АЛРОСА разработала систему на основе больших языковых моделей и нейросетевых алгоритмов, обученную на собственных геологических данных компании, для более точного выделения перспективных поисковых участков.",
+    "ai_mechanisms": [
+      "llm",
+      "classical-ml"
+    ],
+    "data_used": [
+      "геолого-геофизические данные за более чем 50 лет алмазопоисковых работ"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "pilot",
+    "scale": "Испытания проводятся с намерением масштабировать на все разрабатываемые территории АЛРОСА",
+    "metrics": [
+      {
+        "metric_type": "economic_effect",
+        "metric_name": "Ожидаемый экономический эффект на проект",
+        "baseline": "",
+        "result": "сотни миллионов рублей на каждый проект",
+        "delta": "",
+        "status": "projected",
+        "source_url": "https://www.alrosa.ru/press-center/news/2025/alrosa-vnedrit-iskusstvennyy-intellekt-v-poisk-mestorozhdeniy-almazov/",
+        "source_type": "client"
+      }
+    ],
+    "timeline": "2025 (пилот)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "АЛРОСА тестирует ИИ-систему для поиска месторождений алмазов на основе собственных геологических данных; ожидаемый экономический эффект от технологии оценивается в сотни миллионов рублей на каждый проект, после испытаний планируется масштабирование на все разрабатываемые территории компании.",
+    "sources": [
+      {
+        "url": "https://www.alrosa.ru/press-center/news/2025/alrosa-vnedrit-iskusstvennyy-intellekt-v-poisk-mestorozhdeniy-almazov/",
+        "title": "АЛРОСА внедрит искусственный интеллект в поиск месторождений алмазов",
+        "type": "client",
+        "publisher": "АЛРОСА",
+        "date": "2025-08"
+      }
+    ],
+    "primary_source": "https://www.alrosa.ru/press-center/news/2025/alrosa-vnedrit-iskusstvennyy-intellekt-v-poisk-mestorozhdeniy-almazov/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Первичный источник самого клиента о применении LLM/нейросетей поверх 50-летнего геологического архива для геологоразведки — редкий пример применения ИИ именно в добыче алмазов с ожидаемым эффектом на уровне сотен миллионов рублей на проект.",
+    "entry_hypothesis": "У горнодобывающих компаний с длительной историей геологоразведки может накапливаться большой архив неструктурированных геологических данных, который вручную трудно использовать для поиска новых перспективных участков. Стоит оценить объём и состояние такого архива.",
+    "likely_buyer": [
+      "head-of-rnd",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот по систематизации и разметке накопленного геологического архива под последующее обучение модели на одном изученном участке.",
+    "expand_opportunities": [
+      "масштабирование на другие территории",
+      "автоматизация оценки запасов",
+      "интеграция с геологическим моделированием"
+    ],
+    "tags": [
+      "геологоразведка",
+      "LLM",
+      "алмазодобыча"
+    ],
+    "research_notes": "Экономический эффект указан как ожидаемый (projected), не измеренный — не выдаётся за достигнутый результат. Единственный источник — пресс-релиз клиента, независимого подтверждения не найдено в рамках сессии."
   },
   {
     "id": "ru-en-tvel-atommind-01",
@@ -2245,6 +2641,177 @@
     "research_notes": "Единственный найденный источник — сайт вендора SL Soft; независимого клиентского или медийного подтверждения цифр в рамках сессии не найдено."
   },
   {
+    "id": "ru-mn-nornickel-kgmk-cv-01",
+    "title": "Компьютерное зрение для контроля опасных зон на электролизном производстве",
+    "client": "Норникель (Кольская ГМК)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "«Норникель Спутник» совместно с центром автоматизации производства КГМК"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "mining"
+    ],
+    "business_function": [
+      "hse"
+    ],
+    "business_process": [
+      "security",
+      "cv-inspection"
+    ],
+    "problem": "На участке электролиза никеля требовалось контролировать нахождение людей в опасных зонах во время работы технологического оборудования, чтобы предотвращать травматизм.",
+    "before_state": "",
+    "solution": "«Норникель Спутник» совместно с центром автоматизации производства КГМК интегрировал сеть видеокамер (5 существующих + 3 новых) с информационной системой предприятия: система на основе компьютерного зрения анализирует состояние технологической линии по светофорам и фиксирует присутствие людей в запрещённых зонах.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "видеопотоки с камер участка электролиза никеля"
+    ],
+    "integrations": [
+      "информационная система предприятия"
+    ],
+    "deployment": "edge",
+    "stage": "pilot",
+    "scale": "Отделение готовой продукции цеха электролиза никеля (ЦЭН-2), Мончегорск; 8 камер (5 имевшихся + 3 новых)",
+    "metrics": [
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность алгоритма распознавания нарушений",
+        "baseline": "",
+        "result": "более 90%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://up-pro.ru/library/information_systems/automation_production/kak-ii-sledit-za-narusheniyami/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2024–2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Система компьютерного зрения на участке электролиза никеля КГМК с точностью более 90% фиксирует присутствие людей в опасных зонах во время работы оборудования; опытно-промышленная эксплуатация завершена, в планах — добавление звуковой сигнализации и тиражирование на другие предприятия группы.",
+    "sources": [
+      {
+        "url": "https://up-pro.ru/library/information_systems/automation_production/kak-ii-sledit-za-narusheniyami/",
+        "title": "Как ИИ следит за нарушениями кардинальных правил: опыт КГМК",
+        "type": "media",
+        "publisher": "Up-pro.ru",
+        "date": "2025-04"
+      }
+    ],
+    "primary_source": "https://up-pro.ru/library/information_systems/automation_production/kak-ii-sledit-za-narusheniyami/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретный, измеримый (>90% точность) кейс CV-контроля соблюдения кардинальных правил безопасности на опасном металлургическом производстве, реализованный собственными силами — типовой первый шаг для промбезопасности в горно-металлургическом секторе.",
+    "entry_hypothesis": "На опасных производственных участках (электролиз, плавка, дробление) присутствие персонала в опасных зонах может контролироваться только регламентами и обходами, без автоматической фиксации в реальном времени. Стоит проверить, есть ли уже сеть видеокамер на таких участках.",
+    "likely_buyer": [
+      "hse-director"
+    ],
+    "land_opportunity": "Пилот на одном опасном участке с уже установленными камерами: детекция нахождения людей в запретной зоне.",
+    "expand_opportunities": [
+      "звуковое оповещение в реальном времени",
+      "тиражирование на другие переделы",
+      "интеграция с системой нарядов-допусков"
+    ],
+    "tags": [
+      "компьютерное зрение",
+      "промышленная безопасность",
+      "металлургия"
+    ],
+    "research_notes": "Единственный источник Up-pro.ru; отдельный проект от кейса видеоконтроля СИЗ (ru-mn-nornickel-ppe-cv-02) — разные площадки и разработчики, не объединялись."
+  },
+  {
+    "id": "ru-mn-nornickel-ppe-cv-02",
+    "title": "Видеоконтроль использования СИЗ на энергообъектах",
+    "client": "Норникель (Кольская ГМК)",
+    "client_disclosed": true,
+    "client_url": "https://nornickel.digital/cifra_v_nornikele/nornikel_nachal_ispolzovat_sistemu_videokontrolya_sredstv_individualnojj_zashhity",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "«Нортех» (ИТ-подразделение Норникеля)"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "mining"
+    ],
+    "business_function": [
+      "hse"
+    ],
+    "business_process": [
+      "security",
+      "cv-inspection"
+    ],
+    "problem": "Требовался автоматический контроль использования средств индивидуальной защиты (каска, очки, маска, жилет) сотрудниками на энергообъектах в реальном времени.",
+    "before_state": "",
+    "solution": "ИТ-подразделение Норникеля «Нортех» внедрило систему видеоконтроля на основе компьютерного зрения и обработки изображений для распознавания нарушений использования СИЗ в Центре энергообеспечения Кольского дивизиона.",
+    "ai_mechanisms": [
+      "computer-vision"
+    ],
+    "data_used": [
+      "видеопотоки с 19 камер Центра энергообеспечения"
+    ],
+    "integrations": [],
+    "deployment": "edge",
+    "stage": "production",
+    "scale": "19 камер, Центр энергообеспечения Кольской ГМК",
+    "metrics": [
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Точность распознавания нарушений использования СИЗ",
+        "baseline": "",
+        "result": "95%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://nornickel.digital/cifra_v_nornikele/nornikel_nachal_ispolzovat_sistemu_videokontrolya_sredstv_individualnojj_zashhity",
+        "source_type": "client"
+      }
+    ],
+    "timeline": "unknown",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Система видеоконтроля СИЗ на базе 19 камер в Центре энергообеспечения Кольской ГМК распознаёт нарушения (отсутствие каски, очков, маски, жилета) с точностью 95% и работает в режиме реального времени; система начала работать в промышленном режиме, в планах — добавление функции предупреждения работников.",
+    "sources": [
+      {
+        "url": "https://nornickel.digital/cifra_v_nornikele/nornikel_nachal_ispolzovat_sistemu_videokontrolya_sredstv_individualnojj_zashhity",
+        "title": "Норникель начал использовать систему видеоконтроля средств индивидуальной защиты",
+        "type": "client",
+        "publisher": "Nornickel.digital",
+        "date": "unknown"
+      }
+    ],
+    "primary_source": "https://nornickel.digital/cifra_v_nornikele/nornikel_nachal_ispolzovat_sistemu_videokontrolya_sredstv_individualnojj_zashhity",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Первичный источник самого клиента (цифровой портал Норникеля) с конкретной цифрой точности 95% на 19 камерах — хороший референс по точности CV-контроля СИЗ на промышленном объекте.",
+    "entry_hypothesis": "На энергетических и производственных объектах с пропускным и внутренним видеонаблюдением контроль ношения СИЗ обычно ведётся визуально линейными руководителями. Стоит проверить количество уже установленных камер, покрывающих рабочие зоны.",
+    "likely_buyer": [
+      "hse-director"
+    ],
+    "land_opportunity": "Пилот распознавания 2-3 типов СИЗ на существующих камерах одного цеха/участка.",
+    "expand_opportunities": [
+      "голосовое/звуковое предупреждение нарушителей",
+      "тиражирование на другие дивизионы",
+      "интеграция с системой нарядов-допусков"
+    ],
+    "tags": [
+      "компьютерное зрение",
+      "СИЗ",
+      "промышленная безопасность"
+    ],
+    "research_notes": "Дата публикации на источнике не указана явно; точная дата внедрения — unknown. Отдельный проект от кейса КГМК (ru-mn-nornickel-kgmk-cv-01) — другой разработчик («Нортех» vs «Норникель Спутник») и другая площадка."
+  },
+  {
     "id": "ru-cn-fsk-samolet10d-cv-01",
     "title": "CV-пилот автоматического определения выполненных СМР: ГК ФСК и «Самолёт 10D»",
     "client": "ООО «Группа компаний ФСК»",
@@ -2645,6 +3212,93 @@
       "генеративный ИИ"
     ],
     "research_notes": "Это отдельный проект от обновления моделей автоматической оценки стоимости жилья «Домклик» (апрель 2025, rbcrealty.ru) — по правилу «не объединять два разных проекта» второй проект в этот кейс не включён и не используется как источник метрик."
+  },
+  {
+    "id": "ru-mn-rosneft-seismic-nn-01",
+    "title": "Нейросетевой алгоритм для ускоренной обработки сейсмических данных",
+    "client": "Роснефть (РН-КрасноярскНИПИнефть)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "собственная разработка РН-КрасноярскНИПИнефть"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction"
+    ],
+    "business_function": [
+      "rnd",
+      "production"
+    ],
+    "business_process": [
+      "research-development"
+    ],
+    "problem": "Начальная стадия обработки сейсмических данных традиционно требует значительного количества часов работы специалиста-интерпретатора и подвержена субъективности при визуальном анализе.",
+    "before_state": "Обработка типового проекта (300 км², около 30 000 сейсмограмм) вручную занимала до 80 рабочих часов специалиста.",
+    "solution": "Специалисты РН-КрасноярскНИПИнефть разработали программный алгоритм на базе нейронной сети для начальной стадии обработки сейсмических данных, реализованный как самостоятельное приложение для ПК; алгоритм работает на основе математических моделей вместо визуального анализа интерпретатора.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "сейсмограммы",
+      "данные сейсморазведки двух лицензионных участков в Восточной Сибири"
+    ],
+    "integrations": [],
+    "deployment": "on-prem",
+    "stage": "poc",
+    "scale": "Прототип протестирован на реальных данных двух лицензионных участков компании в Восточной Сибири; типовой проект — 300 км² (~30 000 сейсмограмм)",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Сокращение времени начальной обработки сейсмических данных",
+        "baseline": "до 80 рабочих часов специалиста",
+        "result": "7 часов без непосредственного участия специалиста",
+        "delta": "в 10 раз быстрее",
+        "status": "measured",
+        "source_url": "https://www.comnews.ru/digital-economy/content/224564/2023-02-22/2023-w08/rosneft-vnedryaet-neyroseti-obrabotku-dannykh-seysmorazvedki",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2023",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Алгоритм на основе нейронной сети сократил время начальной обработки сейсмических данных типового проекта в 10 раз — с 80 рабочих часов специалиста до 7 часов без его непосредственного участия, протестирован на данных двух лицензионных участков в Восточной Сибири.",
+    "sources": [
+      {
+        "url": "https://www.comnews.ru/digital-economy/content/224564/2023-02-22/2023-w08/rosneft-vnedryaet-neyroseti-obrabotku-dannykh-seysmorazvedki",
+        "title": "«Роснефть» внедряет нейросети в обработку данных сейсморазведки",
+        "type": "media",
+        "publisher": "ComNews",
+        "date": "2023-02"
+      }
+    ],
+    "primary_source": "https://www.comnews.ru/digital-economy/content/224564/2023-02-22/2023-w08/rosneft-vnedryaet-neyroseti-obrabotku-dannykh-seysmorazvedki",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Конкретная, измеримая (10-кратное ускорение) автоматизация трудоёмкого этапа обработки сейсмики собственной геологоразведочной ИТ-структурой крупной ВИНК — хороший ориентир по эффекту для similar geo-разведочных подразделений.",
+    "entry_hypothesis": "У компаний с собственными геологоразведочными подразделениями значительная часть времени специалистов может уходить на рутинную первичную обработку сейсмических данных вручную. Стоит оценить объём такой обработки в человеко-часах в год.",
+    "likely_buyer": [
+      "head-of-rnd",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот автоматизации первичной обработки сейсмоданных на одном лицензионном участке.",
+    "expand_opportunities": [
+      "автоматизация последующих этапов интерпретации сейсмики",
+      "геологическое моделирование",
+      "интеграция с системами разработки месторождений"
+    ],
+    "tags": [
+      "сейсморазведка",
+      "нейросеть",
+      "геологоразведка"
+    ],
+    "research_notes": "Единственный источник — ComNews; независимого второго подтверждения в рамках сессии не найдено, грейд B."
   },
   {
     "id": "ru-en-rosatom-kursk-operator-01",
@@ -3073,6 +3727,105 @@
     "research_notes": "WebFetch страницы robotmia.ru завершался ошибкой редиректа (too many redirects) при прямом обращении; цифры взяты из содержимого страниц, показанного в результатах WebSearch (сниппеты по этим же URL). Юридическое название вендора — ООО «Робот Мия» — подтверждено отдельным поиском."
   },
   {
+    "id": "ru-mn-tatneft-video-analytics-01",
+    "title": "Платформа фото- и видеоаналитики для контроля безопасности на нефтепромыслах",
+    "client": "Татнефть",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "ТатИТнефть"
+    ],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "Центр компетенций ИИ «ТатИТнефти»"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction"
+    ],
+    "business_function": [
+      "hse",
+      "production"
+    ],
+    "business_process": [
+      "cv-inspection",
+      "security"
+    ],
+    "problem": "На нефтедобывающих объектах требовалось выявлять нарушения использования СИЗ, неисправности оборудования и отклонения от технологических процессов, что вручную сложно контролировать на большом числе объектов.",
+    "before_state": "",
+    "solution": "Совместно СП «Татнефть-Добыча», Центр промышленной и экологической безопасности, «Процессинговый центр» и Центр компетенций ИИ «ТатИТнефти» создали корпоративную платформу фото- и видеоаналитики, автоматизирующую распознавание более 50 типов отклонений на производственных площадках, включая нарушения СИЗ, неисправности оборудования и повреждения инфраструктуры.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "фото- и видеопотоки с производственных площадок"
+    ],
+    "integrations": [],
+    "deployment": "edge",
+    "stage": "production",
+    "scale": "Полный функционал запущен во всех НГДУ структурного подразделения «Татнефть-Добыча»; распознаётся более 50 типов отклонений, покрывающих около 90% самых частых рисков на объектах нефтедобычи",
+    "metrics": [
+      {
+        "metric_type": "operations_volume",
+        "metric_name": "Типов отклонений, распознаваемых платформой",
+        "baseline": "",
+        "result": "более 50 типов",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://up-pro.ru/library/information_systems/automation_production/iskusstvennyj-intellekt-opyt-tatnefti/",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Покрытие самых частых рисков на объектах нефтедобычи",
+        "baseline": "",
+        "result": "порядка 90%",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://up-pro.ru/library/information_systems/automation_production/iskusstvennyj-intellekt-opyt-tatnefti/",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2023–2024",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Платформа фото- и видеоаналитики распознаёт более 50 типов отклонений, охватывающих около 90% самых частых рисков на объектах нефтедобычи; полный функционал развёрнут во всех НГДУ «Татнефть-Добыча», что исключило часть документооборота и снизило трудозатраты персонала на устранение отклонений.",
+    "sources": [
+      {
+        "url": "https://up-pro.ru/library/information_systems/automation_production/iskusstvennyj-intellekt-opyt-tatnefti/",
+        "title": "Искусственный интеллект на страже безопасности: опыт Татнефти",
+        "type": "media",
+        "publisher": "Up-pro.ru",
+        "date": "2024"
+      }
+    ],
+    "primary_source": "https://up-pro.ru/library/information_systems/automation_production/iskusstvennyj-intellekt-opyt-tatnefti/",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Масштабное (все НГДУ подразделения) внедрение CV-контроля промбезопасности собственной ИТ-структурой нефтедобывающей компании с широким охватом типов нарушений — сильный ориентир по масштабируемости для аналогичных активов.",
+    "entry_hypothesis": "У нефтедобывающих компаний с распределённой сетью промысловых объектов контроль соблюдения СИЗ и технологических регламентов может вестись преимущественно вручную или выборочно. Стоит оценить число объектов и частоту визуальных проверок персоналом.",
+    "likely_buyer": [
+      "hse-director",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот видеоаналитики контроля СИЗ на одном-двух производственных объектах с типовыми камерами.",
+    "expand_opportunities": [
+      "контроль состояния оборудования",
+      "интеграция с системами нарядов-допусков",
+      "расширение на другие подразделения группы"
+    ],
+    "tags": [
+      "видеоаналитика",
+      "промышленная безопасность",
+      "нефтедобыча"
+    ],
+    "research_notes": "Единственный источник Up-pro.ru. Цифры (50+ типов отклонений, ~90% покрытия рисков) — характеристики охвата системы, подтверждены цитатой источника; собственно эффект (снижение инцидентов, экономия) в процентах не раскрыт, поэтому грейд B, а не A."
+  },
+  {
     "id": "no-cn-afgruppen-alice-schedule-01",
     "title": "ИИ-оптимизация графика и стоимости жилого проекта в Осло (AF Gruppen, ALICE Technologies)",
     "client": "AF Gruppen",
@@ -3372,6 +4125,101 @@
     "research_notes": "Точные проценты снижения аварийности или экономии не раскрыты в источнике — использована качественная, но выраженная в конкретных единицах времени метрика (\"недели\" → \"дни\"), прямо процитированная изданием T&D World со слов инженеров Duke Energy."
   },
   {
+    "id": "no-mn-equinor-seismic-ai-02",
+    "title": "ИИ-интерпретация сейсмических данных норвежского шельфа",
+    "client": "Equinor",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "собственные ML-инструменты Equinor"
+    ],
+    "country": "Норвегия",
+    "region": "europe",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction"
+    ],
+    "business_function": [
+      "rnd"
+    ],
+    "business_process": [
+      "research-development"
+    ],
+    "problem": "Интерпретация сейсмических данных норвежского континентального шельфа традиционными методами ограничивает объём площади, который специалисты могут обработать за период.",
+    "before_state": "",
+    "solution": "Equinor использует машинное обучение с распознаванием образов для интерпретации сейсмических данных: алгоритмам достаточно нескольких сейсмических линий, чтобы картировать площадь за 5-10 минут, что даёт десятикратное увеличение пропускной способности интерпретации по сравнению с традиционными методами.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "сейсмические данные норвежского континентального шельфа"
+    ],
+    "integrations": [],
+    "deployment": "unknown",
+    "stage": "production",
+    "scale": "2 млн км² норвежского континентального шельфа обработано с помощью проприетарных ML-инструментов в 2025 году",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Рост пропускной способности интерпретации сейсмических данных",
+        "baseline": "",
+        "result": "в 10 раз выше",
+        "delta": "10x",
+        "status": "reported",
+        "source_url": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "operations_volume",
+        "metric_name": "Площадь шельфа, обработанная ML-инструментами в 2025 году",
+        "baseline": "",
+        "result": "2 млн км²",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2025",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Машинное обучение с распознаванием образов увеличило пропускную способность интерпретации сейсмических данных Equinor в 10 раз; в 2025 году с помощью проприетарных ML-инструментов было обработано 2 млн км² норвежского континентального шельфа.",
+    "sources": [
+      {
+        "url": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+        "title": "Equinor Says AI Saved It $130M in 2025",
+        "type": "media",
+        "publisher": "JPT / Society of Petroleum Engineers",
+        "date": "2026"
+      }
+    ],
+    "primary_source": "https://jpt.spe.org/equinor-says-ai-saved-it-130m-in-2025",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 4,
+    "why_it_matters": "Десятикратное увеличение пропускной способности интерпретации сейсмики на площади в 2 млн км² — конкретный, легко объяснимый количественный эффект для геологоразведочных подразделений нефтегазовых компаний.",
+    "entry_hypothesis": "У нефтегазовых компаний с большим объёмом накопленных сейсмических данных интерпретация может быть узким местом, ограничивающим скорость оценки новых участков. Стоит оценить объём необработанных или ожидающих переинтерпретации сейсмических данных.",
+    "likely_buyer": [
+      "head-of-rnd",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот по ускоренному картированию одного участка шельфа/суши с использованием image-recognition моделей на существующих сейсмических линиях.",
+    "expand_opportunities": [
+      "автоматизация последующих этапов интерпретации",
+      "приоритизация участков для доразведки",
+      "интеграция с моделированием месторождений"
+    ],
+    "tags": [
+      "сейсморазведка",
+      "компьютерное зрение",
+      "нефтегаз"
+    ],
+    "research_notes": "Тот же первичный источник, что и предиктивное обслуживание Equinor (no-mn-equinor-predictive-maintenance-01), но описывает отдельный проект (сейсмика вместо оборудования) — вынесено в отдельный кейс по правилу #6. Таксономия business_process не содержит отдельного id для геологоразведки/сейсмики — выбран ближайший 'research-development', отмечено как допущение."
+  },
+  {
     "id": "us-cn-jll-openspace-docs-01",
     "title": "360-градусная фотодокументация объекта для JLL (OpenSpace)",
     "client": "JLL (Jones Lang LaSalle)",
@@ -3660,6 +4508,104 @@
       "ветер и солнце"
     ],
     "research_notes": "Пресс-релиз не содержит количественных процентных улучшений (только описание возможностей платформы и масштаб развёртывания), поэтому единственная метрика — масштаб портфеля; отдельного отчёта о результатах через N месяцев эксплуатации не найдено."
+  },
+  {
+    "id": "uk-mn-shell-c3ai-maintenance-01",
+    "title": "Масштабирование предиктивного обслуживания на 10 000 единиц оборудования",
+    "client": "Shell",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "C3.ai"
+    ],
+    "vendor_type": "product-vendor",
+    "technology_providers": [
+      "C3 AI Platform"
+    ],
+    "country": "Великобритания/Нидерланды",
+    "region": "europe",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction",
+      "gas"
+    ],
+    "business_function": [
+      "asset-management-function"
+    ],
+    "business_process": [
+      "predictive-maintenance"
+    ],
+    "problem": "Компания эксплуатирует тысячи единиц промышленного оборудования в добыче, переработке, производстве и газовом сегменте, требующих оптимизации обслуживания и минимизации незапланированных простоев.",
+    "before_state": "",
+    "solution": "Shell развернула решения предиктивного обслуживания на базе платформы C3 AI для мониторинга и прогнозирования отказов оборудования в масштабе всей компании, включая приложения для добычи угольного метана в Австралии и обнаружения аномалий в клапанах переработки.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "anomaly-detection"
+    ],
+    "data_used": [
+      "сенсорные и эксплуатационные данные промышленного оборудования"
+    ],
+    "integrations": [],
+    "deployment": "cloud",
+    "stage": "production",
+    "scale": "10 000 единиц оборудования (по состоянию на 2022 год)",
+    "metrics": [
+      {
+        "metric_type": "energy_efficiency",
+        "metric_name": "Снижение выбросов CO2 на одном СПГ-объекте за счёт оптимизации производства в реальном времени",
+        "baseline": "",
+        "result": "355 тонн CO2 в день (около 130 килотонн в год)",
+        "delta": "",
+        "status": "reported",
+        "source_url": "https://c3.ai/customers/shell/",
+        "source_type": "vendor"
+      },
+      {
+        "metric_type": "yield",
+        "metric_name": "Прирост эффективности производства СПГ",
+        "baseline": "",
+        "result": "1-2%",
+        "delta": "+1-2%",
+        "status": "reported",
+        "source_url": "https://c3.ai/customers/shell/",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "2018–2022",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Shell масштабировала предиктивное обслуживание на платформе C3 AI до 10 000 единиц оборудования (2022); на одном СПГ-объекте оптимизация производства в реальном времени снизила выбросы CO2 на 355 тонн в день, а эффективность производства СПГ выросла на 1-2%.",
+    "sources": [
+      {
+        "url": "https://c3.ai/customers/shell/",
+        "title": "Shell Customer Story",
+        "type": "vendor",
+        "publisher": "C3.ai",
+        "date": "2022"
+      }
+    ],
+    "primary_source": "https://c3.ai/customers/shell/",
+    "evidence_grade": "B",
+    "vendor_claim": true,
+    "sales_relevance": 4,
+    "why_it_matters": "Пример масштабирования единой AI-платформы предиктивного обслуживания на 10 000 активов у одного из крупнейших мировых нефтегазовых операторов, с конкретными экологическими и производственными показателями по отдельному СПГ-активу.",
+    "entry_hypothesis": "У крупных нефтегазовых операторов с разнородным парком оборудования по всей цепочке (добыча, переработка, СПГ) может отсутствовать единая платформа предиктивного обслуживания, из-за чего отказы обнаруживаются постфактум. Стоит оценить долю активов, уже покрытых системами удалённого мониторинга.",
+    "likely_buyer": [
+      "chief-engineer",
+      "head-of-operations"
+    ],
+    "land_opportunity": "Пилот предиктивного обслуживания на одном классе оборудования одного актива (например, компрессоры на одном СПГ-объекте).",
+    "expand_opportunities": [
+      "расширение на другие классы оборудования",
+      "оптимизация производственных параметров в реальном времени",
+      "снижение выбросов CO2 через AI-оптимизацию"
+    ],
+    "tags": [
+      "предиктивное обслуживание",
+      "СПГ",
+      "нефтепереработка"
+    ],
+    "research_notes": "Источник — страница вендора C3.ai (vendor_claim: true); независимого подтверждения со стороны Shell.com в рамках сессии не найдено, поэтому грейд B, а не A."
   },
   {
     "id": "us-en-xcelenergy-panoai-wildfire-01",
@@ -4161,6 +5107,100 @@
     "research_notes": "Источник только вендорский (vc.ru колонка МТС Exolve); отдельной независимой цифры по снижению неявок (в процентных пунктах) не найдено, приведены только доли автоматизации звонков и повторного заполнения слотов."
   },
   {
+    "id": "ru-mn-sibur-cv-materials-01",
+    "title": "ИИ-анализ изображений микроструктуры материалов в R&D",
+    "client": "СИБУР",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "российское ПО автоматического анализа изображений (конкретный вендор не назван в источнике)"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "refining"
+    ],
+    "business_function": [
+      "rnd"
+    ],
+    "business_process": [
+      "research-development"
+    ],
+    "problem": "Ручной анализ экспериментальных данных о структуре материалов и морфологии частиц в исследовательском центре занимал значительное время специалистов и создавал риск невоспроизводимости результатов.",
+    "before_state": "",
+    "solution": "Исследовательский центр «СИБУР Инновации» внедрил ИИ-инструменты автоматического анализа изображений структуры материалов: обученные модели автоматически распознают объекты на изображениях и выполняют количественный анализ морфологии частиц за секунды.",
+    "ai_mechanisms": [
+      "computer-vision",
+      "classical-ml"
+    ],
+    "data_used": [
+      "изображения микроструктуры материалов",
+      "данные морфологии частиц"
+    ],
+    "integrations": [],
+    "deployment": "on-prem",
+    "stage": "production",
+    "scale": "Применяется в исследовательском центре «СИБУР Инновации» для аналитических испытаний материалов",
+    "metrics": [
+      {
+        "metric_type": "processing_time",
+        "metric_name": "Ускорение аналитических испытаний",
+        "baseline": "",
+        "result": "до 7 раз быстрее ручного анализа",
+        "delta": "до 7х",
+        "status": "reported",
+        "source_url": "https://www.cnews.ru/news/line/2026-02-26_sibur_uskoryaet_analiticheskie",
+        "source_type": "media"
+      },
+      {
+        "metric_type": "accuracy",
+        "metric_name": "Совпадение автоматического и ручного анализа по ключевым параметрам",
+        "baseline": "",
+        "result": "более 85%",
+        "delta": "",
+        "status": "measured",
+        "source_url": "https://www.cnews.ru/news/line/2026-02-26_sibur_uskoryaet_analiticheskie",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2026",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Автоматический ИИ-анализ изображений микроструктуры материалов ускоряет аналитические испытания до 7 раз по сравнению с ручным методом, при этом совпадение результатов автоматического и ручного анализа по ключевым количественным параметрам превышает 85%.",
+    "sources": [
+      {
+        "url": "https://www.cnews.ru/news/line/2026-02-26_sibur_uskoryaet_analiticheskie",
+        "title": "СИБУР ускоряет аналитические исследования с помощью искусственного интеллекта",
+        "type": "media",
+        "publisher": "CNews",
+        "date": "2026-02"
+      }
+    ],
+    "primary_source": "https://www.cnews.ru/news/line/2026-02-26_sibur_uskoryaet_analiticheskie",
+    "evidence_grade": "B",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Пример применения компьютерного зрения в R&D нефтехимии — не в производстве, а в лаборатории, с измеримым ускорением и подтверждённой точностью относительно ручного метода.",
+    "entry_hypothesis": "У нефтехимических компаний с собственными R&D-центрами анализ экспериментальных данных (изображения материалов, лабораторные результаты) может выполняться преимущественно вручную. Стоит проверить объём таких испытаний в месяц и долю рутинного визуального анализа.",
+    "likely_buyer": [
+      "head-of-rnd"
+    ],
+    "land_opportunity": "Пилот автоматизации анализа одного типа лабораторных изображений (например, морфология частиц одного класса материалов).",
+    "expand_opportunities": [
+      "расширение на другие виды лабораторных испытаний",
+      "предиктивное моделирование свойств материалов"
+    ],
+    "tags": [
+      "компьютерное зрение",
+      "нефтехимия",
+      "R&D"
+    ],
+    "research_notes": "Конкретный вендор ПО не назван в источнике («российские решения»). Единственный источник — CNews, грейд B."
+  },
+  {
     "id": "ru-hc-crt-voice2med-01",
     "title": "Voice2Med — голосовой ввод медицинских протоколов для врачей лучевой диагностики",
     "client": "Центр диагностики и телемедицины (Москва)",
@@ -4473,6 +5513,175 @@
     "research_notes": "Результаты в основном качественные/прогнозные («потенциально сократит с лет до недель»), измеренных цифр (число проектов, точная экономия времени/денег) в открытых источниках в рамках сессии не найдено — метрика помечена как projected, грейд ограничен B."
   },
   {
+    "id": "ru-mn-vistgroup-dispatch-01",
+    "title": "Автоматизированная система диспетчеризации карьерного автотранспорта",
+    "client": "«Ресурс» (угледобывающая компания)",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "ВИСТ Групп"
+    ],
+    "vendor_type": "integrator",
+    "technology_providers": [
+      "ВИСТ Групп"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "mining"
+    ],
+    "business_function": [
+      "operations"
+    ],
+    "business_process": [
+      "scheduling-dispatching"
+    ],
+    "problem": "Компании требовалось повысить производительность карьерного автотранспортного комплекса, оптимизировать использование ресурсов и повысить промышленную безопасность на участках Талдинского и Северо-Талдинского месторождений.",
+    "before_state": "",
+    "solution": "ВИСТ Групп внедряет автоматизированную систему диспетчеризации, отслеживающую местоположение и состояние более 100 мобильных объектов (в т.ч. 40 карьерных самосвалов и 9 экскаваторов), с модулем оптимизации, автоматически направляющим самосвалы по оптимальным маршрутам, и системой контроля загрузки, предотвращающей недогрузы и перегрузы.",
+    "ai_mechanisms": [
+      "optimization-ml",
+      "classical-ml"
+    ],
+    "data_used": [
+      "телеметрия карьерной техники",
+      "данные о загрузке самосвалов"
+    ],
+    "integrations": [
+      "бортовое оборудование самосвалов и экскаваторов"
+    ],
+    "deployment": "on-prem",
+    "stage": "pilot",
+    "scale": "Более 100 мобильных объектов, включая 40 карьерных самосвалов и 9 экскаваторов на участках «Кыргайский-Средний» и «Отвальный Южный №2 'Глубокий'» Талдинского и Северо-Талдинского месторождений",
+    "metrics": [
+      {
+        "metric_type": "resource_utilization",
+        "metric_name": "Ожидаемый рост производительности самосвалов",
+        "baseline": "",
+        "result": "примерно на 5%",
+        "delta": "+5%",
+        "status": "projected",
+        "source_url": "https://www.comnews.ru/digital-economy/content/202357/2019-10-15/2019-w42/vist-grupp-vnedrit-avtomatizirovannuyu-sistemu-dispetcherizacii-taldinskom-mestorozhdeniya",
+        "source_type": "media"
+      }
+    ],
+    "timeline": "2019",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "ВИСТ Групп внедряет систему диспетчеризации более чем 100 единиц карьерной техники угледобывающей компании «Ресурс»; по оценке директора компании-клиента, интеграция системы без дополнительной оптимизации ПО способна дать рост производительности самосвалов примерно на 5% (ожидаемый эффект, не измеренный).",
+    "sources": [
+      {
+        "url": "https://www.comnews.ru/digital-economy/content/202357/2019-10-15/2019-w42/vist-grupp-vnedrit-avtomatizirovannuyu-sistemu-dispetcherizacii-taldinskom-mestorozhdeniya",
+        "title": "«ВИСТ Групп» внедрит автоматизированную систему диспетчеризации на Талдинском месторождении",
+        "type": "media",
+        "publisher": "ComNews",
+        "date": "2019-10"
+      }
+    ],
+    "primary_source": "https://www.comnews.ru/digital-economy/content/202357/2019-10-15/2019-w42/vist-grupp-vnedrit-avtomatizirovannuyu-sistemu-dispetcherizacii-taldinskom-mestorozhdeniya",
+    "evidence_grade": "C",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает типовой проект автоматизации диспетчеризации карьерного автотранспорта российским интегратором на среднем угольном активе, но результат пока только ожидаемый, а не измеренный.",
+    "entry_hypothesis": "У угледобывающих и горнодобывающих компаний с карьерным автопарком маршрутизация самосвалов может выполняться диспетчерами вручную по рации, что ограничивает загрузку техники. Стоит оценить текущий уровень утилизации самосвалов и наличие телеметрии на борту.",
+    "likely_buyer": [
+      "head-of-operations",
+      "chief-engineer"
+    ],
+    "land_opportunity": "Пилот диспетчеризации и оптимизации маршрутов на одном участке с уже установленной телеметрией на части техники.",
+    "expand_opportunities": [
+      "автоматизация загрузки экскаваторов",
+      "предиктивное обслуживание карьерной техники",
+      "переход к автономным самосвалам"
+    ],
+    "tags": [
+      "диспетчеризация",
+      "карьерный транспорт",
+      "уголь"
+    ],
+    "research_notes": "Результат указан клиентом как ожидаемый (プроецируемый), измеренных фактических цифр после внедрения не найдено — грейд C. Единственный источник ComNews."
+  },
+  {
+    "id": "ru-mn-gazpromneft-ai-assistant-02",
+    "title": "ИИ-помощник с чат-интерфейсом для управления разработкой месторождений",
+    "client": "Газпром нефть",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [],
+    "vendor_type": "in-house",
+    "technology_providers": [
+      "собственная разработка Газпром нефти"
+    ],
+    "country": "Россия",
+    "region": "russia-cis",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oil-extraction"
+    ],
+    "business_function": [
+      "production",
+      "it-function"
+    ],
+    "business_process": [
+      "operations-copilot"
+    ],
+    "problem": "Инженерам по разработке месторождений приходится вручную выбирать источники данных и аналитические модели среди более 200 баз данных и цифровых двойников для решения типовых задач — от планирования разработки до бурения и настройки оборудования.",
+    "before_state": "",
+    "solution": "Газпром нефть разрабатывает ИИ-систему для управления разработкой месторождений с текстовым интерфейсом, аналогичным обычному чату: система автоматически подбирает источники данных и аналитические модели под запрос инженера, объединяя алгоритмы ИИ с цифровыми двойниками пластов, скважин и оборудования.",
+    "ai_mechanisms": [
+      "llm",
+      "ai-agent",
+      "digital-twin"
+    ],
+    "data_used": [
+      "более 200 корпоративных баз данных",
+      "цифровые двойники пластов, скважин и оборудования"
+    ],
+    "integrations": [
+      "цифровые двойники месторождений"
+    ],
+    "deployment": "unknown",
+    "stage": "poc",
+    "scale": "Действующий прототип, решающий десятки типовых инженерных задач",
+    "metrics": [],
+    "timeline": "2026 (прототип)",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "Прототип системы позволяет инженерам через чат-интерфейс получать доступ к данным и аналитическим моделям и решать десятки типовых задач разработки месторождений быстрее, чем при ручном переборе источников; количественные результаты в источнике не приведены.",
+    "sources": [
+      {
+        "url": "https://www.comnews.ru/content/246307/2026-07-09/2026-w28/1009/gazprom-neft-razrabatyvaet-ii-pomoschnika-dlya-upravleniya-dobychey",
+        "title": "«Газпром нефть» разрабатывает ИИ-помощника для управления добычей",
+        "type": "media",
+        "publisher": "ComNews",
+        "date": "2026-07"
+      }
+    ],
+    "primary_source": "https://www.comnews.ru/content/246307/2026-07-09/2026-w28/1009/gazprom-neft-razrabatyvaet-ii-pomoschnika-dlya-upravleniya-dobychey",
+    "evidence_grade": "C",
+    "vendor_claim": false,
+    "sales_relevance": 3,
+    "why_it_matters": "Показывает направление развития — LLM-агент поверх цифровых двойников как единая точка входа для инженеров, но пока без измеримых результатов и на стадии прототипа.",
+    "entry_hypothesis": "У компаний с большим числом разрозненных ИТ-систем и цифровых двойников инженеры могут тратить время на поиск нужного источника данных или модели под конкретную задачу. Стоит проверить количество таких систем и частоту переключения между ними у инженеров разработки.",
+    "likely_buyer": [
+      "chief-engineer",
+      "cio"
+    ],
+    "land_opportunity": "Small-scale пилот LLM-помощника поверх 2-3 наиболее используемых систем инженеров разработки.",
+    "expand_opportunities": [
+      "расширение на бурение",
+      "расширение на нефтепереработку",
+      "интеграция с ERA:ОптимА"
+    ],
+    "tags": [
+      "LLM-агент",
+      "цифровой двойник",
+      "нефтедобыча"
+    ],
+    "research_notes": "Отдельный проект от «ЭРА:ОптимА» (другая система, другая стадия) — не объединён с кейсом 01 по правилу анти-галлюцинации #6. Единственный источник, конкретных цифр результата нет, поэтому грейд C."
+  },
+  {
     "id": "ru-cn-etalon-norbit-sales-01",
     "title": "Система прогнозирования продаж на базе ИИ в Группе «Эталон» (НОРБИТ)",
     "client": "Группа «Эталон»",
@@ -4656,5 +5865,93 @@
       "стройплощадка"
     ],
     "research_notes": "Клиент не назван (NDA), точные даты внедрения в источнике отсутствуют. Единственный источник — сам вендор (Сбер2B), независимого подтверждения не найдено, поэтому грейд C."
+  },
+  {
+    "id": "us-mn-bakerhughes-inventory-01",
+    "title": "ИИ-оптимизация запасов запчастей на предприятии нефтесервиса",
+    "client": "Baker Hughes",
+    "client_disclosed": true,
+    "client_url": "",
+    "vendor": [
+      "C3.ai (BakerHughesC3)"
+    ],
+    "vendor_type": "mixed",
+    "technology_providers": [
+      "BHC3 Inventory Optimization (BakerHughesC3, совместное предприятие Baker Hughes и C3.ai)"
+    ],
+    "country": "США",
+    "region": "north-america",
+    "industry": "mining-oil-gas",
+    "subindustry": [
+      "oilfield-services"
+    ],
+    "business_function": [
+      "supply-chain-function"
+    ],
+    "business_process": [
+      "inventory"
+    ],
+    "problem": "Baker Hughes управляла запасами более 1 млн номенклатурных позиций общей стоимостью свыше 4 млрд долларов США в разных бизнес-подразделениях, что затрудняло балансировку между уровнем запасов и уровнем сервиса.",
+    "before_state": "",
+    "solution": "Совместное предприятие BakerHughesC3 развернуло SaaS-приложение BHC3 Inventory Optimization, обученное на 8 годах исторических ERP-данных (более 340 млн элементов данных) для построения моделей машинного обучения, оптимизирующих уровень запасов.",
+    "ai_mechanisms": [
+      "classical-ml",
+      "optimization-ml"
+    ],
+    "data_used": [
+      "8 лет исторических ERP-данных (свыше 340 млн элементов)"
+    ],
+    "integrations": [
+      "ERP-система"
+    ],
+    "deployment": "cloud",
+    "stage": "pilot",
+    "scale": "Развёрнуто для одного бизнес-подразделения (Digital Solutions); построено 59 000 уникальных ML-моделей; из 40+ идей проектов для развития отобрано 3",
+    "metrics": [
+      {
+        "metric_type": "resource_utilization",
+        "metric_name": "Потенциальное сокращение запасов",
+        "baseline": "",
+        "result": "до 5%",
+        "delta": "-5%",
+        "status": "projected",
+        "source_url": "https://www.bakerhughes.com/bhc3/case-study/enterprise-ai-inventory-optimization",
+        "source_type": "vendor"
+      }
+    ],
+    "timeline": "2019–2020",
+    "budget_disclosed": null,
+    "budget_note": "",
+    "result_summary": "BHC3 Inventory Optimization, построенное на 340 млн элементов исторических ERP-данных за 8 лет (59 000 ML-моделей), позволяет Baker Hughes сократить запасы запчастей до 5% при сохранении или улучшении уровня сервиса в развёрнутых подразделениях.",
+    "sources": [
+      {
+        "url": "https://www.bakerhughes.com/bhc3/case-study/enterprise-ai-inventory-optimization",
+        "title": "Enterprise AI for Inventory Optimization",
+        "type": "vendor",
+        "publisher": "Baker Hughes / BHC3",
+        "date": "2020"
+      }
+    ],
+    "primary_source": "https://www.bakerhughes.com/bhc3/case-study/enterprise-ai-inventory-optimization",
+    "evidence_grade": "C",
+    "vendor_claim": true,
+    "sales_relevance": 3,
+    "why_it_matters": "Пример применения ИИ не в основном технологическом процессе, а в цепочке поставок нефтесервисной компании — показывает, что оптимизация запасов запчастей тоже может быть точкой входа для ИИ-проектов в отрасли.",
+    "entry_hypothesis": "У нефтесервисных компаний с большой номенклатурой запчастей на нескольких производственных площадках может отсутствовать единая модель оптимизации запасов, что ведёт либо к избыточным запасам, либо к дефициту при обслуживании клиентов. Стоит оценить число SKU и историческую глубину ERP-данных.",
+    "likely_buyer": [
+      "supply-chain-director"
+    ],
+    "land_opportunity": "Пилот ML-модели оптимизации запасов на одной товарной категории/одном подразделении с достаточной историей ERP-данных.",
+    "expand_opportunities": [
+      "расширение на другие бизнес-подразделения",
+      "интеграция с предиктивным обслуживанием оборудования клиентов",
+      "оптимизация логистики запчастей"
+    ],
+    "tags": [
+      "оптимизация запасов",
+      "нефтесервис",
+      "цепочка поставок"
+    ],
+    "research_notes": "Это внутренний (in-house для группы Baker Hughes/BHC3) проект, а не кейс внешнего клиента-нефтегазовой компании; источник — страница вендора (vendor_claim: true), результат в источнике сформулирован как потенциальный ('up to 5 percent'), поэтому статус projected и грейд C."
   }
 ]

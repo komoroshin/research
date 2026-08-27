@@ -1131,7 +1131,7 @@
       }
     ],
     "primary_source": "https://www.viz.ai/news/large-real-world-multi-center-study-demonstrates-viz-ai-platform-saves-critical-minutes-in-stroke-care",
-    "evidence_grade": "A",
+    "evidence_grade": "B",
     "vendor_claim": true,
     "sales_relevance": 5,
     "why_it_matters": "Крупное многоцентровое сравнительное исследование (14 тыс. пациентов, 166 учреждений) с сильной статистической значимостью и понятным клиническим результатом — минуты решают исходы при инсульте.",
@@ -1152,7 +1152,7 @@
       "координация помощи",
       "нейрохирургия"
     ],
-    "research_notes": ""
+    "research_notes": "Единственный источник — публикация вендора (Viz.ai), подтверждения со стороны клиники или независимого издания не найдено, поэтому грейд B, а не A."
   },
   {
     "id": "ke-hc-pendahealth-openai-01",
@@ -1351,7 +1351,7 @@
       }
     ],
     "primary_source": "https://blogs.microsoft.com/blog/2024/09/26/a-year-of-dax-copilot-healthcare-innovation-that-refocuses-on-the-clinician-patient-connection/",
-    "evidence_grade": "A",
+    "evidence_grade": "B",
     "vendor_claim": true,
     "sales_relevance": 5,
     "why_it_matters": "Крупная узнаваемая академическая система здравоохранения США, конкретные и разнообразные метрики (время документирования, внерабочее время, доступность приёма) от платформенного вендора (Microsoft) — один из самых цитируемых кейсов ambient AI scribe.",
@@ -1373,7 +1373,7 @@
       "DAX Copilot",
       "выгорание врачей"
     ],
-    "research_notes": "Числа по Northwestern Medicine взяты из общего обзорного поста Microsoft о годовщине DAX Copilot, где перечислены несколько систем здравоохранения; для Northwestern Medicine это единственный найденный источник."
+    "research_notes": "Числа по Northwestern Medicine взяты из общего обзорного поста Microsoft о годовщине DAX Copilot, где перечислены несколько систем здравоохранения; для Northwestern Medicine это единственный найденный источник. Единственный источник — блог Microsoft; метрики имеют статус reported (методика измерения не раскрыта), поэтому грейд B."
   },
   {
     "id": "us-hc-kaiserpermanente-scribe-01",
@@ -1538,7 +1538,7 @@
       }
     ],
     "primary_source": "https://cloud.google.com/blog/topics/customers/how-manipal-hospitals-sped-up-nurse-handoffs-across-37-hospitals",
-    "evidence_grade": "A",
+    "evidence_grade": "B",
     "vendor_claim": true,
     "sales_relevance": 5,
     "why_it_matters": "Один из крупнейших госпитальных операторов Индии, чёткая понятная боль (ручная пересменка медсестёр), измеримое сокращение времени на 70% в масштабе десятков больниц — редкий пример генеративного ИИ вне врачебной документации.",
@@ -1561,7 +1561,7 @@
       "медсёстры",
       "Индия"
     ],
-    "research_notes": ""
+    "research_notes": "Единственный источник — customer story облачной платформы (Google Cloud), независимого подтверждения со стороны Manipal не найдено, поэтому грейд B."
   },
   {
     "id": "ch-hc-novartis-azure-01",

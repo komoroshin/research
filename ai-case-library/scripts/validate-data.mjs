@@ -193,8 +193,17 @@ for (const [url, owners] of urlOwners) {
     const list = [...owners];
     // Общий источник у кейсов разных клиентов — норма (обзорная статья), у одного клиента — повод для склейки.
     const clients = new Set(list.map((id) => normName(cases.find((c) => c.id === id)?.client)));
+    // Общий источник у одного клиента — повод для проверки только если совпадает и процесс:
+    // обзорная статья часто описывает несколько РАЗНЫХ проектов одной компании,
+    // и склеивать их запрещено (п.45 ТЗ: «не объединять два разных проекта в один»).
     if (clients.size === 1) {
-      warnings.push(`общий источник ${url} у кейсов одного клиента: ${list.join(', ')} — объедините их`);
+      const items = list.map((id) => cases.find((c) => c.id === id));
+      const overlap = items.some((a, i) =>
+        items.slice(i + 1).some((b) => (a.business_process ?? []).some((p) => (b.business_process ?? []).includes(p))),
+      );
+      if (overlap) {
+        warnings.push(`общий источник ${url} у кейсов одного клиента с общим процессом: ${list.join(', ')} — проверьте, не один ли это проект`);
+      }
     }
   }
 }
