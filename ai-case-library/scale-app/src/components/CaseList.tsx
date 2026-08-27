@@ -128,8 +128,8 @@ export default function CaseList({
                 </div>
 
                 <div className="card-field">
-                  <span className="lbl">Задача</span>
-                  {clamp(c.problem, 140)}
+                  <span className="lbl">Боль</span>
+                  {clamp(c.pain, 140)}
                 </div>
 
                 <div className="card-result">

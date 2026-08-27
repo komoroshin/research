@@ -66,10 +66,16 @@ check('кейс открывается страницей', await page.locator('
 const pageText = (await page.locator('.case-page').innerText()).toLowerCase();
 check(
   'страница кейса: секции и паспорт проекта',
-  pageText.includes('какая была задача') &&
+  pageText.includes('в чём была боль') &&
+    pageText.includes('какая была задача') &&
     pageText.includes('паспорт проекта') &&
     pageText.includes('бюджет') &&
     pageText.includes('откуда этот кейс'),
+  '',
+);
+check(
+  'боль: реконструкция честно оговорена',
+  pageText.includes('наша реконструкция'),
   '',
 );
 check(

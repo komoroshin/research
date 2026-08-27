@@ -19,7 +19,7 @@ const OUT_DIR = path.join(ROOT, 'scale-app', 'src', 'generated');
 
 const CASE_WHITELIST = new Set([
   'id', 'title', 'region', 'geo', 'industry', 'business_process', 'ai_mechanisms',
-  'client_profile', 'problem', 'solution', 'result_summary', 'metrics',
+  'client_profile', 'pain', 'problem', 'solution', 'result_summary', 'metrics',
   'budget_band', 'budget_note', 'duration_months', 'year', 'stage',
   // производные поля этого скрипта:
   'confidence', 'source_label',

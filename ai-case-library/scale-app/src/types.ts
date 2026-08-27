@@ -26,6 +26,12 @@ export interface ScaleCase {
   business_process: string[];
   ai_mechanisms: string[];
   client_profile: string;
+  /**
+   * Исходная бизнес-проблема («что болело в деньгах/клиентах/рисках»).
+   * Источники редко формулируют её явно, поэтому это реконструкция исследователя —
+   * интерфейс честно проговаривает это в секции «Откуда этот кейс».
+   */
+  pain: string;
   problem: string;
   solution: string;
   result_summary: string;
