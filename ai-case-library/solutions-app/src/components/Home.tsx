@@ -1,4 +1,4 @@
-import { CASES_CATALOG, byCategory, categories, offers } from '../lib/data';
+import { byCategory, categories, offers } from '../lib/data';
 import { OfferCard } from './Shared';
 
 interface Props {
@@ -19,7 +19,7 @@ export default function Home({ onOpen }: Props) {
         </p>
         <div className="hero-stats">
           <div className="hero-stat"><b>{offers.length}</b>направлений</div>
-          <div className="hero-stat"><b>{withProof}</b>подкреплены реальными проектами</div>
+          <div className="hero-stat"><b>{withProof}</b>с примерами реальных внедрений</div>
           <div className="hero-stat"><b>$30k+</b>бюджеты от</div>
           <div className="hero-stat"><b>2–6</b>месяцев типовой срок</div>
         </div>
@@ -40,10 +40,28 @@ export default function Home({ onOpen }: Props) {
         );
       })}
 
-      <div className="disclaimer" style={{ marginTop: 26 }}>
-        Ориентиры результатов и бюджетов — из реальных проектов:{' '}
-        <a href={CASES_CATALOG}>каталог кейсов с бюджетами и сроками</a>. Точные цифры
-        для вашей компании считаем на пилоте.
+      <section className="section process" style={{ marginTop: 26 }}>
+        <h3>Как проходит проект</h3>
+        <ol className="process-steps">
+          <li>
+            <b>Разбор задачи — 30 минут.</b> Созвон: что болит, какие данные есть,
+            решаема ли задача в вашем бюджете. Без обязательств.
+          </li>
+          <li>
+            <b>Ретро-тест или пилот — 4–6 недель.</b> Считаем эффект на ваших
+            исторических данных или запускаем узкий пилот. Решение о большом проекте —
+            после цифр, не до.
+          </li>
+          <li>
+            <b>Внедрение и сопровождение.</b> Интеграция в ваши системы, обучение
+            команды, развитие по мере роста.
+          </li>
+        </ol>
+      </section>
+
+      <div className="disclaimer" style={{ marginTop: 18 }}>
+        Цифры в примерах — из открытых данных о реальных проектах других компаний.
+        Это ориентиры: что получится у вас, считаем на ретро-тесте или пилоте.
       </div>
     </>
   );

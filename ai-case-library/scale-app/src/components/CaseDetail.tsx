@@ -108,11 +108,20 @@ export default function CaseDetail({ item: c, onBack, onOpen }: Props) {
 
           <div className="section" style={{ marginTop: 12 }}>
             <h3>Рамки проекта</h3>
+            {/* Пустые поля не показываем: «не раскрыто» продаёт хуже, чем отсутствие строки. */}
             <dl className="kv aside-kv">
-              <dt>Бюджет</dt>
-              <dd>{budgetLabel(c)}</dd>
-              <dt>Сроки</dt>
-              <dd>{durationLabel(c.duration_months)}</dd>
+              {(c.budget_band !== 'undisclosed' || c.budget_note) && (
+                <>
+                  <dt>Бюджет</dt>
+                  <dd>{budgetLabel(c)}</dd>
+                </>
+              )}
+              {c.duration_months ? (
+                <>
+                  <dt>Сроки</dt>
+                  <dd>{durationLabel(c.duration_months)}</dd>
+                </>
+              ) : null}
               <dt>Год</dt>
               <dd>{c.year}</dd>
               {c.geo !== 'не раскрыто' && (

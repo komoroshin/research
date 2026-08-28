@@ -28,9 +28,6 @@ export function headline(o: Offer): string {
 
 export const TELEGRAM = 'https://t.me/kmoroshin';
 
-/** Каталог реальных кейсов, на который опираются направления (та же площадка Pages). */
-export const CASES_CATALOG = '../projects/';
-
 export function ctaMessage(o: Offer): string {
   return `Хочу обсудить: «${o.title}». Похоже на нашу ситуацию — с чего начнём?`;
 }

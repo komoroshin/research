@@ -1,5 +1,6 @@
 import type { ScaleCase } from '../types';
 import { budgetLabel, durationLabel, label, labels } from '../lib/data';
+import { resultHeadline } from './Shared';
 
 interface Props {
   items: readonly ScaleCase[];
@@ -14,8 +15,16 @@ const ROWS: { title: string; render: (c: ScaleCase) => React.ReactNode }[] = [
   { title: 'Задача', render: (c) => c.problem },
   { title: 'Что внедрили', render: (c) => c.solution },
   { title: 'Технология', render: (c) => labels(c.ai_mechanisms) },
-  { title: 'Бюджет', render: (c) => budgetLabel(c) },
-  { title: 'Сроки', render: (c) => durationLabel(c.duration_months) },
+  {
+    title: 'Бюджет',
+    render: (c) =>
+      c.budget_band !== 'undisclosed' || c.budget_note ? budgetLabel(c) : <span style={{ color: 'var(--text-faint)' }}>—</span>,
+  },
+  {
+    title: 'Сроки',
+    render: (c) =>
+      c.duration_months ? durationLabel(c.duration_months) : <span style={{ color: 'var(--text-faint)' }}>—</span>,
+  },
   {
     title: 'Что изменилось',
     render: (c) =>
@@ -66,7 +75,7 @@ export default function CompareView({ items, onRemove, onOpen }: Props) {
                     onOpen(c.id);
                   }}
                 >
-                  {c.title}
+                  {resultHeadline(c).head}
                 </a>
                 <div style={{ fontWeight: 400, fontSize: 12, color: 'var(--text-faint)' }}>{budgetLabel(c)}</div>
               </th>

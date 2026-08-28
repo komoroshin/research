@@ -19,7 +19,7 @@ export default function IndustryPage({ item: ind, onOpenOffer, onBack }: Props) 
 
       {ind.highlights.length > 0 && (
         <section className="section" style={{ marginBottom: 18 }}>
-          <h3>Реальные результаты в отрасли</h3>
+          <h3>Что уже получают компании отрасли</h3>
           <ul className="proof-list">
             {ind.highlights.map((h, i) => (
               <li key={i}>{h}</li>
