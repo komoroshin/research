@@ -114,6 +114,20 @@ await page.waitForTimeout(300);
 const indTiles = await page.locator('.tile').count();
 check('вкладка «По отраслям»: плитки отраслей', indTiles >= 8, `${indTiles} плиток`);
 
+// Регрессия: длинные чипы-примеры не вылезают за границы плитки.
+const overflowChips = await page.evaluate(() => {
+  let bad = 0;
+  for (const tile of document.querySelectorAll('.tile')) {
+    const tr = tile.getBoundingClientRect();
+    for (const tag of tile.querySelectorAll('.tag')) {
+      const gr = tag.getBoundingClientRect();
+      if (gr.right > tr.right + 1 || gr.left < tr.left - 1) bad++;
+    }
+  }
+  return bad;
+});
+check('чипы примеров не вылезают из плиток', overflowChips === 0, `${overflowChips} переполнений`);
+
 await page.locator('.tile', { hasText: 'Производство' }).first().click();
 await page.waitForTimeout(400);
 const indText = (await page.locator('main').innerText()).toLowerCase();
