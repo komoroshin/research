@@ -1972,12 +1972,13 @@ main h2 {
 .card { min-width: 0; }
 .card-foot { flex-wrap: wrap; row-gap: 6px; }
 
-/* ---------- Логотип «Океан Тех» в шапке ---------- */
+/* ---------- Логотип «Океан Тех» в шапке: крупный, как на основном сайте ---------- */
 .brand-logo {
   display: block;
-  height: 30px;
+  height: 42px;
   width: auto;
 }
+.header { padding-top: 10px; padding-bottom: 10px; }
 @media (max-width: 640px) {
-  .brand-logo { height: 24px; }
+  .brand-logo { height: 30px; }
 }
