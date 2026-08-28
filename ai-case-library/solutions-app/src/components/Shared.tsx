@@ -21,7 +21,7 @@ export function OfferCard({ offer: o, onOpen }: { offer: Offer; onOpen: (id: str
       <div className="card-field">{o.pain}</div>
       <div className="card-result">
         <span className="lbl" style={{ marginRight: 6 }}>
-          {o.proof.length ? 'Реальный проект' : 'Что вы получите'}
+          {o.proof.length ? 'Уже работает у других' : 'Что вы получите'}
         </span>
         {headline(o)}
       </div>

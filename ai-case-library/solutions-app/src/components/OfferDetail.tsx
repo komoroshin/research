@@ -1,5 +1,4 @@
 import type { Offer } from '../types';
-import { CASES_CATALOG } from '../lib/data';
 import { CtaButton } from './Shared';
 
 interface Props {
@@ -55,15 +54,15 @@ export default function OfferDetail({ item: o, onBack }: Props) {
           </Section>
 
           {o.proof.length > 0 && (
-            <Section title="Реальные проекты в этом направлении">
+            <Section title="Как это уже работает у других">
+              <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 0 }}>
+                Примеры реальных проектов похожих компаний — по открытым данным рынка:
+              </p>
               <ul className="proof-list">
                 {o.proof.map((p, i) => (
                   <li key={i}>{p}</li>
                 ))}
               </ul>
-              <p style={{ fontSize: 13 }}>
-                <a href={CASES_CATALOG}>Смотреть каталог кейсов с бюджетами и сроками →</a>
-              </p>
             </Section>
           )}
 
@@ -77,7 +76,8 @@ export default function OfferDetail({ item: o, onBack }: Props) {
             <div className="cta-title">Узнали свою ситуацию?</div>
             <div className="cta-sub">
               Расскажите, как это устроено у вас, — за один созвон наметим пилот
-              и посчитаем, что он даст в ваших цифрах.
+              и посчитаем, что он даст в ваших цифрах. Сначала ретро-тест на ваших
+              данных — потом решение о проекте.
             </div>
             <CtaButton item={o} />
           </div>

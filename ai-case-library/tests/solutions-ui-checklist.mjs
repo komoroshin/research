@@ -33,9 +33,19 @@ check('главная: карточки направлений', cards >= 14, `$
 const heroText = (await page.locator('.hero').innerText()).toLowerCase();
 check('hero говорит о проблеме клиента', heroText.includes('проблем'), '');
 
-// Ссылка на каталог реальных кейсов присутствует.
-const casesLink = await page.locator('a[href="../projects/"]').count();
-check('есть ссылка на каталог реальных кейсов', casesLink >= 1, `${casesLink} ссылок`);
+// Целевой сайт один: ссылок на внутренние каталоги быть не должно.
+const internalLinks = await page
+  .locator('a[href*="projects"], a[href*="catalog"], a[href*="cases"]')
+  .count();
+check('нет ссылок на внутренние каталоги', internalLinks === 0, `${internalLinks} ссылок`);
+
+// Блок «Как проходит проект» — этапы с ретро-тестом.
+const homeText = (await page.locator('main').innerText()).toLowerCase();
+check(
+  'блок «как проходит проект» с ретро-тестом',
+  homeText.includes('как проходит проект') && homeText.includes('ретро-тест'),
+  '',
+);
 
 // --- 2. Направление открывается страницей ---
 await page.locator('.card').first().click();
@@ -86,9 +96,16 @@ await page.goto(BASE + '?offer=demand-forecast', { waitUntil: 'networkidle' });
 const direct = (await page.locator('.case-page h2').innerText()).toLowerCase();
 check('прямая ссылка ?offer= открывает направление', direct.includes('интуиции'), direct);
 
-// Направление с реальными кейсами показывает блок proof.
+// Примеры рынка показаны без присвоения: «у других», а не «наши проекты».
 const proofText = (await page.locator('.case-page').innerText()).toLowerCase();
-check('блок «реальные проекты» с цифрами', proofText.includes('реальные проекты') && proofText.includes('2 млн'), '');
+check(
+  'примеры рынка с цифрами, без присвоения',
+  proofText.includes('уже работает у других') &&
+    proofText.includes('2 млн') &&
+    !proofText.includes('наши проекты') &&
+    !proofText.includes('наши кейсы'),
+  '',
+);
 
 // --- 5. Разрез по отраслям ---
 await page.goto(BASE, { waitUntil: 'networkidle' });
@@ -102,7 +119,7 @@ await page.waitForTimeout(400);
 const indText = (await page.locator('main').innerText()).toLowerCase();
 check(
   'страница отрасли: реальные результаты и направления',
-  indText.includes('реальные результаты в отрасли') &&
+  indText.includes('что уже получают компании отрасли') &&
     indText.includes('2 млн ₽') &&
     (await page.locator('.card').count()) >= 4,
   '',
@@ -118,7 +135,7 @@ check(
   '«назад» возвращает на страницу отрасли',
   (await page.locator('.case-page').count()) === 0 &&
     // innerText отдаёт текст после text-transform: uppercase — сравниваем без регистра
-    (await page.locator('main').innerText()).toLowerCase().includes('реальные результаты в отрасли'),
+    (await page.locator('main').innerText()).toLowerCase().includes('что уже получают компании отрасли'),
   '',
 );
 
