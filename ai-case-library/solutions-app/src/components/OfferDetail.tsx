@@ -1,5 +1,5 @@
 import type { Offer } from '../types';
-import { CtaButton } from './Shared';
+import { CtaButton, ResearchCta } from './Shared';
 
 interface Props {
   item: Offer;
@@ -80,6 +80,15 @@ export default function OfferDetail({ item: o, onBack }: Props) {
               данных — потом решение о проекте.
             </div>
             <CtaButton item={o} />
+          </div>
+
+          <div className="research-mini">
+            <div className="research-mini-title">Не уверены в направлении?</div>
+            <div className="research-mini-sub">
+              Исследование «где ИИ даст выручку» — 150 000 ₽, 2 недели: карта точек
+              применения и расчёт эффекта по вашим процессам.
+            </div>
+            <ResearchCta compact />
           </div>
 
           <div className="section" style={{ marginTop: 12 }}>

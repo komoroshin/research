@@ -42,13 +42,33 @@ const internalLinks = await page
   .count();
 check('нет ссылок на внутренние каталоги', internalLinks === 0, `${internalLinks} ссылок`);
 
-// Блок «Как проходит проект» — этапы с ретро-тестом.
+// Блок «Как проходит проект» — этапы со ступенью «исследование или пилот».
 const homeText = (await page.locator('main').innerText()).toLowerCase();
 check(
-  'блок «как проходит проект» с ретро-тестом',
-  homeText.includes('как проходит проект') && homeText.includes('ретро-тест'),
+  'блок «как проходит проект» со ступенью входа',
+  homeText.includes('как проходит проект') && homeText.includes('исследование или пилот'),
   '',
 );
+
+// Ступень входа: исследование за 150 000 ₽ + блок «Кто мы» + контакты.
+check(
+  'блок исследования-входа со стоимостью',
+  homeText.includes('начните с исследования') && homeText.includes('150 000 ₽') && homeText.includes('2 недели'),
+  '',
+);
+check(
+  'блок «кто мы» с фактами компании',
+  homeText.includes('кто мы') && homeText.includes('океан тех') && homeText.includes('48'),
+  '',
+);
+check(
+  'порог проектов и лестница входа согласованы',
+  homeText.includes('от 5 млн ₽') && homeText.includes('порог') && homeText.includes('не распространяется'),
+  '',
+);
+const emailLinks = await page.locator('a[href="mailto:sales@okeantech.ru"]').count();
+const phoneLinks = await page.locator('a[href^="tel:"]').count();
+check('контакты: email и телефон', emailLinks >= 1 && phoneLinks >= 1, `mailto=${emailLinks}, tel=${phoneLinks}`);
 
 // --- 2. Направление открывается страницей ---
 await page.locator('.card').first().click();
@@ -74,7 +94,7 @@ const heroTile = await page.locator('.metrics-hero .metric-tile').first().boundi
 check('результат виден без скролла', heroTile !== null && heroTile.y < 800, heroTile ? `y=${Math.round(heroTile.y)}` : '');
 
 // --- 3. CTA: липкая колонка, Telegram, буфер ---
-const cta = page.locator('.case-aside .cta-btn');
+const cta = page.locator('.case-aside .cta-block .cta-btn');
 const ctaBox = await cta.boundingBox();
 check('CTA видна без скролла', ctaBox !== null && ctaBox.y < 900, ctaBox ? `y=${Math.round(ctaBox.y)}` : '');
 const ctaHref = await cta.getAttribute('href');
@@ -86,6 +106,10 @@ await page.waitForTimeout(300);
 const clip = await page.evaluate(() => navigator.clipboard.readText());
 check('CTA ведёт на t.me/kmoroshin', ctaHref === 'https://t.me/kmoroshin', ctaHref ?? '');
 check('CTA кладёт заявку в буфер', clip.startsWith('Хочу обсудить:'), clip.slice(0, 60) + '…');
+
+// Второй CTA на странице направления: исследование.
+const offerPage = (await page.locator('.case-page').innerText()).toLowerCase();
+check('второй CTA-исследование на странице направления', offerPage.includes('150 000 ₽'), '');
 
 // --- 4. Навигация: «назад» и прямая ссылка ---
 await page.goBack();

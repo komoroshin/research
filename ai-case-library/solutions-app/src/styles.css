@@ -2017,3 +2017,137 @@ main h2 {
 @media (max-width: 640px) {
   .brand-logo { height: 30px; }
 }
+
+/* ============ Ступень входа: исследование (лаймовая брендовая полоса) ============ */
+.research-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 32px;
+  background: var(--lime);
+  border-radius: 24px;
+  padding: 32px;
+  margin-top: 32px;
+  color: var(--ink);
+}
+.research-title {
+  margin: 0 0 6px;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.research-price {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.research-price b { font-size: 18px; }
+.research-list { margin: 0 0 10px; padding-left: 18px; display: grid; gap: 5px; }
+.research-note { font-size: 13px; color: rgba(20, 26, 34, 0.65); margin: 0 0 14px; }
+.research-band .cta-btn {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #fff;
+}
+.research-band .cta-btn:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+.research-band .cta-hint { color: rgba(20, 26, 34, 0.65); }
+.research-band .cta-hint a { color: var(--ink); text-decoration: underline; }
+.research-band > .research-main > div:last-child { text-align: left; }
+.research-quote {
+  margin: 0;
+  align-self: center;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.research-quote footer {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(20, 26, 34, 0.6);
+}
+@media (max-width: 900px) {
+  .research-band { grid-template-columns: 1fr; padding: 24px; }
+}
+
+/* ============ Кто мы ============ */
+.about { margin-top: 32px; }
+.about-lead { max-width: 780px; font-size: 17px; line-height: 1.4; color: rgba(0, 0, 0, 0.7); }
+.about-stats { margin: 16px 0 18px; }
+.about-pillars { margin-bottom: 18px; }
+.about-team { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 16px; }
+.about-person { display: grid; gap: 2px; }
+.about-person b { color: var(--ink); }
+.about-person span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.about-quote {
+  margin: 0 0 12px;
+  padding: 20px 24px;
+  background: var(--bg-subtle);
+  border-radius: 24px;
+  max-width: 780px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.about-quote footer {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.about-media { font-size: 13px; color: var(--text-muted); max-width: 780px; }
+
+/* ============ Мини-блок исследования в колонке направления ============ */
+.research-mini {
+  margin-top: 12px;
+  background: var(--lime);
+  border-radius: 24px;
+  padding: 18px 20px;
+  color: var(--ink);
+}
+.research-mini-title { font-weight: 600; margin-bottom: 4px; }
+.research-mini-sub { font-size: 13px; line-height: 1.4; color: rgba(20, 26, 34, 0.7); margin-bottom: 10px; }
+.research-mini .cta-btn { background: var(--dark); border-color: var(--dark); color: #fff; font-size: 14px; padding: 9px 20px; }
+.research-mini .cta-hint { color: rgba(20, 26, 34, 0.65); }
+.research-mini .cta-hint a { color: var(--ink); text-decoration: underline; }
+
+/* ============ Футер с контактами ============ */
+.footer-inner { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.footer-contacts { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: center; }
+.footer-contacts a { color: #fff; text-decoration: underline; }
+.footer-contacts span { color: rgba(255, 255, 255, 0.6); }
+
+/* Статистика в «Кто мы» — те же плитки, что в hero */
+.about-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.about-stats .hero-stat {
+  background: var(--bg-subtle);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.about-stats .hero-stat b {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
