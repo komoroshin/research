@@ -4,6 +4,7 @@ import { CtaButton, ResearchCta } from './Shared';
 interface Props {
   item: Offer;
   onBack: () => void;
+  onOpenResearch: () => void;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -19,7 +20,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
  * Направление — полноценная страница по образцу кейса: боль → что сделаем →
  * что получите → реальные проекты; CTA в липкой колонке, «назад» браузера работает.
  */
-export default function OfferDetail({ item: o, onBack }: Props) {
+export default function OfferDetail({ item: o, onBack, onOpenResearch }: Props) {
   return (
     <article className="case-page">
       <button className="backlink" onClick={onBack}>
@@ -88,6 +89,9 @@ export default function OfferDetail({ item: o, onBack }: Props) {
               Исследование «где ИИ даст выручку» — 150 000 ₽, 2 недели: карта точек
               применения и расчёт эффекта по вашим процессам.
             </div>
+            <button className="research-more" onClick={onOpenResearch}>
+              Как устроено исследование →
+            </button>
             <ResearchCta compact />
           </div>
 

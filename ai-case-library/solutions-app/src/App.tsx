@@ -6,8 +6,9 @@ import Home from './components/Home';
 import IndustriesHome from './components/IndustriesHome';
 import IndustryPage from './components/IndustryPage';
 import OfferDetail from './components/OfferDetail';
+import ResearchPage from './components/ResearchPage';
 
-type View = 'problems' | 'industries';
+type View = 'problems' | 'industries' | 'research';
 
 interface NavState {
   view: View;
@@ -17,8 +18,9 @@ interface NavState {
 
 function fromUrl(): NavState {
   const p = new URLSearchParams(window.location.search);
+  const v = p.get('view');
   return {
-    view: p.get('view') === 'industries' ? 'industries' : 'problems',
+    view: v === 'industries' || v === 'research' ? v : 'problems',
     industryId: p.get('industry'),
     offerId: p.get('offer'),
   };
@@ -26,7 +28,7 @@ function fromUrl(): NavState {
 
 function toQuery(s: NavState): string {
   const p = new URLSearchParams();
-  if (s.view === 'industries') p.set('view', 'industries');
+  if (s.view !== 'problems') p.set('view', s.view);
   if (s.industryId) p.set('industry', s.industryId);
   if (s.offerId) p.set('offer', s.offerId);
   const q = p.toString();
@@ -43,7 +45,11 @@ export default function App() {
   const prev = useRef(nav);
   useEffect(() => {
     const next = `${window.location.pathname}${toQuery(nav)}`;
-    const navigated = prev.current.offerId !== nav.offerId || prev.current.industryId !== nav.industryId;
+    const navigated =
+      prev.current.offerId !== nav.offerId ||
+      prev.current.industryId !== nav.industryId ||
+      // страница исследования — тоже навигация: «назад» возвращает откуда пришли
+      (prev.current.view === 'research') !== (nav.view === 'research');
     prev.current = nav;
     if (next !== window.location.pathname + window.location.search) {
       if (navigated) window.history.pushState(null, '', next);
@@ -60,6 +66,7 @@ export default function App() {
 
   const openOffer = (id: string) => setNav((s) => ({ ...s, offerId: id }));
   const closeOffer = () => setNav((s) => ({ ...s, offerId: null }));
+  const openResearch = () => setNav({ view: 'research', industryId: null, offerId: null });
 
   return (
     <div className="app">
@@ -85,13 +92,21 @@ export default function App() {
           >
             По отраслям
           </button>
+          <button
+            aria-current={!offer && nav.view === 'research'}
+            onClick={() => setNav({ view: 'research', industryId: null, offerId: null })}
+          >
+            Исследование
+          </button>
         </nav>
       </header>
 
       <div className="body">
         <main className="main" style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
           {offer ? (
-            <OfferDetail item={offer} onBack={closeOffer} />
+            <OfferDetail item={offer} onBack={closeOffer} onOpenResearch={openResearch} />
+          ) : nav.view === 'research' ? (
+            <ResearchPage onBack={() => setNav({ view: 'problems', industryId: null, offerId: null })} />
           ) : nav.view === 'industries' ? (
             industry ? (
               <IndustryPage
@@ -103,7 +118,7 @@ export default function App() {
               <IndustriesHome onPick={(id) => setNav((s) => ({ ...s, industryId: id }))} />
             )
           ) : (
-            <Home onOpen={openOffer} />
+            <Home onOpen={openOffer} onOpenResearch={openResearch} />
           )}
         </main>
       </div>

@@ -4,9 +4,10 @@ import { OfferCard, ResearchCta } from './Shared';
 
 interface Props {
   onOpen: (id: string) => void;
+  onOpenResearch: () => void;
 }
 
-export default function Home({ onOpen }: Props) {
+export default function Home({ onOpen, onOpenResearch }: Props) {
   return (
     <>
       <div className="hero">
@@ -52,6 +53,9 @@ export default function Home({ onOpen }: Props) {
             ))}
           </ul>
           <p className="research-note">{COMPANY.research.note}</p>
+          <button className="research-more" onClick={onOpenResearch}>
+            Как устроено исследование: подход, примеры точек, что на выходе →
+          </button>
           <ResearchCta />
         </div>
         <blockquote className="research-quote">

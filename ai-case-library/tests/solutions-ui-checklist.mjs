@@ -66,6 +66,13 @@ check(
   homeText.includes('от 5 млн ₽') && homeText.includes('порог') && homeText.includes('не распространяется'),
   '',
 );
+const researchTab = await page.locator('.tabs button:has-text("Исследование")').count();
+const researchMore = await page.locator('.research-band .research-more').count();
+check(
+  'переходы к полному офферу исследования',
+  researchTab === 1 && researchMore === 1,
+  `tab=${researchTab}, link=${researchMore}`,
+);
 const emailLinks = await page.locator('a[href="mailto:sales@okeantech.ru"]').count();
 const phoneLinks = await page.locator('a[href^="tel:"]').count();
 check('контакты: email и телефон', emailLinks >= 1 && phoneLinks >= 1, `mailto=${emailLinks}, tel=${phoneLinks}`);
@@ -131,6 +138,39 @@ check(
     proofText.includes('2 млн') &&
     !proofText.includes('наши проекты') &&
     !proofText.includes('наши кейсы'),
+  '',
+);
+
+// --- 4b. Полный оффер исследования ---
+await page.locator('.research-mini .research-more').click();
+await page.waitForTimeout(400);
+const researchText = (await page.locator('.research-page').innerText()).toLowerCase();
+check(
+  'страница исследования открывается из направления',
+  researchText.includes('где в ваших процессах применим ии'),
+  '',
+);
+check(
+  'оффер: гарантии, принципы и примеры точек',
+  researchText.includes('оплата по факту сдачи') &&
+    researchText.includes('не засчитывается в разработку') &&
+    researchText.includes('локализация контента'),
+  '',
+);
+const rBtn = await page.locator('.research-page .cta-block .cta-btn').count();
+const rMail = await page.locator('.research-page a[href="mailto:sales@okeantech.ru"]').count();
+check('страница исследования: CTA и почта', rBtn >= 1 && rMail >= 1, `btn=${rBtn}, mail=${rMail}`);
+await page.goBack();
+await page.waitForTimeout(400);
+check(
+  '«назад» с исследования возвращает к направлению',
+  (await page.locator('.case-page h2').innerText()).toLowerCase().includes('интуиции'),
+  '',
+);
+await page.goto(BASE + '?view=research', { waitUntil: 'networkidle' });
+check(
+  'прямая ссылка ?view=research открывает оффер',
+  (await page.locator('.research-page').count()) === 1,
   '',
 );
 
