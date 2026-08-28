@@ -1971,3 +1971,13 @@ main h2 {
 .cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
 .card { min-width: 0; }
 .card-foot { flex-wrap: wrap; row-gap: 6px; }
+
+/* ---------- Логотип «Океан Тех» в шапке ---------- */
+.brand-logo {
+  display: block;
+  height: 30px;
+  width: auto;
+}
+@media (max-width: 640px) {
+  .brand-logo { height: 24px; }
+}
