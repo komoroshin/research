@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import logo from './assets/logo.svg';
 import { findIndustry, findOffer } from './lib/data';
 import Home from './components/Home';
 import IndustriesHome from './components/IndustriesHome';
@@ -67,7 +68,7 @@ export default function App() {
           style={{ cursor: 'pointer' }}
           onClick={() => setNav({ view: 'problems', industryId: null, offerId: null })}
         >
-          AI под вашу задачу <small>что мы решаем</small>
+          <img src={logo} alt="Океан Тех" className="brand-logo" />
         </div>
         <span style={{ flex: 1 }} />
         <nav className="tabs" aria-label="Разделы">
