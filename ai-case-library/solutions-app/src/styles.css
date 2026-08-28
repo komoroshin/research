@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap');
+
 /* ---------------------------------------------------------------------------
    AI Case Library — оформление приведено к брендингу Океан Тех
    (см. design.md в репозитории komoroshin/okeantech): нейтральные фоны,
@@ -1655,3 +1657,317 @@ table.compare thead th {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* =========================================================================
+   ТЕМА «ОКЕАН ТЕХ» — фирменный слой поверх базовой вёрстки.
+   Источник: research/… /uploads/5fb3dfd3-design.md (Figma «Океан Тех», авг 2026).
+   Бренд светлый: страница #fff, карточки #F7F7F7 r24, тёмные CTA-блоки #232323,
+   акцент #0460F5, лайм #D5F774 как декор, мono-лейблы IBM Plex Mono uppercase.
+   Suisse Intl / PP Right Grotesk — коммерческие: объявлены первыми в стеках,
+   до подключения файлов шрифтов работает ближайший доступный Inter.
+   ========================================================================= */
+
+:root {
+  --bg: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-subtle: #f7f7f7;
+  --bg-hover: #efefef;
+  --border: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.24);
+  --text: #333333;
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-faint: rgba(0, 0, 0, 0.35);
+  --accent: #0460f5;
+  --accent-soft: rgba(4, 96, 245, 0.08);
+  --accent-text: #0460f5;
+  --measured: #4caf50;
+  --reported: rgba(0, 0, 0, 0.5);
+  --projected: #e3592e;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --shadow: none;
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.12);
+
+  --ink: #141a22;
+  --dark: #232323;
+  --lime: #d5f774;
+
+  --font-sans: 'Suisse Intl', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'PP Right Grotesk', 'Suisse Intl', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+body {
+  background: var(--bg);
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* ---------- Шапка: навигация в mono-пилюлях ---------- */
+.header {
+  background: var(--bg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: none;
+}
+.brand {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.brand small {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+.tabs {
+  background: rgba(0, 0, 0, 0.03);
+  border: none;
+  border-radius: 12px;
+  padding: 4px;
+}
+.tabs button {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+}
+.tabs button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink);
+}
+.tabs button[aria-current='true'] {
+  background: var(--dark);
+  color: #ffffff;
+  border: none;
+}
+
+/* ---------- Hero: display-заголовок ---------- */
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(38px, 5.4vw, 64px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.hero .lead {
+  font-size: 18px;
+  line-height: 1.35;
+  color: rgba(0, 0, 0, 0.65);
+}
+.hero-stats { gap: 10px; }
+.hero .hero-stat {
+  background: var(--bg-subtle);
+  border: none;
+  border-radius: 16px;
+  padding: 14px 18px;
+}
+.hero .hero-stat b {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ---------- Карточки и плитки: #F7F7F7, r24, без обводок ---------- */
+.card,
+.tile {
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
+  border-radius: 24px;
+  box-shadow: none;
+  padding: 24px;
+}
+.card:hover,
+.tile:hover {
+  border-color: transparent;
+  background: #f1f1f1;
+  box-shadow: none;
+  transform: none;
+}
+.tile h3 { color: var(--ink); }
+.tile h3 .n {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+.card-title { color: var(--ink); }
+.offer-group-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ---------- Теги и лейблы: mono uppercase, r12 ---------- */
+.tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.04);
+  border: none;
+  border-radius: 12px;
+  padding: 4px 10px;
+  color: rgba(0, 0, 0, 0.6);
+}
+.tag.budget {
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 600;
+}
+.lbl,
+.card-field .lbl {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.pickbtn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border: none;
+  background: transparent;
+}
+
+/* ---------- Секции страницы направления ---------- */
+.section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.section h3 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  border: none;
+}
+.case-page .case-head h2,
+main h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.case-page .case-head h2 { font-size: clamp(28px, 3.6vw, 44px); line-height: 1.05; }
+.backlink {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* ---------- Результаты: карточки-плитки ---------- */
+.metrics-hero { gap: 10px; }
+.metric-tile,
+.metric-tile.reported {
+  background: var(--bg-subtle);
+  border: none;
+  border-left: none;
+  border-radius: 20px;
+  padding: 18px 20px;
+  box-shadow: none;
+}
+.metric-tile .mt-name { color: var(--ink); }
+
+.proof-list li::marker { color: var(--accent); }
+.process-steps li::marker { color: var(--accent); }
+.process { background: var(--bg-subtle); border-radius: 24px; padding: 24px; }
+
+/* ---------- CTA: тёмная карточка #232323 + пилюля ---------- */
+.cta-block {
+  background: var(--dark);
+  border: none;
+  border-radius: 24px;
+  padding: 24px;
+}
+.cta-block .cta-title { color: #ffffff; }
+.cta-block .cta-sub { color: rgba(255, 255, 255, 0.7); }
+.cta-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 68px;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 12px 28px;
+  box-shadow: none;
+}
+.cta-btn:hover {
+  background: #ffffff;
+  color: var(--ink);
+  border-color: #ffffff;
+  box-shadow: none;
+}
+.cta-block .cta-hint { color: rgba(255, 255, 255, 0.55); }
+/* Мобильная нижняя CTA живёт на светлом фоне — тёмная пилюля */
+.cta-mobile-bar .cta-btn {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: #fff;
+}
+.cta-mobile-bar { background: rgba(255, 255, 255, 0.94); border-top: 1px solid rgba(0, 0, 0, 0.08); }
+.cta-mobile-bar .cta-hint { color: var(--text-muted); }
+
+/* ---------- Паспорт/факты ---------- */
+.kv dt {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.case-aside .section {
+  background: var(--bg-subtle);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+/* ---------- Подпись и футер: тёмная CTA-секция ---------- */
+.disclaimer {
+  background: var(--bg-subtle);
+  border: none;
+  border-radius: 24px;
+  padding: 20px 24px;
+  color: var(--text-muted);
+}
+.footer {
+  background: var(--dark);
+  border-top: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 28px 24px;
+}
+.footer a { color: #ffffff; text-decoration: underline; }
+
+.empty {
+  background: var(--bg-subtle);
+  border: none;
+  border-radius: 24px;
+}
+
+/* Фокус — синий, по DS */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Мобильная устойчивость темы: mono-теги шире прежних — низ карточки переносится,
+   а трек сетки не может требовать больше ширины экрана. */
+.cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+.card { min-width: 0; }
+.card-foot { flex-wrap: wrap; row-gap: 6px; }
