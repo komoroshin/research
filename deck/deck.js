@@ -260,7 +260,10 @@ const Deck = (() => {
         host.appendChild(ul)
       } else if (b.type === 'accent') {
         const d = document.createElement('div')
-        const gated = layout === 'tranches' || layout === 'capital' || layout === 'ask' || layout === 'outlook'
+        // Акцент с явной меткой ([Метка]) рисуется рамкой в любой раскладке:
+        // рамка и есть способ пометить строку как ответ на конкретный вопрос.
+        const gated = Boolean(b.label) ||
+          layout === 'tranches' || layout === 'capital' || layout === 'ask' || layout === 'outlook'
         d.className = gated ? 'gate' : 'arith'
         if (gated) d.dataset.label = b.label || 'Ворота'
         d.innerHTML = inline(b.text)

@@ -259,6 +259,9 @@ li::before {
 }
 .slide[data-layout='levels'] .levels tr:last-child td:first-child { color: var(--ink); }
 .slide[data-layout='levels'] .levels tr:last-child td:first-child { box-shadow: inset 4px 0 0 var(--accent); padding-left: 28px; }
+/* Рамка-акцент под таблицей уровней: компактнее, чем гейт капитала, — на
+   слайде уже стоит таблица, и 36px моноширинного сюда не помещаются. */
+.slide[data-layout='levels'] .gate { margin-top: 22px; padding: 14px 28px; font-size: 28px; }
 
 /* --- слайды 11 и 12: широкая мера ---------------------------------------- */
 
