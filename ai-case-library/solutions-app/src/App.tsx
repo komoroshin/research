@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import logo from './assets/logo.svg';
 import { findIndustry, findOffer } from './lib/data';
+import { COMPANY } from './lib/company';
 import Home from './components/Home';
 import IndustriesHome from './components/IndustriesHome';
 import IndustryPage from './components/IndustryPage';
@@ -107,12 +108,17 @@ export default function App() {
         </main>
       </div>
 
-      <footer className="footer" style={{ textAlign: 'center' }}>
-        Строим AI-решения под конкретную бизнес-проблему — от пилота до продакшена.{' '}
-        <a href="https://t.me/kmoroshin" target="_blank" rel="noopener noreferrer">
-          Написать в Telegram
-        </a>
-        .
+      <footer className="footer">
+        <div className="footer-inner">
+          <div className="footer-brand">Океан Тех — исследования и разработка искусственного интеллекта</div>
+          <div className="footer-contacts">
+            <a href="https://t.me/kmoroshin" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+            <a href={COMPANY.phoneHref}>{COMPANY.phone}</a>
+            <a href={COMPANY.site} target="_blank" rel="noopener noreferrer">okeantech.ru</a>
+            <span>{COMPANY.address}</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
