@@ -58,7 +58,7 @@ const thumb = await presenter.evaluate(() => document.querySelector('#thumb .can
 console.log(`${thumb ? '  ok  ' : ' FAIL '} presenter renders the next-slide thumbnail`)
 // Кусок настоящей заметки: если он появится на основном экране, заметки текут.
 const leak = await page.evaluate(() =>
-  document.body.innerText.includes('договор автора с ней юристом не проверен')
+  document.body.innerText.includes('Готовый код не продаётся и не передаётся')
 )
 console.log(`${leak ? ' FAIL ' : '  ok  '} notes never appear on the main screen`)
 await presenter.screenshot({ path: '/tmp/shots/deck-presenter.png' })
