@@ -79,6 +79,7 @@ html.deck .title-mark,html.deck .title-foot{margin-top:0;margin-bottom:0}
   .cols-3{grid-template-columns:repeat(3,1fr)}
   .cols-2{grid-template-columns:1fr 1fr;gap:clamp(28px,3.5vw,56px)}
   .steps{grid-template-columns:repeat(4,1fr)}
+  .steps.three{grid-template-columns:repeat(3,1fr)}
   .miles{grid-template-columns:repeat(5,1fr);gap:16px}
   .row.trio{grid-template-columns:repeat(3,1fr)}
 }
@@ -91,13 +92,19 @@ html.deck .title-mark,html.deck .title-foot{margin-top:0;margin-bottom:0}
 .card-title{font-size:clamp(17px,1.45vw,23px);font-weight:600;line-height:1.22}
 .card-body{font-size:clamp(15px,1.2vw,19px);line-height:1.46;color:var(--ink-2)}
 .slide.dark .card-body{color:rgba(255,255,255,.7)}
+.card-line{font-size:clamp(14px,1.1vw,17px);line-height:1.44;color:var(--ink-3);
+  padding-top:clamp(8px,.8vw,12px);border-top:1px solid var(--line)}
+.slide.dark .card-line{color:rgba(255,255,255,.5);border-top-color:rgba(255,255,255,.14)}
 
 .stat{background:var(--subtle);border-radius:clamp(14px,1.25vw,20px);
   padding:clamp(16px,1.85vw,30px)}
+.slide.dark .stat{background:rgba(255,255,255,.07)}
 .stat .n{font-family:var(--display);font-size:clamp(28px,3.9vw,62px);line-height:1;
   letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat.sm .n{font-size:clamp(24px,2.7vw,44px)}
 .stat .l{margin-top:clamp(6px,.6vw,10px);font-size:clamp(14px,1.06vw,17px);
   line-height:1.35;color:var(--ink-2)}
+.slide.dark .stat .l{color:rgba(255,255,255,.7)}
 
 /* реестр наработок: статус — часть содержания, а не украшение */
 .ledger{display:flex;flex-direction:column;border-top:1px solid var(--line)}
@@ -113,15 +120,19 @@ html.deck .title-mark,html.deck .title-foot{margin-top:0;margin-bottom:0}
 .chip.on{background:var(--lime);color:var(--ink)}
 .chip.mid{background:rgba(4,96,245,.12);color:var(--blue)}
 .chip.off{background:rgba(20,26,34,.07);color:var(--ink-3)}
-.slide.dark .chip.off{background:rgba(255,255,255,.1);color:rgba(255,255,255,.55)}
 
 /* нумерация — там, где порядок действительно несёт смысл */
-.step{background:rgba(255,255,255,.07);border-radius:clamp(16px,1.5vw,24px);
+.step{background:var(--subtle);border-radius:clamp(16px,1.5vw,24px);
   padding:clamp(20px,1.9vw,30px);display:flex;flex-direction:column;
   gap:clamp(8px,.9vw,14px)}
+.slide.dark .step{background:rgba(255,255,255,.07)}
 .step .num{font-family:var(--mono);font-size:clamp(11px,.88vw,14px);letter-spacing:.1em;
-  color:var(--lime)}
-.step .txt{font-size:clamp(15px,1.25vw,20px);line-height:1.4;color:rgba(255,255,255,.86)}
+  color:var(--blue)}
+.slide.dark .step .num{color:var(--lime)}
+.step .txt{font-size:clamp(15px,1.25vw,20px);line-height:1.4;color:var(--ink-2)}
+.slide.dark .step .txt{color:rgba(255,255,255,.86)}
+.step b{color:var(--ink);font-weight:600}
+.slide.dark .step b{color:#fff}
 
 .mile{border-top:2px solid var(--ink);padding-top:clamp(10px,1vw,16px)}
 .mile .m{font-family:var(--mono);font-size:clamp(12px,.88vw,14px);letter-spacing:.08em;
@@ -134,6 +145,7 @@ ul.pts li{font-size:clamp(17px,1.5vw,24px);line-height:1.42;padding-left:26px;
   position:relative;max-width:1200px}
 ul.pts li::before{content:"";position:absolute;left:0;top:.62em;width:12px;height:2px;
   background:var(--lime)}
+.slide:not(.dark) ul.pts li::before{background:var(--blue)}
 .slide.dark ul.pts li{color:rgba(255,255,255,.88)}
 
 .note{margin-top:clamp(20px,2.2vw,34px);font-size:clamp(14px,1.13vw,18px);line-height:1.45;
@@ -141,7 +153,7 @@ ul.pts li::before{content:"";position:absolute;left:0;top:.62em;width:12px;heigh
 .slide.dark .note{color:rgba(255,255,255,.5)}
 .accent-line{font-size:clamp(17px,1.56vw,25px);line-height:1.4;color:var(--lime);
   margin-top:clamp(20px,2vw,30px);max-width:1100px}
-.slide:not(.dark) .accent-line{color:var(--ink)}
+.slide:not(.dark) .accent-line{color:var(--ink);font-weight:600}
 
 /* тело слайда: в режиме презентации центрируется в остатке высоты */
 html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center;
@@ -173,14 +185,14 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
 
 <div class="canvas" id="canvas">
 
-  <!-- 1 -->
+  <!-- 1. Титул -->
   <section class="slide dark title-slide" data-active>
     <div class="title-mark">Океан Тех</div>
     <div>
       <h1>Совместное<br>предприятие</h1>
-      <p class="lead">ИИ наконец начал приносить бизнесу деньги, а не презентации.
-        Мы умеем доводить его до денег — и ищем не инвестора, а партнёра, на чьих
-        бизнесах эту машину можно масштабировать.</p>
+      <p class="lead">Мы доводим ИИ до денег в реальном бизнесе. Ищем не инвестора,
+        а партнёра, на чьих компаниях эту работу можно поставить на поток — и вырастить
+        из неё продукты для мирового рынка.</p>
     </div>
     <div class="title-foot">
       <span>Предложение о партнёрстве</span>
@@ -188,7 +200,38 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
     </div>
   </section>
 
-  <!-- 2 -->
+  <!-- 2. Предложение сразу, без интриги -->
+  <section class="slide">
+    <div class="eyebrow">Предложение</div>
+    <h2>Ваш доступ к бизнесам,<br>наша инженерная машина</h2>
+    <div class="body">
+      <div class="cols-2">
+        <div class="stack">
+          <div class="eyebrow" style="margin-bottom:0">Партнёр вносит</div>
+          <div class="card"><div class="card-title">Контракты бизнесов группы — 2 млн $ в год</div>
+            <div class="card-body">Реальные задачи реальных компаний вместо заказной
+              разработки для стартапов.</div></div>
+          <div class="card"><div class="card-title">Содержание ядра команды — 360 тыс. $ в год</div>
+            <div class="card-body">Плюс управленческая школа группы и её международные
+              юрлица как рельсы для продуктов.</div></div>
+        </div>
+        <div class="stack">
+          <div class="eyebrow" style="margin-bottom:0">Мы вносим</div>
+          <div class="card"><div class="card-title">Команду, метод и работающий стек</div>
+            <div class="card-body">Инженеров с боевым опытом, методику доведения задачи
+              до эффекта в деньгах и базу из 277 измеренных отраслевых кейсов.</div></div>
+          <div class="card"><div class="card-title">Продуктовую линию и пайплайн</div>
+            <div class="card-body">Два международных продукта на собственном голосовом
+              стеке и контракт около 1 млн $ уже в переговорах.</div></div>
+        </div>
+      </div>
+      <p class="accent-line">Доли отражают фактический вклад сторон: обе стороны зарабатывают,
+        только если машина едет. Юридическую конструкцию собирают юристы отдельным треком.</p>
+    </div>
+    <div class="mark">Океан Тех</div><div class="counter"></div>
+  </section>
+
+  <!-- 3. Кто мы -->
   <section class="slide">
     <div class="eyebrow">Кто мы</div>
     <h2>Студия с историей и командой,<br>прошедшей боевую обкатку</h2>
@@ -201,26 +244,53 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
       </div>
       <div class="cols-2">
         <div class="card">
-          <div class="card-title">ИИ-трек: доказано на деле</div>
+          <div class="card-title">ИИ-трек: доказан на деле</div>
           <div class="card-body">Два проекта, пять месяцев, 500 тысяч долларов, заказчик
-            доволен. Это была обкатка на самом требовательном типе клиента — продуктовой
-            команде с ежедневными релизами и живой нагрузкой.</div>
+            доволен. Обкатка шла на самом требовательном типе клиента — продуктовой команде
+            с ежедневными релизами и живой нагрузкой.</div>
         </div>
         <div class="card">
           <div class="card-title">Пайплайн работает сам</div>
           <div class="card-body">Сейчас в переговорах контракт около миллиона долларов
-            с правообладателем федерального бренда — дискавери уже сделан и оплачен.
-            Крупные заказчики выбирают нас без чужой дистрибуции.</div>
+            с правообладателем федерального бренда: дискавери сделан и оплачен. Крупные
+            заказчики выбирают нас без чужой дистрибуции.</div>
         </div>
       </div>
     </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 3 -->
+  <!-- 4. Метод -->
   <section class="slide">
-    <div class="eyebrow">Наработки</div>
-    <h2>Что построено, а что предстоит</h2>
+    <div class="eyebrow">Метод</div>
+    <h2>Как мы доводим ИИ до денег</h2>
+    <div class="body">
+      <div class="steps three">
+        <div class="step"><div class="num">Шаг 01</div><div class="txt">
+          <b>Приходим с чужими цифрами.</b> База из 277 верифицированных кейсов с измеренным
+          эффектом: показываем, что уже получили компании этой отрасли.</div></div>
+        <div class="step"><div class="num">Шаг 02</div><div class="txt">
+          <b>Исследование, две недели.</b> Интервью с теми, кто делает работу, разбор по
+          протоколу, расчёт эффекта экономистом — карта из трёх-пяти точек в деньгах.</div></div>
+        <div class="step"><div class="num">Шаг 03</div><div class="txt">
+          <b>Пилот и внедрение.</b> Считаем на исторических данных клиента, затем строим.
+          Решение о большом проекте принимается после цифр, а не до них.</div></div>
+      </div>
+      <div class="row trio" style="margin-top:clamp(18px,2vw,30px)">
+        <div class="stat sm"><div class="n">−54%</div><div class="l">стоимость выявления хищений энергии в распределительной сети</div></div>
+        <div class="stat sm"><div class="n">100%</div><div class="l">звонков под контролем качества вместо 1–3% вручную, телеком</div></div>
+        <div class="stat sm"><div class="n">−16%</div><div class="l">диагностических ошибок на 40 тысячах визитов, сеть клиник</div></div>
+      </div>
+      <div class="note">Вход к клиенту платный, поэтому пайплайн окупает себя и не требует
+        бюджета на пресейл.</div>
+    </div>
+    <div class="mark">Океан Тех</div><div class="counter"></div>
+  </section>
+
+  <!-- 5. Инженерная глубина -->
+  <section class="slide">
+    <div class="eyebrow">Инженерная глубина</div>
+    <h2>Свой стек — в голосовых системах</h2>
     <div class="body">
       <div class="ledger">
         <div class="item"><div class="what">Полнодуплексный голосовой диалог, задержка около секунды
@@ -239,39 +309,14 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
           <span class="sub">Прикладная надстройка над диалогом, который мы уже ведём</span></div>
           <span class="chip off">к разработке</span></div>
       </div>
-      <div class="note">Мы называем построенное и спроектированное разными словами: техническая
-        проверка занимает десять минут, и лучше пройти её на своих формулировках.</div>
+      <div class="note">Здесь мы глубже большинства студий — и именно отсюда растут наши
+        собственные продукты. Построенное и спроектированное называем разными словами:
+        техническая проверка занимает десять минут.</div>
     </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 4 -->
-  <section class="slide">
-    <div class="eyebrow">Почему покупают</div>
-    <h2>Бизнес покупает не ИИ,<br>а эффект в собственных цифрах</h2>
-    <div class="body">
-      <div class="cols-3" style="margin-bottom:clamp(18px,2vw,30px)">
-        <div class="card"><div class="card-title">Контроль качества × 100</div>
-          <div class="card-body">Проверка 100% звонков вместо 1–3% вручную; нарушения скриптов
-            с 6% до 0,3% за год. Телеком-оператор.</div></div>
-        <div class="card"><div class="card-title">Потери энергии −54%</div>
-          <div class="card-body">Стоимость выявления одного хищения вдвое ниже, результативность
-            проверок ×2,2. Распределительная сеть.</div></div>
-        <div class="card"><div class="card-title">Ошибок врачей −16%</div>
-          <div class="card-body">Измерено на 40 тысячах визитов в исследовании с участием
-            разработчика модели. Сеть клиник.</div></div>
-      </div>
-      <ul class="pts">
-        <li>Мы приходим к клиенту не с презентацией, а с бенчмарками: <b>277 верифицированных
-          кейсов</b> с измеренным эффектом, разложенных по отраслям и процессам.</li>
-        <li>Вход — платное исследование за две недели с расчётом эффекта на его данных.
-          Пайплайн окупает себя и не требует бюджета на пресейл.</li>
-      </ul>
-    </div>
-    <div class="mark">Океан Тех</div><div class="counter"></div>
-  </section>
-
-  <!-- 5 -->
+  <!-- 6. Машина -->
   <section class="slide dark">
     <div class="eyebrow">Модель</div>
     <h2>Машина, которую мы предлагаем<br>построить вместе</h2>
@@ -292,60 +337,58 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 6 -->
+  <!-- 7. Продукты на своём стеке -->
   <section class="slide">
-    <div class="eyebrow">Портфель</div>
-    <h2>Три ставки на одном голосовом ядре</h2>
-    <div class="body">
-      <div class="cols-3">
-        <div class="card"><div class="card-title">Контроль качества голосовых агентов</div>
-          <div class="card-body">«Vanta для голосовых агентов»: рынок уже финансируется
-            (Coval — 31 млн долларов, Hamming, Cekura), но никто не закрыл доказательство
-            безопасности для аудиторов и закупок. Европейский AI Act делает это обязательным
-            к 2027 году.</div></div>
-        <div class="card"><div class="card-title">Голосовой компаньон для пожилых</div>
-          <div class="card-body">Рынок разобран на половинки: Sensi (53 млн долларов) —
-            детектор без разговора, Meela и inTouch — разговор без детектора. Связки нет
-            ни у кого, а трудная половина у нас уже построена.</div></div>
-        <div class="card"><div class="card-title">ИИ для энергоактивов</div>
-          <div class="card-body">Если в группе есть сети: коммерческие потери и здоровье парка
-            оборудования. Доступ к сети — самый дефицитный актив этой категории, западные
-            команды годами стоят за ним в очереди.</div></div>
-      </div>
-      <div class="note">Это не три случайные идеи, а три применения одного стека: голос, память,
-        локальный контур, приёмочная проверка. Каждая проверяется за 90 дней по своему плану.</div>
-    </div>
-    <div class="mark">Океан Тех</div><div class="counter"></div>
-  </section>
-
-  <!-- 7 -->
-  <section class="slide">
-    <div class="eyebrow">Что нужно от партнёра</div>
-    <h2>Доступ и опора, а не деньги на прожиг</h2>
+    <div class="eyebrow">Продуктовая линия</div>
+    <h2>Два продукта на нашем голосовом стеке</h2>
     <div class="body">
       <div class="cols-2">
-        <div class="stack">
-          <div class="card"><div class="card-title">Контракты бизнесов группы — 2 млн $ в год</div>
-            <div class="card-body">Реальные задачи реальных компаний: то, ради чего мы уходим
-              из заказной разработки для стартапов.</div></div>
-          <div class="card"><div class="card-title">Содержание ядра команды — 360 тыс. $ в год</div>
-            <div class="card-body">Инженерное ядро работает над продуктами, пока сервисный
-              контур набирает обороты.</div></div>
+        <div class="card">
+          <div class="card-title">Контроль качества голосовых агентов</div>
+          <div class="card-body">Голосовых агентов сейчас строят все, а доказать, что агент
+            не сломается при смене модели у провайдера, не умеет почти никто. Наш приёмочный
+            контур — судья, регрессия, детектор дрейфа персоны — ровно об этом.</div>
+          <div class="card-line">Рынок финансируется: Coval — 31 млн $, Hamming, Cekura.
+            Свободна ниша доказательства для аудиторов и закупок, а европейский AI Act
+            делает такое доказательство обязательным к 2027 году.</div>
         </div>
-        <div class="stack">
-          <div class="card"><div class="card-title">Школа масштабирования</div>
-            <div class="card-body">Управленческая практика большой группы: мы хотим научиться
-              структурности, а не изобретать её заново на своих ошибках.</div></div>
-          <div class="card"><div class="card-title">Международные рельсы</div>
-            <div class="card-body">Юрлица группы в Европе, ОАЭ и США — контур, из которого
-              продукты продаются на мировом рынке.</div></div>
+        <div class="card">
+          <div class="card-title">Голосовой компаньон для пожилых</div>
+          <div class="card-body">Компаньон, который своим ежедневным разговором замечает
+            тревожные изменения и зовёт родственника или оператора ухода. Продаётся не семьям,
+            а сетям ухода и домам престарелых.</div>
+          <div class="card-line">Рынок разобран на половинки: Sensi (53 млн $) — детектор без
+            разговора, Meela и inTouch — разговор без детектора. Связки нет ни у кого,
+            а трудная, разговорная половина у нас уже построена.</div>
         </div>
       </div>
+      <p class="accent-line">Окно — полтора-два года: обе категории на ранней стадии,
+        лидеры не определились.</p>
     </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 8 -->
+  <!-- 8. Третье направление — из отраслей партнёра -->
+  <section class="slide">
+    <div class="eyebrow">Третье направление</div>
+    <h2>Вырастет из ваших отраслей,<br>а не из нашей фантазии</h2>
+    <div class="body">
+      <ul class="pts">
+        <li>Мы не приносим готовый список направлений: он рождается там, где у группы болит
+          и где уже есть данные. Это второй шаг машины, а не отдельная ставка.</li>
+        <li><b>Пример — энергосети.</b> Коммерческие потери: ML-приоритизация проверок дала
+          сети рост результативности в 2,2 раза и вдвое меньшую стоимость выявления хищения.
+          Продукт возвращает выручку, а не экономит расходы, — поэтому окупается сам.</li>
+        <li>Доступ к сети — самый дефицитный актив этой категории: западные команды годами
+          стоят в очереди за пилотом. У группы он есть с первого дня.</li>
+      </ul>
+      <div class="note">Конкретное направление выбираем вместе на первой сессии — по вашим
+        отраслям и вашим данным.</div>
+    </div>
+    <div class="mark">Океан Тех</div><div class="counter"></div>
+  </section>
+
+  <!-- 9. Экономика и вехи -->
   <section class="slide">
     <div class="eyebrow">Горизонт 24 месяца</div>
     <h2>Сервис финансирует продукты</h2>
@@ -368,54 +411,7 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 9 -->
-  <section class="slide dark">
-    <div class="eyebrow">Суть предложения</div>
-    <h2>Паритетное партнёрство</h2>
-    <div class="body">
-      <div class="cols-2">
-        <div>
-          <div class="eyebrow" style="margin-bottom:clamp(12px,1.2vw,18px)">Мы вносим</div>
-          <ul class="pts">
-            <li>Команду, прошедшую обкатку, и работающие наработки</li>
-            <li>Базу 277 кейсов и методологию входа к клиенту</li>
-            <li>Действующий пайплайн и портфель из трёх продуктов</li>
-          </ul>
-        </div>
-        <div>
-          <div class="eyebrow" style="margin-bottom:clamp(12px,1.2vw,18px)">Партнёр вносит</div>
-          <ul class="pts">
-            <li>Контракты бизнесов группы и содержание ядра</li>
-            <li>Управленческую школу и структуру</li>
-            <li>Международные юрлица как рельсы для продуктов</li>
-          </ul>
-        </div>
-      </div>
-      <p class="accent-line">Доли отражают фактический вклад сторон, и обе стороны зарабатывают
-        только если машина едет. Юридическую конструкцию собирают юристы отдельным треком.</p>
-    </div>
-    <div class="mark">Океан Тех</div><div class="counter"></div>
-  </section>
-
-  <!-- 10 -->
-  <section class="slide">
-    <div class="eyebrow">Окно</div>
-    <h2>Почему это разговор именно сейчас</h2>
-    <div class="body">
-      <ul class="pts">
-        <li>Голосовой ИИ дошёл до производственного качества: категории на ранней стадии,
-          лидеры не определились. Через полтора-два года вход будет стоить кратно дороже.</li>
-        <li>Европейский AI Act с 2026–2027 годов создаёт обязательный спрос на доказательство
-          безопасности агентов — рынок, которого физически не существовало год назад.</li>
-        <li>Эффект ИИ в реальном бизнесе перестал быть экспериментом: наша база показывает
-          поток измеренных результатов 2023–2026 годов. Маржу этой волны заберёт тот, кто
-          первым поставит конвейер «доступ → эффект → продукт».</li>
-      </ul>
-    </div>
-    <div class="mark">Океан Тех</div><div class="counter"></div>
-  </section>
-
-  <!-- 11 -->
+  <!-- 10. Риски -->
   <section class="slide">
     <div class="eyebrow">Честно</div>
     <h2>Что может не сработать</h2>
@@ -425,7 +421,7 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
           <div class="card-body">В ИИ-треке у нас один крупный заказчик. Поэтому мы и предлагаем
             конструкцию, где доля зарабатывается результатом, а не покупается авансом.</div></div>
         <div class="card"><div class="card-title">Продукты пока гипотезы</div>
-          <div class="card-body">У каждой есть валидация чужими деньгами — раунды прямых
+          <div class="card-body">У каждого есть валидация чужими деньгами — раунды прямых
             аналогов — и план проверки за 90 дней на деньгах предприятия, а не на вере.</div></div>
         <div class="card"><div class="card-title">Всё держится на людях</div>
           <div class="card-body">Ядро команды закрепляется опционами и вестингом: мы
@@ -437,7 +433,7 @@ html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
-  <!-- 12 -->
+  <!-- 11. Следующий шаг -->
   <section class="slide dark">
     <div class="eyebrow">Следующий шаг</div>
     <h2>Начнём с одной задачи,<br>а не с документов</h2>
