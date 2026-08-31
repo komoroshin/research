@@ -15,129 +15,166 @@
   --blue:#0460F5;
   --desk:#14181D;
   --line:rgba(20,26,34,.12);
-  --line-dark:rgba(255,255,255,.16);
   --sans:'Suisse Intl','Helvetica Neue',Helvetica,Arial,sans-serif;
   --display:'PP Right Grotesk','Suisse Intl','Helvetica Neue',Arial,sans-serif;
   --mono:'IBM Plex Mono','SF Mono',Menlo,Consolas,monospace;
+  --pad-x:clamp(22px,5vw,104px);
+  --pad-y:clamp(34px,5.5vw,88px);
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--desk);color:var(--ink);
+html,body{margin:0;background:var(--paper);color:var(--ink);
   font-family:var(--sans);-webkit-font-smoothing:antialiased}
 
-/* ---------- сцена: канва 1600×900 масштабируется во вьюпорт ---------- */
-.stage{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden}
-.canvas{width:1600px;height:900px;position:relative;transform-origin:center center;
-  box-shadow:0 40px 120px rgba(0,0,0,.45)}
-.slide{position:absolute;inset:0;background:var(--paper);padding:88px 104px;
-  display:none;flex-direction:column;overflow:hidden}
-.slide[data-active]{display:flex}
-.slide.dark{background:var(--dark);color:#fff}
+/* ---------------------------------------------------------------
+   Базовый режим — документ: слайды идут подряд и читаются скроллом.
+   Так дека открывается на телефоне и там, где не выполняется скрипт.
+   Режим презентации включается скриптом на широком экране.
+----------------------------------------------------------------*/
+.slide{position:relative;background:var(--paper);padding:var(--pad-y) var(--pad-x);
+  display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
+.slide.dark{background:var(--dark);color:#fff;border-bottom-color:rgba(255,255,255,.1)}
 .slide.dark .eyebrow{color:var(--lime)}
 .slide.dark h1,.slide.dark h2{color:#fff}
+.mark,.counter,.rail,.nav,.hint{display:none}
+
+html.deck,html.deck body{height:100%;overflow:hidden;background:var(--desk)}
+html.deck .canvas{position:fixed;inset:0}
+html.deck .slide{position:absolute;inset:0;height:100dvh;display:none;overflow-y:auto;
+  border-bottom:0}
+html.deck .slide[data-active]{display:flex}
+html.deck .mark,html.deck .counter,html.deck .rail{display:block}
+html.deck .nav{display:flex}
+html.deck .hint{display:block}
 
 /* ---------- типографика ---------- */
-.eyebrow{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-3);margin-bottom:26px;flex:none}
-h1{font-family:var(--display);font-size:96px;line-height:.98;letter-spacing:-.02em;
-  font-weight:500;margin:0;text-wrap:balance}
-h2{font-family:var(--display);font-size:58px;line-height:1.04;letter-spacing:-.015em;
-  font-weight:500;margin:0 0 34px;max-width:1180px;text-wrap:balance}
-.lead{font-size:27px;line-height:1.42;max-width:1000px;color:var(--ink-2);margin:28px 0 0}
+.eyebrow{font-family:var(--mono);font-size:clamp(11px,.88vw,14px);font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:clamp(14px,1.7vw,26px);flex:none}
+h1{font-family:var(--display);font-size:clamp(42px,7.2vw,116px);line-height:1;
+  letter-spacing:-.02em;font-weight:500;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:clamp(28px,3.6vw,58px);line-height:1.05;
+  letter-spacing:-.015em;font-weight:500;margin:0 0 clamp(20px,2.2vw,34px);
+  max-width:1180px;text-wrap:balance}
+.lead{font-size:clamp(17px,1.7vw,27px);line-height:1.42;max-width:1000px;
+  color:var(--ink-2);margin:clamp(18px,1.8vw,28px) 0 0}
 .slide.dark .lead{color:rgba(255,255,255,.72)}
 p{margin:0}
 b,strong{font-weight:600}
 
 /* ---------- титул ---------- */
-.title-slide{justify-content:space-between}
-.title-mark{font-family:var(--mono);font-size:15px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--lime)}
-.title-slide h1{font-size:124px;max-width:1300px}
-.title-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;
-  font-family:var(--mono);font-size:14px;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.5)}
+.title-mark{font-family:var(--mono);font-size:clamp(12px,.95vw,15px);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--lime);margin-bottom:clamp(40px,10vw,0px)}
+.title-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+  margin-top:clamp(32px,6vw,0px);font-family:var(--mono);font-size:clamp(11px,.88vw,14px);
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);flex-wrap:wrap}
+html.deck .title-slide{justify-content:space-between}
+html.deck .title-mark,html.deck .title-foot{margin-top:0;margin-bottom:0}
 
-/* ---------- сетки ---------- */
-.row{display:flex;gap:20px}
-.cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:56px}
-.grow{flex:1;display:flex;flex-direction:column;justify-content:center}
+/* ---------- сетки: на узком экране в одну колонку ---------- */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.3vw,20px)}
+.cols-3,.cols-2{display:grid;grid-template-columns:1fr;gap:clamp(14px,1.4vw,20px)}
+.steps,.miles{display:grid;grid-template-columns:1fr;gap:clamp(12px,1.3vw,20px)}
+@media (min-width:900px){
+  .row{grid-template-columns:repeat(4,1fr)}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-2{grid-template-columns:1fr 1fr;gap:clamp(28px,3.5vw,56px)}
+  .steps{grid-template-columns:repeat(4,1fr)}
+  .miles{grid-template-columns:repeat(5,1fr);gap:16px}
+  .row.trio{grid-template-columns:repeat(3,1fr)}
+}
+.stack{display:flex;flex-direction:column;gap:clamp(14px,1.4vw,20px)}
 
-.card{background:var(--subtle);border-radius:24px;padding:32px 34px;display:flex;
-  flex-direction:column;gap:12px}
+.card{background:var(--subtle);border-radius:clamp(16px,1.5vw,24px);
+  padding:clamp(20px,2.1vw,34px);display:flex;flex-direction:column;
+  gap:clamp(8px,.8vw,12px)}
 .slide.dark .card{background:rgba(255,255,255,.07)}
-.card-title{font-size:23px;font-weight:600;line-height:1.2}
-.card-body{font-size:19px;line-height:1.46;color:var(--ink-2)}
+.card-title{font-size:clamp(17px,1.45vw,23px);font-weight:600;line-height:1.22}
+.card-body{font-size:clamp(15px,1.2vw,19px);line-height:1.46;color:var(--ink-2)}
 .slide.dark .card-body{color:rgba(255,255,255,.7)}
 
-/* показатели */
-.stat{background:var(--subtle);border-radius:20px;padding:26px 30px;flex:1}
-.stat .n{font-family:var(--display);font-size:62px;line-height:1;letter-spacing:-.02em;
-  font-variant-numeric:tabular-nums}
-.stat .l{margin-top:10px;font-size:17px;line-height:1.35;color:var(--ink-2)}
+.stat{background:var(--subtle);border-radius:clamp(14px,1.25vw,20px);
+  padding:clamp(16px,1.85vw,30px)}
+.stat .n{font-family:var(--display);font-size:clamp(28px,3.9vw,62px);line-height:1;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{margin-top:clamp(6px,.6vw,10px);font-size:clamp(14px,1.06vw,17px);
+  line-height:1.35;color:var(--ink-2)}
 
-/* строка-реестр со статусами */
-.ledger{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
-.ledger .item{display:flex;align-items:center;gap:28px;padding:22px 4px;
-  border-bottom:1px solid var(--line)}
-.ledger .what{font-size:25px;font-weight:500;flex:1}
-.ledger .sub{display:block;font-size:17px;font-weight:400;color:var(--ink-3);margin-top:5px}
-.chip{font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
-  padding:8px 18px;border-radius:48px;white-space:nowrap;flex:none}
+/* реестр наработок: статус — часть содержания, а не украшение */
+.ledger{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ledger .item{display:flex;align-items:flex-start;gap:clamp(12px,1.75vw,28px);
+  padding:clamp(14px,1.4vw,22px) 2px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ledger .what{font-size:clamp(17px,1.56vw,25px);font-weight:500;flex:1 1 260px;
+  line-height:1.24}
+.ledger .sub{display:block;font-size:clamp(13px,1.06vw,17px);font-weight:400;
+  color:var(--ink-3);margin-top:6px;line-height:1.35}
+.chip{font-family:var(--mono);font-size:clamp(11px,.82vw,13px);letter-spacing:.08em;
+  text-transform:uppercase;padding:7px 16px;border-radius:48px;white-space:nowrap;
+  flex:none;align-self:center}
 .chip.on{background:var(--lime);color:var(--ink)}
-.chip.mid{background:rgba(4,96,245,.1);color:var(--blue)}
+.chip.mid{background:rgba(4,96,245,.12);color:var(--blue)}
 .chip.off{background:rgba(20,26,34,.07);color:var(--ink-3)}
+.slide.dark .chip.off{background:rgba(255,255,255,.1);color:rgba(255,255,255,.55)}
 
-/* нумерованные шаги — порядок здесь несёт смысл */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-.step{background:rgba(255,255,255,.07);border-radius:24px;padding:30px 28px;
-  display:flex;flex-direction:column;gap:14px}
-.step .num{font-family:var(--mono);font-size:14px;letter-spacing:.1em;color:var(--lime)}
-.step .txt{font-size:20px;line-height:1.4;color:rgba(255,255,255,.86)}
+/* нумерация — там, где порядок действительно несёт смысл */
+.step{background:rgba(255,255,255,.07);border-radius:clamp(16px,1.5vw,24px);
+  padding:clamp(20px,1.9vw,30px);display:flex;flex-direction:column;
+  gap:clamp(8px,.9vw,14px)}
+.step .num{font-family:var(--mono);font-size:clamp(11px,.88vw,14px);letter-spacing:.1em;
+  color:var(--lime)}
+.step .txt{font-size:clamp(15px,1.25vw,20px);line-height:1.4;color:rgba(255,255,255,.86)}
 
-/* вехи */
-.miles{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:12px}
-.mile{border-top:2px solid var(--ink);padding-top:16px}
-.mile .m{font-family:var(--mono);font-size:14px;letter-spacing:.08em;color:var(--blue);
-  margin-bottom:8px}
-.mile .t{font-size:18px;line-height:1.38;color:var(--ink-2)}
+.mile{border-top:2px solid var(--ink);padding-top:clamp(10px,1vw,16px)}
+.mile .m{font-family:var(--mono);font-size:clamp(12px,.88vw,14px);letter-spacing:.08em;
+  color:var(--blue);margin-bottom:6px}
+.mile .t{font-size:clamp(15px,1.13vw,18px);line-height:1.38;color:var(--ink-2)}
 
-/* маркированные списки */
-ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
-ul.pts li{font-size:24px;line-height:1.42;padding-left:30px;position:relative;max-width:1200px}
-ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height:2px;
+ul.pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;
+  gap:clamp(12px,1.15vw,18px)}
+ul.pts li{font-size:clamp(17px,1.5vw,24px);line-height:1.42;padding-left:26px;
+  position:relative;max-width:1200px}
+ul.pts li::before{content:"";position:absolute;left:0;top:.62em;width:12px;height:2px;
   background:var(--lime)}
 .slide.dark ul.pts li{color:rgba(255,255,255,.88)}
 
-/* тело слайда: шапка держится вверху, содержимое центрируется в остатке */
-.body{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
-.note{margin-top:34px;font-size:18px;line-height:1.45;color:var(--ink-3);
-  max-width:1080px}
+.note{margin-top:clamp(20px,2.2vw,34px);font-size:clamp(14px,1.13vw,18px);line-height:1.45;
+  color:var(--ink-3);max-width:1080px}
 .slide.dark .note{color:rgba(255,255,255,.5)}
-.accent-line{font-size:25px;line-height:1.4;color:var(--lime);margin-top:30px;max-width:1100px}
+.accent-line{font-size:clamp(17px,1.56vw,25px);line-height:1.4;color:var(--lime);
+  margin-top:clamp(20px,2vw,30px);max-width:1100px}
+.slide:not(.dark) .accent-line{color:var(--ink)}
 
-/* ---------- хром ---------- */
-.mark{position:absolute;top:44px;right:52px;font-family:var(--mono);font-size:12px;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+/* тело слайда: в режиме презентации центрируется в остатке высоты */
+html.deck .body{flex:1;display:flex;flex-direction:column;justify-content:center;
+  min-height:0}
+
+/* ---------- хром режима презентации ---------- */
+.mark{position:absolute;top:clamp(24px,2.6vw,44px);right:var(--pad-x);
+  font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3)}
 .slide.dark .mark{color:rgba(255,255,255,.4)}
-.counter{position:absolute;bottom:40px;right:52px;font-family:var(--mono);font-size:13px;
-  letter-spacing:.08em;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.counter{position:absolute;bottom:clamp(22px,2.4vw,40px);right:var(--pad-x);
+  font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
 .slide.dark .counter{color:rgba(255,255,255,.4)}
-.rail{position:absolute;left:0;bottom:0;height:4px;background:var(--lime);width:0;
+.rail{position:fixed;left:0;bottom:0;height:4px;background:var(--lime);width:0;z-index:3;
   transition:width .28s ease}
 @media (prefers-reduced-motion:reduce){.rail{transition:none}}
-
-.hint{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);font-family:var(--mono);
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.34);
-  pointer-events:none}
-.nav{position:fixed;inset:0;display:flex}
-.nav button{flex:1;background:none;border:0;cursor:pointer;opacity:0}
+/* подсказка лежит поверх и светлых, и тёмных слайдов — нейтральный серый */
+.hint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--mono);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8B9199;
+  pointer-events:none;z-index:4}
+.nav{position:fixed;inset:0;z-index:2}
+.nav button{position:absolute;top:0;bottom:0;width:50%;background:none;border:0;
+  cursor:pointer;opacity:0}
+.nav #prev{left:0}
+.nav #next{right:0}
 .nav button:focus-visible{opacity:1;outline:3px solid var(--lime);outline-offset:-6px}
 </style>
 
-<div class="stage"><div class="canvas" id="canvas">
+<div class="canvas" id="canvas">
 
   <!-- 1 -->
-  <section class="slide dark title-slide">
+  <section class="slide dark title-slide" data-active>
     <div class="title-mark">Океан Тех</div>
     <div>
       <h1>Совместное<br>предприятие</h1>
@@ -155,24 +192,26 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Кто мы</div>
     <h2>Студия с историей и командой,<br>прошедшей боевую обкатку</h2>
-    <div class="row" style="margin-bottom:34px">
-      <div class="stat"><div class="n">64</div><div class="l">человека в штате</div></div>
-      <div class="stat"><div class="n">48</div><div class="l">проектов реализовано</div></div>
-      <div class="stat"><div class="n">7</div><div class="l">отраслей</div></div>
-      <div class="stat"><div class="n">32</div><div class="l">клиента</div></div>
-    </div>
-    <div class="cols-2">
-      <div class="card">
-        <div class="card-title">ИИ-трек: доказано на деле</div>
-        <div class="card-body">Два проекта, пять месяцев, 500 тысяч долларов, заказчик
-          доволен. Это была обкатка на самом требовательном типе клиента — продуктовой
-          команде с ежедневными релизами и живой нагрузкой.</div>
+    <div class="body">
+      <div class="row" style="margin-bottom:clamp(20px,2.2vw,34px)">
+        <div class="stat"><div class="n">64</div><div class="l">человека в штате</div></div>
+        <div class="stat"><div class="n">48</div><div class="l">проектов реализовано</div></div>
+        <div class="stat"><div class="n">7</div><div class="l">отраслей</div></div>
+        <div class="stat"><div class="n">32</div><div class="l">клиента</div></div>
       </div>
-      <div class="card">
-        <div class="card-title">Пайплайн работает сам</div>
-        <div class="card-body">Сейчас в переговорах контракт около миллиона долларов
-          с правообладателем федерального бренда — дискавери уже сделан и оплачен.
-          Крупные заказчики выбирают нас без чужой дистрибуции.</div>
+      <div class="cols-2">
+        <div class="card">
+          <div class="card-title">ИИ-трек: доказано на деле</div>
+          <div class="card-body">Два проекта, пять месяцев, 500 тысяч долларов, заказчик
+            доволен. Это была обкатка на самом требовательном типе клиента — продуктовой
+            команде с ежедневными релизами и живой нагрузкой.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Пайплайн работает сам</div>
+          <div class="card-body">Сейчас в переговорах контракт около миллиона долларов
+            с правообладателем федерального бренда — дискавери уже сделан и оплачен.
+            Крупные заказчики выбирают нас без чужой дистрибуции.</div>
+        </div>
       </div>
     </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
@@ -182,25 +221,27 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Наработки</div>
     <h2>Что построено, а что предстоит</h2>
-    <div class="ledger">
-      <div class="item"><div class="what">Полнодуплексный голосовой диалог, задержка около секунды
-        <span class="sub">Можно перебивать и переспрашивать — разговор, а не обмен репликами</span></div>
-        <span class="chip on">работает</span></div>
-      <div class="item"><div class="what">Долгая память о человеке между сессиями
-        <span class="sub">Помнит, что рассказывали неделю назад, и опирается на это</span></div>
-        <span class="chip on">работает</span></div>
-      <div class="item"><div class="what">Локальный инференс: данные не покидают контур
-        <span class="sub">Условие сделки для регулируемых отраслей и рынков GDPR</span></div>
-        <span class="chip on">работает</span></div>
-      <div class="item"><div class="what">Приёмочный контур: удержание персоны, судья, регрессия
-        <span class="sub">Спроектирован в дискавери; разработка финансируется контрактом в переговорах</span></div>
-        <span class="chip mid">в разработке</span></div>
-      <div class="item"><div class="what">Детектор тревожных ситуаций в разговоре
-        <span class="sub">Прикладная надстройка над диалогом, который мы уже ведём</span></div>
-        <span class="chip off">к разработке</span></div>
+    <div class="body">
+      <div class="ledger">
+        <div class="item"><div class="what">Полнодуплексный голосовой диалог, задержка около секунды
+          <span class="sub">Можно перебивать и переспрашивать — разговор, а не обмен репликами</span></div>
+          <span class="chip on">работает</span></div>
+        <div class="item"><div class="what">Долгая память о человеке между сессиями
+          <span class="sub">Помнит, что рассказывали неделю назад, и опирается на это</span></div>
+          <span class="chip on">работает</span></div>
+        <div class="item"><div class="what">Локальный инференс: данные не покидают контур
+          <span class="sub">Условие сделки для регулируемых отраслей и рынков GDPR</span></div>
+          <span class="chip on">работает</span></div>
+        <div class="item"><div class="what">Приёмочный контур: удержание персоны, судья, регрессия
+          <span class="sub">Спроектирован в дискавери; разработка финансируется контрактом в переговорах</span></div>
+          <span class="chip mid">в разработке</span></div>
+        <div class="item"><div class="what">Детектор тревожных ситуаций в разговоре
+          <span class="sub">Прикладная надстройка над диалогом, который мы уже ведём</span></div>
+          <span class="chip off">к разработке</span></div>
+      </div>
+      <div class="note">Мы называем построенное и спроектированное разными словами: техническая
+        проверка занимает десять минут, и лучше пройти её на своих формулировках.</div>
     </div>
-    <div class="note">Мы называем построенное и спроектированное разными словами: техническая
-      проверка занимает десять минут, и лучше пройти её на своих формулировках.</div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -208,23 +249,25 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Почему покупают</div>
     <h2>Бизнес покупает не ИИ,<br>а эффект в собственных цифрах</h2>
-    <div class="cols-3" style="margin-bottom:30px">
-      <div class="card"><div class="card-title">Контроль качества × 100</div>
-        <div class="card-body">Проверка 100% звонков вместо 1–3% вручную; нарушения скриптов
-          с 6% до 0,3% за год. Телеком-оператор.</div></div>
-      <div class="card"><div class="card-title">Потери энергии −54%</div>
-        <div class="card-body">Стоимость выявления одного хищения вдвое ниже, результативность
-          проверок ×2,2. Распределительная сеть.</div></div>
-      <div class="card"><div class="card-title">Ошибок врачей −16%</div>
-        <div class="card-body">Измерено на 40 тысячах визитов в исследовании с участием
-          разработчика модели. Сеть клиник.</div></div>
+    <div class="body">
+      <div class="cols-3" style="margin-bottom:clamp(18px,2vw,30px)">
+        <div class="card"><div class="card-title">Контроль качества × 100</div>
+          <div class="card-body">Проверка 100% звонков вместо 1–3% вручную; нарушения скриптов
+            с 6% до 0,3% за год. Телеком-оператор.</div></div>
+        <div class="card"><div class="card-title">Потери энергии −54%</div>
+          <div class="card-body">Стоимость выявления одного хищения вдвое ниже, результативность
+            проверок ×2,2. Распределительная сеть.</div></div>
+        <div class="card"><div class="card-title">Ошибок врачей −16%</div>
+          <div class="card-body">Измерено на 40 тысячах визитов в исследовании с участием
+            разработчика модели. Сеть клиник.</div></div>
+      </div>
+      <ul class="pts">
+        <li>Мы приходим к клиенту не с презентацией, а с бенчмарками: <b>277 верифицированных
+          кейсов</b> с измеренным эффектом, разложенных по отраслям и процессам.</li>
+        <li>Вход — платное исследование за две недели с расчётом эффекта на его данных.
+          Пайплайн окупает себя и не требует бюджета на пресейл.</li>
+      </ul>
     </div>
-    <ul class="pts">
-      <li>Мы приходим к клиенту не с презентацией, а с бенчмарками: <b>277 верифицированных
-        кейсов</b> с измеренным эффектом, разложенных по отраслям и процессам.</li>
-      <li>Вход — платное исследование за две недели с расчётом эффекта на его данных.
-        Пайплайн окупает себя и не требует бюджета на пресейл.</li>
-    </ul>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -232,18 +275,20 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide dark">
     <div class="eyebrow">Модель</div>
     <h2>Машина, которую мы предлагаем<br>построить вместе</h2>
-    <div class="steps">
-      <div class="step"><div class="num">Шаг 01</div><div class="txt">Доступ к бизнесам группы:
-        платные исследования, затем проекты с эффектом на выручку</div></div>
-      <div class="step"><div class="num">Шаг 02</div><div class="txt">Каждый проект оставляет
-        повторяемый модуль — растёт библиотека решений</div></div>
-      <div class="step"><div class="num">Шаг 03</div><div class="txt">Модули собираются
-        в продукты и продаются за пределы группы, международно</div></div>
-      <div class="step"><div class="num">Шаг 04</div><div class="txt">Продукты возвращают
-        группе технологическое преимущество и долю в растущем активе</div></div>
+    <div class="body">
+      <div class="steps">
+        <div class="step"><div class="num">Шаг 01</div><div class="txt">Доступ к бизнесам группы:
+          платные исследования, затем проекты с эффектом на выручку</div></div>
+        <div class="step"><div class="num">Шаг 02</div><div class="txt">Каждый проект оставляет
+          повторяемый модуль — растёт библиотека решений</div></div>
+        <div class="step"><div class="num">Шаг 03</div><div class="txt">Модули собираются
+          в продукты и продаются за пределы группы, международно</div></div>
+        <div class="step"><div class="num">Шаг 04</div><div class="txt">Продукты возвращают
+          группе технологическое преимущество и долю в растущем активе</div></div>
+      </div>
+      <p class="accent-line">Группа конвертирует свой клиентский доступ в продуктовую стоимость.
+        Мы — механизм этой конверсии.</p>
     </div>
-    <p class="accent-line">Группа конвертирует свой клиентский доступ в продуктовую стоимость.
-      Мы — механизм этой конверсии.</p>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -251,23 +296,25 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Портфель</div>
     <h2>Три ставки на одном голосовом ядре</h2>
-    <div class="cols-3">
-      <div class="card"><div class="card-title">Контроль качества голосовых агентов</div>
-        <div class="card-body">«Vanta для голосовых агентов»: рынок уже финансируется
-          (Coval — 31 млн долларов, Hamming, Cekura), но никто не закрыл доказательство
-          безопасности для аудиторов и закупок. Европейский AI Act делает это обязательным
-          к 2027 году.</div></div>
-      <div class="card"><div class="card-title">Голосовой компаньон для пожилых</div>
-        <div class="card-body">Рынок разобран на половинки: Sensi (53 млн долларов) —
-          детектор без разговора, Meela и inTouch — разговор без детектора. Связки нет
-          ни у кого, а трудная половина у нас уже построена.</div></div>
-      <div class="card"><div class="card-title">ИИ для энергоактивов</div>
-        <div class="card-body">Если в группе есть сети: коммерческие потери и здоровье парка
-          оборудования. Доступ к сети — самый дефицитный актив этой категории, западные
-          команды годами стоят за ним в очереди.</div></div>
+    <div class="body">
+      <div class="cols-3">
+        <div class="card"><div class="card-title">Контроль качества голосовых агентов</div>
+          <div class="card-body">«Vanta для голосовых агентов»: рынок уже финансируется
+            (Coval — 31 млн долларов, Hamming, Cekura), но никто не закрыл доказательство
+            безопасности для аудиторов и закупок. Европейский AI Act делает это обязательным
+            к 2027 году.</div></div>
+        <div class="card"><div class="card-title">Голосовой компаньон для пожилых</div>
+          <div class="card-body">Рынок разобран на половинки: Sensi (53 млн долларов) —
+            детектор без разговора, Meela и inTouch — разговор без детектора. Связки нет
+            ни у кого, а трудная половина у нас уже построена.</div></div>
+        <div class="card"><div class="card-title">ИИ для энергоактивов</div>
+          <div class="card-body">Если в группе есть сети: коммерческие потери и здоровье парка
+            оборудования. Доступ к сети — самый дефицитный актив этой категории, западные
+            команды годами стоят за ним в очереди.</div></div>
+      </div>
+      <div class="note">Это не три случайные идеи, а три применения одного стека: голос, память,
+        локальный контур, приёмочная проверка. Каждая проверяется за 90 дней по своему плану.</div>
     </div>
-    <div class="note">Это не три случайные идеи, а три применения одного стека: голос, память,
-      локальный контур, приёмочная проверка. Каждая проверяется за 90 дней по своему плану.</div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -275,22 +322,24 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Что нужно от партнёра</div>
     <h2>Доступ и опора, а не деньги на прожиг</h2>
-    <div class="cols-2">
-      <div style="display:flex;flex-direction:column;gap:20px">
-        <div class="card"><div class="card-title">Контракты бизнесов группы — 2 млн $ в год</div>
-          <div class="card-body">Реальные задачи реальных компаний: то, ради чего мы уходим
-            из заказной разработки для стартапов.</div></div>
-        <div class="card"><div class="card-title">Содержание ядра команды — 360 тыс. $ в год</div>
-          <div class="card-body">Инженерное ядро работает над продуктами, пока сервисный
-            контур набирает обороты.</div></div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:20px">
-        <div class="card"><div class="card-title">Школа масштабирования</div>
-          <div class="card-body">Управленческая практика большой группы: мы хотим научиться
-            структурности, а не изобретать её заново на своих ошибках.</div></div>
-        <div class="card"><div class="card-title">Международные рельсы</div>
-          <div class="card-body">Юрлица группы в Европе, ОАЭ и США — контур, из которого
-            продукты продаются на мировом рынке.</div></div>
+    <div class="body">
+      <div class="cols-2">
+        <div class="stack">
+          <div class="card"><div class="card-title">Контракты бизнесов группы — 2 млн $ в год</div>
+            <div class="card-body">Реальные задачи реальных компаний: то, ради чего мы уходим
+              из заказной разработки для стартапов.</div></div>
+          <div class="card"><div class="card-title">Содержание ядра команды — 360 тыс. $ в год</div>
+            <div class="card-body">Инженерное ядро работает над продуктами, пока сервисный
+              контур набирает обороты.</div></div>
+        </div>
+        <div class="stack">
+          <div class="card"><div class="card-title">Школа масштабирования</div>
+            <div class="card-body">Управленческая практика большой группы: мы хотим научиться
+              структурности, а не изобретать её заново на своих ошибках.</div></div>
+          <div class="card"><div class="card-title">Международные рельсы</div>
+            <div class="card-body">Юрлица группы в Европе, ОАЭ и США — контур, из которого
+              продукты продаются на мировом рынке.</div></div>
+        </div>
       </div>
     </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
@@ -300,20 +349,22 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Горизонт 24 месяца</div>
     <h2>Сервис финансирует продукты</h2>
-    <div class="row" style="margin-bottom:40px">
-      <div class="stat"><div class="n">2 млн $</div><div class="l">выручки сервисного контура в год</div></div>
-      <div class="stat"><div class="n">30–40%</div><div class="l">валовая маржа проектов</div></div>
-      <div class="stat"><div class="n">600–800 тыс. $</div><div class="l">в год на продуктизацию — без внешнего венчура</div></div>
+    <div class="body">
+      <div class="row trio" style="margin-bottom:clamp(22px,2.6vw,40px)">
+        <div class="stat"><div class="n">2 млн $</div><div class="l">выручки сервисного контура в год</div></div>
+        <div class="stat"><div class="n">30–40%</div><div class="l">валовая маржа проектов</div></div>
+        <div class="stat"><div class="n">600–800<br>тыс. $</div><div class="l">в год на продуктизацию — без внешнего венчура</div></div>
+      </div>
+      <div class="miles">
+        <div class="mile"><div class="m">Месяц 3</div><div class="t">Первый контракт с бизнесом группы</div></div>
+        <div class="mile"><div class="m">Месяц 6</div><div class="t">Первый эффект, измеренный в цифрах клиента</div></div>
+        <div class="mile"><div class="m">Месяц 12</div><div class="t">Первый внешний платящий клиент продукта</div></div>
+        <div class="mile"><div class="m">Месяц 18</div><div class="t">Международное юрлицо, продажи вне группы</div></div>
+        <div class="mile"><div class="m">Месяц 24</div><div class="t">1 млн $ ARR продуктов — или пересборка портфеля</div></div>
+      </div>
+      <div class="note">Вехи — предмет согласования на первой сессии: мы предпочитаем считать
+        их вместе с вашими людьми, а не приносить готовыми.</div>
     </div>
-    <div class="miles">
-      <div class="mile"><div class="m">Месяц 3</div><div class="t">Первый контракт с бизнесом группы</div></div>
-      <div class="mile"><div class="m">Месяц 6</div><div class="t">Первый эффект, измеренный в цифрах клиента</div></div>
-      <div class="mile"><div class="m">Месяц 12</div><div class="t">Первый внешний платящий клиент продукта</div></div>
-      <div class="mile"><div class="m">Месяц 18</div><div class="t">Международное юрлицо, продажи вне группы</div></div>
-      <div class="mile"><div class="m">Месяц 24</div><div class="t">1 млн $ ARR продуктов — или пересборка портфеля</div></div>
-    </div>
-    <div class="note">Вехи — предмет согласования на первой сессии: мы предпочитаем считать
-      их вместе с вашими людьми, а не приносить готовыми.</div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -321,26 +372,28 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide dark">
     <div class="eyebrow">Суть предложения</div>
     <h2>Паритетное партнёрство</h2>
-    <div class="cols-2">
-      <div>
-        <div class="eyebrow" style="margin-bottom:18px">Мы вносим</div>
-        <ul class="pts">
-          <li>Команду, прошедшую обкатку, и работающие наработки</li>
-          <li>Базу 277 кейсов и методологию входа к клиенту</li>
-          <li>Действующий пайплайн и портфель из трёх продуктов</li>
-        </ul>
+    <div class="body">
+      <div class="cols-2">
+        <div>
+          <div class="eyebrow" style="margin-bottom:clamp(12px,1.2vw,18px)">Мы вносим</div>
+          <ul class="pts">
+            <li>Команду, прошедшую обкатку, и работающие наработки</li>
+            <li>Базу 277 кейсов и методологию входа к клиенту</li>
+            <li>Действующий пайплайн и портфель из трёх продуктов</li>
+          </ul>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:clamp(12px,1.2vw,18px)">Партнёр вносит</div>
+          <ul class="pts">
+            <li>Контракты бизнесов группы и содержание ядра</li>
+            <li>Управленческую школу и структуру</li>
+            <li>Международные юрлица как рельсы для продуктов</li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <div class="eyebrow" style="margin-bottom:18px">Партнёр вносит</div>
-        <ul class="pts">
-          <li>Контракты бизнесов группы и содержание ядра</li>
-          <li>Управленческую школу и структуру</li>
-          <li>Международные юрлица как рельсы для продуктов</li>
-        </ul>
-      </div>
+      <p class="accent-line">Доли отражают фактический вклад сторон, и обе стороны зарабатывают
+        только если машина едет. Юридическую конструкцию собирают юристы отдельным треком.</p>
     </div>
-    <p class="accent-line">Доли отражают фактический вклад сторон, и обе стороны зарабатывают
-      только если машина едет. Юридическую конструкцию собирают юристы отдельным треком.</p>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -348,15 +401,17 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Окно</div>
     <h2>Почему это разговор именно сейчас</h2>
-    <ul class="pts">
-      <li>Голосовой ИИ дошёл до производственного качества: категории на ранней стадии,
-        лидеры не определились. Через полтора-два года вход будет стоить кратно дороже.</li>
-      <li>Европейский AI Act с 2026–2027 годов создаёт обязательный спрос на доказательство
-        безопасности агентов — рынок, которого физически не существовало год назад.</li>
-      <li>Эффект ИИ в реальном бизнесе перестал быть экспериментом: наша база показывает
-        поток измеренных результатов 2023–2026 годов. Маржу этой волны заберёт тот, кто
-        первым поставит конвейер «доступ → эффект → продукт».</li>
-    </ul>
+    <div class="body">
+      <ul class="pts">
+        <li>Голосовой ИИ дошёл до производственного качества: категории на ранней стадии,
+          лидеры не определились. Через полтора-два года вход будет стоить кратно дороже.</li>
+        <li>Европейский AI Act с 2026–2027 годов создаёт обязательный спрос на доказательство
+          безопасности агентов — рынок, которого физически не существовало год назад.</li>
+        <li>Эффект ИИ в реальном бизнесе перестал быть экспериментом: наша база показывает
+          поток измеренных результатов 2023–2026 годов. Маржу этой волны заберёт тот, кто
+          первым поставит конвейер «доступ → эффект → продукт».</li>
+      </ul>
+    </div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -364,19 +419,21 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide">
     <div class="eyebrow">Честно</div>
     <h2>Что может не сработать</h2>
-    <div class="cols-3">
-      <div class="card"><div class="card-title">Короткий послужной список</div>
-        <div class="card-body">В ИИ-треке у нас один крупный заказчик. Поэтому мы и предлагаем
-          конструкцию, где доля зарабатывается результатом, а не покупается авансом.</div></div>
-      <div class="card"><div class="card-title">Продукты пока гипотезы</div>
-        <div class="card-body">У каждой есть валидация чужими деньгами — раунды прямых
-          аналогов — и план проверки за 90 дней на деньгах предприятия, а не на вере.</div></div>
-      <div class="card"><div class="card-title">Всё держится на людях</div>
-        <div class="card-body">Ядро команды закрепляется опционами и вестингом: мы
-          заинтересованы в длинном горизонте не меньше вашего.</div></div>
+    <div class="body">
+      <div class="cols-3">
+        <div class="card"><div class="card-title">Короткий послужной список</div>
+          <div class="card-body">В ИИ-треке у нас один крупный заказчик. Поэтому мы и предлагаем
+            конструкцию, где доля зарабатывается результатом, а не покупается авансом.</div></div>
+        <div class="card"><div class="card-title">Продукты пока гипотезы</div>
+          <div class="card-body">У каждой есть валидация чужими деньгами — раунды прямых
+            аналогов — и план проверки за 90 дней на деньгах предприятия, а не на вере.</div></div>
+        <div class="card"><div class="card-title">Всё держится на людях</div>
+          <div class="card-body">Ядро команды закрепляется опционами и вестингом: мы
+            заинтересованы в длинном горизонте не меньше вашего.</div></div>
+      </div>
+      <div class="note">Мы показываем риски сами, потому что партнёрство на десять лет
+        не строится на умолчаниях.</div>
     </div>
-    <div class="note">Мы показываем риски сами, потому что партнёрство на десять лет
-      не строится на умолчаниях.</div>
     <div class="mark">Океан Тех</div><div class="counter"></div>
   </section>
 
@@ -384,18 +441,20 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   <section class="slide dark">
     <div class="eyebrow">Следующий шаг</div>
     <h2>Начнём с одной задачи,<br>а не с документов</h2>
-    <ul class="pts">
-      <li>Час разбора: какие бизнесы группы дают первые три проекта и где там деньги</li>
-      <li>Двухнедельное исследование на одном из них — совместная проверка на деле</li>
-      <li>Условия партнёрства — после первого измеренного результата, а не до него</li>
-    </ul>
-    <p class="accent-line">Константин Морошин · Океан Тех · sales@okeantech.ru · okeantech.ru</p>
+    <div class="body">
+      <ul class="pts">
+        <li>Час разбора: какие бизнесы группы дают первые три проекта и где там деньги</li>
+        <li>Двухнедельное исследование на одном из них — совместная проверка на деле</li>
+        <li>Условия партнёрства — после первого измеренного результата, а не до него</li>
+      </ul>
+      <p class="accent-line">Константин Морошин · Океан Тех · sales@okeantech.ru · okeantech.ru</p>
+    </div>
     <div class="counter"></div>
   </section>
 
-  <div class="rail" id="rail"></div>
-</div></div>
+</div>
 
+<div class="rail" id="rail"></div>
 <div class="nav">
   <button id="prev" aria-label="Предыдущий слайд"></button>
   <button id="next" aria-label="Следующий слайд"></button>
@@ -407,28 +466,14 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var total = slides.length, i = 0;
   var rail = document.getElementById('rail');
-  var canvas = document.getElementById('canvas');
+  var root = document.documentElement;
+  // Режим презентации — только там, где слайд помещается целиком.
+  // На телефоне и в узком окне дека остаётся документом со скроллом.
+  var wide = matchMedia('(min-width: 900px) and (min-height: 500px)');
 
   slides.forEach(function(s, n){
     var c = s.querySelector('.counter');
     if (c) c.textContent = (n + 1) + ' / ' + total;
-
-    // Всё, что идёт после заголовка, живёт в центрируемом теле слайда,
-    // чтобы короткие слайды не оставляли пустоту внизу канвы.
-    if (s.classList.contains('title-slide')) return;
-    var head = s.querySelector('h2');
-    if (!head) return;
-    var body = document.createElement('div');
-    body.className = 'body';
-    var node = head.nextElementSibling;
-    while (node) {
-      var nextNode = node.nextElementSibling;
-      if (!node.classList.contains('mark') && !node.classList.contains('counter')) {
-        body.appendChild(node);
-      }
-      node = nextNode;
-    }
-    s.insertBefore(body, s.querySelector('.mark') || null);
   });
 
   function show(n){
@@ -437,17 +482,26 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
       if (k === i) s.setAttribute('data-active',''); else s.removeAttribute('data-active');
     });
     rail.style.width = ((i + 1) / total * 100) + '%';
-    try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {}
+    if (root.classList.contains('deck')) {
+      try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {}
+    }
   }
 
-  function fit(){
-    var pad = 40;
-    var k = Math.min((innerWidth - pad) / 1600, (innerHeight - pad) / 900);
-    canvas.style.transform = 'scale(' + k + ')';
+  function sync(){
+    if (wide.matches) {
+      root.classList.add('deck');
+      show(i);
+    } else {
+      root.classList.remove('deck');
+      slides.forEach(function(s){ s.removeAttribute('data-active'); });
+    }
   }
 
-  addEventListener('resize', fit);
+  if (wide.addEventListener) wide.addEventListener('change', sync);
+  else if (wide.addListener) wide.addListener(sync);
+
   addEventListener('keydown', function(e){
+    if (!root.classList.contains('deck')) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
     else if (e.key === 'Home') show(0);
@@ -457,7 +511,7 @@ ul.pts li::before{content:"";position:absolute;left:0;top:13px;width:12px;height
   document.getElementById('prev').addEventListener('click', function(){ show(i - 1); });
 
   var start = parseInt((location.hash || '').slice(1), 10);
-  fit();
-  show(isNaN(start) ? 0 : start - 1);
+  if (!isNaN(start)) i = start - 1;
+  sync();
 })();
 </script>
