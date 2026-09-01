@@ -7,6 +7,7 @@
 
     python3 _build_deck.py loss      # loss-recovery-deck.html
     python3 _build_deck.py energy    # energy-portfolio-deck.html
+    python3 _build_deck.py grid      # grid-engineering-deck.html
     python3 _build_deck.py           # обе
 """
 import sys
@@ -20,6 +21,8 @@ DECKS = {
              "Океан Тех × Возврат потерь в сетях"),
     "energy": ("_energy-deck-slides.html", "energy-portfolio-deck.html",
                "Океан Тех × Энергетика: три продукта"),
+    "grid": ("_grid-deck-slides.html", "grid-engineering-deck.html",
+             "Океан Тех × Инженерия подключения с ИИ внутри"),
 }
 
 

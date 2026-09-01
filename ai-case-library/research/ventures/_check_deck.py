@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Проверки деки перед показом. Ловит регрессии, которые иначе увидит инвестор.
 
-    python3 _check_deck.py energy
+    python3 _check_deck.py energy   # или loss / grid
 
 Четыре проверки:
 1. Числа — каждое значимое число деки должно быть в реестре с источником.
@@ -111,6 +111,51 @@ NUMBERS_LOSS = {
 }
 
 
+# Дека для непрофильного инвестора: AI-native инженерия подключения.
+# Источники — hypothesis-design-service.md, ic6-services.md, ic7-*.md.
+NUMBERS_GRID = {
+    "61": "LBNL Queued Up 2026: медиана заявка → питание, месяцев",
+    "13%": "LBNL: доля мощности, дошедшей до эксплуатации",
+    "160+": "Data Center Knowledge 2026: ожидание трансформатора, недель",
+    "89%": "DOE USEER 2025: работодатели T&D-строительства с трудностями найма",
+    "6–9": "IEEE Spectrum 10.2025: срок закрытия вакансии у малой фирмы, мес.",
+    "3%": "MISO: инженерный пакет ≈3% CAPEX (ic7-5)",
+    "0,5": "MISO: инженерный пакет ПС 345 кВ, нижняя граница, млн $ (ic7-5)",
+    "1,0": "MISO: инженерный пакет ПС 345 кВ, верхняя граница, млн $ (ic7-5)",
+    "345": "класс напряжения подстанции в якоре MISO, кВ",
+    "1900": "Burns & McDonnell India: инженеров (ic7-1)",
+    "5500": "WSP GCC India: сотрудников (ic7-1)",
+    "1,78": "WSP → POWER Engineers, млрд $, закрыто 01.10.2024",
+    "4000": "POWER Engineers: сотрудников на момент сделки",
+    "3,3": "WSP → TRC, млрд $ (ENR)",
+    "1,4": "H&MV Engineering: оценка, млрд € (08.2026, по заголовку)",
+    "4": "Aurora Solar: оценка 2022, млрд $; число покупок Enverus",
+    "2023": "Transcend: последний раунд 08.2023",
+    "28": "ThinkLabs: Series A, млн $ (03.2026)",
+    "27.08.2026": "Black & Veatch: вакансия AI Program Manager – Power Delivery & Grid",
+    "100": "Long Lake: EBITDA, млн $; SEC: подстанций в год (~100)",
+    "1,7": "Metropolis: раунд на выкуп SP Plus, млрд $ (10.2023)",
+    "1343": "Saudi Electricity: подстанций в сети, Q1 2026",
+    "15": "Saudi Arabia: контракты на сети и ПС за 2025, млрд $ (trade.gov)",
+    "130": "National Grid ETP: подстанций до 2031",
+    "2031": "National Grid ETP: горизонт программы",
+    "8": "National Grid ETP, млрд £; индийский офшор, $/час",
+    "60–80": "ic7-5: выручка на инженера при офшорной ставке, тыс. $/год",
+    "125": "ic7-5: инженеров на 10 млн $ без ИИ, нижняя граница",
+    "170": "ic7-5: инженеров на 10 млн $ без ИИ, верхняя граница",
+    "110": "расчёт: инженеров на 10 млн $ при выработке ×1,5–2, верхняя (допущение)",
+    "1,5": "допущение: рост выработки с ИИ-ядром, нижняя; ask шага 1, млн $",
+    "20%": "POWER Engineers = 20% pro forma выручки WSP в США",
+    "524": "Aurora Solar: привлечено, млн $",
+    "18–36": "допущение: срок временного ИИ-преимущества, мес.",
+    "277": "Наша база верифицированных кейсов",
+    "5–6": "ask шага 2, млн $",
+    "250": "первый дешёвый шаг, тыс. $",
+    "2024": "год сделки WSP → POWER",
+    "2025": "год сделки Pearl Street → Enverus; год контрактов КСА",
+    "2026": "текущий год",
+}
+
 # Снято по итогам проверки гипотезы либо запрещено textstyle.md.
 FORBIDDEN = [
     (r"слабо занят", "ниша признана занятой — формулировка снята 01.09.2026"),
@@ -173,15 +218,18 @@ def check_numbers(text, registry):
 
 def main():
     key = sys.argv[1] if len(sys.argv) > 1 else "energy"
-    deck = HERE / ("energy-portfolio-deck.html" if key == "energy"
-                   else "loss-recovery-deck.html")
-    slides = HERE / (f"_{key}-deck-slides.html" if key == "energy"
-                     else "_loss-deck-slides.html")
+    files = {
+        "energy": ("energy-portfolio-deck.html", "_energy-deck-slides.html", NUMBERS_ENERGY),
+        "loss": ("loss-recovery-deck.html", "_loss-deck-slides.html", NUMBERS_LOSS),
+        "grid": ("grid-engineering-deck.html", "_grid-deck-slides.html", NUMBERS_GRID),
+    }
+    deck_name, slides_name, registry = files[key]
+    deck = HERE / deck_name
+    slides = HERE / slides_name
     html = deck.read_text(encoding="utf-8")
     text = strip_tags(slides.read_text(encoding="utf-8"))
     fails = 0
 
-    registry = NUMBERS_ENERGY if key == "energy" else NUMBERS_LOSS
     unknown = check_numbers(text, registry)
     if unknown:
         print("НЕ ПРОШЛО · числа без источника в реестре:", ", ".join(unknown))
