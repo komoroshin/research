@@ -19,8 +19,9 @@ from pathlib import Path
 HERE = Path(__file__).parent
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
-# Реестр чисел: значение → где подтверждено. Число не из реестра — ошибка.
-NUMBERS = {
+# Реестры чисел по декам: значение → где подтверждено.
+# Число не из реестра своей деки — ошибка.
+NUMBERS_ENERGY = {
     "23%": "SMUD: собрано 723 тыс. $ из начисленных 3,11 млн $ (кейс EPRI)",
     "2,3": "SMUD: рост выставленной суммы 1,36 → 3,11 млн $",
     "22,4%": "NERC Нигерия 2025: потери сбора",
@@ -69,6 +70,47 @@ NUMBERS = {
     "5": "Число занятых покупателей из семи (очереди на подключение)",
 }
 
+# Дека по потерям. Источники — в loss-recovery.md, раздел «Источники».
+NUMBERS_LOSS = {
+    "23%": "SMUD: собрано из начисленного (кейс EPRI)",
+    "2,3": "SMUD: рост выставленной суммы",
+    "38": "Фаридабад: нижняя граница собираемости",
+    "51%": "Фаридабад: собираемость за FY24",
+    "22,4%": "NERC Нигерия 2025: потери сбора",
+    "18,9%": "NERC Нигерия 2025: технические и коммерческие",
+    "2003": "CHOICE Technologies: год начала работы",
+    "30+": "CHOICE: число компаний-заказчиков",
+    "100": "CHOICE: млн абонентов",
+    "2007": "CHOICE: Light в Рио как клиент с этого года",
+    "20+": "Minsait: число компаний-заказчиков",
+    "70%": "Minsait: доля выявляемого мошенничества",
+    "10%": "Minsait: доля проверяемых точек",
+    "40": "Itron Revenue Assurance: млн точек учёта ежедневно",
+    "32": "Itron: число компаний-заказчиков",
+    "2014": "Itron/Detectent: год полного цикла у SMUD",
+    "2021": "МТС EnergyTool: год начала продаж; обзор ВС РФ — 22.12.2021",
+    "50+": "МТС EnergyTool: число внедрений",
+    "76%": "ANEEL: доля десяти компаний в коммерческих потерях Бразилии",
+    "45": "ANEEL: нетехнические потери Бразилии за 2025, ТВт·ч",
+    "31%": "ANEEL: доля Light и Amazonas Energia",
+    "5,8%": "ANEEL: их доля низковольтного рынка",
+    "9,2%": "Бразилия: покрытие умными счётчиками в 2025",
+    "30,6%": "Бразилия: прогноз покрытия к 2030",
+    "2030": "Бразилия: горизонт прогноза покрытия",
+    "18,5%": "Кения: предел возмещения потерь регулятором",
+    "21,2%": "Кения: фактические потери KPLC",
+    "144": "Lei 14.133/2021, ст. 144 — оплата долей от сэкономленного",
+    "20%": "Индия: пример доли от возврата в разборе модели денег",
+    "60%": "Индия: доля от удерживаемого клиентом при доле 20%",
+    "350": "AiDASH → Schneider Electric, млн $",
+    "91,5": "AiDASH: привлечено до сделки, млн $",
+    "2026": "Текущий год",
+    "2025": "Год сравнения",
+    "1": "Порядковые номера в перечнях",
+    "4": "Число слоёв продукта",
+}
+
+
 # Снято по итогам проверки гипотезы либо запрещено textstyle.md.
 FORBIDDEN = [
     (r"слабо занят", "ниша признана занятой — формулировка снята 01.09.2026"),
@@ -81,6 +123,9 @@ FORBIDDEN = [
     (r"у нас построен стек|построенные активы — наш главный", "аргумент снят 01.09.2026"),
     (r"National Grid Partners выделил", "переупакованная аллокация, не новые деньги"),
 ]
+
+# Дека по потерям цитирует снятую формулировку, чтобы её опровергнуть.
+FORBIDDEN_EXCEPT = {"loss": [r"слабо занят"]}
 
 INTERNAL_MARKERS = ["ВНУТРЕННЕЕ", "TODO", "ЗАМЕТКА:", "не показывать"]
 
@@ -113,8 +158,8 @@ def strip_tags(html):
     return re.sub(r"<[^>]+>", " ", html)
 
 
-def check_numbers(text):
-    known = set(NUMBERS)
+def check_numbers(text, registry):
+    known = set(registry)
     problems = []
     for tok in re.findall(r"\d[\d.,]*\+?%?", text):
         tok = tok.rstrip(".,")
@@ -136,14 +181,17 @@ def main():
     text = strip_tags(slides.read_text(encoding="utf-8"))
     fails = 0
 
-    unknown = check_numbers(text)
+    registry = NUMBERS_ENERGY if key == "energy" else NUMBERS_LOSS
+    unknown = check_numbers(text, registry)
     if unknown:
         print("НЕ ПРОШЛО · числа без источника в реестре:", ", ".join(unknown))
         fails += 1
     else:
         print("ок · все значимые числа есть в реестре с источником")
 
-    hits = [(p, why) for p, why in FORBIDDEN if re.search(p, text, re.I)]
+    skip = FORBIDDEN_EXCEPT.get(key, [])
+    hits = [(p, why) for p, why in FORBIDDEN
+            if p not in skip and re.search(p, text, re.I)]
     if hits:
         for p, why in hits:
             print(f"НЕ ПРОШЛО · запрещённая формулировка /{p}/ — {why}")
@@ -157,6 +205,14 @@ def main():
         fails += 1
     else:
         print("ок · внутренних пометок нет")
+
+    head = html[:200]
+    if 'charset' in head.lower() and 'viewport' in head.lower():
+        print("ок · объявлены кодировка и viewport")
+    else:
+        print("НЕ ПРОШЛО · нет charset или viewport в начале файла —"
+              " кириллица превратится в кракозябры у части просмотрщиков")
+        fails += 1
 
     with tempfile.TemporaryDirectory() as td:
         probe = Path(td) / "probe.html"
@@ -183,4 +239,7 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except BrokenPipeError:  # вывод оборван через | head — это не ошибка проверки
+        sys.exit(0)

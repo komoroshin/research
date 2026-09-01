@@ -26,11 +26,14 @@ DECKS = {
 def build(key):
     slides_name, out_name, title = DECKS[key]
     src = SOURCE.read_text(encoding="utf-8").split("\n")
+    # Служебные строки заголовка канона не переносим — свои ставим ниже.
+    src = [l for l in src if not l.startswith("<meta ")]
 
-    # Строки 1–5 — <title> и пять @font-face со вшитыми шрифтами; 6–184 — CSS.
+    # <title> и пять @font-face со вшитыми шрифтами, затем CSS до </style>.
+    css_end = next(i for i, l in enumerate(src) if l.strip() == "</style>")
     fonts = "\n".join(src[0:5]).replace(
         "<title>Океан Тех × Партнёрство</title>", "", 1)
-    css = "\n".join(src[5:184])
+    css = "\n".join(src[5:css_end + 1])
 
     tail_start = next(i for i, l in enumerate(src)
                       if l.strip() == '<div class="rail" id="rail"></div>')
@@ -39,6 +42,8 @@ def build(key):
     slides = (HERE / slides_name).read_text(encoding="utf-8").strip()
     out = HERE / out_name
     out.write_text(
+        '<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f"<title>{title}</title>\n{fonts}\n{css}\n\n"
         f'<div class="canvas" id="canvas">\n\n{slides}\n\n</div>\n\n{tail}\n',
         encoding="utf-8",
