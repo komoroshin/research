@@ -32,8 +32,8 @@ function cards(s, dark, y, h, items, kind) {
   const gap = 0.25, cw = (CW - gap * (items.length - 1)) / items.length;
   items.forEach((it, i) => {
     const x = M + i * (cw + gap);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h, fill: { color: dark ? C.cardDark : C.subtle },
-      line: BORDER, rectRadius: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x, y, w: cw, h, fill: { color: dark ? C.cardDark : C.subtle },
+      line: BORDER });
     if (kind === "stat") {
       s.addText(it.n, { x: x + 0.35, y: y + 0.3, w: cw - 0.7, h: 0.9, fontFace: F, fontSize: 44, bold: true,
         color: dark ? C.white : C.ink, isTextBox: true, margin: 0, valign: "top" });
@@ -142,7 +142,7 @@ function small(s, dark, y, text) {
   [["Фирма до покупки", "2,8 млн $", "выручки в год · 40 инженеров · маржа бюро без ИИ", C.subtle, C.ink, C.ink2],
    ["Та же фирма с нашим ИИ", "4,2 млн $", "выручки в год · те же 40 инженеров · маржа 24% после оплаты ИИ-команды", C.white, C.ink, C.ink2]].forEach((c, i) => {
     const x = M + i * (cw + gap);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: cw, h: 1.85, fill: { color: c[3] }, line: BORDER, rectRadius: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 2.35, w: cw, h: 1.85, fill: { color: c[3] }, line: BORDER });
     s.addText(c[0].toUpperCase(), { x: x + 0.35, y: 2.55, w: cw - 0.7, h: 0.3, fontFace: MONO, fontSize: 9.5, color: C.blue, charSpacing: 2, isTextBox: true, margin: 0 });
     s.addText(c[1], { x: x + 0.35, y: 2.9, w: cw - 0.7, h: 0.75, fontFace: F, fontSize: 38, bold: true, color: c[4], isTextBox: true, margin: 0, valign: "top" });
     s.addText(c[2], { x: x + 0.35, y: 3.65, w: cw - 0.7, h: 0.5, fontFace: F, fontSize: 12, color: c[5], isTextBox: true, margin: 0, valign: "top" });
@@ -188,7 +188,7 @@ function small(s, dark, y, text) {
   const sw = (CW - 0.25 * 3) / 4;
   [["48", "проектов реализовано, 32 клиента из 7 отраслей"], ["64", "человека в штате: исследователи, инженеры, дизайнеры"], ["14", "исследователей и ML-инженеров; база из 277 верифицированных кейсов ИИ"], ["59%", "сокращение сроков создания решений на собственном фреймворке (по данным компании)"]].forEach((c, i) => {
     const x = M + i * (sw + 0.25);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.35, w: sw, h: 1.2, fill: { color: C.white }, line: BORDER, rectRadius: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 2.35, w: sw, h: 1.2, fill: { color: C.white }, line: BORDER });
     s.addText(c[0], { x: x + 0.25, y: 2.45, w: 1.1, h: 0.5, fontFace: F, fontSize: 24, bold: true, color: C.ink, isTextBox: true, margin: 0 });
     s.addText(c[1], { x: x + 1.3, y: 2.47, w: sw - 1.5, h: 1.0, fontFace: F, fontSize: 9.5, color: C.ink2, isTextBox: true, margin: 0, valign: "top" });
   });
@@ -199,7 +199,7 @@ function small(s, dark, y, text) {
   const gap = 0.25, cw = (CW - gap * 2) / 3, ph = 1.3;
   people.forEach((pp, i) => {
     const x = M + i * (cw + gap);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 3.75, w: cw, h: 1.7, fill: { color: C.white }, line: BORDER, rectRadius: 0 });
+    s.addShape(pres.shapes.RECTANGLE, { x, y: 3.75, w: cw, h: 1.7, fill: { color: C.white }, line: BORDER });
     s.addImage({ path: PH + pp[0], x: x + 0.2, y: 3.95, w: ph * 0.86, h: ph });
     const tx = x + 0.2 + ph * 0.86 + 0.18, tw = cw - (ph * 0.86 + 0.55);
     s.addText(pp[1], { x: tx, y: 3.92, w: tw, h: 0.3, fontFace: F, fontSize: 12, bold: true, color: C.ink, isTextBox: true, margin: 0, fit: "shrink" });
