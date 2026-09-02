@@ -23,6 +23,8 @@ DECKS = {
                "Океан Тех × Энергетика: три продукта"),
     "grid": ("_grid-deck-slides.html", "grid-engineering-deck.html",
              "Океан Тех × Инженерия подключения с ИИ внутри"),
+    "vision": ("_vision-deck-slides.html", "grid-vision-deck.html",
+               "Океан Тех × Электричество — новая нефть эпохи ИИ"),
 }
 
 

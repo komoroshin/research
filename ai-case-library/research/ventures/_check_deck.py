@@ -156,6 +156,24 @@ NUMBERS_GRID = {
     "2026": "текущий год",
 }
 
+# Версия для импульсивного инвестора: те же источники плюс вижн-числа.
+NUMBERS_VISION = dict(NUMBERS_GRID, **{
+    "2061": "LBNL Queued Up 2026: ГВт в очереди на подключение (генерация)",
+    "3,54": "PJM: издержки от перегрузки, I полугодие 2026, млрд $",
+    "180%": "PJM: рост издержек от перегрузки за полугодие (179,9%)",
+    "116": "GE Vernova: бэклог газовых турбин, ГВт (II кв. 2026)",
+    "507": "Data Center Knowledge 2026: работников нужно к 2030, тыс.",
+    "2030": "горизонт оценки дефицита работников",
+    "500": "цель: инженеров в группе к годам 4–5 (не прогноз)",
+    "30%": "HRSD КСА № 103105 от 26.01.2025: саудизация технических инженерных профессий",
+    "103105": "номер постановления HRSD КСА",
+    "26.01.2025": "дата постановления HRSD КСА",
+    "1,05": "Emerald AI: оценка, млрд $ (25.08.2026)",
+    "25.08.2026": "дата раунда Emerald AI",
+    "5": "транш 2, млн $",
+    "3": "транш 3, млн $",
+})
+
 # Снято по итогам проверки гипотезы либо запрещено textstyle.md.
 FORBIDDEN = [
     (r"слабо занят", "ниша признана занятой — формулировка снята 01.09.2026"),
@@ -222,6 +240,7 @@ def main():
         "energy": ("energy-portfolio-deck.html", "_energy-deck-slides.html", NUMBERS_ENERGY),
         "loss": ("loss-recovery-deck.html", "_loss-deck-slides.html", NUMBERS_LOSS),
         "grid": ("grid-engineering-deck.html", "_grid-deck-slides.html", NUMBERS_GRID),
+        "vision": ("grid-vision-deck.html", "_vision-deck-slides.html", NUMBERS_VISION),
     }
     deck_name, slides_name, registry = files[key]
     deck = HERE / deck_name
