@@ -5,7 +5,8 @@ const W = 13.33, M = 0.6, CW = W - 2 * M;
 const C = { dark: "232323", ink: "141A22", lime: "D5F774", blue: "0460F5", subtle: "F7F7F7", white: "FFFFFF",
             cardDark: "343434", ink2: "5C6067", ink3: "8A8E94", wh2: "B8B8B8", wh3: "8C8C8C", ph: "E4E6EA", phDark: "3E3E3E" };
 const F = "Arial", MONO = "Courier New";
-let n = 0; const TOTAL = 13;
+let n = 0; const TOTAL = 14;
+const PH = __dirname + '/_team/';
 
 function base(dark, eyebrow, title, opts = {}) {
   n++;
@@ -169,23 +170,44 @@ function small(s, dark, y, text) {
   s.addNotes("Не называть выручку года 5 как «будет». Если спросят «когда тысяча инженеров?» — «после того, как пять фирм покажут одно ядро и одну маржу».");
 }
 
-// 10 · Команда — плейсхолдеры
+// 10 · Кто мы
 {
-  const s = base(false, "8 · Команда", "[Заголовок: кто мы и почему именно мы]");
+  const s = base(false, "8 · Кто мы", "Океан Тех — компания, которая исследует искусственный интеллект и строит решения для бизнеса");
   const gap = 0.25, cw = (CW - gap * 3) / 4;
-  for (let i = 0; i < 4; i++) {
+  [["48", "проектов реализовано"], ["32", "клиента из разных отраслей"], ["64", "человека в штате: исследователи, инженеры, продуктовые дизайнеры"], ["7", "отраслей фокуса: финансы, медицина, производство, e-commerce и другие"]].forEach((c, i) => {
     const x = M + i * (cw + gap);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.3, w: cw, h: 3.1, fill: { color: C.subtle }, line: { color: "D6D9DE", dashType: "dash", width: 1 }, rectRadius: 0.18 });
-    s.addShape(pres.shapes.OVAL, { x: x + 0.3, y: 2.6, w: 1.0, h: 1.0, fill: { color: C.ph }, line: { color: "C9CDD3", dashType: "dash", width: 1 } });
-    s.addText("[фото]", { x: x + 0.3, y: 2.6, w: 1.0, h: 1.0, align: "center", valign: "middle", fontFace: F, fontSize: 9, color: C.ink3, isTextBox: true, margin: 0 });
-    s.addText("[Имя Фамилия]", { x: x + 0.3, y: 3.8, w: cw - 0.6, h: 0.35, fontFace: F, fontSize: 15, bold: true, color: C.ink, isTextBox: true, margin: 0 });
-    s.addText("[Роль в проекте]", { x: x + 0.3, y: 4.15, w: cw - 0.6, h: 0.3, fontFace: F, fontSize: 12, color: C.blue, isTextBox: true, margin: 0 });
-    s.addText("[Одна строка: чем занимался раньше и что делает здесь]", { x: x + 0.3, y: 4.5, w: cw - 0.6, h: 0.8, fontFace: F, fontSize: 11.5, color: C.ink2, isTextBox: true, margin: 0, valign: "top" });
-  }
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: M, y: 5.65, w: CW, h: 0.9, fill: { color: C.white }, line: { color: "D6D9DE", dashType: "dash", width: 1 }, rectRadius: 0.12 });
-  s.addText("[Чего в команде пока нет и кого добавляем первым — например, инженер-партнёр с лицензией на целевом рынке]",
-    { x: M + 0.3, y: 5.65, w: CW - 0.6, h: 0.9, fontFace: F, fontSize: 12.5, color: C.ink3, isTextBox: true, margin: 0, valign: "middle" });
-  s.addNotes("Плейсхолдеры. Заполнить: имена, роли, одна строка опыта. Честно ответить на вопрос «вы когда-нибудь проектировали подстанцию или покупали компанию?» — через блок «кого добавляем первым».");
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.3, w: cw, h: 1.9, fill: { color: C.subtle }, line: { color: C.subtle }, rectRadius: 0.18 });
+    s.addText(c[0], { x: x + 0.3, y: 2.5, w: cw - 0.6, h: 0.8, fontFace: F, fontSize: 40, bold: true, color: C.ink, isTextBox: true, margin: 0, valign: "top" });
+    s.addText(c[1], { x: x + 0.3, y: 3.3, w: cw - 0.6, h: 0.8, fontFace: F, fontSize: 11.5, color: C.ink2, isTextBox: true, margin: 0, valign: "top" });
+  });
+  const items = [
+    { b: "Центр исследований", t: "изучает поведение языковых моделей и агентов на реальных задачах бизнеса: 14 исследователей и ML-инженеров, база из 277 верифицированных кейсов ИИ. Это он за день проверил одиннадцать гипотез и оставил одну." },
+    { b: "Департамент разработки", t: "строит и внедряет ИИ в сложных системах — от высоконагруженных сервисов до корпоративных внедрений. Собственный фреймворк сокращает сроки создания и интеграции решений на 59%." },
+    { b: "О нас пишут", t: "Inc., RTVI, TAdviser — методы, данные и разбор реальных внедрений." }];
+  const runs = [];
+  items.forEach((it, i) => { runs.push({ text: it.b + " ", options: { bold: true, color: C.ink } }); runs.push({ text: it.t, options: { color: C.ink, breakLine: i < items.length - 1 } }); });
+  s.addText(runs, { x: M, y: 4.5, w: CW - 0.4, h: 2.2, fontFace: F, fontSize: 13, bullet: { indent: 18 }, paraSpaceAfter: 8, isTextBox: true, margin: 0, valign: "top", lineSpacingMultiple: 1.1 });
+  s.addNotes("Факты из корпоративной презентации Океан Тех (2026): 48 проектов, 32 клиента, 64 сотрудника, 7 отраслей; Центр исследований основан в 2025, 14 исследователей; фреймворк — 59% сокращения сроков; публикации Inc., RTVI, TAdviser. 277 кейсов — база Центра исследований.");
+}
+
+// 11 · Команда
+{
+  const s = base(false, "9 · Команда", "Управленческая дисциплина, понимание задач бизнеса и инженерный уровень");
+  const people = [
+    ["penkov.png", "Дмитрий Пеньков", "Генеральный директор, основатель", "Предприниматель с опытом в технологиях. Buckswood School (Англия), МИРБИС, экономический лицей МБИ им. А. Собчака, MBA при МГИМО."],
+    ["moroshin.png", "Константин Морошин", "Глава Центра исследований", "Исследователь UX в B2B ИТ. Проекты для МТС Ред, КРОК, Инностейдж, Сбера. Более 10 лет продаж ИТ в энтерпрайзе."],
+    ["kovalev.png", "Сергей Ковалёв", "Управляющий партнёр", "Предприниматель и стратег с обширным опытом в области искусственного интеллекта и Web3."]];
+  const gap = 0.25, cw = (CW - gap * 2) / 3, ph = 2.05;
+  people.forEach((pp, i) => {
+    const x = M + i * (cw + gap);
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.3, w: cw, h: 4.15, fill: { color: C.subtle }, line: { color: C.subtle }, rectRadius: 0.18 });
+    s.addImage({ path: PH + pp[0], x: x + 0.3, y: 2.55, w: ph * 0.86, h: ph });
+    s.addText(pp[1], { x: x + 0.3, y: 4.75, w: cw - 0.6, h: 0.35, fontFace: F, fontSize: 15, bold: true, color: C.ink, isTextBox: true, margin: 0 });
+    s.addText(pp[2], { x: x + 0.3, y: 5.1, w: cw - 0.6, h: 0.3, fontFace: F, fontSize: 11.5, color: C.blue, isTextBox: true, margin: 0 });
+    s.addText(pp[3], { x: x + 0.3, y: 5.45, w: cw - 0.6, h: 0.9, fontFace: F, fontSize: 10.5, color: C.ink2, isTextBox: true, margin: 0, valign: "top" });
+  });
+  small(s, false, 6.6, "60+ человек в штате: исследователи, инженеры, продуктовые дизайнеры. Чего в команде пока нет и кого добавляем первым — инженер-партнёр с лицензией на целевом рынке.");
+  s.addNotes("Биографии — из корпоративной презентации Океан Тех. Честный ответ на «вы проектировали подстанции?» — нет, поэтому первая покупка и первый найм — инженер-партнёр с лицензией; ИИ и метод — наши.");
 }
 
 // 11 · Просим
