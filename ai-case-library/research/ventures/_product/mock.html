@@ -1,0 +1,59 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>mock</title>
+<style>
+*{box-sizing:border-box} body{margin:0;width:1440px;height:900px;background:#EEF0F3;font-family:Inter,Arial,Helvetica,sans-serif;color:#141A22;position:relative;overflow:hidden}
+.top{height:56px;background:#141A22;color:#fff;display:flex;align-items:center;padding:0 28px;gap:24px;font-size:15px}
+.top b{font-size:16px;letter-spacing:.02em}.top span{opacity:.6}.top .r{margin-left:auto;opacity:.6;font-size:13px}
+.wrap{display:grid;grid-template-columns:440px 1fr;gap:20px;padding:20px 28px;height:844px}
+.panel{background:#fff;border-radius:14px;padding:22px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+h2{margin:0 0 14px;font-size:17px}.f{margin-bottom:12px}.f label{display:block;font-size:12px;color:#6A7079;margin-bottom:5px}
+.f .v{border:1px solid #D9DDE3;border-radius:8px;padding:10px 12px;font-size:15px;background:#FAFBFC}
+.btn{margin-top:14px;background:#0460F5;color:#fff;border-radius:8px;padding:12px;text-align:center;font-weight:600;font-size:15px}
+.hint{font-size:12px;color:#8A8E94;margin-top:12px;line-height:1.45}
+.right{display:flex;flex-direction:column;gap:14px}
+.hdr{display:flex;align-items:center;justify-content:space-between}
+.hdr .t{font-size:20px;font-weight:700}.hdr .s{font-size:13px;color:#6A7079}
+.pill{background:#D5F774;color:#141A22;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600}
+.list{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:36px 1fr 220px 130px;align-items:center;gap:14px;padding:12px 14px;border:1px solid #E4E7EB;border-radius:10px;background:#fff}
+.ok{width:22px;height:22px;border-radius:50%;background:#1E9E5A;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.warn{background:#E0A100}.wait{background:#C7CBD1}
+.row .n{font-size:15px;font-weight:600}.row .d{font-size:12px;color:#6A7079;margin-top:2px}
+.row .m{font-size:13px;color:#141A22}.row .st{font-size:12px;color:#6A7079;text-align:right}
+.foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.kpi{background:#F6F7F9;border-radius:10px;padding:12px 14px}.kpi .k{font-size:22px;font-weight:700}.kpi .l{font-size:12px;color:#6A7079}
+.sign{background:#141A22;color:#fff;border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.sign b{font-size:15px}.sign span{font-size:12px;opacity:.7}
+.wm{position:absolute;left:28px;bottom:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8A8E94}
+</style></head><body>
+<div class="top"><b>Океан Грид</b><span>ИИ-проектировщик подключения к сети</span><span>Проекты</span><span>Нормы сетей</span><span>Библиотека оборудования</span><div class="r">Проект #0412 · инженер: A. Al-Harbi (SCE №••••)</div></div>
+<div class="wrap">
+  <div class="panel">
+    <h2>Вход: площадка и мощность</h2>
+    <div class="f"><label>Объект</label><div class="v">Дата-центр · 120 МВт ИТ-нагрузки</div></div>
+    <div class="f"><label>Площадка</label><div class="v">Эр-Рияд, промзона Riyadh 2nd · 24.63° N, 46.78° E</div></div>
+    <div class="f"><label>Сетевая компания и точка подключения</label><div class="v">Saudi Electricity Company · ПС 132 кВ, 3,2 км</div></div>
+    <div class="f"><label>Требуемая мощность / напряжение</label><div class="v">150 МВА · 132/33 кВ · N-1</div></div>
+    <div class="f"><label>Срок готовности</label><div class="v">Пакет для подачи в сеть — 3 недели</div></div>
+    <div class="btn">Собрать пакет проекта</div>
+    <div class="hint">ИИ считает схему, чертит и проверяет по нормам выбранной сети. Инженер проверяет и подписывает — без подписи пакет в сеть не уходит.</div>
+  </div>
+  <div class="right">
+    <div class="hdr"><div><div class="t">Выход: пакет проекта подключения</div><div class="s">7 документов · нормы SEC Distribution & Transmission Code · версия 3</div></div><div><div class="pill">Готово к проверке инженером</div><div style="font-size:11px;color:#8A8E94;text-align:right;margin-top:6px;letter-spacing:.1em;text-transform:uppercase">Концепт интерфейса</div></div></div>
+    <div class="list">
+      <div class="row"><div class="ok">✓</div><div><div class="n">Схема подключения (однолинейная)</div><div class="d">Два ввода 132 кВ, секционирование 33 кВ, резерв N-1</div></div><div class="m">Сгенерировано ИИ · 14 мин</div><div class="st">к проверке</div></div>
+      <div class="row"><div class="ok">✓</div><div><div class="n">Расчёт токов КЗ и уставок защит</div><div class="d">По данным сети в точке подключения</div></div><div class="m">Сгенерировано ИИ · 22 мин</div><div class="st">к проверке</div></div>
+      <div class="row"><div class="ok">✓</div><div><div class="n">Компоновка подстанции 132/33 кВ</div><div class="d">План, разрезы, кабельные трассы</div></div><div class="m">Сгенерировано ИИ · 41 мин</div><div class="st">к проверке</div></div>
+      <div class="row"><div class="ok">✓</div><div><div class="n">Спецификация оборудования</div><div class="d">Трансформаторы 2×80 МВА, КРУЭ 132 кВ, КРУ 33 кВ — с учётом сроков поставки</div></div><div class="m">Сгенерировано ИИ · 9 мин</div><div class="st">к проверке</div></div>
+      <div class="row"><div class="ok warn">!</div><div><div class="n">Проверка по нормам сетевой компании</div><div class="d">2 замечания: сечение заземляющего контура, расстояние до ограды</div></div><div class="m">Проверено ИИ · 6 мин</div><div class="st">требует решения инженера</div></div>
+      <div class="row"><div class="ok">✓</div><div><div class="n">Пояснительная записка и расчёт нагрузок</div><div class="d">Формат подачи SEC, английский</div></div><div class="m">Сгенерировано ИИ · 12 мин</div><div class="st">к проверке</div></div>
+      <div class="row"><div class="ok wait">·</div><div><div class="n">Пакет для подачи в сеть</div><div class="d">Собирается после подписи инженера</div></div><div class="m">—</div><div class="st">ждёт подписи</div></div>
+    </div>
+    <div class="foot">
+      <div class="kpi"><div class="k">1 ч 44 мин</div><div class="l">работа ИИ над пакетом</div></div>
+      <div class="kpi"><div class="k">~6 ч</div><div class="l">проверка инженером (оценка)</div></div>
+      <div class="sign"><div><b>Отправить инженеру на подпись</b><br><span>A. Al-Harbi · лицензия SCE</span></div><div>→</div></div>
+    </div>
+  </div>
+</div>
+<div class="wm">Концепт интерфейса · не работающая система · данные примера условные</div>
+</body></html>
