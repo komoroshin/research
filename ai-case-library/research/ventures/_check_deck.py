@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Проверки деки перед показом. Ловит регрессии, которые иначе увидит инвестор.
 
-    python3 _check_deck.py energy   # или loss / grid
+    python3 _check_deck.py energy   # или loss / grid / vision / simple
 
 Четыре проверки:
 1. Числа — каждое значимое число деки должно быть в реестре с источником.
@@ -276,6 +276,7 @@ def main():
         "loss": ("loss-recovery-deck.html", "_loss-deck-slides.html", NUMBERS_LOSS),
         "grid": ("grid-engineering-deck.html", "_grid-deck-slides.html", NUMBERS_GRID),
         "vision": ("grid-vision-deck.html", "_vision-deck-slides.html", NUMBERS_VISION),
+        "simple": ("grid-simple-deck.html", "_simple-deck-slides.html", NUMBERS_VISION),
     }
     deck_name, slides_name, registry = files[key]
     deck = HERE / deck_name

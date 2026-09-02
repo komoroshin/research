@@ -25,6 +25,8 @@ DECKS = {
              "Океан Тех × Инженерия подключения с ИИ внутри"),
     "vision": ("_vision-deck-slides.html", "grid-vision-deck.html",
                "Океан Тех × Электричество — новая нефть эпохи ИИ"),
+    "simple": ("_simple-deck-slides.html", "grid-simple-deck.html",
+               "Океан Тех × ИИ не хватает электричества"),
 }
 
 
