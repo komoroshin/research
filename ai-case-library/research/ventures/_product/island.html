@@ -1,0 +1,49 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>island</title>
+<style>
+*{box-sizing:border-box} body{margin:0;width:1440px;height:900px;background:#0F1419;font-family:Inter,Arial,Helvetica,sans-serif;color:#fff;overflow:hidden}
+.top{height:56px;display:flex;align-items:center;padding:0 28px;gap:24px;font-size:15px;border-bottom:1px solid rgba(255,255,255,.08)}.top b{font-size:16px}.top span{opacity:.55}.top .r{margin-left:auto;opacity:.55;font-size:13px}
+.wrap{display:grid;grid-template-columns:400px 1fr;gap:20px;padding:22px 28px;height:844px}
+.side{display:flex;flex-direction:column;gap:12px}.q{background:#161C24;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px;font-size:15px}.q small{display:block;font-size:11px;opacity:.5;margin-bottom:4px}
+h2{margin:0;font-size:17px}.btn{background:#D5F774;color:#0F1419;border-radius:8px;padding:12px;text-align:center;font-weight:700;font-size:15px}
+.cmp{margin-top:6px;background:#161C24;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px}.cmp .t{font-size:12px;opacity:.55;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.bar{display:grid;grid-template-columns:110px 1fr 60px;align-items:center;gap:10px;font-size:13px;margin:6px 0}.bar i{display:block;height:10px;border-radius:5px}
+.main{display:flex;flex-direction:column;gap:14px}
+.hdr{display:flex;justify-content:space-between;align-items:center}.hdr .t{font-size:20px;font-weight:700}.hdr .s{font-size:13px;opacity:.55}.pill{background:#D5F774;color:#0F1419;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mod{background:#161C24;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px}.mod .n{font-size:15px;font-weight:700}.mod .v{font-size:24px;font-weight:700;margin:6px 0 2px}.mod .d{font-size:12px;opacity:.6;line-height:1.4}.mod .ai{margin-top:8px;font-size:12px;color:#D5F774}
+.tl{background:#161C24;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px}.tl .n{font-size:13px;opacity:.55;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.row{display:grid;grid-template-columns:200px 1fr;align-items:center;gap:12px;font-size:13px;margin:6px 0}.row i{display:block;height:14px;border-radius:7px;position:relative}.row i b{position:absolute;right:8px;top:-1px;font-size:11px;font-weight:600}
+.wm{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;text-align:right}
+</style></head><body>
+<div class="top"><b>Океан Энергоостров</b><span>ИИ-энергетик для дата-центров</span><span>Конфигурации</span><span>Оборудование и сроки</span><span>Разрешения</span><div class="r">Проект «Riyadh DC-3» · КОНЦЕПТ ИНТЕРФЕЙСА, ДАННЫЕ УСЛОВНЫЕ</div></div>
+<div class="wrap">
+  <div class="side">
+    <h2>Вход</h2>
+    <div class="q"><small>Объект</small>Дата-центр · 120 МВт ИТ · 24/7</div>
+    <div class="q"><small>Площадка</small>Эр-Рияд · 38 га · газ в 4 км · сеть 132 кВ в 3 км</div>
+    <div class="q"><small>Ограничения</small>Энергия через 14 месяцев · резерв N+1 · CO₂ не выше нормы КСА</div>
+    <div class="btn">Собрать энергоостров</div>
+    <div class="cmp"><div class="t">Срок до первого мегаватта</div>
+      <div class="bar"><span>Только сеть</span><i style="background:#F28B4C;width:100%"></i><span>60 мес</span></div>
+      <div class="bar"><span>Энергоостров</span><i style="background:#7CE38B;width:23%"></i><span>14 мес</span></div>
+      <div class="bar"><span>Остров + сеть</span><i style="background:#D5F774;width:23%"></i><span>14 → 60</span></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="hdr"><div><div class="t">Конфигурация энергоострова · вариант 2 из 5</div><div class="s">подобрана под реальные сроки поставки оборудования и нормы КСА</div></div><div class="pill">Готово к проекту</div></div>
+    <div class="grid">
+      <div class="mod"><div class="n">Газовые турбины</div><div class="v">6 × 22 МВт</div><div class="d">Аэродеривативные, поставка 14 мес. Вариант 3 × 45 МВт отклонён: очередь 30+ мес.</div><div class="ai">ИИ: заменил тяжёлые турбины на доступные</div></div>
+      <div class="mod"><div class="n">Накопитель</div><div class="v">60 МВт / 240 МВт·ч</div><div class="d">Покрывает пики и пуск турбин, продаёт резерв в сеть после подключения.</div><div class="ai">ИИ: размер под профиль нагрузки ИТ</div></div>
+      <div class="mod"><div class="n">Солнце</div><div class="v">40 МВт</div><div class="d">Дневная доля, снижает расход газа на 18%. Площадь — в границах участка.</div><div class="ai">ИИ: посчитал по инсоляции площадки</div></div>
+      <div class="mod"><div class="n">Резерв сети</div><div class="v">132 кВ · 50 МВт</div><div class="d">Подключение к сети как резерв и канал продажи излишков — по обычной очереди, параллельно.</div><div class="ai">ИИ: пакет для сети — отдельным проектом</div></div>
+    </div>
+    <div class="tl"><div class="n">План · до первого мегаватта</div>
+      <div class="row"><span>Проект и разрешения</span><i style="background:#3A4452;width:28%"><b>4 мес</b></i></div>
+      <div class="row"><span>Поставка турбин и батарей</span><i style="background:#3A4452;width:70%;margin-left:0"><b>14 мес</b></i></div>
+      <div class="row"><span>Стройка и пуск</span><i style="background:#3A4452;width:40%;margin-left:30%"><b>мес 8–14</b></i></div>
+      <div class="row"><span>Подключение к сети (резерв)</span><i style="background:#2B3340;width:100%"><b>очередь сети · ~60 мес</b></i></div>
+    </div>
+    <div class="wm">Данные примера условные · сроки поставки — допущение</div>
+  </div>
+</div>
+</body></html>
