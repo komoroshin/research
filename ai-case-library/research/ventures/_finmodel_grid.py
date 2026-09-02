@@ -12,7 +12,8 @@ BILLABLE_HOURS = 2000        # оплачиваемых часов на инже
 RATE_LOW, RATE_HIGH = 30, 40 # $/час при субподряде у EPC (ic7-5: ≤30–40)
 OFFSHORE_FLOOR = 8           # индийский офшор, $/час (ic7-5) — ценовой пол
 AI_TEAM_COST = 1.2e6         # ИИ-ядро: 8–10 разработчиков в год, $ (допущение)
-ASK_TOTAL = 10e6             # ask деки
+ASK_TOTAL = 10e6             # ask сдержанной деки (grid)
+ASK_VISION = 30e6            # ask вижн-деки: ядро + 5 фирм + роботы
 
 # ---- Рычаги-допущения ---------------------------------------------------------
 SCENARIOS = {
@@ -84,6 +85,29 @@ line("Маржа при полной выработке", lambda r: f"{r['margin
 line("Инженеров на 10 млн $ выручки", lambda r: f"{r['eng_for_10m']:.0f}")
 line("Потребность в капитале за 24 мес.", lambda r: m(r["need"]))
 print()
+# ---- Roll-up: что покупают 30 млн $ (вижн-дека) -------------------------------
+base = rows[1]                       # базовый сценарий как единица
+N_FIRMS = 5
+ROBOTS, ROBOT_PRICE = 30, 52e3       # парк роботов, $ (State Grid: $41–52 тыс.)
+acq = N_FIRMS * base["price"]
+robots = ROBOTS * ROBOT_PRICE
+core_3y = AI_TEAM_COST * 3
+ramp_gap = N_FIRMS * max(0.0, base["cost"] - AI_TEAM_COST - base["run_rate"] * RAMP) * 0.5
+deal_costs = N_FIRMS * 0.4e6
+need30 = acq + robots + core_3y + ramp_gap + deal_costs
+run30 = N_FIRMS * base["run_rate"]
+eng30 = N_FIRMS * base["engineers"]
+print("## Roll-up на 30 млн $ (вижн-дека, базовый сценарий × 5 фирм)\n")
+print(f"- Покупка {N_FIRMS} фирм по {m(base['price'])}: {m(acq)}.")
+print(f"- Парк {ROBOTS} роботов по {ROBOT_PRICE/1e3:.0f} тыс. $: {m(robots)}.")
+print(f"- ИИ-ядро три года: {m(core_3y)}; интеграционный недобор: {m(ramp_gap)}; "
+      f"сделки и юристы: {m(deal_costs)}.")
+print(f"- **Потребность: {m(need30)} против ask {m(ASK_VISION)}** — запас "
+      f"{m(ASK_VISION-need30)} на дороже купленные фирмы или третий рынок.")
+print(f"- Run-rate после интеграции: {m(run30)} при {eng30} инженерах; "
+      f"маржа базового сценария {base['margin']*100:.0f}%.")
+print("- Допущение, которое всё решает: мультипликатор покупки 1,0× выручки. При 2× "
+      f"потребность вырастает на {m(acq)} и запас исчезает.\n")
 print("## Как читать\n")
 print("1. **Один рычаг решает всё — рост выработки.** Без него (×1,0) это")
 print("   инжиниринговое бюро на офшорных ставках с маржой около нуля после")
