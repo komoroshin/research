@@ -195,6 +195,9 @@ NUMBERS_VISION = dict(NUMBERS_GRID, **{
     "2021": "Enverus: год сделки Hellman & Friedman",
     "300+": "Pearl Street SUGAR: ГВт очереди обработано до покупки Enverus (ic5-3)",
     "03.2025": "Pearl Street → Enverus: дата сделки",
+    "415": "IEA Energy and AI 2025: потребление ДЦ в 2024, ТВт·ч (ic14)",
+    "950": "IEA Key Questions on Energy and AI 2026: ДЦ в 2030, ТВт·ч (ic14)",
+    "715": "IEA 2026: анонсированный capex гиперскейлеров на 2026, млрд $ (ic14)",
     "1000": "цель после раунда: инженеров в группе (четверть POWER Engineers)",
     "105": "финмодель, базовый сценарий: выручка на инженера с ядром, тыс. $",
 })
