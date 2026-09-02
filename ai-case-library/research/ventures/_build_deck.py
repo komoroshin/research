@@ -27,6 +27,8 @@ DECKS = {
                "Океан Тех × Электричество — новая нефть эпохи ИИ"),
     "simple": ("_simple-deck-slides.html", "grid-simple-deck.html",
                "Океан Тех × ИИ не хватает электричества"),
+    "classic": ("_classic-deck-slides.html", "grid-classic-deck.html",
+                "Океан Тех × Продуктовая презентация"),
 }
 
 

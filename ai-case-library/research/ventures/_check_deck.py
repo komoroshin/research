@@ -200,6 +200,9 @@ NUMBERS_VISION = dict(NUMBERS_GRID, **{
     "715": "IEA 2026: анонсированный capex гиперскейлеров на 2026, млрд $ (ic14)",
     "35%": "ic15: стадия строительства, верхняя граница доли проектного гонорара",
     "27%": "ic15: WA OFM — construction contract administration в базовом гонораре",
+    "450": "оценка: 3% (доля инжиниринга, MISO) от 15 млрд $ контрактов КСА, млн $/год",
+    "24%": "финмодель, базовый сценарий: маржа после интеграции ИИ",
+    "1,2": "финмодель, консервативный сценарий: рост выработки ×1,2 — убыточен, критерий остановки",
     "1000": "цель после раунда: инженеров в группе (четверть POWER Engineers)",
     "105": "финмодель, базовый сценарий: выручка на инженера с ядром, тыс. $",
 })
@@ -277,6 +280,7 @@ def main():
         "grid": ("grid-engineering-deck.html", "_grid-deck-slides.html", NUMBERS_GRID),
         "vision": ("grid-vision-deck.html", "_vision-deck-slides.html", NUMBERS_VISION),
         "simple": ("grid-simple-deck.html", "_simple-deck-slides.html", NUMBERS_VISION),
+        "classic": ("grid-classic-deck.html", "_classic-deck-slides.html", NUMBERS_VISION),
     }
     deck_name, slides_name, registry = files[key]
     deck = HERE / deck_name
