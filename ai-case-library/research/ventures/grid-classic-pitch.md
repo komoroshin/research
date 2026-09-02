@@ -49,9 +49,17 @@
 - Никаких данных российских сетей, майнинга, гиперскейлеров по имени,
   Америки в горизонте раунда.
 
+## Файлы для отправки
+
+- `grid-classic-deck.pptx` — редактируемая презентация (PowerPoint/Keynote/Google Slides),
+  заметки спикера на каждом слайде: источники и «чего не говорить».
+- `grid-classic-deck.pdf` — та же дека для пересылки.
+- `grid-classic-deck.html` — интерактивная версия для показа с экрана.
+
 ## Команды
 
 ```
-python3 _build_deck.py classic
-python3 _check_deck.py classic
+python3 _build_deck.py classic          # HTML
+python3 _check_deck.py classic          # пять проверок HTML-версии
+node _build_classic_pptx.js             # .pptx (pptxgenjs); затем soffice → .pdf
 ```
