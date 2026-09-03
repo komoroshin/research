@@ -1,0 +1,157 @@
+url,publisher,source_type,accessed,status,used_for
+https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/,TechCrunch,media,2026-09-03,ok,"Instinct: подтверждение раунда, продукт, вирусность (открыт WebFetch)"
+https://techcrunch.com/2026/08/11/general-catalyst-leads-1-1b-round-into-2-month-old-river-ai/,TechCrunch,media,2026-09-03,ok,"River AI: подтверждение раунда, продукт, основатель (открыт WebFetch)"
+https://thenextweb.com/news/walden-robotics-300-million-toyota-humanoid,The Next Web,media,2026-09-03,ok,"Walden: раунд, деплой на заводе Toyota, W1-свидетельство (открыт WebFetch)"
+https://techcrunch.com/2026/08/06/naive-raises-28-5m-to-automate-the-grunt-work-of-setting-up-and-running-a-company/,TechCrunch,media,2026-09-03,ok,"Naïve: раунд, продукт, трекшен (открыт WebFetch)"
+https://techcrunch.com/2026/07/08/prime-intellect-raises-130m-series-a-to-help-enterprises-build-their-own-ai-agents/,TechCrunch,media,2026-09-03,ok,"Prime Intellect: раунд, ARR, клиенты (открыт WebFetch)"
+https://techcrunch.com/2026/08/26/runable-hits-21m-to-bet-ai-agents-can-go-from-building-businesses-to-growing-them/,TechCrunch,media,2026-09-03,ok,"Runable: проверка — оказалась Индия, отклонён (открыт WebFetch)"
+https://fortune.com/2026/06/03/apoha-36-million-series-a-funding-round-exit-stealth-wave-form-ai-liquid-intelligence/,Fortune,media,2026-09-03,ok,"Apoha: проверка — Лондон/SF, раунд размыт, отклонён (открыт WebFetch)"
+https://qz.com/instinct-ai-assistant-series-b-funding-valuation-082726,Quartz,media,2026-09-03,partial,Instinct: второй источник раунда (заголовок и сниппет в выдаче)
+https://techfundingnews.com/noah-shinns-instinct-goes-from-100m-to-2-5b-in-weeks-23-year-olds-ai-assistant-just-raised-250m-series-b/,Tech Funding News,media,2026-09-03,partial,Instinct: W4 — скачок оценки $100M→$2.5B (заголовок в выдаче)
+https://www.citybiz.co/article/895693/instinct-maker-of-personal-ai-assistant-raises-250m-at-2-5b-valuation/,citybiz,media,2026-09-03,partial,Instinct: эхо раунда (в выдаче)
+https://www.kucoin.com/news/flash/ai-assistant-startup-instinct-raises-250m-in-b-round-valuation-hits-2-5b,KuCoin News,aggregator,2026-09-03,partial,Instinct: эхо раунда (в выдаче)
+https://www.businesswire.com/news/home/20260811845258/en/River-AI-Raises-$1.1B-Led-by-General-Catalyst-and-AMP-PBC-to-Build-Open-AI-Stack,Business Wire,company,2026-09-03,partial,River: пресс-релиз компании — подтверждение раунда (в выдаче)
+https://qz.com/river-ai-fundraise-enterprise-custom-ai-tools-081126,Quartz,media,2026-09-03,partial,River: второй медиа-источник (в выдаче)
+https://thenextweb.com/news/river-ai-1-1-billion-babuschkin-general-catalyst-open-weights,The Next Web,media,2026-09-03,partial,River: эхо раунда (в выдаче)
+https://techstartups.com/2026/08/11/former-xai-co-founder-igor-babuschkins-river-ai-raises-1-1-billion-to-build-your-own-personal-ai/,Tech Startups,media,2026-09-03,partial,River: эхо раунда (в выдаче)
+https://www.bloomberg.com/news/articles/2026-07-15/toyota-backed-robotics-startup-walden-launches-with-1-1-billion-valuation,Bloomberg,media,2026-09-03,partial,"Walden: подтверждение оценки $1.1B (заголовок в выдаче, статья за пейволлом — не открывалась)"
+https://www.businesswire.com/news/home/20260715089377/en/Walden-Robotics-Launches-with-$300-Million-to-Put-General-Purpose-Robots-to-Work-Today,Business Wire,company,2026-09-03,partial,Walden: пресс-релиз компании (в выдаче)
+https://www.bostonglobe.com/2026/07/15/business/walden-robotics-cambridge-toyota-humanoid/,Boston Globe,media,2026-09-03,partial,Walden: локальное медиа-эхо (в выдаче)
+https://www.waldenrobotics.com/news/walden-robotics-launches-from-stealth,Walden Robotics,company,2026-09-03,partial,Walden: пост компании (в выдаче)
+https://www.kucoin.com/news/flash/walden-robotics-completes-300m-seed-round-valued-at-11b,KuCoin News,aggregator,2026-09-03,partial,Walden: эхо с ошибочной оценкой $11B — НЕ использован для цифр
+https://siliconangle.com/2026/08/06/naive-bags-28-5m-funding-automate-creation-day-day-running-almost-business/,SiliconANGLE,media,2026-09-03,partial,"Naïve: второй медиа-источник, W5-свидетельство (в выдаче)"
+https://www.finsmes.com/2026/08/naive-raises-28-5m-in-series-a-funding.html,FinSMEs,media,2026-09-03,partial,Naïve: эхо раунда (в выдаче)
+https://cryptobriefing.com/prime-intellect-130m-series-a-billion-valuation/,Crypto Briefing,media,2026-09-03,partial,Prime Intellect: второй источник раунда/оценки (в выдаче)
+https://radical.vc/portfolio/prime-intellect/,Radical Ventures,investor,2026-09-03,partial,Prime Intellect: страница лид-инвестора (в выдаче)
+https://techcrunch.com/2026/08/20/ai-data-startup-micro1-reaches-500m-gross-run-rate-amid-ai-training-boom/,TechCrunch,media,2026-09-03,partial,Micro1: трекшен без нового раунда — основание для stale_round (в выдаче)
+https://sacra.com/c/micro1/,Sacra,analyst,2026-09-03,partial,Micro1: история раундов — Series A сентябрь 2025 (в выдаче)
+https://techcrunch.com/2026/03/10/ai-network-startup-eridu-emerges-from-stealth-with-hefty-200m-series-a/,TechCrunch,media,2026-09-03,partial,"Eridu: раунд подтверждён, но отклонён как not_ai (в выдаче)"
+https://eridu.ai/pr/eridu-emerges-from-stealth-with-over-200m-in-funding/,Eridu,company,2026-09-03,partial,Eridu: пресс-релиз (в выдаче)
+https://www.networkworld.com/article/4143119/eridu-exits-stealth-with-200m-to-rebuild-ai-networking.html,Network World,media,2026-09-03,partial,Eridu: медиа-эхо (в выдаче)
+https://techcrunch.com/2026/07/22/glow-emerges-from-stealth-at-1-2b-valuation-to-challenge-endpoint-security-in-the-ai-era/,TechCrunch,media,2026-09-03,partial,"Glow: кандидат, отклонён no_wow (в выдаче)"
+https://techcrunch.com/2026/06/18/the-11-standout-startups-from-ycs-demo-day-according-to-vcs/,TechCrunch,media,2026-09-03,partial,YC Demo Day: источник кандидатов Ploy/Fundamental (в выдаче)
+https://alleywatch.com/2026/08/global-startup-funding-top-largest-july-2026-vc/,AlleyWatch,aggregator,2026-09-03,partial,Дайджест июля: кандидаты Oak/Walden (в выдаче)
+https://techstartups.com/2026/07/06/venture-capital-startup-funding-roundup-july-6-2026/,Tech Startups,aggregator,2026-09-03,partial,Дайджест: кандидат Radical Numerics (в выдаче)
+https://techstartups.com/2026/07/01/venture-capital-startup-funding-roundup-july-1-2026/,Tech Startups,aggregator,2026-09-03,partial,Дайджест: кандидат Ellis (в выдаче)
+https://techstartups.com/2026/08/20/twin1-ai-emerges-from-stealth-with-20m-in-funding-to-give-every-professional-an-ai-powered-digital-twin/,Tech Startups,media,2026-09-03,partial,"Twin1 AI: кандидат, отклонён (в выдаче)"
+https://fortune.com/2026/07/22/arrakis-a-startup-betting-ais-biggest-payoff-is-in-industrial-sectors-not-office-work-emerges-from-stealth-with-38-million-in-venture-funding/,Fortune,media,2026-09-03,partial,"Arrakis: кандидат, отклонён (в выдаче)"
+https://thenextweb.com/news/horizon3-250m-series-e-2bn-autonomous-ai-pentest,The Next Web,media,2026-09-03,partial,"Horizon3: кандидат, отклонён out_of_scope D+ (в выдаче)"
+https://www.calcalistech.com/ctechnews/article/h1tdxjhrgx,Calcalist Tech,media,2026-09-03,partial,"Enigma: кандидат, отклонён out_of_scope Израиль (в выдаче)"
+https://www.finsmes.com/2026/09/oppex-ai-raises-approx-usd500k-in-pre-seed-funding.html,FinSMEs,media,2026-09-03,partial,"Oppex AI: кандидат, отклонён out_of_scope Индия (в выдаче)"
+https://techcrunch.com/2026/07/31/smallest-ai-raises-13m-to-build-ultra-fast-voice-ai-that-sounds-genuinely-human/,TechCrunch,media,2026-09-03,partial,"Smallest.ai: кандидат, отклонён no_wow (в выдаче)"
+https://techcrunch.com/2026/06/25/patronus-ai-lands-50m-to-build-digital-worlds-that-stress-test-ai-agents/,TechCrunch,media,2026-09-03,partial,"Patronus AI: кандидат, отклонён no_wow (в выдаче)"
+https://techcrunch.com/2026/06/16/probably-raises-9m-to-build-a-more-reliable-kind-of-ai/,TechCrunch,media,2026-09-03,partial,"Probably: кандидат, отклонён no_wow (в выдаче)"
+https://techcrunch.com/2026/08/25/stability-ai-maker-of-image-generator-stable-diffusion-raises-76-million-in-fresh-funding/,TechCrunch,media,2026-09-03,partial,"Stability AI: кандидат, отклонён out_of_scope (в выдаче)"
+https://wellows.com/blog/ai-startups/,Wellows,aggregator,2026-09-03,partial,Агрегатор-список: кандидат Recall (в выдаче)
+https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/,TechCrunch,media,2026-09-03,ok,"Instinct: раунд, оценка, продукт, вирусность (открыт WebFetch)"
+https://siliconangle.com/2026/08/27/consumer-focused-ai-assistant-startup-instinct-reportedly-raising-250m/,SiliconANGLE,media,2026-09-03,ok,"Instinct: второй источник раунда, динамика оценки, инвесторы (открыт WebFetch)"
+https://sources.news/p/two-new-ai-assistants-have-silicon,Sources.news,media,2026-09-03,ok,"Instinct: технология, команда, контекст ажиотажа (открыт WebFetch)"
+https://www.forbes.com/sites/iainmartin/2026/08/26/vcs-are-so-obsessed-with-this-ai-assistant-that-its-valuation-jumped-fivefold-in-weeks/,Forbes,media,2026-09-03,partial,"Instinct: W4 — рост оценки пятикратно за недели (заголовок и пересказ из выдачи WebSearch, страницу не открывал)"
+https://x.com/pitdesi/status/2090579987778937159,X / Sheel Mohnot,media,2026-09-03,partial,Instinct: W2 — независимый отзыв практика (виден в выдаче WebSearch)
+https://x.com/noahrshinn/status/2092691344456351744,X / Noah Shinn,company,2026-09-03,partial,Instinct: пост основателя о продукте (виден в выдаче WebSearch)
+https://techcrunch.com/2026/08/24/instincts-powerful-ai-assistant-is-raising-privacy-and-security-concerns/,TechCrunch,media,2026-09-03,partial,Instinct: контекст опасений о приватности (виден в выдаче WebSearch)
+https://techcrunch.com/2026/08/17/higgsfield-raises-400m-series-b-quadrupling-its-valuation-in-8-months-to-5-4b/,TechCrunch,media,2026-09-03,ok,"Higgsfield: раунд, ARR, пользователи, команда (открыт WebFetch)"
+https://www.prnewswire.com/news-releases/higgsfield-raises-400-million-series-b-financing-at-5-4-billion-valuation-with-annualized-revenue-reaching-700-million-302852430.html,PR Newswire,company,2026-09-03,partial,"Higgsfield: состав инвесторов, подтверждение раунда (виден в выдаче WebSearch)"
+https://www.finsmes.com/2026/08/higgsfield-raises-400m-in-series-b-funding.html,Finsmes,media,2026-09-03,partial,Higgsfield: эхо раунда (виден в выдаче WebSearch)
+https://sacra.com/c/higgsfield/,Sacra,media,2026-09-03,partial,Higgsfield: история раундов (виден в выдаче WebSearch)
+https://higgsfield.ai/,Higgsfield,company,2026-09-03,partial,"Higgsfield: сайт, продукты Cinema Studio (виден в выдаче WebSearch)"
+https://techcrunch.com/2026/08/17/wispr-raises-280m-at-2b-valuation-as-it-looks-beyond-dictation/,TechCrunch,media,2026-09-03,ok,"Wispr: раунд, инвесторы, продукт, планы (открыт WebFetch)"
+https://www.bloomberg.com/news/articles/2026-05-12/ai-dictation-startup-wispr-in-funding-talks-at-2-billion-value,Bloomberg,media,2026-09-03,blocked,Wispr: W4 — переговоры при $2B в мае (пейволл; заголовок из выдачи WebSearch)
+https://www.productgrowth.blog/p/wispr-flow-growth-teardown,Product Growth,media,2026-09-03,ok,"Wispr: независимый growth-разбор, характер цифр роста (открыт WebFetch)"
+https://wisprflow.ai/new-funding,Wispr,company,2026-09-03,partial,Wispr: пост компании о раунде (виден в выдаче WebSearch)
+https://finance.yahoo.com/technology/ai/articles/ai-dictation-firm-wispr-valued-110612154.html,Yahoo Finance,media,2026-09-03,partial,Wispr: эхо раунда (виден в выдаче WebSearch)
+https://www.producthunt.com/products/wisprflow/reviews,Product Hunt,media,2026-09-03,partial,"Wispr: community award, отзывы (виден в выдаче WebSearch)"
+https://techcrunch.com/2026/04/15/ai-learning-app-gizmo-levels-up-with-13m-users-and-a-22m-investment/,TechCrunch,media,2026-09-03,ok,"Gizmo: раунд, пользователи, команда (открыт WebFetch)"
+https://www.prnewswire.com/news-releases/gizmo-raises-22-million-series-a-to-make-learning-addictive-for-13-million-learners-worldwide-302741943.html,PR Newswire,company,2026-09-03,partial,Gizmo: анонс компании (виден в выдаче WebSearch)
+https://app.dealroom.co/news/feed/gizmo-raises-22m-series-a-to-expand-ai-powered-learning-platform-to-13m-users-globally,Dealroom,media,2026-09-03,partial,Gizmo: эхо раунда (виден в выдаче WebSearch)
+https://gizmo.ai/,Gizmo,company,2026-09-03,partial,Gizmo: сайт продукта (виден в выдаче WebSearch)
+https://www.axios.com/2026/06/01/sekai-mini-app-startup-funding,Axios,media,2026-09-03,blocked,"Sekai: раунд + 15M мини-аппов (403 Cloudflare и в WebFetch, и в fetch-page.mjs; заголовок из выдачи WebSearch)"
+https://finance.yahoo.com/sectors/technology/articles/sekai-raises-26m-seed-series-213200757.html,Yahoo Finance (PR),company,2026-09-03,ok,"Sekai: метрики, инвесторы, основатель, сайт (открыт WebFetch)"
+https://cryptobriefing.com/sekai-raises-20m-series-a-ai-apps/,Crypto Briefing,media,2026-09-03,partial,"Sekai: эхо раунда, механика продукта (виден в выдаче WebSearch)"
+https://techcrunch.com/2026/04/24/two-college-kids-raise-a-5-1-million-pre-seed-to-build-an-ai-social-network-in-imessage/,TechCrunch,media,2026-09-03,ok,"Series: раунд, продукт, вирусное видео, метрики (открыт WebFetch)"
+https://finance.yahoo.com/markets/stocks/articles/series-ai-powered-social-network-155449573.html,Yahoo Finance,media,2026-09-03,partial,Series: эхо раунда (виден в выдаче WebSearch)
+https://yaledailynews.com/articles/growing-series-startup-yalies-turn-to-reality-tv-and-other-campuses,Yale Daily News,media,2026-09-03,partial,Series: независимое кампусное покрытие (виден в выдаче WebSearch)
+https://series.so/,Series,company,2026-09-03,partial,Series: сайт продукта (виден в выдаче WebSearch)
+https://instinct.co/,Instinct,company,2026-09-03,partial,Instinct: сайт/waitlist (виден в выдаче WebSearch)
+https://techcrunch.com/2026/05/21/hark-raises-700m-series-a-for-its-secretive-universal-ai-interface/,TechCrunch,media,2026-09-03,partial,Hark: раунд $700M — кандидат отклонён (виден в выдаче WebSearch)
+https://techcrunch.com/2026/07/16/how-a-former-deepmind-researcher-raised-at-a-300m-pre-seed-valuation-before-launching-a-product/,TechCrunch,media,2026-09-03,partial,Elorian: раунд/оценка — кандидат отклонён (виден в выдаче WebSearch)
+https://www.kdnuggets.com/openclaw-explained-the-free-ai-agent-tool-going-viral-already-in-2026,KDnuggets,media,2026-09-03,partial,OpenClaw: вирусность без раунда — отклонён (виден в выдаче WebSearch)
+https://hubkub.com/tech-news/yc-w26-demo-day-2026/,Hubkub,media,2026-09-03,partial,YC W26: кандидаты GRU Space / Hex Security / Luel (виден в выдаче WebSearch)
+https://www.producthunt.com/leaderboard/weekly/2026/29,Product Hunt,media,2026-09-03,partial,"PH-топы недели: кандидаты, Framer AI Agents (виден в выдаче WebSearch)"
+https://tech.eu/2026/08/12/lovables-valuation-doubles-to-13bn-as-raises-400m/,Tech.eu,media,2026-09-03,ok,"Проверка раунда Lovable: $400M Series C, оценка $13.3B, 12.08.2026, инвесторы"
+https://www.france24.com/en/france/20260310-french-ai-startup-ami-raises-1b-to-develop-universal-intelligent-systems,France 24,media,2026-09-03,ok,"Проверка раунда AMI Labs: $1B, 10.03.2026, инвесторы, отсутствие продукта"
+https://www.calcalistech.com/ctechnews/article/h1tdxjhrgx,Calcalist (CTech),media,2026-09-03,ok,"Подтверждение раунда Enigma $71M seed, 27.07.2026, инвесторы, бэкграунд основателей"
+https://techcrunch.com/2026/06/15/sarvam-becomes-indias-newest-ai-unicorn-with-234-million-funding-round-led-by-hcltech/,TechCrunch,media,2026-09-03,ok,"Проверка раунда Sarvam AI: $234M Series B, $1.5B, метрики трекшена (company-only)"
+https://techcrunch.com/2026/07/09/paris-based-ai-voice-startup-gradium-raises-100m-seed-backed-by-nvidia/,TechCrunch,media,2026-09-03,ok,"Проверка раунда Gradium: seed до $100M, 09.07.2026, Nvidia, спин-офф Kyutai"
+https://news.crunchbase.com/robotics/embodied-ai-fuels-record-funding-china-ipo-momentum-builds/,Crunchbase News,media,2026-09-03,ok,"TARS: $513M / оценка $1.9B, апрель 2026; X Square Robot; объёмы китайского робо-финансирования"
+https://sifted.eu/articles/gradium-nvidia-30m-extension-seed,Sifted,media,2026-09-03,partial,"Gradium: заголовок и лид открылись через fetch-page.mjs (расширение seed на ~$30M до >$100M, 08.07.2026); тело статьи закрыто пейволлом"
+https://www.caixinglobal.com/2026-04-17/chinese-ai-robotics-startup-tars-raises-455-million-in-record-pre-a-round-102434873.html,Caixin Global,media,2026-09-03,ok,"TARS: $455M pre-A, 17.04.2026, лиды GL Ventures/HongShan/Meituan, рекорд сектора"
+https://interestingengineering.com/ai-robotics/china-humanoid-robot-stitches-embroidery,Interesting Engineering,media,2026-09-03,ok,"Вау-свидетельство W1 для TARS: world-first бимануальная вышивка, демо 22.12.2025"
+https://e.vnexpress.net/news/tech/tech-news/china-s-tars-humanoid-robot-becomes-world-s-first-to-achieve-two-handed-stitching-4998932.html,VnExpress International,media,2026-09-03,ok,"Второе независимое подтверждение W1 для TARS; бэкграунд команды (Baidu Apollo, Huawei)"
+https://techcrunch.com/2026/07/27/enigma-raises-70m-to-make-controlling-a-robot-as-easy-as-adjusting-the-volume/,TechCrunch,media,2026-09-03,ok,"Enigma: раунд, публичный эксперимент со 100+ роботами, основатели, отсутствие выручки"
+https://techcrunch.com/2026/07/15/indian-ai-coding-startup-emergent-becomes-a-unicorn-just-over-a-year-after-launch/,TechCrunch,media,2026-09-03,ok,"Emergent: $130M Series C, $1.5B, $120M ARR run-rate, 200k платящих клиентов, x5 оценки за 6 мес"
+https://siliconangle.com/2026/07/15/emergent-emerges-latest-ai-unicorn-raising-130m-funding/,SiliconANGLE,media,2026-09-03,ok,"Второе независимое подтверждение раунда Emergent + 12 млн приложений, 70% пользователей без опыта кода"
+https://www.semafor.com/article/07/16/2026/robot-data-startup-microagi-raises-largest-seed-round-ever-in-germany,Semafor,media,2026-09-03,ok,"Microagi: $55M, рекорд Германии; механика сбора данных (бесплатная уборка в NY), лицензирование данных лабораториям, аренда железа Unitree/UBTech"
+https://sifted.eu/articles/munich-robotics-startup-microagi-raises-55m-germanys-largest-ever-seed-round,Sifted,media,2026-09-03,partial,"Microagi: заголовок и лид через fetch-page.mjs (Мюнхен, $55M, крупнейший seed Германии, 16.07.2026); тело статьи за пейволлом"
+https://techfundingnews.com/this-munich-startup-founded-by-two-f1-engineers-a-whatsapp-entrepreneur-and-an-alan-turing-researcher-just-raised-55m-in-germanys-largest-ever-seed-round/,TechFundingNews,media,2026-09-03,blocked,Попытка добрать детали по Microagi (продукт Atlas) — HTTP 403; данные о продукте в запись не вносил
+https://en.sedaily.com/technology/2026/08/26/wrtn-raises-100-billion-won-becomes-first-korean-ai-service,Seoul Economic Daily,media,2026-09-03,ok,"Wrtn: 100 млрд вон Series C, выручка 47.1 -> прогноз 200 млрд вон, продукты Crack/Kyarafu/OOC, первый корейский AI-юникорн"
+https://www.koreatimes.co.kr/business/tech-science/20260826/wrtn-raises-72-mil-in-series-c-funding-round,The Korea Times,media,2026-09-03,ok,Второе независимое подтверждение раунда Wrtn; OOC — 10 млрд вон месячной выручки за 3 месяца
+https://www.bloomberg.com/news/articles/2026-08-25/korean-ai-startup-wrtn-raises-funds-at-870-million-value-to-fund-global-growth,Bloomberg,media,2026-09-03,blocked,Страница не открывалась (пейволл); использован только заголовок из выдачи WebSearch — оценка 1.2 трлн вон ($870M)
+https://sifted.eu/articles/callosum-raise-atomico-plural-uk-sovereign-ai,Sifted,media,2026-09-03,partial,"Callosum: заголовок и лид через fetch-page.mjs ($100M seed, Atomico, Plural, UK Sovereign AI Fund, 20.08.2026); тело за пейволлом"
+https://tech.eu/2026/08/20/callosum-raises-100m-seed-round/,Tech.eu,media,2026-09-03,ok,"Callosum: детали раунда, DCVC, партнёрство с Cerebras, предыдущий seed $10.25M (февраль 2026)"
+https://www.siliconrepublic.com/start-ups/uk-ai-start-up-callosum-secures-100m-seed-funding-round,Silicon Republic,media,2026-09-03,ok,"Третье подтверждение Callosum: основатели Akarca и Achterberg, первая раскрытая сделка UK Sovereign AI Fund, сделки с Rebellions и Axelera"
+https://www.techtimes.com/articles/323999/20260811/ai-that-planted-backdoors-failed-detect-78-when-defending-corma-raises-60m.htm,TechTimes,media,2026-09-03,blocked,Попытка проверить бенчмарк-заявление Corma — HTTP 403; из-за этого Corma отклонена по no_wow
+https://www.kommersant.ru/doc/8726075,Коммерсантъ,media,2026-09-03,ok,"ru-architech-devtools-round-2026-06: сумма, доля, оценка, контекст рынка (WebFetch)"
+https://techcrunch.com/2026/06/01/this-ai-weather-startup-is-out-forecasting-government-agencies/,TechCrunch,media,2026-09-03,ok,"us-windborne-weather-series-b-2026-08: W1 — метрики против ECMWF, зонды, WeatherMesh-6 (WebFetch)"
+https://siliconangle.com/2026/05/18/decart-raises-300m-ai-optimization-software-world-models/,SiliconANGLE,media,2026-09-03,partial,"il-decart: раунд $300M @ $4B, Amazon-клиент (выдача WebSearch)"
+https://www.calcalistech.com/ctechnews/article/sjt9ncukgl,CTech/Calcalist,media,2026-09-03,partial,"il-decart: подтверждение раунда, Nvidia (выдача WebSearch)"
+https://www.jns.org/news/world/israeli-ai-firm-decart-raises-300-million-at-4-billion-valuation,JNS,media,2026-09-03,partial,"il-decart: подтверждение раунда, total raised $450M (выдача WebSearch)"
+https://thenextweb.com/news/decart-300-million-radical-ventures-world-models,TheNextWeb,media,2026-09-03,partial,il-decart: лид Radical Ventures (выдача WebSearch)
+https://techcrunch.com/2026/06/10/decarts-new-world-model-can-simulate-hours-of-photorealistic-driving-with-some-caveats/,TechCrunch,media,2026-09-03,partial,il-decart: W1 — driving world model (выдача WebSearch)
+https://www.ynetnews.com/business/article/b1xdaxfuee,Ynetnews,media,2026-09-03,partial,il-decart: W1 — Mirage real-time video-to-video (выдача WebSearch)
+https://research.contrary.com/company/decart,Contrary Research,media,2026-09-03,partial,"il-decart: W2 — Oasis 1M пользователей за 3 дня, фаундеры (выдача WebSearch)"
+https://www.citybiz.co/article/888523/anthropic-reportedly-in-talks-to-acquire-ai-startup-decart-in-6-billion-deal/,citybiz,media,2026-09-03,partial,il-decart: слух о переговорах Anthropic — только research_notes (выдача WebSearch)
+https://www.businesswire.com/news/home/20260713849009/en/Chai-Discovery-Announces-$400M-Series-C-to-Advance-AI-Driven-Molecular-Design,BusinessWire,company,2026-09-03,partial,"us-chai-discovery: пресс-релиз раунда, дата 13.07.2026 (выдача WebSearch)"
+https://siliconangle.com/2026/07/14/chai-discovery-nabs-400m-series-c-ai-designed-antibodies-reach-big-pharma/,SiliconANGLE,media,2026-09-03,partial,"us-chai-discovery: W1, раунд (выдача WebSearch)"
+https://www.fiercebiotech.com/biotech/chai-brews-400m-series-c-fuel-ai-used-lilly-novartis-and-pfizer,Fierce Biotech,media,2026-09-03,partial,"us-chai-discovery: сделки с Lilly/Pfizer/Novartis, Chai-3 (выдача WebSearch)"
+https://allsci.com/news/funding/venture-financing/ai-drug-designer-chai-discovery-triples-valuation-to-usd-3-8b-after-usd-400m-series-c/,AllSci,media,2026-09-03,partial,us-chai-discovery: утроение оценки до $3.8B (выдача WebSearch)
+https://www.prnewswire.com/news-releases/higgsfield-raises-400-million-series-b-financing-at-5-4-billion-valuation-with-annualized-revenue-reaching-700-million-302852430.html,PRNewswire,company,2026-09-03,partial,"us-higgsfield: раунд, оценка, annualized revenue $700M, инвесторы (выдача WebSearch)"
+https://www.cnbc.com/video/2026/08/17/higgsfield-ceo-alex-mashrabov-on-new-funding-round-ai-content-creation-battle-and-growth-outlook.html,CNBC,media,2026-09-03,partial,"us-higgsfield: независимое подтверждение раунда, дата 17.08.2026 (выдача WebSearch)"
+https://sacra.com/c/higgsfield/,Sacra,media,2026-09-03,partial,"us-higgsfield: W3 — оценка выручки $700M annualized, динамика с $200M (выдача WebSearch)"
+https://www.finsmes.com/2026/08/higgsfield-raises-400m-in-series-b-funding.html,Finsmes,media,2026-09-03,partial,us-higgsfield: подтверждение раунда (выдача WebSearch)
+https://www.contentgrip.com/higgsfield-ai-video-funding/,ContentGrip,media,2026-09-03,partial,us-higgsfield: подтверждение раунда (выдача WebSearch)
+https://astanahub.com/en/blog/higgsfield-ai-edinorog-iz-kazakhstana-s-globalnymi-ambitsiiami,Astana Hub,media,2026-09-03,partial,"us-higgsfield: казахстанское происхождение, первый единорог КЗ (выдача WebSearch)"
+https://astanatimes.com/2025/09/higgsfield-ai-becomes-kazakhstans-first-unicorn-startup-valued-at-over-1-billion/,The Astana Times,media,2026-09-03,partial,us-higgsfield: первый единорог Казахстана (выдача WebSearch)
+https://techcrunch.com/2026/08/05/ai-makes-weather-prediction-better-can-windborne-make-it-lucrative/,TechCrunch,media,2026-09-03,partial,"us-windborne: профиль, WeatherMesh-6 — самая точная модель по публичным бенчмаркам (выдача WebSearch)"
+https://windbornesystems.com/blog/windborne-systems-raises-37-million-to-build-the-worlds-weather-intelligence-infrastructure,WindBorne Systems,company,2026-09-03,partial,us-windborne: пост компании о раунде (выдача WebSearch)
+https://pulse2.com/windborne-systems-raises-37-million-series-b-to-expand-atmospheric-sensing-network-and-ai-weather-models/,Pulse2,media,2026-09-03,partial,"us-windborne: W4 — переподписанный раунд, ко-лиды (выдача WebSearch)"
+https://www.finsmes.com/2026/08/windborne-systems-raises-37m-in-series-b-funding.html,Finsmes,media,2026-09-03,partial,"us-windborne: подтверждение раунда, дата 05.08.2026 (выдача WebSearch)"
+https://sifted.eu/articles/cuspai-lands-450m-round-to-accelerate-ai-materials-discovery,Sifted,media,2026-09-03,partial,"uk-cuspai: раунд $450M, Foundry (выдача WebSearch)"
+https://qz.com/cuspai-raises-450-million-series-b-ai-materials-foundry-072026,Quartz,media,2026-09-03,partial,uk-cuspai: подтверждение раунда (выдача WebSearch)
+https://pulse2.com/cuspai-raises-450-million-series-b-at-2-6-billion-valuation-to-discover-new-materials/,Pulse2,media,2026-09-03,partial,uk-cuspai: W4 — оценка $2.6B против $520M в сент. 2025 (выдача WebSearch)
+https://medium.com/@CuspAI/launching-our-ai-materials-foundry-and-450-million-series-b-f5603d8259dd,CuspAI (Medium),company,2026-09-03,partial,uk-cuspai: пост компании о раунде и Foundry (выдача WebSearch)
+https://www.cnews.ru/news/line/2026-06-05_investitsionnaya_kompaniya,CNews,media,2026-09-03,partial,ru-architech: второй источник сделки УКМ → АрхиТех (выдача WebSearch)
+https://www.kommersant.ru/doc/8712628,Коммерсантъ,media,2026-09-03,partial,ru-architech: анонс намерения на ПМЭФ (выдача WebSearch)
+https://vc.ru/id4994551/2968545-gruppa-ukm-investiruet-v-arhiteh-ii,vc.ru / Русский Венчур,media,2026-09-03,partial,ru-architech: эхо сделки в РФ-венчурных медиа (выдача WebSearch)
+https://www.tadviser.ru/index.php/Компания:Mymeet.ai_(Маймит),TAdviser,media,2026-09-03,partial,"d-23 Mymeet.ai: подтверждение раунда 16,5 млн руб. (выдача WebSearch)"
+https://rb.ru/news/mymeetai-deal/,RB.ru,media,2026-09-03,partial,d-23 Mymeet.ai: подтверждение раунда (выдача WebSearch)
+https://vc.ru/id4994551/3001901-investitsii-v-mymeet-ai,vc.ru / Русский Венчур,media,2026-09-03,partial,d-23 Mymeet.ai: детали сделки и выручки (выдача WebSearch)
+https://techcrunch.com/2026/01/14/robotic-software-maker-skild-ai-hits-14b-valuation/,TechCrunch,media,2026-09-03,partial,d-07 Skild AI: дата анонса 14.01.2026 → stale_round (выдача WebSearch)
+https://www.therobotreport.com/uk-based-humanoid-secures-152m-in-series-a-funding/,The Robot Report,media,2026-09-03,partial,d-08 Humanoid: раунд $152M Series A (выдача WebSearch)
+https://www.forbes.com/sites/johnkoetsier/2026/07/21/humanoid-raises-152-million-at-135-billion-valuation-europes-newest-robot-unicorn/,Forbes,media,2026-09-03,partial,"d-08 Humanoid: оценка $1.35B, дата 21.07.2026 (выдача WebSearch)"
+https://news.crunchbase.com/robotics/startup-venture-funding-surges-2026-data/,Crunchbase News,media,2026-09-03,partial,контекст: $8.6B в гуманоидов за H1 2026 — аргумент против W4 у Humanoid (выдача WebSearch)
+https://techfundingnews.com/xai-co-founder-raises-1-1b-for-river-ai-to-build-an-open-ai-stack/,TechFundingNews,media,2026-09-03,partial,d-09 River AI: раунд $1.1B (выдача WebSearch)
+https://techstartups.com/2026/08/11/former-xai-co-founder-igor-babuschkins-river-ai-raises-1-1-billion-to-build-your-own-personal-ai/,TechStartups,media,2026-09-03,partial,d-09 River AI: дата анонса ~11.08.2026 (выдача WebSearch)
+https://vc.ru/invest/3100089-startap-instinct-privlek-finansirovanie-dlya-razrabotki-ii-assistenta,vc.ru,media,2026-09-03,partial,"d-21 Instinct: раунд $250M @ $2.5B, закрытая бета (выдача WebSearch)"
+https://vc.ru/invest/3075002-startap-lovable-privlek-finansirovanie-dlya-vajb-kodinga,vc.ru,media,2026-09-03,partial,d-22 Lovable: раунд $400M @ $13.3B (выдача WebSearch)
+https://techcrunch.com/2026/07/31/smallest-ai-raises-13m-to-build-ultra-fast-voice-ai-that-sounds-genuinely-human/,TechCrunch,media,2026-09-03,partial,d-17 Smallest.ai: раунд $13M (выдача WebSearch)
+https://techcrunch.com/2026/07/29/encore-ai-raises-30m-to-build-ai-agents-that-learn-from-customer-calls/,TechCrunch,media,2026-09-03,partial,d-18 Encore AI: раунд $30M (выдача WebSearch)
+https://www.eu-startups.com/2026/07/uk-startup-worldmodeldata-raises-e8-million-to-turn-video-games-into-training-data-for-physical-ai/,EU-Startups,media,2026-09-03,partial,d-16 Worldmodeldata: единственный источник раунда (выдача WebSearch)
+https://www.forbes.com/sites/josipamajic/2026/06/30/world-model-startups-raise-3-billion-vcs-bet-beyond-llms/,Forbes,media,2026-09-03,partial,"контекст world models ($3B за H1), d-11 World Labs, d-28 AMI (выдача WebSearch)"
+https://aiweekly.co/alerts/elevenlabs-anchors-7bn-voice-ai-funding-rush-in-q1-2026,AI Weekly,media,2026-09-03,partial,d-12/d-13/d-14: январско-февральские voice-раунды → stale (выдача WebSearch)
+https://www.newcomer.co/p/investors-go-hard-for-voice-ai-with,Newcomer,media,2026-09-03,partial,d-15 Decagon: январская сделка → stale (выдача WebSearch)
+https://intuitionlabs.ai/articles/ai-biologics-discovery-pharma-investment-trends,IntuitionLabs,aggregator,2026-09-03,partial,d-19 Earendil Labs: единственное упоминание раунда $787M (выдача WebSearch)
+https://www.calcalistech.com/ctechnews/article/rj67r5yvze,CTech/Calcalist,media,2026-09-03,partial,d-20 Tomorrow.io: раунд $175M без установленной даты (выдача WebSearch)
+https://the-tech.kz/glavnye-novosti-venchurnogo-rynka-czentralnoj-azii-avgust-2026/,The Tech (KZ),media,2026-09-03,partial,обзор ЦА-рынка: источник кандидатов d-25 VibeVO (выдача WebSearch)
+https://vc.ru/growth/3072868-startapy-udivivshie-venchurnyj-rynok,vc.ru,media,2026-09-03,partial,"PASS 1: источник кандидатов РФ/глобал (CuspAI, Mymeet.ai) (выдача WebSearch)"
+https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/,TechCrunch,media,2026-09-03,ok,"сверка при слиянии: раунд Instinct $250M, total $350M"

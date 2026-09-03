@@ -1,0 +1,1704 @@
+[
+  {
+    "id": "il-decart-worldmodels-series-b-2026-05",
+    "name": "Decart",
+    "website": "https://decart.ai",
+    "one_liner": "Real-time world models: генеративные интерактивные миры и видео-в-видео преобразование в реальном времени (Oasis, Mirage).",
+    "what_it_does": "Израильская компания строит real-time генеративные AI-системы: Oasis — первая играбельная AI-генерируемая игровая среда в реальном времени, Mirage/MirageLSD — первая модель непрерывного преобразования видео-в-видео в реальном времени, плюс новая world model для симуляции многочасового фотореалистичного вождения. Также разрабатывает софт-оптимизацию, позволяющую запускать модели на разных AI-чипах (Amazon — стратегический клиент).",
+    "ai_mechanisms": [
+      "world-model",
+      "real-time-video-generation",
+      "inference-optimization"
+    ],
+    "category": "world-models / infra",
+    "product_stage": "ga",
+    "country": "Израиль",
+    "founded": "2023",
+    "team_background": "Основана в конце 2023 Дином Лейтерсдорфом и Моше Шалевом (Тель-Авив).",
+    "funding": {
+      "round": "Series B",
+      "amount": "$300M",
+      "announced": "2026-05-18",
+      "lead_investors": [
+        "Radical Ventures"
+      ],
+      "other_investors": [
+        "Nvidia",
+        "eBay Ventures",
+        "Adobe Ventures",
+        "Toyota Ventures",
+        "Andrej Karpathy",
+        "Michael Eisner",
+        "члены семьи основателей Nintendo",
+        "Moritz Baier-Lentz"
+      ],
+      "valuation": "$4B",
+      "valuation_confirmed": true,
+      "total_raised": "$450M",
+      "funding_confirmed": true
+    },
+    "traction": "Oasis набрал более 1 млн пользователей за первые три дня после запуска (Contrary Research); Amazon присоединился как стратегический клиент (SiliconANGLE).",
+    "wow_score": 5,
+    "wow_signals": [
+      "W1",
+      "W2",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W1",
+        "claim": "Mirage — первая в мире модель real-time видео-в-видео преобразования без прерываний; новая world model симулирует часы фотореалистичного вождения",
+        "source_url": "https://techcrunch.com/2026/06/10/decarts-new-world-model-can-simulate-hours-of-photorealistic-driving-with-some-caveats/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W1",
+        "claim": "Real-time video-to-video инструмент Mirage — независимое освещение запуска",
+        "source_url": "https://www.ynetnews.com/business/article/b1xdaxfuee",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W2",
+        "claim": "Oasis (ноябрь 2024) — первая real-time видеомодель, более 1 млн пользователей за первые три дня, публичная похвала Илона Маска",
+        "source_url": "https://research.contrary.com/company/decart",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "$300M при оценке $4B; Nvidia в раунде, Amazon — стратегический клиент",
+        "source_url": "https://siliconangle.com/2026/05/18/decart-raises-300m-ai-optimization-software-world-models/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "World Labs",
+      "Runway",
+      "Odyssey"
+    ],
+    "sources": [
+      {
+        "url": "https://siliconangle.com/2026/05/18/decart-raises-300m-ai-optimization-software-world-models/",
+        "title": "Decart raises $300M for its AI optimization software, world models",
+        "type": "media",
+        "publisher": "SiliconANGLE",
+        "date": "2026-05"
+      },
+      {
+        "url": "https://www.calcalistech.com/ctechnews/article/sjt9ncukgl",
+        "title": "Nvidia backs Israeli AI unicorn Decart in $300 million funding round at $4 billion valuation",
+        "type": "media",
+        "publisher": "CTech/Calcalist",
+        "date": "2026-05"
+      },
+      {
+        "url": "https://www.jns.org/news/world/israeli-ai-firm-decart-raises-300-million-at-4-billion-valuation",
+        "title": "Israeli AI firm Decart raises $300 million at $4 billion valuation",
+        "type": "media",
+        "publisher": "JNS",
+        "date": "2026-05"
+      },
+      {
+        "url": "https://thenextweb.com/news/decart-300-million-radical-ventures-world-models",
+        "title": "Decart raises $300M to put a real-time world model in front of Amazon's chips",
+        "type": "media",
+        "publisher": "TheNextWeb",
+        "date": "2026-05"
+      }
+    ],
+    "evidence_grade": "A",
+    "why_wow": "Единственная команда, у которой world models работают в реальном времени и уже в руках миллионов пользователей: играбельный AI-мир и живое видео-в-видео — то, что год назад существовало только в виде офлайн-рендеров. Плюс редкая комбинация: исследовательский прорыв + инфраструктурный бизнес (оптимизация под разные чипы).",
+    "signal_for_us": "Рынок платит за real-time интерактивность генерации, а не только за качество кадра; world models превращаются из исследований в категорию с выручкой и стратегами (Amazon, Toyota, Adobe) в каптейбле.",
+    "steal_ideas": [
+      "Запуск исследовательской демки как бесплатного вирусного продукта (Oasis) для найма, бренда и каптейбла",
+      "Монетизация побочного актива — своей инфраструктурной оптимизации — как отдельной линии бизнеса"
+    ],
+    "contact_angle": "Прямого повода нет; стоит следить как за ориентиром демо-стратегии для AI-продуктов клиентов.",
+    "tags": [
+      "world models",
+      "real-time",
+      "Израиль",
+      "series b"
+    ],
+    "research_notes": "Citybiz сообщал о переговорах Anthropic о покупке Decart за $6B — слух, не подтверждён, в запись не включён. Лид раунда: TheNextWeb называет Radical Ventures; CTech/JNS перечисляют Nvidia и стратегов без явного лида."
+  },
+  {
+    "id": "us-agent-instinct-seriesb-2026-08",
+    "name": "Instinct",
+    "website": "https://instinct.co/",
+    "one_liner": "Персональный AI-агент, который живёт в текстах и звонках: подключается к приложениям и устройствам пользователя и сам выполняет задачи (покупки, брони, отмена подписок).",
+    "what_it_does": "Instinct — персональный AI-ассистент без нового интерфейса: пользователь общается с ним через SMS/звонки, агент подключается к приложениям и устройствам и действует как человек за телефоном и компьютером (управляет календарём, письмами, многошаговыми процессами; ранние пользователи планировали автопутешествия, покупали продукты и билеты, отменяли подписки). Продукт в приватной бете (с февраля 2026) по инвайтам и waitlist. По оценке независимого разбора — оркестрация готовых моделей с дообучением и tool use.",
+    "ai_mechanisms": [
+      "ai-agent",
+      "llm"
+    ],
+    "category": "consumer",
+    "product_stage": "beta",
+    "country": "США",
+    "founded": "2025",
+    "team_background": "Основатель Noah Shinn, 23 года, экс-research scientist в Sierra (компания Брета Тейлора); юрлицо Spear Street Technology.",
+    "funding": {
+      "round": "Series B",
+      "amount": "$250M",
+      "announced": "2026-08-26",
+      "lead_investors": [
+        "Index Ventures",
+        "Benchmark"
+      ],
+      "other_investors": [
+        "Conviction (ранний раунд)",
+        "Greenoaks (ранний раунд)",
+        "Kleiner Perkins (Series A)"
+      ],
+      "valuation": "$2.5B",
+      "valuation_confirmed": true,
+      "total_raised": "$350M",
+      "funding_confirmed": true
+    },
+    "traction": "Публичных цифр пользователей/ARR нет: продукт в приватной бете. Вирусность — waitlist и инвайты; Forbes описывает 'VC feeding frenzy' с ростом оценки с ~$100M до $2.5B за считанные недели.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W2",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W2",
+        "claim": "TechCrunch выносит вирусность в заголовок ('Viral AI startup Instinct...'); продукт разошёлся по инвайтам, ажиотаж в Кремниевой долине",
+        "source_url": "https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W2",
+        "claim": "Независимые практики публично хвалят продукт: инвестор Sheel Mohnot — 'OpenClaw for normal people. It feels like magic'",
+        "source_url": "https://x.com/pitdesi/status/2090579987778937159",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Оценка выросла пятикратно за недели — до $2.5B ('AI Assistant Instinct Hits $2.5 Billion Valuation In Weeks Amid VC Feeding Frenzy')",
+        "source_url": "https://www.forbes.com/sites/iainmartin/2026/08/26/vcs-are-so-obsessed-with-this-ai-assistant-that-its-valuation-jumped-fivefold-in-weeks/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Раунд $250M co-lead Index Ventures и Benchmark при оценке $2.5B; предыдущий раунд $100M при $1B — недели назад",
+        "source_url": "https://siliconangle.com/2026/08/27/consumer-focused-ai-assistant-startup-instinct-reportedly-raising-250m/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "OpenClaw (open-source)",
+      "Poke (куплен Cognition)",
+      "Hark"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/",
+        "title": "Viral AI startup Instinct has raised $350M at a $2.5B valuation",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.forbes.com/sites/iainmartin/2026/08/26/vcs-are-so-obsessed-with-this-ai-assistant-that-its-valuation-jumped-fivefold-in-weeks/",
+        "title": "AI Assistant Instinct Hits $2.5 Billion Valuation In Weeks Amid VC Feeding Frenzy",
+        "type": "media",
+        "publisher": "Forbes",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://siliconangle.com/2026/08/27/consumer-focused-ai-assistant-startup-instinct-reportedly-raising-250m/",
+        "title": "Consumer-focused AI assistant startup Instinct reportedly raising $250M",
+        "type": "media",
+        "publisher": "SiliconANGLE",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://techcrunch.com/2026/08/24/instincts-powerful-ai-assistant-is-raising-privacy-and-security-concerns/",
+        "title": "Instinct's powerful AI assistant is raising privacy and security concerns",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://sources.news/p/two-new-ai-assistants-have-silicon",
+        "title": "Two new AI assistants have Silicon Valley buzzing",
+        "type": "media",
+        "publisher": "Sources.news",
+        "date": "2026"
+      },
+      {
+        "url": "https://x.com/noahrshinn/status/2092691344456351744",
+        "title": "Пост основателя о запуске Instinct",
+        "type": "company",
+        "publisher": "X / Noah Shinn",
+        "date": "2026"
+      },
+      {
+        "url": "https://qz.com/instinct-ai-assistant-series-b-funding-valuation-082726",
+        "title": "Instinct AI assistant raises $250 million Series B at $2.5B valuation",
+        "type": "media",
+        "publisher": "Quartz",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://techfundingnews.com/noah-shinns-instinct-goes-from-100m-to-2-5b-in-weeks-23-year-olds-ai-assistant-just-raised-250m-series-b/",
+        "title": "Noah Shinn's Instinct goes from $100M to $2.5B in weeks",
+        "type": "media",
+        "publisher": "Tech Funding News",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.citybiz.co/article/895693/instinct-maker-of-personal-ai-assistant-raises-250m-at-2-5b-valuation/",
+        "title": "Instinct, Maker of Personal AI Assistant, Raises $250M at $2.5B Valuation",
+        "type": "media",
+        "publisher": "citybiz",
+        "date": "2026-08"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Хрестоматийный вирусный запуск 2026 года: продукт в закрытой бете без единой публичной метрики довёл оценку до $2.5B за недели — чисто на сарафане инвайтов и восторгах ранних пользователей. Показателен сам интерфейс: не приложение, а телефонный номер, которому пишешь и звонишь.",
+    "signal_for_us": "Рынок сместился от чат-ботов к агентам, которые реально исполняют бытовые задачи; 'OpenClaw for normal people' — то есть упаковка гиковской агентности в консьюмерский UX — это тема, за которую инвесторы сейчас платят любые деньги. Одновременно TechCrunch фиксирует волну вопросов к приватности — окно для сервисов доверия/безопасности агентов.",
+    "steal_ideas": [
+      "Интерфейс 'без интерфейса': вход через привычный канал (SMS/звонок), нулевой порог обучения.",
+      "Дистрибуция через инвайты от участников — дефицит как двигатель вирусности.",
+      "Демо через истории реальных задач ('агент купил дом', 'отменил подписки') вместо фич-листа."
+    ],
+    "contact_angle": "Прямого повода нет; стоит наблюдать как референс агентского UX для наших консьюмерских гипотез.",
+    "tags": [
+      "ai-агенты",
+      "консьюмер",
+      "series-b",
+      "вирусный запуск"
+    ],
+    "research_notes": "Метрики пользователей нигде не раскрыты (приватная бета) — W3 не засчитан. Цифра waitlist ~180k встречалась в пересказах, но страницу-первоисточник с ней не открывал — в traction не включена. Раунд подтверждён TechCrunch + Forbes + SiliconANGLE + пост основателя. Слито с записью полосы A (дубль). Сверка с TechCrunch 2026-09-03: раунд Series B — $250M, $350M в заголовке — общий объём привлечённого (total funding); оценка $2.5B подтверждена."
+  },
+  {
+    "id": "kr-consumer-wrtn-seriesc-2026-08",
+    "name": "Wrtn Technologies",
+    "website": "unknown",
+    "one_liner": "Корейская потребительская AI-платформа: бесплатный доступ к топовым LLM плюс платные сервисы AI-персонажей и развлекательного контента.",
+    "what_it_does": "Wrtn — сеульская платформа AI-сервисов для массового пользователя. Базовый продукт даёт бесплатный доступ к ведущим моделям (GPT, Claude, Gemini) для поиска, написания документов и оформления презентаций, а деньги приносят продукты вокруг AI-персонажей и развлекательного контента: Crack в Корее, Kyarafu в Японии и OOC в Северной Америке. По данным корейских СМИ, зарубежная выручка компании уже превысила внутреннюю.",
+    "ai_mechanisms": [
+      "llm",
+      "character-ai",
+      "consumer-assistant"
+    ],
+    "category": "consumer",
+    "product_stage": "ga",
+    "country": "Южная Корея",
+    "founded": "unknown",
+    "team_background": "",
+    "funding": {
+      "round": "series-c",
+      "amount": "100 млрд вон (~$72M)",
+      "announced": "2026-08-25",
+      "lead_investors": [],
+      "other_investors": [
+        "Coreline Ventures",
+        "Eugene Asset Management",
+        "Goodwater Capital",
+        "Antler Global",
+        "Woori Venture Partners",
+        "Korea Development Bank",
+        "Sui Generis Partners",
+        "Capstone Partners"
+      ],
+      "valuation": "свыше 1 трлн вон; Bloomberg в заголовке — 1,2 трлн вон ($870M)",
+      "valuation_confirmed": false,
+      "total_raised": "230 млрд вон",
+      "funding_confirmed": true
+    },
+    "traction": "Выручка 2025 года — 47,1 млрд вон, прогноз на 2026 год — свыше 200 млрд вон. Платформа OOC, запущенная в Северной Америке в мае 2026, за три месяца вышла на 10 млрд вон месячной выручки. Зарубежная выручка превысила внутреннюю.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W3",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W3",
+        "claim": "OOC, запущенная в Северной Америке в мае 2026, превысила 10 млрд вон месячной выручки в течение трёх месяцев; выручка 2025 года — 47,1 млрд вон при прогнозе свыше 200 млрд вон на 2026-й",
+        "source_url": "https://www.koreatimes.co.kr/business/tech-science/20260826/wrtn-raises-72-mil-in-series-c-funding-round",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W3",
+        "claim": "Подтверждение тех же цифр и факта, что зарубежная выручка обогнала внутреннюю",
+        "source_url": "https://en.sedaily.com/technology/2026/08/26/wrtn-raises-100-billion-won-becomes-first-korean-ai-service",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Первый корейский AI-сервисный стартап, перешагнувший оценку в 1 трлн вон; Bloomberg в заголовке даёт 1,2 трлн вон ($870M)",
+        "source_url": "https://www.bloomberg.com/news/articles/2026-08-25/korean-ai-startup-wrtn-raises-funds-at-870-million-value-to-fund-global-growth",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Character.AI",
+      "Talkie",
+      "Poe"
+    ],
+    "sources": [
+      {
+        "url": "https://www.koreatimes.co.kr/business/tech-science/20260826/wrtn-raises-72-mil-in-series-c-funding-round",
+        "title": "WRTN raises $72 mil. in Series C funding round",
+        "type": "media",
+        "publisher": "The Korea Times",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://en.sedaily.com/technology/2026/08/26/wrtn-raises-100-billion-won-becomes-first-korean-ai-service",
+        "title": "Wrtn Raises 100 Billion Won, Becomes First Korean AI Service Unicorn",
+        "type": "media",
+        "publisher": "Seoul Economic Daily",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.bloomberg.com/news/articles/2026-08-25/korean-ai-startup-wrtn-raises-funds-at-870-million-value-to-fund-global-growth",
+        "title": "Korean AI Startup Wrtn Raises Funds at $870 Million Value",
+        "type": "media",
+        "publisher": "Bloomberg",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://en.wowtale.net/2026/08/27/234887/",
+        "title": "AI Platform Wrtn Technologies Raises $76M Series C at Over $760M Valuation",
+        "type": "media",
+        "publisher": "WOWTALE",
+        "date": "2026-08"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Корейский потребительский AI-сервис заработал за рубежом больше, чем дома, и сделал это на развлекательном контенте с AI-персонажами, а не на продуктивности. Скорость выхода на 10 млрд вон в месяц за три месяца на чужом рынке — это не «локальный чемпион», а работающая экспортная модель.",
+    "signal_for_us": "Массовый AI монетизируется через развлечение и эмоциональное вовлечение быстрее, чем через продуктивность: бесплатный доступ к моделям служит воронкой, а платят за персонажей. Для B2B-гипотез это скорее контрсигнал — деньги в consumer AI сейчас в другом месте.",
+    "steal_ideas": [
+      "Бесплатный агрегатор чужих моделей как воронка, платный собственный продукт поверх неё.",
+      "Отдельный бренд и продукт под каждый рынок (Crack / Kyarafu / OOC) вместо одной локализованной версии.",
+      "Массовый маркетинг вне tech-канала (амбассадор-музыкант, спонсорство крупнейшей игровой выставки) — для consumer AI работает лучше продуктовых анонсов."
+    ],
+    "contact_angle": "Прямого повода нет — это B2C-компания далеко от нашего профиля; полезнее как кейс монетизации.",
+    "tags": [
+      "consumer AI",
+      "AI-персонажи",
+      "series C",
+      "Корея"
+    ],
+    "research_notes": "Источники расходятся по сумме и оценке: Korea Times — 100 млрд вон (~$72,23M) при оценке «свыше 1 трлн вон»; Bloomberg в заголовке — 1,2 трлн вон ($870M); ground.news пересказывает «over $722 million»; WOWTALE — $76M при «over $760M». Поэтому valuation_confirmed = false. Страницу Bloomberg не открывал (пейволл) — использован только заголовок из выдачи WebSearch, это отражено в source-log. Прогноз выручки на 2026 год — это прогноз компании, переданный СМИ, а не достигнутый факт. Год основания и состав команды в открытых источниках, которые я смотрел, не назван."
+  },
+  {
+    "id": "us-videogen-higgsfield-seriesb-2026-08",
+    "name": "Higgsfield",
+    "website": "https://higgsfield.ai/",
+    "one_liner": "AI-платформа генерации видео и изображений с продуктовыми студиями под роли: Cinema Studio для кино, Marketing Studio для маркетинга.",
+    "what_it_does": "Higgsfield — генеративная платформа для создания AI-видео и изображений. Флагман Cinema Studio — рабочее пространство AI-кинопроизводства (камеры/линзы, контроль цвета Soul HEX, консистентность персонажей Soul ID, сторонние видеомодели вроде Seedance внутри); Marketing Studio — для маркетинговых команд. По TechCrunch, работает с 390 компаниями из Fortune 500; премьеры AI-фильмов в Каннах и Нью-Йорке.",
+    "ai_mechanisms": [
+      "generative-ai",
+      "multimodal"
+    ],
+    "category": "media-gen",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "2023",
+    "team_background": "Основатели Alex Mashrabov (экс-руководитель в Snap) и Erzat Dulat.",
+    "funding": {
+      "round": "Series B",
+      "amount": "$400M",
+      "announced": "2026-08-17",
+      "lead_investors": [
+        "DST Global"
+      ],
+      "other_investors": [
+        "Growth Equity at Goldman Sachs Alternatives",
+        "Tribe Capital",
+        "Valor Capital",
+        "Smash Capital",
+        "Fifth Wall",
+        "Intel Capital",
+        "Liberty Global Tech Ventures",
+        "Mirae Asset Capital",
+        "NTT DOCOMO Ventures"
+      ],
+      "valuation": "$5.4B",
+      "valuation_confirmed": true,
+      "total_raised": "unknown",
+      "funding_confirmed": true
+    },
+    "traction": "$700M annualized revenue; 30 млн пользователей (TechCrunch: 200 стран; пресс-релиз: 238 стран и территорий); 390 клиентов из Fortune 500 — цифры компании, ретранслированы СМИ.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W3",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W3",
+        "claim": "$700M годовой выручки (annualized) и 30 млн пользователей примерно за полтора года с запуска продуктовой линейки",
+        "source_url": "https://techcrunch.com/2026/08/17/higgsfield-raises-400m-series-b-quadrupling-its-valuation-in-8-months-to-5-4b/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Оценка выросла вчетверо за 8 месяцев: $1.3B (январь 2026) → $5.4B; Series B $400M лидирует DST Global",
+        "source_url": "https://techcrunch.com/2026/08/17/higgsfield-raises-400m-series-b-quadrupling-its-valuation-in-8-months-to-5-4b/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Подтверждение раунда и состава инвесторов в анонсе компании ($400M Series B при $5.4B, annualized revenue $700M)",
+        "source_url": "https://www.prnewswire.com/news-releases/higgsfield-raises-400-million-series-b-financing-at-5-4-billion-valuation-with-annualized-revenue-reaching-700-million-302852430.html",
+        "source_type": "company"
+      },
+      {
+        "signal": "W3",
+        "claim": "Annualized revenue ~$700M в июле 2026, рост с ~$200M на конец 2025 — оценка независимого аналитического сервиса Sacra",
+        "source_url": "https://sacra.com/c/higgsfield/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Runway",
+      "Synthesia",
+      "PixVerse",
+      "Luma"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/08/17/higgsfield-raises-400m-series-b-quadrupling-its-valuation-in-8-months-to-5-4b/",
+        "title": "Higgsfield raises $400M Series B, quadrupling its valuation in 8 months to $5.4B",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/higgsfield-raises-400-million-series-b-financing-at-5-4-billion-valuation-with-annualized-revenue-reaching-700-million-302852430.html",
+        "title": "Higgsfield Raises $400 Million Series B Financing at $5.4 Billion Valuation",
+        "type": "company",
+        "publisher": "PR Newswire",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.finsmes.com/2026/08/higgsfield-raises-400m-in-series-b-funding.html",
+        "title": "Higgsfield Raises $400M in Series B Funding",
+        "type": "media",
+        "publisher": "Finsmes",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://sacra.com/c/higgsfield/",
+        "title": "Higgsfield revenue, valuation & funding",
+        "type": "media",
+        "publisher": "Sacra",
+        "date": "2026"
+      },
+      {
+        "url": "https://www.contentgrip.com/higgsfield-ai-video-funding/",
+        "title": "Higgsfield raises US$400M for enterprise AI video",
+        "type": "media",
+        "publisher": "ContentGrip",
+        "date": "2026-08"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Редкий случай, когда генеративное видео — уже не демо, а машина выручки: $700M annualized и 30 млн пользователей при оценке, выросшей вчетверо за 8 месяцев. Ставка на 'студии под роль' (кинематографисты, маркетологи) вместо универсальной генерилки выглядит выигрышной механикой.",
+    "signal_for_us": "AI-видео перешло из стадии хайпа в стадию промышленной монетизации; деньги идут в тех, кто упаковывает модели в рабочие процессы конкретных профессий, а не в сами модели. Наличие 390 клиентов Fortune 500 — сигнал, что корпоративный спрос на генеративный контент созрел.",
+    "steal_ideas": [
+      "Вертикальные 'студии' поверх одних и тех же моделей: отдельный продукт под каждую профессию.",
+      "Чужие топ-модели (Seedance и др.) внутри своего workflow — агрегатор как продукт.",
+      "Премьеры AI-фильмов на офлайн-площадках уровня Канн как PR-механика."
+    ],
+    "contact_angle": "Стоит проверить партнёрство для клиентских проектов по видео-контенту: мы внедряем — они платформа.",
+    "tags": [
+      "генерация видео",
+      "series-b",
+      "медиа"
+    ],
+    "research_notes": "Выручка/пользователи — цифры компании, ретранслированные TechCrunch (независимого аудита нет) — поэтому B, не A. Вирусные просмотры (40M views из маркетинговых разборов) не включал — первоисточник не открывал. Расхождение 200 vs 238 стран между TechCrunch и пресс-релизом отмечено в traction. Слито с записью полосы D (дубль): добавлено независимое подтверждение выручки от Sacra и источник ContentGrip."
+  },
+  {
+    "id": "us-agent-infra-naive-series-a-2026-08",
+    "name": "Naïve",
+    "website": "unknown",
+    "one_liner": "Единый API-слой (инкорпорация LLC, платежи, почта, телефония, облако), через который AI-агенты создают и ведут компании.",
+    "what_it_does": "Инфраструктура, позволяющая AI-агентам автоматизировать создание и операционку бизнеса: платежи, почтовые аккаунты, номера телефонов, облако, хранилище и инкорпорация компании упакованы за одним API. Разработчик даёт промпт в Cursor/Claude Code/Codex, тот через API Naïve поднимает всю обвязку и регистрирует американскую LLC; KYC/KYB-проверки проходит человек. Клиенты строят AI-агентства, «безликие» контент-каналы, автономные сервисы проката.",
+    "ai_mechanisms": [
+      "ai-agent",
+      "llm"
+    ],
+    "category": "agent-infra",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "unknown",
+    "team_background": "CEO и сооснователь — Sean Dorje; компания из портфеля Y Combinator.",
+    "funding": {
+      "round": "series A",
+      "amount": "$28.5M",
+      "announced": "2026-08-06",
+      "lead_investors": [
+        "Nexus Venture Partners"
+      ],
+      "other_investors": [
+        "Y Combinator",
+        "Zetta Venture Partners",
+        "Liquid 2 Ventures"
+      ],
+      "valuation": "unknown",
+      "valuation_confirmed": false,
+      "total_raised": "$32M",
+      "funding_confirmed": true
+    },
+    "traction": "Более 30 000 разработчиков-клиентов за месяцы после запуска; годовой run-rate вырос в 10 раз до «low double-digit millions» за шесть месяцев (по данным TechCrunch со слов компании).",
+    "wow_score": 4,
+    "wow_signals": [
+      "W5",
+      "W3"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W5",
+        "claim": "Новая категория «инфраструктура для автономных компаний»: агенты не просто пишут код, а открывают LLC и ведут операционку бизнеса через один API — независимые СМИ описывают это как расширение vibe-coding до vibe-company",
+        "source_url": "https://siliconangle.com/2026/08/06/naive-bags-28-5m-funding-automate-creation-day-day-running-almost-business/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W3",
+        "claim": "30 000+ разработчиков-клиентов за месяцы после запуска; run-rate вырос в 10 раз до низких десятков миллионов долларов за полгода",
+        "source_url": "https://techcrunch.com/2026/08/06/naive-raises-28-5m-to-automate-the-grunt-work-of-setting-up-and-running-a-company/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Stripe Atlas (инкорпорация без агентской обвязки)",
+      "Firstbase",
+      "агентские тулкиты общего назначения"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/08/06/naive-raises-28-5m-to-automate-the-grunt-work-of-setting-up-and-running-a-company/",
+        "title": "Naïve raises $28.5M to automate the grunt work of setting up and running a company",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://siliconangle.com/2026/08/06/naive-bags-28-5m-funding-automate-creation-day-day-running-almost-business/",
+        "title": "Naïve bags $28.5M in funding to automate the creation and day-to-day running of almost any business",
+        "type": "media",
+        "publisher": "SiliconANGLE",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.finsmes.com/2026/08/naive-raises-28-5m-in-series-a-funding.html",
+        "title": "Naïve Raises $28.5M in Series A Funding",
+        "type": "media",
+        "publisher": "FinSMEs",
+        "date": "2026-08"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Это не «ещё один копилот», а слой, который делает компанию управляемой агентом сущностью: LLC, банкинг-обвязка, почта и телефония — программируемы из промпта. 30 тысяч разработчиков за месяцы говорят, что «автономный бизнес» из мема превращается в сегмент.",
+    "signal_for_us": "Разогревается ниша agent-native инфраструктуры: деньги идут не только в агентов, но и в «розетки», к которым агентов подключают. Подтверждает нашу гипотезу, что ценность смещается в интеграционный слой — ровно то, что мы продаём как услугу.",
+    "steal_ideas": [
+      "Упаковка десятка скучных сервисов (инкорпорация, телефония, почта) в один API, спроектированный под агента как пользователя, а не под человека.",
+      "Дистрибуция через инструменты разработчиков (Cursor, Claude Code): продукт продаётся там, где агент уже работает.",
+      "Человек остаётся в цикле только на регуляторных шагах (KYC/KYB) — честная граница автономии как фича."
+    ],
+    "contact_angle": "Стоит проверить партнёрство: мы внедряем агентов клиентам — Naïve может быть инфраструктурным кирпичом для их бэк-офисных сценариев (США).",
+    "tags": [
+      "агентская инфраструктура",
+      "yc",
+      "series A",
+      "автономные компании"
+    ],
+    "research_notes": "Цифры трекшена — от компании через TechCrunch/SiliconANGLE, независимой верификации нет (потому grade B, а не A). Оценка и точный год основания не раскрыты; штаб-квартира в статье не названа (США — по инкорпорации LLC, YC и инвесторам)."
+  },
+  {
+    "id": "us-windborne-weather-series-b-2026-08",
+    "name": "WindBorne Systems",
+    "website": "https://windbornesystems.com",
+    "one_liner": "Собственная сеть метеозондов + AI-модель WeatherMesh: прогноз погоды точнее государственных агентств.",
+    "what_it_does": "Строит «погодную разведку» полного цикла: флот из ~400 одновременно летающих умных метеозондов (15 стартовых площадок по миру) собирает данные атмосферы, на которых работает трансформерная модель WeatherMesh. WeatherMesh-6 превосходит модель европейского центра ECMWF — мирового золотого стандарта: точность прогноза на 5 дней вперёд сопоставима с традиционным прогнозом за день до события; обновление каждый час против 6 часов у традиционных моделей, разрешение до 3 км по США.",
+    "ai_mechanisms": [
+      "weather-foundation-model",
+      "transformer-forecasting",
+      "proprietary-sensing"
+    ],
+    "category": "ai-for-science / weather",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "2019",
+    "team_background": "Основана в 2019 студентами Стэнфорда.",
+    "funding": {
+      "round": "Series B",
+      "amount": "$37M",
+      "announced": "2026-08-05",
+      "lead_investors": [
+        "Khosla Ventures",
+        "Galvanize"
+      ],
+      "other_investors": [
+        "TransLink Capital",
+        "Lux Capital"
+      ],
+      "valuation": "$250M",
+      "valuation_confirmed": false,
+      "total_raised": "$62M+",
+      "funding_confirmed": true
+    },
+    "traction": "WeatherMesh-6 (июнь 2026) — самая точная модель прогноза погоды по публичным бенчмаркам (TechCrunch).",
+    "wow_score": 4,
+    "wow_signals": [
+      "W1",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W1",
+        "claim": "Модель WindBorne обгоняет ECMWF: точность на 5 дней вперёд как у традиционного прогноза за 1 день; собственная сеть из ~400 зондов",
+        "source_url": "https://techcrunch.com/2026/06/01/this-ai-weather-startup-is-out-forecasting-government-agencies/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W1",
+        "claim": "WeatherMesh-6 — самая точная модель прогноза погоды в мире по публичным бенчмаркам",
+        "source_url": "https://techcrunch.com/2026/08/05/ai-makes-weather-prediction-better-can-windborne-make-it-lucrative/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Переподписанный Series B $37M под ко-лидерством Khosla Ventures и Galvanize",
+        "source_url": "https://pulse2.com/windborne-systems-raises-37-million-series-b-to-expand-atmospheric-sensing-network-and-ai-weather-models/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Tomorrow.io",
+      "Atmo",
+      "Google DeepMind (GraphCast/GenCast)"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/08/05/ai-makes-weather-prediction-better-can-windborne-make-it-lucrative/",
+        "title": "AI makes weather prediction better. Can WindBorne make it lucrative?",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-08-05"
+      },
+      {
+        "url": "https://windbornesystems.com/blog/windborne-systems-raises-37-million-to-build-the-worlds-weather-intelligence-infrastructure",
+        "title": "WindBorne Systems Raises $37 Million",
+        "type": "company",
+        "publisher": "WindBorne (блог)",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://www.finsmes.com/2026/08/windborne-systems-raises-37m-in-series-b-funding.html",
+        "title": "WindBorne Systems Raises $37M in Series B Funding",
+        "type": "media",
+        "publisher": "Finsmes",
+        "date": "2026-08"
+      },
+      {
+        "url": "https://techcrunch.com/2026/06/01/this-ai-weather-startup-is-out-forecasting-government-agencies/",
+        "title": "This AI weather startup is out-forecasting government agencies",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-06-01"
+      }
+    ],
+    "evidence_grade": "A",
+    "why_wow": "Частный стартап систематически обыгрывает ECMWF — институт с десятилетиями истории и суперкомпьютерами — за счёт связки «свои данные (зонды) + своя AI-модель». Пять дней прогноза с точностью вчерашнего одного дня — измеримое «невозможное вчера».",
+    "signal_for_us": "Вертикали, где AI-модель питается собственным проприетарным сенсорным потоком, дают защищаемое преимущество, которого нет у чисто софтверных обёрток; погодная разведка стала venture-категорией.",
+    "steal_ideas": [
+      "Двухслойный ров: proprietary-данные + модель, а не только модель",
+      "Публичные бенчмарки против государственного «золотого стандарта» как маркетинг"
+    ],
+    "contact_angle": "",
+    "tags": [
+      "погода",
+      "AI for science",
+      "hardware+AI",
+      "series b"
+    ],
+    "research_notes": "Оценка $250M фигурировала в освещении раунда, но первоисточник цифры не установлен — помечена как неподтверждённая."
+  },
+  {
+    "id": "il-robotics-enigma-seed-2026-07",
+    "name": "Enigma",
+    "website": "unknown",
+    "one_liner": "Израильская лаборатория, строящая foundation-модели и интерфейсы управления роботами, с публичным экспериментом: сотней роботов можно управлять онлайн из браузера.",
+    "what_it_does": "Enigma разрабатывает базовые AI-модели для роботов плюс софт и интерфейсы, снижающие объём инженерной работы под конкретную среду и задачу. Ставка компании — что узкое место не в возможностях моделей, а в интерфейсе: как человек хочет объяснять роботу, что делать. При выходе из стелса компания выложила онлайн более 100 собственных роботов в ангарах в Израиле и Калифорнии: любой желающий может ими управлять — рисовать кистью, фехтовать, смешивать жидкости в колбах — а компания собирает данные о том, как люди на практике общаются с машинами (текстом, голосом, видео, жестами).",
+    "ai_mechanisms": [
+      "robotics-foundation-model",
+      "embodied-ai",
+      "multimodal"
+    ],
+    "category": "robotics",
+    "product_stage": "demo-only",
+    "country": "Израиль",
+    "founded": "2025",
+    "team_background": "Основатели — Jonathan Jacobi (CEO) и Gal Niv (CTO): познакомились подростками на хакерских соревнованиях, служили в подразделении 8200, работали в кибербезопасности (Microsoft, Check Point). Роботехнического бэкграунда у обоих нет — это отдельно подчёркивают источники.",
+    "funding": {
+      "round": "seed",
+      "amount": "$71M",
+      "announced": "2026-07-27",
+      "lead_investors": [
+        "Index Ventures",
+        "Ribbit Capital"
+      ],
+      "other_investors": [
+        "Conviction Partners (Sarah Guo)",
+        "ангелы — руководители и исследователи OpenAI, Anthropic, xAI, Cognition, Thinking Machines, Wiz"
+      ],
+      "valuation": "unknown",
+      "valuation_confirmed": false,
+      "total_raised": "$71M",
+      "funding_confirmed": true
+    },
+    "traction": "",
+    "wow_score": 4,
+    "wow_signals": [
+      "W4",
+      "W5"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W5",
+        "claim": "Вместо продукта компания запустила публичный эксперимент: 100+ собственных роботов в ангарах в Израиле и Калифорнии доступны для управления онлайн любому желающему (рисование кистью, бой на мечах, простые химические опыты); цель — выяснить, как люди на самом деле хотят разговаривать с машинами",
+        "source_url": "https://techcrunch.com/2026/07/27/enigma-raises-70m-to-make-controlling-a-robot-as-easy-as-adjusting-the-volume/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W5",
+        "claim": "Независимый разбор той же механики: $70M на компанию без продукта и выручки, где стратегия запуска — сам эксперимент",
+        "source_url": "https://thenextweb.com/news/enigma-70m-seed-robot-interaction-experiment",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "$71M seed под лидерством Index Ventures и Ribbit Capital с участием Conviction и технических руководителей OpenAI, Anthropic, Thinking Machines, xAI и Cognition — для компании младше года и без продукта",
+        "source_url": "https://www.calcalistech.com/ctechnews/article/h1tdxjhrgx",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Physical Intelligence",
+      "Skild AI",
+      "Microagi"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/07/27/enigma-raises-70m-to-make-controlling-a-robot-as-easy-as-adjusting-the-volume/",
+        "title": "Enigma raises $71M to make controlling a robot as easy as adjusting the volume",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.calcalistech.com/ctechnews/article/h1tdxjhrgx",
+        "title": "Israeli AI robotics startup Enigma emerges from stealth with $71 million Seed round",
+        "type": "media",
+        "publisher": "Calcalist (CTech)",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://thenextweb.com/news/enigma-70m-seed-robot-interaction-experiment",
+        "title": "Enigma raised $70M to let anyone online control its robots",
+        "type": "media",
+        "publisher": "The Next Web",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Компания переопределила, что вообще является узким местом в робототехнике: не «модель не умеет», а «человек не знает, как попросить». И запустилась не пресс-релизом, а работающим публичным аттракционом, который одновременно и демо, и машина сбора данных о взаимодействии.",
+    "signal_for_us": "Топовые фонды готовы платить восьмизначные суммы за тезис об интерфейсе, а не о возможностях модели. Это подтверждает, что в прикладном AI ценность всё чаще смещается в слой «как человек ставит задачу», а не «что модель умеет».",
+    "steal_ideas": [
+      "Запуск-как-эксперимент: вместо waitlist дать людям потрогать реальную систему — получаешь и охват, и размеченные данные о поведении пользователей.",
+      "Публично признать, что продукта и выручки нет, и продавать гипотезу — это снимает вопросы к отсутствию метрик и делает историю честной.",
+      "Заявить проблему в чужой формулировке («сделать управление роботом таким же простым, как крутилка громкости») — метафора вытащила заголовки во всех изданиях."
+    ],
+    "contact_angle": "Стоит проверить, нужен ли им кто-то на слое интерфейсов/сценариев взаимодействия — команда основателей из кибербезопасности, а не из робототехники, и внешняя экспертиза по UX-сценариям может быть востребована.",
+    "tags": [
+      "робототехника",
+      "foundation models",
+      "seed",
+      "Израиль",
+      "Unit 8200"
+    ],
+    "research_notes": "Формулировка «world's first interactive AI robots online» встречается только в пресс-релизе компании (Newswire/Morningstar) — как company-источник в вау-скор не засчитывал, засчитан только сам факт эксперимента по независимым публикациям TechCrunch и TNW. Оценка компании не раскрыта. Выручки и трекшена нет — компания подтверждает это сама, поэтому W3 отсутствует. Сайт компании не открывал."
+  },
+  {
+    "id": "de-robotdata-microagi-seed-2026-07",
+    "name": "Microagi",
+    "website": "unknown",
+    "one_liner": "Мюнхенский стартап, который собирает данные с реальных заводов и квартир, чтобы обучать гуманоидных роботов, и лицензирует эти данные фронтир-лабораториям.",
+    "what_it_does": "Microagi собирает данные с действующих производственных линий и из домохозяйств, чтобы обучать софт следующего поколения гуманоидных роботов, и одновременно внедряет роботов у клиентов в производстве и логистике. Компания арендует клиентам кастомизированное железо китайских производителей (Unitree, UBTech), а сама зарабатывает на слое данных и развёртывания — включая лицензирование собранных данных фронтир-AI-лабораториям. В мае 2026 стартап запустил в Нью-Йорке бесплатную услугу уборки квартир — именно как способ собирать обучающие данные в реальных жилых помещениях.",
+    "ai_mechanisms": [
+      "embodied-ai",
+      "robotics-foundation-model",
+      "training-data"
+    ],
+    "category": "data-infra",
+    "product_stage": "beta",
+    "country": "Германия",
+    "founded": "2025-09",
+    "team_background": "Пять сооснователей: Bercan Kilic (CEO, бывший инженер по аэродинамике Red Bull Racing и экс-профессиональный киберспортсмен), Yoan Iliev (ранее Mercedes-AMG Petronas F1), Anton Poletaev (экс-исследователь Alan Turing Institute), Nico Nussbaum (инженер, RWTH Aachen), Artjem Weissbeck (сооснователь WhatsApp-commerce платформы Charles).",
+    "funding": {
+      "round": "seed",
+      "amount": "$55M",
+      "announced": "2026-07-16",
+      "lead_investors": [
+        "Hummingbird"
+      ],
+      "other_investors": [
+        "Northzone",
+        "LocalGlobe",
+        "Village Global",
+        "Redalpine"
+      ],
+      "valuation": "unknown",
+      "valuation_confirmed": false,
+      "total_raised": "$55M",
+      "funding_confirmed": true
+    },
+    "traction": "",
+    "wow_score": 4,
+    "wow_signals": [
+      "W4",
+      "W5"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W4",
+        "claim": "$55M — крупнейший посевной раунд в истории Германии; компания основана в сентябре 2025, то есть закрыла его меньше чем через год после старта",
+        "source_url": "https://sifted.eu/articles/munich-robotics-startup-microagi-raises-55m-germanys-largest-ever-seed-round",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Независимое подтверждение рекорда: «largest seed round ever in Germany», раунд от 16 июля 2026",
+        "source_url": "https://www.semafor.com/article/07/16/2026/robot-data-startup-microagi-raises-largest-seed-round-ever-in-germany",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W5",
+        "claim": "Бизнес-механика, которой раньше не было: в мае 2026 компания запустила в Нью-Йорке бесплатную уборку квартир, чтобы собирать обучающие данные, лицензирует собранные данные фронтир-AI-лабораториям и сдаёт заводским клиентам в аренду кастомизированное железо Unitree и UBTech",
+        "source_url": "https://www.semafor.com/article/07/16/2026/robot-data-startup-microagi-raises-largest-seed-round-ever-in-germany",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Physical Intelligence",
+      "Enigma",
+      "Skild AI"
+    ],
+    "sources": [
+      {
+        "url": "https://sifted.eu/articles/munich-robotics-startup-microagi-raises-55m-germanys-largest-ever-seed-round",
+        "title": "Munich robotics startup Microagi raises $55m, Germany's largest ever seed round",
+        "type": "media",
+        "publisher": "Sifted",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.semafor.com/article/07/16/2026/robot-data-startup-microagi-raises-largest-seed-round-ever-in-germany",
+        "title": "Robot-data startup Microagi raises largest seed round ever in Germany",
+        "type": "media",
+        "publisher": "Semafor",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://techfundingnews.com/this-munich-startup-founded-by-two-f1-engineers-a-whatsapp-entrepreneur-and-an-alan-turing-researcher-just-raised-55m-in-germanys-largest-ever-seed-round/",
+        "title": "This Munich startup founded by two F1 engineers... raised $55M in Germany's largest-ever seed round",
+        "type": "media",
+        "publisher": "TechFundingNews",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Компания решила проблему обучающих данных для роботов не покупкой датасетов, а тем, что пошла бесплатно убирать чужие квартиры и работать на чужих заводах. Данные — побочный продукт оказанной услуги, и они же становятся вторым источником выручки при лицензировании лабораториям.",
+    "signal_for_us": "Инвесторы платят рекордные для страны деньги не за робота, а за доступ к реальным данным о физическом труде. Дефицитный ресурс в физическом AI — не модель и не железо, а вход в чужие помещения и процессы.",
+    "steal_ideas": [
+      "Бесплатная услуга как канал сбора уникальных данных — клиент получает пользу, ты получаешь актив, который потом продаёшь отдельно.",
+      "Разделение слоёв: чужое дешёвое железо в аренду, своя маржа — на софте и данных.",
+      "Состав команды как самостоятельный инфоповод: инженеры Формулы-1 плюс исследователь Alan Turing Institute дали заголовки, которые не про сумму раунда."
+    ],
+    "contact_angle": "Стоит проверить как партнёра по внедрению: у них слой развёртывания роботов у промышленных клиентов, и им может быть нужна локальная экспертиза по автоматизации процессов у заказчика.",
+    "tags": [
+      "физический AI",
+      "робототехника",
+      "данные",
+      "seed",
+      "Германия"
+    ],
+    "research_notes": "Тело статьи Sifted закрыто (текст обфусцирован пейволлом) — подтверждены заголовок и лид: Мюнхен, сбор данных с заводов и из домохозяйств, $55M, крупнейший seed в Германии, 16 июля 2026. Состав инвесторов (Hummingbird лид, Northzone, LocalGlobe, Village Global, Redalpine) взят из сниппета выдачи по статье Sifted. Продукт Atlas упоминается в сниппете TechFundingNews, но саму страницу открыть не удалось (403), поэтому детали Atlas в запись не вносил. Выручки и клиентских метрик в открытых источниках нет — W3 отсутствует."
+  },
+  {
+    "id": "us-robotics-walden-seed-2026-07",
+    "name": "Walden Robotics",
+    "website": "https://www.waldenrobotics.com",
+    "one_liner": "Полустек Physical AI: колёсные полугуманоидные роботы, уже отрабатывающие смены на заводе Toyota.",
+    "what_it_does": "Full-stack Physical AI компания: строит и внедряет general-purpose роботов для заводской работы — загрузка/выгрузка автодеталей, чистка оборудования, комплектация (kitting). Роботы сознательно без ног: гуманоидный верх на колёсной базе (безопаснее, больше батарея и компьют). Учатся новым задачам через практику на Large Behavior Models — классе моделей, который команда помогала создавать в Toyota Research Institute.",
+    "ai_mechanisms": [
+      "robotics",
+      "multimodal"
+    ],
+    "category": "robotics",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "2026",
+    "team_background": "Спин-офф Toyota Research Institute (январь 2026); основатель и CEO — Russ Tedrake.",
+    "funding": {
+      "round": "seed",
+      "amount": "$300M",
+      "announced": "2026-07-15",
+      "lead_investors": [
+        "Toyota",
+        "Deviation Capital"
+      ],
+      "other_investors": [
+        "Nvidia",
+        "Boeing",
+        "Samsung Ventures",
+        "CoreWeave Ventures",
+        "AE Ventures"
+      ],
+      "valuation": "$1.1B",
+      "valuation_confirmed": true,
+      "total_raised": "$300M",
+      "funding_confirmed": true
+    },
+    "traction": "С февраля 2026 роботы работают в продакшне на заводе Toyota в Северной Америке; один робот отрабатывает 8-часовые смены рядом с людьми. Клиенты в automotive, aerospace, полупроводниках, электронике, логистике и life sciences.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W1",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W1",
+        "claim": "General-purpose роботы уже в производстве: с февраля 2026 работают на заводе Toyota, 8-часовые смены рядом с человеческими командами — на фоне отрасли, где гуманоиды в основном на стадии демо",
+        "source_url": "https://thenextweb.com/news/walden-robotics-300-million-toyota-humanoid",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Аномальный для стадии seed раунд $300M при оценке $1.1B на выходе из стелса; ко-лиды Toyota и Deviation Capital, участие Nvidia, Boeing, Samsung Ventures, CoreWeave Ventures",
+        "source_url": "https://thenextweb.com/news/walden-robotics-300-million-toyota-humanoid",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Figure",
+      "Agility Robotics",
+      "1X",
+      "Tesla Optimus"
+    ],
+    "sources": [
+      {
+        "url": "https://thenextweb.com/news/walden-robotics-300-million-toyota-humanoid",
+        "title": "Walden Robotics launches with $300M, and no legs",
+        "type": "media",
+        "publisher": "The Next Web",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.bloomberg.com/news/articles/2026-07-15/toyota-backed-robotics-startup-walden-launches-with-1-1-billion-valuation",
+        "title": "Toyota-Backed Startup Walden Robotics Comes Out of Stealth With $1.1 Billion Valuation",
+        "type": "media",
+        "publisher": "Bloomberg",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.businesswire.com/news/home/20260715089377/en/Walden-Robotics-Launches-with-$300-Million-to-Put-General-Purpose-Robots-to-Work-Today",
+        "title": "Walden Robotics Launches with $300 Million to Put General-Purpose Robots to Work Today",
+        "type": "company",
+        "publisher": "Business Wire (пресс-релиз)",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.waldenrobotics.com/news/walden-robotics-launches-from-stealth",
+        "title": "Walden Robotics Launches from Stealth",
+        "type": "company",
+        "publisher": "Walden Robotics",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://www.bostonglobe.com/2026/07/15/business/walden-robotics-cambridge-toyota-humanoid/",
+        "title": "Boston-area AI startup Walden Robotics raises $300 million",
+        "type": "media",
+        "publisher": "Boston Globe",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "A",
+    "why_wow": "Пока конкуренты показывают демо гуманоидов с ногами, Walden выкатил роботов, которые уже пол-года стоят в реальном производстве и работают полные смены рядом с людьми. Контрарианская ставка «без ног» — прагматизм против зрелищности, и её подписали Toyota, Nvidia, Boeing и Samsung на seed в $300M.",
+    "signal_for_us": "Physical AI перешёл из демо-фазы в фазу внедрений; корпоративные стратеги (Toyota, Boeing, Samsung) платят за deployability, а не за форм-фактор. Ниша «скучных» промышленных роботов на базе behavior-моделей разогревается быстрее шоу-гуманоидов.",
+    "steal_ideas": [
+      "Позиционирование от прагматики клиента («людям на заводе не нужны ноги») против хайпа конкурентов — сильный дифференциатор в PR.",
+      "Выход из стелса сразу с работающим внедрением у якорного клиента-инвестора: анонс = кейс, а не обещание.",
+      "Стратегические корпоративные инвесторы как канал дистрибуции (Toyota и Boeing — одновременно клиенты)."
+    ],
+    "contact_angle": "Прямого повода нет; как референс для клиентов из производства — пример «агент в физическом мире» и модели спин-оффа из корпоративной лаборатории.",
+    "tags": [
+      "робототехника",
+      "physical AI",
+      "seed",
+      "спин-офф"
+    ],
+    "research_notes": "Заголовок KuCoin ошибочно указывает оценку $11B — расходится со всеми остальными источниками ($1.1B), не использован. В ранней выдаче фигурировала сумма $310M (дайджест) — по первоисточникам $300M. Large Behavior Models — нет точного id в таксономии, взяты ближайшие robotics+multimodal."
+  },
+  {
+    "id": "in-devtools-emergent-seriesc-2026-07",
+    "name": "Emergent",
+    "website": "https://emergent.sh",
+    "one_liner": "Индийская платформа «vibe coding»: по описанию на естественном языке собирает и разворачивает готовые веб- и мобильные приложения.",
+    "what_it_does": "Emergent — агентная платформа, которая по текстовому описанию создаёт production-ready веб- и мобильные приложения и берёт на себя деплой, хостинг, тестирование и отладку; сооснователь описывает продукт как «инженерная команда в коробке». Целевая аудитория — предприниматели и малый бизнес без разработчиков: среди клиентов транспортные компании, заводы, строительные фирмы и управляющие недвижимостью, собирающие себе внутренний софт. Выручка распределена по трём равным частям между Северной Америкой, Европой и прочими рынками; на Индию приходится 8–9%.",
+    "ai_mechanisms": [
+      "llm",
+      "coding-agent",
+      "agentic-workflow"
+    ],
+    "category": "devtools",
+    "product_stage": "ga",
+    "country": "Индия",
+    "founded": "2024",
+    "team_background": "Основатели — Mukund Jha (CEO) и Madhav Jha (CTO); публичный запуск в июне 2025. Компания прошла Y Combinator (YC — среди инвесторов). Команда ~200 человек, в основном в Бенгалуру, с присутствием в Сан-Франциско.",
+    "funding": {
+      "round": "series-c",
+      "amount": "$130M",
+      "announced": "2026-07-15",
+      "lead_investors": [
+        "Creaegis"
+      ],
+      "other_investors": [
+        "MNI Ventures — Claypond Capital",
+        "Sentinel Global",
+        "Khosla Ventures",
+        "SoftBank Vision Fund 2",
+        "Lightspeed",
+        "Y Combinator"
+      ],
+      "valuation": "$1.5B post-money",
+      "valuation_confirmed": true,
+      "total_raised": "$230M",
+      "funding_confirmed": true
+    },
+    "traction": "Годовой run-rate выручки $120M, рост на 70% за четыре месяца; более 200 000 платящих клиентов; по данным SiliconANGLE — более 12 млн приложений, созданных на платформе с момента запуска, 70% пользователей без опыта программирования.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W3",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W3",
+        "claim": "Годовой run-rate $120M, рост на 70% за четыре месяца, более 200 000 платящих клиентов — примерно через год после публичного запуска",
+        "source_url": "https://techcrunch.com/2026/07/15/indian-ai-coding-startup-emergent-becomes-a-unicorn-just-over-a-year-after-launch/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W3",
+        "claim": "Более 12 млн приложений, собранных на платформе с момента запуска; 70% пользователей не имеют опыта программирования",
+        "source_url": "https://siliconangle.com/2026/07/15/emergent-emerges-latest-ai-unicorn-raising-130m-funding/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Оценка выросла в пять раз за шесть месяцев — с $300M в январе 2026 до $1.5B в июле 2026; в раунде SoftBank Vision Fund 2, Lightspeed, Khosla",
+        "source_url": "https://techcrunch.com/2026/07/15/indian-ai-coding-startup-emergent-becomes-a-unicorn-just-over-a-year-after-launch/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Lovable",
+      "Replit",
+      "Cursor",
+      "Claude Code",
+      "OpenAI Codex"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/07/15/indian-ai-coding-startup-emergent-becomes-a-unicorn-just-over-a-year-after-launch/",
+        "title": "Indian AI coding startup Emergent becomes a unicorn with $130M Series C",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://siliconangle.com/2026/07/15/emergent-emerges-latest-ai-unicorn-raising-130m-funding/",
+        "title": "Emergent emerges as the latest AI unicorn after raising $130M in funding",
+        "type": "media",
+        "publisher": "SiliconANGLE",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://emergent.sh/news/emergent-now-a-unicorn-at-1-5-billion-valuation",
+        "title": "Emergent Is Now a Unicorn: We Raised $130M in Our Series C",
+        "type": "company",
+        "publisher": "Emergent",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "A",
+    "why_wow": "Скорость: от публичного запуска до $120M годового run-rate и 200 тысяч платящих клиентов примерно за год, причём деньги приходят в основном не из Индии, а из США и Европы. Это редкий пример индийской команды, которая выиграла конкуренцию в самой перегретой западной нише, а не построила локальный аналог.",
+    "signal_for_us": "Ниша «собери себе софт словами» уже платящая, и платит не разработчик, а владелец небольшого бизнеса. Значит спрос на кастомный внутренний софт для SMB реален и деньги за него готовы платить — это ближе к нашей продажной аудитории, чем инструменты для инженеров.",
+    "steal_ideas": [
+      "Позиционирование «инженерная команда в коробке» вместо «AI-инструмент для разработки» — продаёт результат, а не технологию.",
+      "Клиентские истории из скучных отраслей (перевозки, заводы, стройка, управление недвижимостью) — сильнее убеждают SMB, чем стартап-кейсы.",
+      "Публиковать оценку сэкономленных денег на пользователя как метрику ценности — понятный аргумент в переговорах."
+    ],
+    "contact_angle": "Стоит проверить как инструмент под наши собственные задачи (быстрые внутренние приложения под клиента) — и отдельно как канал: их аудитория SMB близка к нашей.",
+    "tags": [
+      "vibe coding",
+      "devtools",
+      "series C",
+      "Индия",
+      "YC"
+    ],
+    "research_notes": "Метрика «оценка экономии $83 000 на пользователя» из SiliconANGLE в traction не переносил — источник передаёт её как оценку компании. Дата анонса: TechCrunch и SiliconANGLE — 15 июля 2026, пресс-релиз PR Newswire датирован 17 июля; беру дату СМИ. $120M ARR приводится TechCrunch со слов компании — это отражено в грейде и в формулировке."
+  },
+  {
+    "id": "us-chai-discovery-biotech-series-c-2026-07",
+    "name": "Chai Discovery",
+    "website": "https://www.chaidiscovery.com",
+    "one_liner": "AI-платформа молекулярного дизайна: zero-shot генерация антител de novo (Chai-2, Chai-3) для фармы.",
+    "what_it_does": "Строит фундаментальные модели молекулярного дизайна. Chai-2 — первая zero-shot генеративная платформа полностью de novo дизайна антител с двузначным процентом экспериментального успеха; представлена Chai-3. Платформу используют Eli Lilly, Novartis и Pfizer. Основана в 2024 в Сан-Франциско выходцами из OpenAI, Meta FAIR и Stripe.",
+    "ai_mechanisms": [
+      "molecular-foundation-model",
+      "generative-protein-design"
+    ],
+    "category": "ai-for-science / biotech",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "2024",
+    "team_background": "Основатели Joshua Meier, Jack Dent, Matthew McPartlon, Jacques Boitreaud — опыт OpenAI, Meta FAIR, Stripe.",
+    "funding": {
+      "round": "Series C",
+      "amount": "$400M",
+      "announced": "2026-07-13",
+      "lead_investors": [
+        "Index Ventures"
+      ],
+      "other_investors": [
+        "Kleiner Perkins",
+        "Sequoia Capital",
+        "Dimension",
+        "Bain Capital Ventures",
+        "Battery Ventures",
+        "Baillie Gifford",
+        "BDT & MSD",
+        "Sapphire Ventures",
+        "Avra Capital",
+        "Thrive Capital",
+        "OpenAI",
+        "Menlo Ventures",
+        "General Catalyst"
+      ],
+      "valuation": "$3.8B",
+      "valuation_confirmed": true,
+      "total_raised": "unknown",
+      "funding_confirmed": true
+    },
+    "traction": "Контракты с Eli Lilly, Pfizer и Novartis (Fierce Biotech); оценка утроилась до $3.8B за раунд (AllSci).",
+    "wow_score": 4,
+    "wow_signals": [
+      "W1",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W1",
+        "claim": "Chai-2 — первая zero-shot платформа полностью de novo дизайна антител с двузначной экспериментальной успешностью; AI-спроектированные антитела дошли до big pharma",
+        "source_url": "https://siliconangle.com/2026/07/14/chai-discovery-nabs-400m-series-c-ai-designed-antibodies-reach-big-pharma/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W1",
+        "claim": "Модели Chai используются Lilly, Novartis и Pfizer; представлена Chai-3",
+        "source_url": "https://www.fiercebiotech.com/biotech/chai-brews-400m-series-c-fuel-ai-used-lilly-novartis-and-pfizer",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "$400M Series C во главе с Index Ventures, оценка $3.8B — утроение оценки; в раунде Sequoia, Kleiner Perkins, OpenAI",
+        "source_url": "https://allsci.com/news/funding/venture-financing/ai-drug-designer-chai-discovery-triples-valuation-to-usd-3-8b-after-usd-400m-series-c/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Isomorphic Labs",
+      "EvolutionaryScale",
+      "Cradle"
+    ],
+    "sources": [
+      {
+        "url": "https://www.businesswire.com/news/home/20260713849009/en/Chai-Discovery-Announces-$400M-Series-C-to-Advance-AI-Driven-Molecular-Design",
+        "title": "Chai Discovery Announces $400M Series C",
+        "type": "company",
+        "publisher": "BusinessWire (пресс-релиз)",
+        "date": "2026-07-13"
+      },
+      {
+        "url": "https://siliconangle.com/2026/07/14/chai-discovery-nabs-400m-series-c-ai-designed-antibodies-reach-big-pharma/",
+        "title": "Chai Discovery nabs $400M Series C as AI-designed antibodies reach Big Pharma",
+        "type": "media",
+        "publisher": "SiliconANGLE",
+        "date": "2026-07-14"
+      },
+      {
+        "url": "https://www.fiercebiotech.com/biotech/chai-brews-400m-series-c-fuel-ai-used-lilly-novartis-and-pfizer",
+        "title": "Chai brews up $400M series C to fuel AI molecule models used by Lilly, Novartis and Pfizer",
+        "type": "media",
+        "publisher": "Fierce Biotech",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "A",
+    "why_wow": "Дизайн антител «с нуля» с двузначным процентом лабораторного успеха — задача, которая считалась недостижимой для вычислительных методов; за два года от основания — до платформенных сделок с тремя фарм-гигантами и $3.8B оценки.",
+    "signal_for_us": "AI-for-science перешёл от «моделей структуры» к «моделям дизайна» с проверяемой экспериментальной успешностью; фарма готова платить за платформу, а не за пайплайн собственных молекул.",
+    "steal_ideas": [
+      "Публикация измеримого experimental success rate как главного маркетингового артефакта вместо демо",
+      "Платформенная модель (продавать инструмент фарме) вместо капиталоёмкой разработки собственных лекарств"
+    ],
+    "contact_angle": "",
+    "tags": [
+      "biotech",
+      "антитела",
+      "foundation model",
+      "series c"
+    ],
+    "research_notes": "Total raised не найден в открытых источниках сессии. Доля традиционного W3 не засчитана: сделки с фармой без раскрытых цифр."
+  },
+  {
+    "id": "us-agent-platform-prime-intellect-series-a-2026-07",
+    "name": "Prime Intellect",
+    "website": "unknown",
+    "one_liner": "Платформа полного цикла (compute + RL-фреймворки + evals), на которой компании тренируют собственных AI-агентов вместо зависимости от frontier-лабораторий.",
+    "what_it_does": "Full-stack платформа для enterprise-разработки AI-агентов: доступ к вычислениям, фреймворки reinforcement learning и инструменты оценки. Работает как маркетплейс с модульным доступом — клиент берёт отдельные инструменты без «всё или ничего». Миссия — дать организациям возможность тренировать собственных агентов, снижая зависимость от frontier-лабораторий. Клиенты: Ramp, Zapier, Flapping Airplanes; Ramp построил на платформе агента, который, по словам компании, обошёл frontier-модели по точности при большей скорости и доле стоимости.",
+    "ai_mechanisms": [
+      "reinforcement-learning",
+      "ai-agent",
+      "llm"
+    ],
+    "category": "devtools",
+    "product_stage": "ga",
+    "country": "США",
+    "founded": "2024",
+    "team_background": "CEO и сооснователь — Vincent Weisser.",
+    "funding": {
+      "round": "series A",
+      "amount": "$130M",
+      "announced": "2026-07-08",
+      "lead_investors": [
+        "Radical Ventures"
+      ],
+      "other_investors": [
+        "Nvidia Ventures",
+        "Intel Capital",
+        "Dell Technologies Capital",
+        "Iconiq"
+      ],
+      "valuation": "$1B",
+      "valuation_confirmed": true,
+      "total_raised": "unknown",
+      "funding_confirmed": true
+    },
+    "traction": "$100M annualized revenue run rate (по данным TechCrunch со слов компании) у компании, основанной в 2024; клиенты — Ramp, Zapier, Flapping Airplanes.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W3",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W3",
+        "claim": "$100M ARR run rate примерно за два года с основания (2024) — аномально быстро для infra/devtools-стадии",
+        "source_url": "https://techcrunch.com/2026/07/08/prime-intellect-raises-130m-series-a-to-help-enterprises-build-their-own-ai-agents/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Series A $130M при оценке $1B; лид Radical Ventures, участие Nvidia Ventures, Intel Capital, Dell Technologies Capital, Iconiq и ангелов уровня фаундеров Perplexity, Box, Harvey, Cognition, Mercor",
+        "source_url": "https://cryptobriefing.com/prime-intellect-130m-series-a-billion-valuation/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "River AI",
+      "Together AI",
+      "Modal",
+      "инструменты frontier-лабораторий (fine-tuning API OpenAI/Anthropic)"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/07/08/prime-intellect-raises-130m-series-a-to-help-enterprises-build-their-own-ai-agents/",
+        "title": "Prime Intellect raises $130M Series A to help enterprises build their own AI agents",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://cryptobriefing.com/prime-intellect-130m-series-a-billion-valuation/",
+        "title": "Prime Intellect raises $130M Series A at $1B valuation",
+        "type": "media",
+        "publisher": "Crypto Briefing",
+        "date": "2026-07"
+      },
+      {
+        "url": "https://radical.vc/portfolio/prime-intellect/",
+        "title": "Prime Intellect — Radical Ventures portfolio",
+        "type": "investor",
+        "publisher": "Radical Ventures",
+        "date": "2026-07"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Ставка «каждая компания тренирует своих агентов сама» уже даёт $100M run rate — то есть спрос на независимость от frontier-лабораторий реален и монетизируется. Кейс Ramp (свой агент лучше frontier-моделей на своей задаче) — ранний прецедент экономики специализированных моделей.",
+    "signal_for_us": "Рынок сдвигается от «купить API у большой лаборатории» к «натренировать своё на своей задаче»: RL-инфраструктура и evals становятся отдельной большой категорией. Для нас это аргумент в разговорах с клиентами про кастомных агентов поверх открытых моделей.",
+    "steal_ideas": [
+      "Модульный маркетплейс вместо platform lock-in: клиент начинает с одного инструмента — снижает порог сделки.",
+      "Публичный кейс клиента, где специализированный агент бьёт frontier-модель по цене/скорости, — самый убедительный формат пруфа для этой категории.",
+      "Ангелы-фаундеры из соседних AI-компаний как сигнал доверия отрасли."
+    ],
+    "contact_angle": "Стоит проверить платформу как возможный бэкенд для кастомных агентов наших клиентов (RL-туning под узкие задачи) — техническое знакомство.",
+    "tags": [
+      "RL-инфраструктура",
+      "агенты",
+      "series A",
+      "unicorn"
+    ],
+    "research_notes": "ARR — со слов компании через TechCrunch, независимого подтверждения цифры нет (потому grade B). Утверждение про агента Ramp «лучше frontier-моделей» — заявление компании/клиента, не бенчмарк. Общий total_raised не подтверждён."
+  },
+  {
+    "id": "us-appgen-sekai-seriesa-2026-06",
+    "name": "Sekai",
+    "website": "https://sekaiapp.com/",
+    "one_liner": "Консьюмерская платформа, где промпт за секунды превращается в играбельное шареабельное мини-приложение; создано 15 млн мини-аппов, по 200 тыс. в день.",
+    "what_it_does": "Sekai позволяет 'строить софт, описывая словами': текстовый промпт превращается в играбельное мини-приложение (игры, мемы, квизы, фан-инструменты, утилиты), которым можно делиться и которое можно ремиксить. Начинали с аниме-фанфикшена, развернулись в универсальную app-генерацию после скачка качества кодинг-моделей. Пример из анонса: квиз про Coachella от 20-летнего пользователя собрал 50 тыс. игроков за уикенд; пользователи проводят на платформе более часа в день.",
+    "ai_mechanisms": [
+      "llm",
+      "generative-ai"
+    ],
+    "category": "consumer",
+    "product_stage": "ga",
+    "country": "unknown",
+    "founded": "unknown",
+    "team_background": "Основатель Lucky Zhang, четвёртая компания: первую купил Apple (Yi+ AI, 2017), вторую — ByteDance/TikTok, третья — крупнейший музыкальный стриминг Вьетнама.",
+    "funding": {
+      "round": "Series A",
+      "amount": "$20M",
+      "announced": "2026-06",
+      "lead_investors": [
+        "Khosla Ventures",
+        "Connect Ventures"
+      ],
+      "other_investors": [
+        "Mayfield (лид сида)",
+        "a16z speedrun",
+        "A*",
+        "MVP Ventures",
+        "359 Capital",
+        "Parable VC",
+        "645 Ventures"
+      ],
+      "valuation": "unknown",
+      "valuation_confirmed": false,
+      "total_raised": "$26M",
+      "funding_confirmed": true
+    },
+    "traction": "15 млн мини-аппов создано пользователями; ~200 тыс. новых в день; ~1 млн мини-аппов за первые два месяца после запуска генеративных инструментов; время в продукте — более часа в день.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W3",
+      "W5"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W3",
+        "claim": "Axios: 'Sekai raises $20 million as people create 15 million AI mini apps' — 15 млн созданных мини-аппов на момент Series A",
+        "source_url": "https://www.axios.com/2026/06/01/sekai-mini-app-startup-funding",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W3",
+        "claim": "200 тыс. новых мини-аппов в день, >1 часа в день на пользователя; ~1 млн аппов за первые два месяца",
+        "source_url": "https://finance.yahoo.com/sectors/technology/articles/sekai-raises-26m-seed-series-213200757.html",
+        "source_type": "company"
+      },
+      {
+        "signal": "W5",
+        "claim": "Новая механика: софт как социальный контент — промпт превращается в играбельный, шареабельный и ремиксуемый мини-апп; фактически UGC-платформа, где юниты контента — приложения",
+        "source_url": "https://cryptobriefing.com/sekai-raises-20m-series-a-ai-apps/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Websim",
+      "Lovable (иной сегмент — prosumer)",
+      "Roblox (по механике UGC)"
+    ],
+    "sources": [
+      {
+        "url": "https://www.axios.com/2026/06/01/sekai-mini-app-startup-funding",
+        "title": "Sekai raises $20 million as people create 15 million AI mini apps",
+        "type": "media",
+        "publisher": "Axios",
+        "date": "2026-06"
+      },
+      {
+        "url": "https://finance.yahoo.com/sectors/technology/articles/sekai-raises-26m-seed-series-213200757.html",
+        "title": "Sekai Raises $26M in Seed and Series A as Users Create, Play, and Remix 15 Million Mini-Apps",
+        "type": "company",
+        "publisher": "Yahoo Finance (пресс-релиз)",
+        "date": "2026-06"
+      },
+      {
+        "url": "https://cryptobriefing.com/sekai-raises-20m-series-a-ai-apps/",
+        "title": "Sekai raises $20M Series A to enhance AI app creation platform",
+        "type": "media",
+        "publisher": "Crypto Briefing",
+        "date": "2026-06"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Вчера 'сделать приложение' было проектом на недели — здесь это единица развлекательного контента: 200 тыс. приложений в день создают обычные люди ради шутки, квиза или мема. Это новая категория UGC, где генерация кода стала расходным материалом социальной механики.",
+    "signal_for_us": "Порог создания софта упал до нуля — ценность смещается в дистрибуцию и социальный слой вокруг генерации. Подтверждает гипотезу, что 'vibe coding' уходит в консьюмер как развлечение, а не только в prosumer-инструменты.",
+    "steal_ideas": [
+      "Ремикс чужого артефакта одним тапом — движок вирусности.",
+      "Метрика 'создано юнитов в день' как главный публичный показатель вместо DAU.",
+      "Пивот из узкой фан-ниши (аниме) в широкую платформу после скачка возможностей моделей."
+    ],
+    "contact_angle": "Повода для прямого контакта нет; механика ремикса и 'апп как контент' — кандидат на перенос в наши продуктовые прототипы.",
+    "tags": [
+      "генерация приложений",
+      "консьюмер",
+      "series-a",
+      "ugc"
+    ],
+    "research_notes": "Страница Axios отдаёт 403 (Cloudflare) — использован заголовок из поисковой выдачи, подтверждающий раунд и 15M-метрику; детальные цифры — из пресс-релиза (Yahoo) и Crypto Briefing. Гео и год основания в открытых источниках не зафиксированы — unknown. Оценка не раскрыта."
+  },
+  {
+    "id": "us-social-series-preseed-2026-04",
+    "name": "Series",
+    "website": "https://series.so/",
+    "one_liner": "AI-социальная сеть, живущая целиком в iMessage: студенты текстят AI-агенту, кого хотят найти, и он сводит их друг с другом.",
+    "what_it_does": "Series — соцсеть без приложения: пользователь пишет номеру 'Series AI' в iMessage, кто он и кого ищет (социально или профессионально), и получает 'shares' — карусель из 10 карточек-профилей других пользователей с похожими запросами; переписку можно начать, не раскрывая свой номер. Вход по .edu-почте. По TechCrunch — более 750 активных кампусов и 82% retention на 30-й день среди активированных пользователей.",
+    "ai_mechanisms": [
+      "ai-agent",
+      "llm",
+      "recommender"
+    ],
+    "category": "consumer",
+    "founded": "2025",
+    "product_stage": "ga",
+    "country": "США",
+    "team_background": "Основатели — студенты Yale Nathaneo Johnson (CEO) и Sean Hargrow, познакомились на подкасте Yale Entrepreneurial Society.",
+    "funding": {
+      "round": "pre-seed",
+      "amount": "$5.1M",
+      "announced": "2026-04-24",
+      "lead_investors": [],
+      "other_investors": [
+        "Iqram Magdon-Ismail (сооснователь Venmo)",
+        "Pear VC",
+        "Steve Huffman (CEO Reddit)",
+        "Edward Tian (основатель GPTZero)"
+      ],
+      "valuation": "unknown",
+      "valuation_confirmed": false,
+      "total_raised": "unknown",
+      "funding_confirmed": true
+    },
+    "traction": "Более 750 кампусов; day-30 retention 82% среди активированных пользователей (цифры компании, приведены TechCrunch); к осени 2025 — более 300 тыс. профилей.",
+    "wow_score": 4,
+    "wow_signals": [
+      "W2",
+      "W5"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W2",
+        "claim": "TechCrunch: 'now-viral LinkedIn video' — трейлер, снятый за ночь, разошёлся вирусно; первый инвестор пришёл в течение двух дней, раунд закрыт за 14 дней",
+        "source_url": "https://techcrunch.com/2026/04/24/two-college-kids-raise-a-5-1-million-pre-seed-to-build-an-ai-social-network-in-imessage/",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W2",
+        "claim": "Независимое кампусное покрытие: Yale Daily News о росте Series, reality-TV-формате и экспансии на другие кампусы",
+        "source_url": "https://yaledailynews.com/articles/growing-series-startup-yalies-turn-to-reality-tv-and-other-campuses",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W5",
+        "claim": "Одна из первых соцсетей, работающих целиком внутри iMessage: AI-агент как посредник знакомств вместо ленты и приложения",
+        "source_url": "https://techcrunch.com/2026/04/24/two-college-kids-raise-a-5-1-million-pre-seed-to-build-an-ai-social-network-in-imessage/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "LinkedIn (по задаче нетворкинга)",
+      "Instinct (по интерфейсу-в-мессенджере)",
+      "Marriage Pact / кампусные матчинг-проекты"
+    ],
+    "sources": [
+      {
+        "url": "https://techcrunch.com/2026/04/24/two-college-kids-raise-a-5-1-million-pre-seed-to-build-an-ai-social-network-in-imessage/",
+        "title": "Two college kids raise a $5.1 million pre-seed to build an AI social network in iMessage",
+        "type": "media",
+        "publisher": "TechCrunch",
+        "date": "2026-04"
+      },
+      {
+        "url": "https://finance.yahoo.com/markets/stocks/articles/series-ai-powered-social-network-155449573.html",
+        "title": "Series, An AI-Powered Social Network For Gen Z Founded By Yale Students, Raises $5.1M Pre-Seed Round",
+        "type": "media",
+        "publisher": "Yahoo Finance",
+        "date": "2026-04"
+      },
+      {
+        "url": "https://yaledailynews.com/articles/growing-series-startup-yalies-turn-to-reality-tv-and-other-campuses",
+        "title": "Growing Series startup, Yalies turn to reality TV and other campuses",
+        "type": "media",
+        "publisher": "Yale Daily News",
+        "date": "2026"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Соцсеть, у которой нет приложения вовсе: весь продукт — AI-агент в iMessage, а вирусный трейлер, снятый студентами за ночь, закрыл раунд за 14 дней. Механика 'AI как посредник знакомства' вместо ленты — свежий взгляд на то, чем вообще может быть социальная сеть.",
+    "signal_for_us": "Мессенджер-нативные AI-продукты (без собственного приложения) — устойчивый паттерн 2026 года и в консьюмере (Series, Instinct); порог дистрибуции — ноль установок. Gen Z-нетворкинг через агентов — разогревающаяся ниша.",
+    "steal_ideas": [
+      "Продукт внутри чужого мессенджера: ноль установок, вход по одному сообщению.",
+      "Ограничение входа (.edu) как механика доверия и кампусной вирусности.",
+      "Кинематографичный launch-трейлер в LinkedIn как замена пресс-релизу."
+    ],
+    "contact_angle": "",
+    "tags": [
+      "консьюмер",
+      "социальная сеть",
+      "pre-seed",
+      "imessage"
+    ],
+    "research_notes": "В апреле 2025 компания анонсировала $3.1M (вне окна); $5.1M pre-seed анонсирован TechCrunch 2026-04-24 — вероятно, включает/расширяет ту сумму, отдельность раундов источники не проясняют. Retention и кампусы — цифры компании через TechCrunch. Просмотры вирусного видео численно нигде не зафиксированы."
+  },
+  {
+    "id": "cn-humanoid-tars-prea-2026-04",
+    "name": "TARS Robotics",
+    "website": "unknown",
+    "one_liner": "Шанхайский разработчик гуманоидных роботов с собственными моделями воплощённого интеллекта (TARS A1).",
+    "what_it_does": "TARS разрабатывает гуманоидных роботов и модели embodied AI, объединяя разработку крупных моделей, R&D по железу и серийное производство единого софтверно-аппаратного решения. Публично компания описывает подход как связку «DATA AI PHYSICS»: реальные данные операций (платформа SenseHub), обучающий движок AWE 2.0 и роботы, спроектированные под минимальный разрыв между симуляцией и физикой. В декабре 2025 на живом мероприятии робот компании выполнил ручную вышивку двумя руками — вдел нитку в иглу и прострочил логотип с субмиллиметровой точностью.",
+    "ai_mechanisms": [
+      "embodied-ai",
+      "world-model",
+      "robotics-foundation-model"
+    ],
+    "category": "robotics",
+    "product_stage": "demo-only",
+    "country": "Китай",
+    "founded": "2025-02",
+    "team_background": "Основана в феврале 2025 командой бывших руководителей из автономного вождения; VnExpress называет выходцев из проекта Baidu Apollo и подразделения автономного вождения Huawei. CEO — Chen Yilun.",
+    "funding": {
+      "round": "pre-A",
+      "amount": "$455M",
+      "announced": "2026-04-17",
+      "lead_investors": [
+        "GL Ventures (Hillhouse)",
+        "HSG / HongShan",
+        "Meituan"
+      ],
+      "other_investors": [
+        "Beijing Robotics Industry Development Investment Fund"
+      ],
+      "valuation": "$1.9B",
+      "valuation_confirmed": true,
+      "total_raised": "unknown",
+      "funding_confirmed": true
+    },
+    "traction": "",
+    "wow_score": 4,
+    "wow_signals": [
+      "W1",
+      "W4"
+    ],
+    "wow_evidence": [
+      {
+        "signal": "W1",
+        "claim": "Первая публичная демонстрация гуманоидного робота, выполняющего ручную вышивку двумя руками: вдевание нитки в иглу и строчка логотипа с субмиллиметровой точностью на мягком материале — задача, которая до этого считалась недоступной автоматизации",
+        "source_url": "https://interestingengineering.com/ai-robotics/china-humanoid-robot-stitches-embroidery",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W1",
+        "claim": "Независимое подтверждение того же факта: «world's first to achieve two-handed stitching», демонстрация 22 декабря 2025",
+        "source_url": "https://e.vnexpress.net/news/tech/tech-news/china-s-tars-humanoid-robot-becomes-world-s-first-to-achieve-two-handed-stitching-4998932.html",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Раунд $455M — новый рекорд крупнейшего единичного раунда в китайском секторе гуманоидной робототехники (формулировка Caixin)",
+        "source_url": "https://www.caixinglobal.com/2026-04-17/chinese-ai-robotics-startup-tars-raises-455-million-in-record-pre-a-round-102434873.html",
+        "source_type": "independent"
+      },
+      {
+        "signal": "W4",
+        "claim": "Crunchbase News: компании 1 год, раунд под лидерством Hillhouse и HSG, оценка $1.9B",
+        "source_url": "https://news.crunchbase.com/robotics/embodied-ai-fuels-record-funding-china-ipo-momentum-builds/",
+        "source_type": "independent"
+      }
+    ],
+    "competitors": [
+      "Unitree",
+      "X Square Robot",
+      "PsiBot",
+      "Infiforce"
+    ],
+    "sources": [
+      {
+        "url": "https://www.caixinglobal.com/2026-04-17/chinese-ai-robotics-startup-tars-raises-455-million-in-record-pre-a-round-102434873.html",
+        "title": "Chinese AI Robotics Startup TARS Raises $455 Million in Record Pre-A Round",
+        "type": "media",
+        "publisher": "Caixin Global",
+        "date": "2026-04"
+      },
+      {
+        "url": "https://news.crunchbase.com/robotics/embodied-ai-fuels-record-funding-china-ipo-momentum-builds/",
+        "title": "Embodied AI Fuels Record Robotics Funding In China As IPO Momentum Builds",
+        "type": "media",
+        "publisher": "Crunchbase News",
+        "date": "2026-05"
+      },
+      {
+        "url": "https://interestingengineering.com/ai-robotics/china-humanoid-robot-stitches-embroidery",
+        "title": "Chinese humanoid robot achieves world's first embroidery feat in demo",
+        "type": "media",
+        "publisher": "Interesting Engineering",
+        "date": "2025-12"
+      },
+      {
+        "url": "https://e.vnexpress.net/news/tech/tech-news/china-s-tars-humanoid-robot-becomes-world-s-first-to-achieve-two-handed-stitching-4998932.html",
+        "title": "China's TARS humanoid robot becomes world's first to achieve two-handed stitching",
+        "type": "media",
+        "publisher": "VnExpress International",
+        "date": "2025-12"
+      }
+    ],
+    "evidence_grade": "B",
+    "why_wow": "Не «ещё один гуманоид»: компания показала конкретную моторную задачу, которую робототехника считала нерешённой — бимануальную работу с иглой и мягким материалом. Это редкий случай, когда вау держится не на размере чека, а на видимой физической способности, и уже поэтому раунд читается иначе.",
+    "signal_for_us": "Китайский капитал в embodied AI концентрируется в единичных командах: рекордный раунд ушёл компании возрастом год. Рынок сейчас платит за доказанную мелкую моторику и работу с деформируемыми материалами, а не за демо-походку.",
+    "steal_ideas": [
+      "Одно узкое, визуально невозможное демо (вышивка) вместо длинного списка возможностей — оно само разошлось по нишевым и общим СМИ.",
+      "Формулировка подхода в виде запоминающейся триады («данные — модель — физика») даёт журналистам готовый заголовок.",
+      "Публичный живой показ, а не смонтированный ролик — снимает главное возражение к роботизированным демо."
+    ],
+    "contact_angle": "Прямого коммерческого повода нет; стоит проверить как ориентир по тому, какие демо-форматы работают, и следить за выходом на внешние рынки.",
+    "tags": [
+      "робототехника",
+      "гуманоиды",
+      "embodied AI",
+      "Китай",
+      "pre-A"
+    ],
+    "research_notes": "Расхождение источников по раунду: Caixin — $455M pre-A (лиды GL Ventures, HSG, Meituan), Crunchbase News — $513M «seed» под лидерством Hillhouse и HSG при оценке $1.9B. GL Ventures — венчурное подразделение Hillhouse, HSG = HongShan, то есть речь почти наверняка об одном и том же раунде с разной классификацией и суммой; беру цифру Caixin как первоисточник по сумме, оценку — по Crunchbase News. Сайт компании не открывал, поэтому website = unknown. Демо с вышивкой датировано декабрём 2025 — оно ВНЕ окна свежести, но окно применяется к раунду (апрель 2026), а не к вау-свидетельству. Трекшен (выручка, поставки) в открытых источниках не найден."
+  }
+]
