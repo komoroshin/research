@@ -155,6 +155,7 @@ details.help ul{padding-left:20px;margin:6px 0}
     <div class="daybox" id="dayBox"></div>
     <div class="actions">
       <button class="ghost" id="btnNew">Новая игра</button>
+      <button class="ghost" id="btnCastle">🏰 Замок</button>
       <button id="btnEnd">Конец хода ⏭</button>
     </div>
   </div>
@@ -174,6 +175,7 @@ details.help ul{padding-left:20px;margin:6px 0}
       <li><b>Бой на гексах.</b> Активный отряд подсвечен, зелёные гексы — куда он может дойти. Тапни по врагу, чтобы атаковать (отряд сам подойдёт), по гексу — чтобы переместиться. Лучники и монахи стреляют издалека, грифоны и ангелы летают.</li>
       <li><b>Магия.</b> Раз в раунд героиня может произнести заклинание (тратит ману). Новые заклинания даёт Гильдия магов в замке. Мана восстанавливается по 2 в день и полностью в замке.</li>
       <li><b>Опыт и навыки.</b> За победы растут уровень, первичные параметры и выбирается вторичный навык: логистика, наступление, стрельба, броня, интеллект, удача.</li>
+      <li><b>Замок</b> открывается кнопкой «Замок» сверху из любой точки карты: строить можно всегда, а войска, нанятые без героини, остаются гарнизоном и защищают замок от штурма. Заведи героиню в замок — и забери их в армию.</li>
       <li><b>Артефакты</b> 🗡️🛡️🎩👢📿 лежат на карте под охраной. <b>Жилища</b> продают войска вне замка. <b>Родник</b> восстанавливает ход, <b>башня</b> открывает карту, <b>школа войны</b> и <b>камень знаний</b> дают параметры и опыт.</li>
       <li><b>Лорд Хаарт</b> выйдет из Цитадели на третьей неделе: он захватывает твои шахты и, если застанет замок пустым, — конец игры. Разбить его можно, но он вернётся сильнее.</li>
       <li><b>Цель:</b> взять Цитадель 🏯 (гарнизон с драконами). Считаются дни до победы.</li>
@@ -300,7 +302,7 @@ function newGame(){
   }}
   S={day:1,gold:3000,wood:10,ore:5,tiles,
      hero:{x:1,y:2,mp:24,att:1,def:1,pow:1,kno:1,mana:10,lvl:1,xp:0,army:[{id:'pike',count:12,hp:10},{id:'archer',count:6,hp:10}],skills:{},arts:[],spells:['arrow'],pendingLv:0},
-     town:{b:{},avail:{pike:14,archer:9,griffin:7,sword:4,monk:0,cav:0,angel:0},builtDay:0},
+     town:{b:{},avail:{pike:14,archer:9,griffin:7,sword:4,monk:0,cav:0,angel:0},builtDay:0,garrison:[]},
      eh:null,ehLevel:0,log:[],won:false,lost:false};
   log('Катерина выезжает из замка. На юго-востоке — Цитадель лорда Хаарта. <em>Тапни по клетке</em>, чтобы идти.');
 }
@@ -535,7 +537,8 @@ function visit(o,resume){
   if(o.s==='P'&&!used){document.getElementById('spA').onclick=use(()=>{S.gold-=1000;S.hero.att++;log('🏟️ Школа войны: атака +1.');});
     document.getElementById('spD').onclick=use(()=>{S.gold-=1000;S.hero.def++;log('🏟️ Школа войны: защита +1.');});}
 }
-function addUnits(id,n){const st=S.hero.army.find(a=>a.id===id);if(st)st.count+=n;else S.hero.army.push({id,count:n,hp:C[id].hp});}
+function addUnits(id,n,arr){arr=arr||S.hero.army;const st=arr.find(a=>a.id===id);if(st)st.count+=n;else arr.push({id,count:n,hp:C[id].hp});}
+const heroInTown=()=>S.hero.x===1&&S.hero.y===2;
 function tryInteract(p){
   if(p.eh&&ehAlive()&&S.eh.x===p.x&&S.eh.y===p.y){confirmBattle({kind:'eh'},null);return;}
   const o=S.tiles[p.y][p.x].obj;if(!o)return;
@@ -594,15 +597,15 @@ function hexPath(res,c,r){const p=[];let k=[c,r];while(k){p.unshift(k);const e=r
 const adjacent=(a,b)=>hexDist([a.c,a.r],[b.c,b.r])===1;
 const enemyAdjacent=u=>alive(u.side==='pl'?'en':'pl').some(e=>adjacent(u,e));
 
-function startBattle(enemyDefs,enHero,target,onWin,defending){
+function startBattle(enemyDefs,enHero,target,onWin,defending,army){
   busy=true;hoverPath=null;
-  const plHero={att:heroStat('att'),def:heroStat('def'),name:'Катерина',side:'pl'};
+  const garrison=!!army;army=army||S.hero.army;const plHero=garrison?{att:0,def:0,name:'гарнизон',side:'pl'}:{att:heroStat('att'),def:heroStat('def'),name:'Катерина',side:'pl'};
   const units=[];const rowsOrder=[3,2,4,1,5,0,6];
-  S.hero.army.filter(a=>a.count>0).forEach((a,i)=>{a.hp=a.hp||C[a.id].hp;units.push({id:a.id,count:a.count,hp:a.hp,max:a.count,side:'pl',c:0,r:rowsOrder[i],ret:0,defending:false,spdMod:0,waited:false,ref:a});});
+  army.filter(a=>a.count>0).forEach((a,i)=>{a.hp=a.hp||C[a.id].hp;units.push({id:a.id,count:a.count,hp:a.hp,max:a.count,side:'pl',c:0,r:rowsOrder[i],ret:0,defending:false,spdMod:0,waited:false,ref:a});});
   enemyDefs.filter(e=>e.count>0).forEach((e,i)=>{units.push({id:e.id,count:e.count,hp:C[e.id].hp,max:e.count,side:'en',c:BC-1,r:rowsOrder[i],ret:0,defending:false,spdMod:0,waited:false});});
   const obst=new Set();let tries=0;while(obst.size<5&&tries++<60){const c=rnd(2,BC-3),r=rnd(0,BR-1);if(!units.some(u=>u.c===c&&u.r===r))obst.add(key(c,r));}
-  B={units,obst,enHero,plHero,round:0,order:[],idx:0,waiting:false,spell:null,spellUsed:false,floats:[],log:[],target,onWin,killedXp:0,auto:false,hover:null,anim:null,over:false};
-  modal(`<div class="bhead"><h2 id="bTitle">${enHero?`Бой: ${enHero.name}`:'Бой'}</h2><span class="vs">Катерина ⚔${plHero.att} 🛡${plHero.def} · мана ${S.hero.mana}/${maxMana()}${enHero?` · противник ⚔${enHero.att} 🛡${enHero.def}`:''}</span></div>
+  B={units,obst,enHero,plHero,round:0,order:[],idx:0,waiting:false,spell:null,spellUsed:false,floats:[],log:[],target,onWin,killedXp:0,auto:garrison,garrison,hover:null,anim:null,over:false};
+  modal(`<div class="bhead"><h2 id="bTitle">${enHero?`Бой: ${enHero.name}`:'Бой'}</h2><span class="vs">${garrison?'Гарнизон без героини':`Катерина ⚔${plHero.att} 🛡${plHero.def} · мана ${S.hero.mana}/${maxMana()}`}${enHero?` · противник ⚔${enHero.att} 🛡${enHero.def}`:''}</span></div>
     <div class="bwrap"><canvas id="bcv" width="${Math.round(HW*(BC+.5)+8)}" height="${Math.round(HS*1.5*(BR-1)+2*HS+8)}"></canvas></div>
     <div class="spells" id="bSpells"></div>
     <div class="bctrl"><span class="turn" id="bTurn"></span><span class="grp"><button class="sm ghost" id="bWait">Ждать</button><button class="sm ghost" id="bDef">Защита 🛡</button><button class="sm ghost" id="bAuto">Автобой</button><button class="sm danger" id="bRun">Отступить</button></span></div>
@@ -611,9 +614,10 @@ function startBattle(enemyDefs,enHero,target,onWin,defending){
   bcv.addEventListener('click',onBattleClick);bcv.addEventListener('mousemove',ev=>{B.hover=hexFromEvent(ev);});bcv.addEventListener('mouseleave',()=>{B.hover=null;});
   document.getElementById('bDef').onclick=()=>{if(!B.waiting)return;const u=B.order[B.idx];u.defending=true;blog(`${C[u.id].name} встают в защиту.`);endAction();};
   document.getElementById('bWait').onclick=()=>{if(!B.waiting)return;const u=B.order[B.idx];if(u.waited)return;u.waited=true;B.order.push(u);blog(`${C[u.id].name} выжидают.`);endAction();};
+  if(B.garrison){document.getElementById('bAuto').disabled=true;document.getElementById('bRun').disabled=true;}
   document.getElementById('bAuto').onclick=()=>{if(!B.waiting)return;B.auto=true;document.getElementById('bAuto').disabled=true;const u=B.order[B.idx];B.waiting=false;aiAct(u).then(endAction);};
   document.getElementById('bRun').onclick=()=>{if(!B.waiting)return;finishBattle(false,true);};
-  blog(`Бой начинается${defending?' — лорд Хаарт атакует':''}.`);
+  blog(garrison?'Лорд Хаарт штурмует замок. Гарнизон принимает бой.':`Бой начинается${defending?' — лорд Хаарт атакует':''}.`);
   requestAnimationFrame(battleLoop);
   newRound();
 }
@@ -637,7 +641,7 @@ function renderBattleUI(){
   t.textContent=B.waiting?`Ходят ${C[u.id].name} (скорость ${uSpd(u)}) — выбери цель или гекс`:u?`Ходит противник: ${C[u.id].name}`:'';
   ['bDef','bWait','bRun'].forEach(id=>document.getElementById(id).disabled=!B.waiting);
   document.getElementById('bWait').disabled=!B.waiting||(u&&u.waited);
-  const sp=document.getElementById('bSpells');
+  const sp=document.getElementById('bSpells');if(B.garrison){sp.innerHTML='';return;}
   sp.innerHTML=`<span>Магия (${S.hero.mana} маны${B.spellUsed?', уже была в этом раунде':''}):</span>`+S.hero.spells.map(k=>{const s=SPELLS[k];const can=B.waiting&&!B.spellUsed&&S.hero.mana>=s.cost;
     return `<button class="sp ${B.spell===k?'on':''}" data-sp="${k}" ${can?'':'disabled'} title="${s.desc(heroStat('pow'))}">${s.e} ${s.name} · ${s.cost}</button>`;}).join('');
   sp.querySelectorAll('[data-sp]').forEach(el=>el.onclick=()=>{B.spell=B.spell===el.dataset.sp?null:el.dataset.sp;renderBattleUI();
@@ -750,18 +754,19 @@ function hexPathDraw(g,x,y,s){g.beginPath();for(let i=0;i<6;i++){const a=Math.PI
 function finishBattle(win,fled){
   if(B.over)return;B.over=true;B.waiting=false;
   B.units.filter(u=>u.side==='pl').forEach(u=>{u.ref.count=u.count;u.ref.hp=u.hp;});
-  S.hero.army=S.hero.army.filter(a=>a.count>0);
+  S.hero.army=S.hero.army.filter(a=>a.count>0);S.town.garrison=S.town.garrison.filter(a=>a.count>0);
   const xp=B.killedXp,tg=B.target,onWin=B.onWin;
   const t=document.getElementById('bTurn');['bDef','bWait','bRun','bAuto'].forEach(id=>document.getElementById(id).disabled=true);
   const grp=document.querySelector('.bctrl .grp');
   if(win){
     if(tg.kind==='castle'){S.won=true;S.tiles[tg.y][tg.x].obj=null;t.innerHTML='<b>Цитадель пала!</b>';grp.innerHTML='<button id="bOk">К летописи</button>';
       document.getElementById('bOk').onclick=()=>{closeModal();B=null;gainXp(xp,showVictory);};return;}
+    if(tg.kind==='garrison'){S.eh.alive=false;S.eh.respawn=S.day+4;S.ehLevel++;log('🏰 <em>Гарнизон отбил штурм!</em> Лорд Хаарт отброшен от замка.');t.innerHTML='<b>Замок устоял!</b>';grp.innerHTML='<button id="bOk">Продолжить</button>';document.getElementById('bOk').onclick=()=>{closeModal();B=null;computeVis();renderAll();save();if(onWin)onWin();};return;}
     if(tg.kind==='eh'){S.eh.alive=false;S.eh.respawn=S.day+4;S.ehLevel++;log(`⚔️ <em>Лорд Хаарт разбит!</em> +${fmt(xp)} опыта. Он вернётся через несколько дней — сильнее.`);}
     else{S.tiles[tg.y][tg.x].obj=null;log(`⚔️ Победа над отрядом! +${fmt(xp)} опыта.`);}
     t.innerHTML=`<b>Победа! +${fmt(xp)} опыта</b>`;
   } else {
-    if(tg.kind==='eh'&&tg.defend){/* enemy attacked and won */}
+    if(tg.kind==='garrison'){S.lost=true;t.innerHTML='<b>Гарнизон разбит.</b> Замок пал.';grp.innerHTML='<button id="bOk">Продолжить</button>';document.getElementById('bOk').onclick=()=>{closeModal();B=null;showDefeat();};return;}
     S.hero.army=[];S.hero.x=1;S.hero.y=2;S.hero.mp=0;
     log(fled?'Катерина отступила, бросив армию, и вернулась в замок.':'💀 Армия разбита. Катерина бежала в замок без войск.','bad');
     t.innerHTML=`<b>${fled?'Отступление':'Поражение'}</b>. Героиня возвращается в замок.`;
@@ -792,14 +797,19 @@ function restart(){try{localStorage.removeItem(SAVE_KEY)}catch(e){};B=null;busy=
 const canPay=c=>S.gold>=(c.gold||0)&&S.wood>=(c.wood||0)&&S.ore>=(c.ore||0);
 const pay=c=>{S.gold-=c.gold||0;S.wood-=c.wood||0;S.ore-=c.ore||0;};
 function openTown(){
-  const T=S.town;
+  const T=S.town;const inTown=heroInTown();T.garrison=T.garrison.filter(a=>a.count>0);
+  const unitRow=(a,btn)=>`<div class="trow"><span class="e">${C[a.id].e}</span><span class="n">${C[a.id].name}<small>⚔${C[a.id].att} 🛡${C[a.id].def} · ❤${a.hp}/${C[a.id].hp}</small></span><span class="a"><span class="cost">×${a.count}</span>${btn}</span></div>`;
+  const garRows=T.garrison.length?T.garrison.map((a,i)=>unitRow(a,inTown?`<button class="sm" data-take="${i}">Забрать</button>`:'')).join(''):'<div class="trow"><span class="e">🏰</span><span class="n">Гарнизона нет<small>Войска, нанятые без героини, остаются здесь и защищают замок.</small></span></div>';
+  const heroRows=inTown&&S.hero.army.length?S.hero.army.map((a,i)=>unitRow(a,`<button class="sm ghost" data-leave="${i}">Оставить</button>`)).join(''):'';
   const bRows=Object.entries(BUILD).map(([k,b])=>{const built=T.b[k];const can=!built&&T.builtDay!==S.day&&canPay(b.cost);
     return `<div class="trow ${built?'built':''}"><span class="e">${b.e}</span><span class="n">${b.name}${built?' — построено':''}<small>${b.desc}</small></span>
      <span class="a"><span class="cost">💰${fmt(b.cost.gold)} 🪵${b.cost.wood} 🪨${b.cost.ore}</span> <button class="sm" data-b="${k}" ${can?'':'disabled'}>${built?'✓':'Строить'}</button></span></div>`;}).join('');
   const rRows=RECRUIT.map(id=>{const t=C[id];const locked=t.needs&&!T.b[t.needs];const av=locked?0:T.avail[id];const max=Math.min(av,Math.floor(S.gold/t.cost));
     return `<div class="trow"><span class="e">${t.e}</span><span class="n">${t.name}<small>⚔${t.att} 🛡${t.def} · урон ${t.dmg[0]}–${t.dmg[1]} · ❤${t.hp} · ск.${t.spd}${t.ranged?' · стрелки':''}${t.fly?' · летают':''} · ${fmt(t.cost)}💰${locked?` · нужно: ${BUILD[t.needs].name}`:''}</small></span>
      <span class="a"><span class="cost">есть ${av}</span><input type="number" min="0" max="${max}" value="${max}" data-i="${id}"><button class="sm" data-r="${id}" ${max?'':'disabled'}>Нанять</button></span></div>`;}).join('');
-  modal(`<div class="town"><h2>🏰 Замок Катерины</h2><p class="lead">Неделя ${week()}, день ${dow()}. ${T.builtDay===S.day?'Сегодня уже строили — одна стройка в день.':'Можно построить одно здание.'} Мана восстановлена.</p>
+  modal(`<div class="town"><h2>🏰 Замок Катерины</h2><p class="lead">Неделя ${week()}, день ${dow()}. ${T.builtDay===S.day?'Сегодня уже строили — одна стройка в день.':'Можно построить одно здание.'} ${inTown?'Героиня в замке: найм идёт прямо в её армию, мана восстановлена.':'Героиня в походе: нанятые войска остаются в гарнизоне.'}</p>
+   <h3>Гарнизон замка</h3><div class="rows">${garRows}</div>
+   ${heroRows?`<h3>Армия героини</h3><div class="rows">${heroRows}</div>`:''}
    <h3>Найм войск</h3><div class="rows">${rRows}</div>
    <h3>Строительство</h3><div class="rows">${bRows}</div>
    <div class="row"><button id="tClose">Выйти из замка</button></div></div>`);
@@ -810,7 +820,9 @@ function openTown(){
     log(`${b.e} Построено: ${b.name}.`);renderTop();openTown();});
   document.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{const id=el.dataset.r,t=C[id];
     const n=Math.max(0,Math.min(+document.querySelector(`[data-i="${id}"]`).value||0,T.avail[id],Math.floor(S.gold/t.cost)));if(!n)return;
-    S.gold-=n*t.cost;T.avail[id]-=n;addUnits(id,n);log(`${t.e} Нанято: ${t.name} ×${n}.`);renderTop();renderSide();openTown();});
+    S.gold-=n*t.cost;T.avail[id]-=n;addUnits(id,n,inTown?S.hero.army:T.garrison);log(`${t.e} Нанято: ${t.name} ×${n}${inTown?'':' — в гарнизон'}.`);renderTop();renderSide();openTown();});
+  document.querySelectorAll('[data-take]').forEach(el=>el.onclick=()=>{const a=T.garrison.splice(+el.dataset.take,1)[0];addUnits(a.id,a.count,S.hero.army);renderSide();openTown();});
+  document.querySelectorAll('[data-leave]').forEach(el=>el.onclick=()=>{const a=S.hero.army.splice(+el.dataset.leave,1)[0];addUnits(a.id,a.count,T.garrison);renderSide();openTown();});
 }
 
 // ================= ENEMY HERO =================
@@ -840,7 +852,11 @@ async function enemyTurn(){
   for(const p of path){if(mp<p.cost)break;mp-=p.cost;eh.x=p.x;eh.y=p.y;
     const o=S.tiles[p.y][p.x].obj;
     if(o&&o.k==='mine'&&o.owner==='pl'){o.owner='en';log(`🏴 Лорд Хаарт захватил: ${MINES[o.m].name}.`,'bad');computeVis();}
-    if(o&&o.k==='town'){S.lost=true;renderAll();showDefeat();return;}
+    if(o&&o.k==='town'){const gar=S.town.garrison.filter(a=>a.count>0);
+      if(gar.length){log('🏴 <em>Лорд Хаарт штурмует замок!</em> Гарнизон принимает бой.','bad');computeVis();
+        await new Promise(res=>{startBattle(eh.army.map(a=>({...a})),{att:eh.att,def:eh.def,name:'лорд Хаарт'},{kind:'garrison'},res,true,S.town.garrison);});
+        if(!ehAlive()){eh.x=21;eh.y=12;}return;}
+      S.lost=true;renderAll();showDefeat();return;}
     if(VIS[p.y*W+p.x]){await sleep(140);}
   }
   computeVis();
@@ -867,6 +883,7 @@ async function endTurn(){
   if(!S.lost){busy=false;renderAll();save();}
 }
 document.getElementById('btnEnd').onclick=endTurn;
+document.getElementById('btnCastle').onclick=()=>{if(busy||S.won||S.lost)return;busy=true;openTown();};
 document.getElementById('btnNew').onclick=()=>{
   modal(`<h2>Начать заново?</h2><p class="lead">Текущий поход будет забыт.</p><div class="row"><button class="ghost" id="nNo">Отмена</button><button class="danger" id="nYes">Новая игра</button></div>`);
   document.getElementById('nNo').onclick=closeModal;document.getElementById('nYes').onclick=restart;};
@@ -890,7 +907,7 @@ function renderSide(){
    <div class="army">${army.length?army.map(a=>`<div class="u"><span class="e">${C[a.id].e}</span><span class="n">${C[a.id].name}<small>⚔${C[a.id].att} 🛡${C[a.id].def} · ❤${a.hp}/${C[a.id].hp} · ск.${C[a.id].spd}</small></span><span class="c">${a.count}</span></div>`).join(''):'<div class="empty">Армии нет — найми войска в замке.</div>'}</div>
    ${ehAlive()?`<div class="enemybox">🏴 Лорд Хаарт на карте${VIS[S.eh.y*W+S.eh.x]?' — виден':' — где-то в тумане'}: ⚔${S.eh.att} 🛡${S.eh.def}, ${S.eh.army.map(a=>`${C[a.id].e}${a.count}`).join(' ')}</div>`:''}
    <div class="btns">${inTown?'<button id="btnTown">🏰 Войти в замок</button>':''}${canVisit?`<button id="btnVisit">${here.k==='dwell'?DWELL[here.d].e+' '+DWELL[here.d].name:SPEC[here.s].e+' '+SPEC[here.s].name}</button>`:''}<button class="ghost" id="btnHome">Показать замок на карте</button></div>
-   <div class="hint">${inTown?'Ты в замке: найми войска, построй здание. Мана полная.':'Тапни по клетке карты — героиня пойдёт. Точки с ⚔ означают бой с охраной, красные — не хватит хода.'}</div>`;
+   <div class="hint">${inTown?'Ты в замке: найми войска, построй здание. Мана полная.':'Тапни по клетке карты — героиня пойдёт. Точки с ⚔ означают бой с охраной, красные — не хватит хода. Кнопка «Замок» сверху открывает замок из любой точки.'}${S.town.garrison.some(a=>a.count>0)?`<br>Гарнизон замка: ${S.town.garrison.filter(a=>a.count>0).map(a=>`${C[a.id].e}${a.count}`).join(' ')}`:''}</div>`;
   const bt=document.getElementById('btnTown');if(bt)bt.onclick=openTown;
   const bv=document.getElementById('btnVisit');if(bv)bv.onclick=()=>visit(here,()=>{});
   document.getElementById('btnHome').onclick=()=>{const scale=cv.getBoundingClientRect().width/cv.width;wrap.scrollTo({left:0,top:0,behavior:'smooth'});hoverPath=[{x:1,y:2,cost:0}];setTimeout(()=>{hoverPath=null;},900);};
@@ -900,7 +917,7 @@ function renderAll(){renderTop();renderSide();renderLog();}
 // ================= BOOT =================
 const saved=load();
 if(saved){S=saved;S.log.unshift('Поход продолжается с того места, где ты остановился.');}else newGame();
-if(!S.hero.pendingLv)S.hero.pendingLv=0;
+if(!S.hero.pendingLv)S.hero.pendingLv=0;if(!S.town.garrison)S.town.garrison=[];
 computeVis();renderAll();requestAnimationFrame(loop);
 setTimeout(scrollToHero,200);
 if(S.won){busy=true;showVictory();}else if(S.lost){busy=true;showDefeat();}
