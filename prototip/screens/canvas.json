@@ -1,0 +1,144 @@
+{
+ "artboards": [
+  {
+   "file": "Onboarding.dc.html",
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Э0 Start"
+  },
+  {
+   "file": "DayCard.dc.html",
+   "x": 480,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Э1 Day card"
+  },
+  {
+   "file": "AddMeal.dc.html",
+   "x": 960,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Э1a Add a meal"
+  },
+  {
+   "file": "FirstInsight.dc.html",
+   "x": 1440,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Э2 First insight"
+  },
+  {
+   "file": "Background.dc.html",
+   "x": 1920,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "Э3 Background"
+  },
+  {
+   "file": "Main.dc.html",
+   "x": 0,
+   "y": 994,
+   "w": 390,
+   "h": 844,
+   "title": "Э4 Suspect"
+  },
+  {
+   "file": "Check.dc.html",
+   "x": 480,
+   "y": 994,
+   "w": 390,
+   "h": 844,
+   "title": "Э5 Test, day 3"
+  },
+  {
+   "file": "CheckDiscarded.dc.html",
+   "x": 960,
+   "y": 994,
+   "w": 390,
+   "h": 844,
+   "title": "Э5 Test, day not counted"
+  },
+  {
+   "file": "CheckPaused.dc.html",
+   "x": 1440,
+   "y": 994,
+   "w": 390,
+   "h": 844,
+   "title": "Э5 Test, paused"
+  },
+  {
+   "file": "Verdict.dc.html",
+   "x": 0,
+   "y": 1988,
+   "w": 390,
+   "h": 844,
+   "title": "Э6 Answer"
+  },
+  {
+   "file": "VerdictNotConfirmed.dc.html",
+   "x": 480,
+   "y": 1988,
+   "w": 390,
+   "h": 844,
+   "title": "Э6 Not confirmed"
+  },
+  {
+   "file": "Map.dc.html",
+   "x": 960,
+   "y": 1988,
+   "w": 390,
+   "h": 844,
+   "title": "Э7 Map"
+  },
+  {
+   "file": "MapEmpty.dc.html",
+   "x": 1440,
+   "y": 1988,
+   "w": 390,
+   "h": 844,
+   "title": "Э7 Map, empty"
+  },
+  {
+   "file": "DoctorPage.dc.html",
+   "x": 0,
+   "y": 2982,
+   "w": 390,
+   "h": 844,
+   "title": "Э7a Doctor page"
+  },
+  {
+   "file": "RedFlag.dc.html",
+   "x": 480,
+   "y": 2982,
+   "w": 390,
+   "h": 844,
+   "title": "Э8 Red flag"
+  },
+  {
+   "file": "MomentSwitcher.dc.html",
+   "x": 960,
+   "y": 2982,
+   "w": 390,
+   "h": 844,
+   "title": "Moment switcher"
+  }
+ ],
+ "annotations": [
+  {
+   "id": "brief",
+   "x": -320,
+   "y": 0,
+   "w": 260,
+   "text": "Threshold prototype, level A.\nOne loop: suspect → test → answer.\nStatic mockups for SwiftUI.\nTexts: prototip/04-teksty.md (EN).\nRow 1: observation. Row 2: suspect and test. Row 3: answer and map. Row 4: doctor page, red flag, switcher."
+  }
+ ],
+ "launch": {
+  "view": "canvas"
+ }
+}
