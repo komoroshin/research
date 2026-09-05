@@ -1,0 +1,564 @@
+<title>Герои Серебряной Марки</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+:root{
+  --ground:#16120d; --ground2:#241d14;
+  --parch:#e4d0a0; --parch2:#d3ba84; --parch3:#b99c66;
+  --ink:#2b2014; --ink2:#5a4630;
+  --gold:#d6a83f; --gold2:#f1cf74; --gold3:#8a6a1f;
+  --red:#8b2b21; --red2:#b8402f;
+  --green:#3f6b2a;
+  --font-d:'Philosopher','Trebuchet MS',Georgia,serif;
+  --font-b:'Alegreya',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ground);color:var(--parch);font-family:var(--font-b);font-size:16px;line-height:1.4}
+body{background:
+  radial-gradient(ellipse at 50% 0%,#2a2117 0%,var(--ground) 60%);
+  min-height:100vh;padding:12px 10px 40px}
+h1,h2,h3{font-family:var(--font-d);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.01em}
+button{font-family:var(--font-d);font-size:15px;cursor:pointer;border:2px solid var(--gold3);
+  background:linear-gradient(#f3d68a,#c99a35);color:var(--ink);padding:7px 14px;border-radius:3px;
+  box-shadow:inset 0 1px 0 #fff3c7,0 1px 2px #000a}
+button:hover{background:linear-gradient(#fbe19c,#d6a83f)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.45;cursor:default;transform:none}
+button:focus-visible,.stack:focus-visible{outline:2px solid #fff;outline-offset:2px}
+button.ghost{background:linear-gradient(#5a4630,#3a2c1c);color:var(--parch);border-color:var(--gold3)}
+button.danger{background:linear-gradient(#c04a3a,#8b2b21);color:#fff1d6;border-color:#4d150f}
+
+.frame{max-width:1120px;margin:0 auto}
+.masthead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.masthead h1{font-size:clamp(22px,4vw,32px);color:var(--gold2);text-shadow:0 2px 0 #3a2a08,0 0 18px #d6a83f55}
+.masthead .sub{color:var(--parch3);font-style:italic;font-size:15px}
+
+.resbar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;
+  background:linear-gradient(#3b2d1c,#2a1f12);border:2px solid var(--gold3);border-radius:4px;padding:6px 12px;margin-bottom:8px;
+  box-shadow:inset 0 0 0 1px #0007,0 2px 6px #000a}
+.res{display:flex;gap:14px;flex-wrap:wrap;font-variant-numeric:tabular-nums;font-weight:500}
+.res span b{color:var(--gold2);font-weight:700}
+.daybox{font-family:var(--font-d);color:var(--gold2);font-size:16px;font-variant-numeric:tabular-nums}
+.resbar .actions{display:flex;gap:8px}
+
+.board{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:10px;align-items:start}
+@media (max-width:820px){.board{grid-template-columns:1fr}}
+.mapwrap{border:3px solid var(--gold3);border-radius:4px;padding:3px;background:#0b0906;
+  box-shadow:0 0 0 1px #d6a83f55 inset,0 4px 18px #000c;position:relative}
+canvas{display:block;width:100%;height:auto;image-rendering:auto;touch-action:manipulation;cursor:pointer;border-radius:2px}
+.log{margin-top:8px;background:#0f0c08;border:2px solid #4a3a22;border-radius:4px;padding:8px 12px;
+  min-height:76px;max-height:120px;overflow:auto;font-size:14.5px;color:#cbb58a}
+.log p{margin:0 0 3px}
+.log p:first-child{color:var(--parch)}
+.log em{color:var(--gold2);font-style:normal}
+
+.panel{background:linear-gradient(170deg,#eedcb0,#d6be88 70%,#c8ad75);color:var(--ink);border:3px solid var(--gold3);border-radius:4px;
+  box-shadow:inset 0 0 0 1px #fff5d6aa,0 4px 18px #000c;padding:12px 14px}
+.panel h2{font-size:20px;color:#3d2a0d;border-bottom:1px solid var(--parch3);padding-bottom:6px;margin-bottom:8px}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin-bottom:10px}
+.hero .face{font-size:38px;line-height:1;width:54px;height:54px;display:grid;place-items:center;background:#f6e6bf;border:2px solid var(--gold3);border-radius:4px}
+.stats{display:grid;grid-template-columns:repeat(2,auto);gap:2px 14px;font-size:14.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:700}
+.xpbar{height:7px;background:#b09361;border-radius:3px;overflow:hidden;margin:6px 0 10px;border:1px solid #8a6a1f}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#8b2b21,#d6a83f)}
+.mpbar{display:flex;gap:3px;margin:4px 0 10px}
+.mpbar i{flex:1;height:8px;background:#3f6b2a;border-radius:2px}
+.mpbar i.off{background:#b09361}
+.army{display:grid;gap:4px}
+.army .u{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;background:#f6e6bf;border:1px solid var(--parch3);border-radius:3px;padding:4px 8px;font-size:14.5px}
+.army .u .e{font-size:22px;text-align:center}
+.army .u .n{font-weight:500}
+.army .u .n small{display:block;color:var(--ink2);font-size:12.5px}
+.army .u .c{font-family:var(--font-d);font-size:18px;font-variant-numeric:tabular-nums}
+.army .empty{color:var(--ink2);font-style:italic;padding:6px 0}
+.panel .btns{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.hint{font-size:13.5px;color:var(--ink2);margin-top:12px;line-height:1.35}
+
+details.help{margin-top:14px;color:#cbb58a;font-size:14.5px;max-width:64ch}
+details.help summary{cursor:pointer;font-family:var(--font-d);color:var(--gold2);font-size:16px}
+details.help ul{padding-left:20px;margin:6px 0}
+
+/* modals */
+.overlay{position:fixed;inset:0;background:#000000b8;display:grid;place-items:center;padding:12px;z-index:10;overflow:auto}
+.scroll{background:linear-gradient(170deg,#eedcb0,#d6be88 70%,#c8ad75);color:var(--ink);border:3px solid var(--gold3);border-radius:5px;
+  box-shadow:inset 0 0 0 1px #fff5d6aa,0 10px 40px #000e;padding:16px 18px;width:min(720px,100%);max-height:96vh;overflow:auto}
+.scroll h2{font-size:22px;color:#3d2a0d;margin-bottom:4px}
+.scroll .lead{color:var(--ink2);margin:0 0 12px;font-style:italic}
+.scroll .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+
+/* battle */
+.field{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.side h3{font-size:15px;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.side.enemy h3{text-align:right}
+.stack{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;background:#f6e6bf;border:2px solid var(--parch3);border-radius:4px;padding:5px 8px;margin-bottom:5px;font-size:14px;text-align:left;width:100%;font-family:var(--font-b);color:var(--ink);box-shadow:none;cursor:default}
+.stack .e{font-size:24px;text-align:center}
+.stack .n{font-weight:500}
+.stack .n small{display:block;color:var(--ink2);font-size:12px;font-variant-numeric:tabular-nums}
+.stack .c{font-family:var(--font-d);font-size:20px;font-variant-numeric:tabular-nums}
+.stack.active{border-color:var(--gold);background:#fff2c9;box-shadow:0 0 0 2px #d6a83f88}
+.stack.target{cursor:pointer;border-color:#b8402f}
+.stack:hover{background:#f6e6bf}
+.stack.active:hover{background:#fff2c9}
+.stack.target:hover{background:#ffe3d5}
+.stack.dead{opacity:.35}
+.stack.def::after{content:'🛡';grid-column:1/-1;font-size:11px;color:var(--ink2);text-align:right}
+.blog{background:#f6e6bf;border:1px solid var(--parch3);border-radius:3px;padding:6px 10px;height:110px;overflow:auto;font-size:13.5px;margin-top:8px;color:var(--ink2)}
+.blog p{margin:0 0 2px}
+.blog p:last-child{color:var(--ink);font-weight:500}
+.bctrl{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap}
+.bctrl .turn{font-family:var(--font-d);color:#3d2a0d}
+
+/* town */
+.town h3{font-size:17px;color:#3d2a0d;margin:12px 0 6px}
+.rows{display:grid;gap:5px}
+.trow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:#f6e6bf;border:1px solid var(--parch3);border-radius:3px;padding:6px 10px;font-size:14.5px}
+.trow .e{font-size:24px;text-align:center}
+.trow .n{font-weight:500}
+.trow .n small{display:block;color:var(--ink2);font-size:12.5px;font-variant-numeric:tabular-nums}
+.trow .a{display:flex;gap:6px;align-items:center}
+.trow input{width:56px;font:inherit;font-variant-numeric:tabular-nums;padding:4px 6px;border:1px solid var(--parch3);border-radius:3px;background:#fff8e6;color:var(--ink)}
+.trow.built{opacity:.65}
+.trow .cost{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:520px){.trow{grid-template-columns:30px 1fr;} .trow .a{grid-column:1/-1;justify-content:flex-end}}
+.big{text-align:center;padding:10px 0}
+.big .e{font-size:64px;line-height:1}
+.big p{max-width:48ch;margin:8px auto}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.choice button{padding:14px 10px;font-size:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="frame">
+  <div class="masthead">
+    <h1>Герои Серебряной Марки</h1>
+    <div class="sub">Захвати Цитадель лорда Хаарта на востоке. Чем меньше дней — тем славнее победа.</div>
+  </div>
+
+  <div class="resbar">
+    <div class="res">
+      <span title="Золото">💰 <b id="rGold">0</b></span>
+      <span title="Дерево">🪵 <b id="rWood">0</b></span>
+      <span title="Руда">🪨 <b id="rOre">0</b></span>
+      <span title="Доход в день">↳ <b id="rInc">0</b>/день</span>
+    </div>
+    <div class="daybox" id="dayBox">Неделя 1, день 1</div>
+    <div class="actions">
+      <button class="ghost" id="btnNew" title="Начать заново">Новая игра</button>
+      <button id="btnEnd">Конец хода ⏭</button>
+    </div>
+  </div>
+
+  <div class="board">
+    <div>
+      <div class="mapwrap"><canvas id="map" width="800" height="520"></canvas></div>
+      <div class="log" id="log"></div>
+    </div>
+    <aside class="panel" id="side"></aside>
+  </div>
+
+  <details class="help">
+    <summary>Как играть</summary>
+    <ul>
+      <li><b>Тапни по клетке</b> — героиня пойдёт туда. Каждый день у неё 12 очков хода, лес стоит 2 очка, горы и вода непроходимы.</li>
+      <li><b>Собирай ресурсы</b> (💰 🪵 🪨), захватывай шахты ⛏ — они приносят доход каждый день.</li>
+      <li><b>Монстры</b> охраняют добычу. Тапни по ним — начнётся бой. В бою тапай по врагу, чтобы атаковать активным отрядом. Лучники бьют без ответного удара.</li>
+      <li><b>Замок 🏰</b> — нанимай войска и строй здания (одно в день). Каждую неделю прирост обновляется.</li>
+      <li>За победы героиня получает опыт и растит атаку/защиту — они усиливают всю армию.</li>
+      <li><b>Цель:</b> разбить гарнизон Цитадели 🏯 на востоке. Там дракон — приходи не раньше, чем с серьёзной армией.</li>
+    </ul>
+  </details>
+</div>
+
+<div id="modal"></div>
+
+<script>
+'use strict';
+// ---------- data ----------
+const W=20,H=13,TS=40;
+const MAP=`..T..~~~......M.MM..
+.H..T..~~..$..M..3.g
+....T...~~c...T.....
+.$.1.....~~..T.2..o.
+TT...*.....~..T.....
+TTT.2..w....~.....M.
+MM......T....6..T.MM
+M..o....*....T....~M
+..1....~~~...T...$..
+...T..~~..~~....c...
+.$....~....~~..3.5..
+....2..T....~~~...E.
+..g....*..T...~~.4..`.split('\n');
+
+const C={
+ pike:{name:'Копейщик',pl:'Копейщики',e:'🛡️',att:4,def:5,dmg:[1,3],hp:10,spd:4,cost:60,xp:15,growth:14},
+ archer:{name:'Лучник',pl:'Лучники',e:'🏹',att:6,def:3,dmg:[2,3],hp:10,spd:4,cost:100,xp:20,growth:9,ranged:true},
+ griffin:{name:'Грифон',pl:'Грифоны',e:'🦅',att:8,def:8,dmg:[3,6],hp:25,spd:6,cost:300,xp:50,growth:7},
+ sword:{name:'Мечник',pl:'Мечники',e:'⚔️',att:10,def:12,dmg:[6,9],hp:35,spd:5,cost:400,xp:80,growth:4},
+ angel:{name:'Ангел',pl:'Ангелы',e:'👼',att:20,def:20,dmg:[50,50],hp:200,spd:12,cost:3000,xp:500,growth:1,needs:'portal'},
+ goblin:{name:'Гоблин',pl:'Гоблины',e:'👺',att:4,def:2,dmg:[1,2],hp:5,spd:5,xp:10},
+ wolf:{name:'Волк',pl:'Волки',e:'🐺',att:6,def:3,dmg:[2,3],hp:10,spd:6,xp:20},
+ skel:{name:'Скелет',pl:'Скелеты',e:'💀',att:5,def:4,dmg:[1,3],hp:6,spd:4,xp:15},
+ orc:{name:'Орк',pl:'Орки',e:'👿',att:8,def:4,dmg:[2,5],hp:15,spd:4,xp:40},
+ troll:{name:'Тролль',pl:'Тролли',e:'👹',att:10,def:8,dmg:[5,10],hp:40,spd:5,xp:120},
+ ogre:{name:'Огр',pl:'Огры',e:'🧟',att:13,def:7,dmg:[6,12],hp:40,spd:3,xp:150},
+ dragon:{name:'Чёрный дракон',pl:'Чёрные драконы',e:'🐉',att:25,def:25,dmg:[40,50],hp:250,spd:9,xp:1500},
+};
+const RECRUIT=['pike','archer','griffin','sword','angel'];
+const GUARDS={'1':['goblin',15],'2':['wolf',10],'3':['skel',20],'4':['troll',6],'5':['ogre',8],'6':['orc',12]};
+const GARRISON=[['orc',30],['troll',10],['dragon',1]];
+const MINES={g:{name:'Золотая шахта',e:'⛏️',res:'gold',amt:1000},w:{name:'Лесопилка',e:'🪚',res:'wood',amt:2},o:{name:'Рудник',e:'⚒️',res:'ore',amt:2}};
+const BUILD={
+ fort:{name:'Крепость',e:'🧱',desc:'+50% к недельному приросту войск',cost:{gold:1500,wood:10,ore:10}},
+ capitol:{name:'Капитолий',e:'🏛️',desc:'+2000 золота в день',cost:{gold:5000,wood:15,ore:15}},
+ portal:{name:'Портал славы',e:'✨',desc:'Позволяет нанимать ангелов',cost:{gold:5000,wood:20,ore:20}},
+};
+const RES_NAME={gold:'золота',wood:'дерева',ore:'руды'};
+const RES_E={gold:'💰',wood:'🪵',ore:'🪨'};
+const SAVE_KEY='heroes-silver-mark-v1';
+
+// ---------- state ----------
+let S=null, busy=false, hoverPath=null;
+
+function newGame(){
+  const tiles=[];
+  for(let y=0;y<H;y++){tiles.push([]);for(let x=0;x<W;x++){
+    const ch=MAP[y][x];
+    const t={ter: ch==='T'?'forest':ch==='M'?'mount':ch==='~'?'water':'grass', obj:null, seed:(x*73856093 ^ y*19349663)>>>0};
+    if(ch==='H') t.obj={k:'town'};
+    else if(ch==='E') t.obj={k:'enemy'};
+    else if(MINES[ch]) t.obj={k:'mine',m:ch,owned:false};
+    else if(ch==='$') t.obj={k:'pile',res:'gold',amt:500+100*((x*7+y*3)%6)};
+    else if(ch==='*') t.obj={k:'pile',res:(x+y)%2?'wood':'ore',amt:5+((x*3+y)%4)};
+    else if(ch==='c') t.obj={k:'chest'};
+    else if(GUARDS[ch]) t.obj={k:'mon',id:GUARDS[ch][0],count:GUARDS[ch][1]};
+    tiles[y].push(t);
+  }}
+  S={day:1,gold:2000,wood:10,ore:5,tiles,
+     hero:{x:1,y:1,mp:12,maxMp:12,att:1,def:1,lvl:1,xp:0,army:[{id:'pike',count:10,hp:10},{id:'archer',count:5,hp:10}]},
+     town:{b:{fort:false,capitol:false,portal:false},avail:{pike:14,archer:9,griffin:7,sword:4,angel:0},builtDay:0},
+     log:[],won:false};
+  log('Катерина выезжает из замка. На востоке — Цитадель лорда Хаарта. <em>Тапни по клетке</em>, чтобы идти.');
+}
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{const s=localStorage.getItem(SAVE_KEY);if(s){const o=JSON.parse(s);if(o&&o.tiles&&o.hero)return o;}}catch(e){}return null;}
+
+function log(msg){S.log.unshift(msg);S.log=S.log.slice(0,40);renderLog();}
+function renderLog(){document.getElementById('log').innerHTML=S.log.slice(0,8).map(m=>`<p>${m}</p>`).join('');}
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const fmt=n=>n.toLocaleString('ru-RU');
+function week(){return Math.floor((S.day-1)/7)+1}
+function dayOfWeek(){return (S.day-1)%7+1}
+function income(){let g=1000+(S.town.b.capitol?2000:0),w=0,o=0;
+  S.tiles.forEach(r=>r.forEach(t=>{if(t.obj&&t.obj.k==='mine'&&t.obj.owned){const m=MINES[t.obj.m];if(m.res==='gold')g+=m.amt;if(m.res==='wood')w+=m.amt;if(m.res==='ore')o+=m.amt;}}));
+  return {gold:g,wood:w,ore:o};}
+function xpNeed(l){return l*1000+(l-1)*l*100}
+function growthOf(id){return Math.round(C[id].growth*(S.town.b.fort?1.5:1))}
+
+// ---------- rendering ----------
+const cv=document.getElementById('map'),ctx=cv.getContext('2d');
+const EMO='"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+function hsh(seed,n){let x=(seed+n*2654435761)>>>0;x^=x<<13;x^=x>>>17;x^=x<<5;return ((x>>>0)%1000)/1000;}
+function drawTile(x,y){
+  const t=S.tiles[y][x],px=x*TS,py=y*TS;
+  const v=hsh(t.seed,1);
+  if(t.ter==='water'){
+    ctx.fillStyle=`hsl(206 52% ${30+v*6}%)`;ctx.fillRect(px,py,TS,TS);
+    ctx.strokeStyle='#7fb1d9aa';ctx.lineWidth=1;
+    for(let i=0;i<2;i++){const yy=py+10+i*16+hsh(t.seed,i+5)*6,xx=px+4+hsh(t.seed,i+9)*12;
+      ctx.beginPath();ctx.moveTo(xx,yy);ctx.quadraticCurveTo(xx+6,yy-4,xx+12,yy);ctx.quadraticCurveTo(xx+18,yy+4,xx+22,yy);ctx.stroke();}
+    return;
+  }
+  ctx.fillStyle=`hsl(${92+v*10} ${38+v*10}% ${34+v*6}%)`;ctx.fillRect(px,py,TS,TS);
+  // grass tufts
+  ctx.fillStyle='#0004';
+  for(let i=0;i<3;i++){ctx.fillRect(px+4+hsh(t.seed,i+20)*30,py+4+hsh(t.seed,i+30)*30,3,2);}
+  if(t.ter==='forest'){
+    ctx.fillStyle='#2f5a25';ctx.fillRect(px,py,TS,TS);
+    for(let i=0;i<3;i++){const cx=px+8+i*12+hsh(t.seed,i+40)*4,cy=py+30-hsh(t.seed,i+50)*8;
+      ctx.fillStyle='#1c3a17';ctx.beginPath();ctx.moveTo(cx,cy-18);ctx.lineTo(cx+8,cy);ctx.lineTo(cx-8,cy);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#4a8a35';ctx.beginPath();ctx.moveTo(cx,cy-18);ctx.lineTo(cx+5,cy-6);ctx.lineTo(cx-5,cy-6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#5a3a1a';ctx.fillRect(cx-1.5,cy,3,5);}
+  } else if(t.ter==='mount'){
+    ctx.fillStyle='#6e6252';ctx.fillRect(px,py,TS,TS);
+    const cx=px+20+ (hsh(t.seed,60)-.5)*8,cy=py+36;
+    ctx.fillStyle='#4a4036';ctx.beginPath();ctx.moveTo(cx-22,cy);ctx.lineTo(cx,cy-34);ctx.lineTo(cx+22,cy);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#8d8070';ctx.beginPath();ctx.moveTo(cx,cy-34);ctx.lineTo(cx+22,cy);ctx.lineTo(cx+2,cy);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#efe9dd';ctx.beginPath();ctx.moveTo(cx,cy-34);ctx.lineTo(cx+7,cy-22);ctx.lineTo(cx+2,cy-20);ctx.lineTo(cx-3,cy-24);ctx.lineTo(cx-7,cy-22);ctx.closePath();ctx.fill();
+  }
+}
+function drawEmoji(e,x,y,size){ctx.font=`${size}px ${EMO}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(e,x*TS+TS/2,y*TS+TS/2+2);}
+function drawObj(x,y){
+  const o=S.tiles[y][x].obj;if(!o)return;
+  if(o.k==='town'){ctx.fillStyle='#d6a83f33';ctx.fillRect(x*TS,y*TS,TS,TS);drawEmoji('🏰',x,y,30);}
+  else if(o.k==='enemy'){ctx.fillStyle='#8b2b2144';ctx.fillRect(x*TS,y*TS,TS,TS);drawEmoji('🏯',x,y,30);}
+  else if(o.k==='mine'){drawEmoji(MINES[o.m].e,x,y,24);
+    ctx.fillStyle=o.owned?'#d6a83f':'#8b2b21';ctx.fillRect(x*TS+28,y*TS+4,9,7);ctx.fillStyle='#3a2c1c';ctx.fillRect(x*TS+27,y*TS+4,2,12);}
+  else if(o.k==='pile'){drawEmoji(RES_E[o.res],x,y,22);}
+  else if(o.k==='chest'){drawEmoji('🎁',x,y,22);}
+  else if(o.k==='mon'){drawEmoji(C[o.id].e,x,y,24);
+    ctx.fillStyle='#000a';ctx.fillRect(x*TS+2,y*TS+TS-13,TS-4,11);
+    ctx.fillStyle='#f1cf74';ctx.font=`bold 10px ${EMO}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(C[o.id].pl+' '+o.count,x*TS+TS/2,y*TS+TS-7);}
+}
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)drawTile(x,y);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)drawObj(x,y);
+  if(hoverPath&&hoverPath.length){
+    ctx.strokeStyle='#f1cf74';ctx.lineWidth=3;ctx.setLineDash([6,5]);ctx.beginPath();
+    ctx.moveTo(S.hero.x*TS+TS/2,S.hero.y*TS+TS/2);
+    let mp=S.hero.mp;
+    hoverPath.forEach(p=>{ctx.lineTo(p.x*TS+TS/2,p.y*TS+TS/2);});
+    ctx.stroke();ctx.setLineDash([]);
+    hoverPath.forEach(p=>{mp-=p.cost;ctx.fillStyle=mp>=0?'#f1cf74':'#b8402f';ctx.beginPath();ctx.arc(p.x*TS+TS/2,p.y*TS+TS/2,4,0,7);ctx.fill();});
+  }
+  // hero
+  const hx=S.hero.x*TS,hy=S.hero.y*TS;
+  ctx.fillStyle='#d6a83faa';ctx.beginPath();ctx.ellipse(hx+TS/2,hy+TS-6,14,5,0,0,7);ctx.fill();
+  drawEmoji('🏇',S.hero.x,S.hero.y,28);
+}
+
+// ---------- pathfinding ----------
+function passable(x,y,goal){const t=S.tiles[y][x];if(t.ter==='mount'||t.ter==='water')return false;
+  if(t.obj&&(t.obj.k==='mon'||t.obj.k==='enemy'))return false;return true;}
+function cost(x,y){return S.tiles[y][x].ter==='forest'?2:1}
+function dijkstra(sx,sy){
+  const dist=Array.from({length:H},()=>Array(W).fill(Infinity)),prev=Array.from({length:H},()=>Array(W).fill(null));
+  dist[sy][sx]=0;const q=[[0,sx,sy]];
+  while(q.length){q.sort((a,b)=>a[0]-b[0]);const [d,x,y]=q.shift();if(d>dist[y][x])continue;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=x+dx,ny=y+dy;
+      if(nx<0||ny<0||nx>=W||ny>=H||!passable(nx,ny))continue;const nd=d+cost(nx,ny);
+      if(nd<dist[ny][nx]){dist[ny][nx]=nd;prev[ny][nx]=[x,y];q.push([nd,nx,ny]);}}}
+  return {dist,prev};
+}
+function pathTo(tx,ty){
+  const {dist,prev}=dijkstra(S.hero.x,S.hero.y);
+  const t=S.tiles[ty][tx];let interact=null,gx=tx,gy=ty;
+  if(t.obj&&(t.obj.k==='mon'||t.obj.k==='enemy')){
+    interact={x:tx,y:ty};let best=Infinity;gx=-1;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=tx+dx,ny=ty+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      if(dist[ny][nx]<best){best=dist[ny][nx];gx=nx;gy=ny;}}
+    if(gx<0)return null;
+  } else if(!passable(tx,ty)||dist[ty][tx]===Infinity)return null;
+  const path=[];let cx=gx,cy=gy;
+  while(!(cx===S.hero.x&&cy===S.hero.y)){path.unshift({x:cx,y:cy,cost:cost(cx,cy)});const p=prev[cy][cx];if(!p)break;[cx,cy]=p;}
+  return {path,interact};
+}
+
+// ---------- movement & interaction ----------
+function tileFromEvent(ev){const r=cv.getBoundingClientRect();const x=Math.floor((ev.clientX-r.left)/r.width*W),y=Math.floor((ev.clientY-r.top)/r.height*H);
+  return (x<0||y<0||x>=W||y>=H)?null:{x,y};}
+cv.addEventListener('mousemove',ev=>{if(busy||S.won)return;const t=tileFromEvent(ev);if(!t){hoverPath=null;draw();return;}
+  const r=pathTo(t.x,t.y);hoverPath=r?r.path:null;draw();});
+cv.addEventListener('mouseleave',()=>{hoverPath=null;draw();});
+cv.addEventListener('click',ev=>{if(busy||S.won)return;const t=tileFromEvent(ev);if(!t)return;
+  if(t.x===S.hero.x&&t.y===S.hero.y){const o=S.tiles[t.y][t.x].obj;if(o&&o.k==='town')openTown();return;}
+  const r=pathTo(t.x,t.y);if(!r){log('Туда не пройти.');return;}
+  if(!r.path.length&&r.interact){tryInteract(r.interact);return;}
+  if(S.hero.mp<r.path[0].cost){log('Очки хода закончились — заверши ход.');return;}
+  hoverPath=null;busy=true;walk(r.path,0,r.interact);
+});
+function walk(path,i,interact){
+  if(i>=path.length||S.hero.mp<path[i].cost){busy=false;draw();renderSide();
+    if(interact&&i>=path.length)tryInteract(interact);else if(interact)log('Очков хода не хватило дойти — продолжи завтра.');
+    return;}
+  const p=path[i];S.hero.mp-=p.cost;S.hero.x=p.x;S.hero.y=p.y;draw();renderSide();
+  const stop=enterTile(p.x,p.y,()=>walk(path,i+1,interact),i===path.length-1);
+  if(!stop)setTimeout(()=>walk(path,i+1,interact),110);
+}
+function enterTile(x,y,resume,final){
+  const t=S.tiles[y][x],o=t.obj;if(!o)return false;
+  if(o.k==='pile'){S[o.res]+=o.amt;log(`Подобрано ${RES_E[o.res]} ${fmt(o.amt)} ${RES_NAME[o.res]}.`);t.obj=null;renderTop();return false;}
+  if(o.k==='mine'){if(!o.owned){o.owned=true;const m=MINES[o.m];log(`${m.e} ${m.name} захвачена: +${m.amt} ${RES_NAME[m.res]} в день.`);renderTop();}return false;}
+  if(o.k==='chest'){t.obj=null;openChest(resume);return true;}
+  if(o.k==='town'&&final){busy=false;openTown();return true;}
+  return false;
+}
+function openChest(resume){
+  const gold=rnd(3,5)*500,xp=gold-500;
+  modal(`<h2>🎁 Сундук с сокровищами</h2><p class="lead">В сундуке ${fmt(gold)} золотых. Забрать золото или раздать его крестьянам ради славы?</p>
+   <div class="choice"><button id="chG">💰 Взять ${fmt(gold)} золота</button><button id="chX">⭐ Слава: +${fmt(xp)} опыта</button></div>`);
+  document.getElementById('chG').onclick=()=>{S.gold+=gold;log(`Из сундука взято ${fmt(gold)} золота.`);closeModal();renderTop();resume();};
+  document.getElementById('chX').onclick=()=>{closeModal();log(`Золото роздано крестьянам: +${fmt(xp)} опыта.`);gainXp(xp);resume();};
+}
+function tryInteract(p){
+  const o=S.tiles[p.y][p.x].obj;if(!o)return;
+  if(!S.hero.army.some(a=>a.count>0)){log('У Катерины нет армии — сначала найми войска в замке.');return;}
+  const enemy= o.k==='enemy'? GARRISON.map(([id,c])=>({id,count:c})) : [{id:o.id,count:o.count}];
+  const title=o.k==='enemy'?'Штурмовать Цитадель лорда Хаарта?':`Напасть на отряд: ${C[o.id].pl} ×${o.count}?`;
+  modal(`<h2>${title}</h2><p class="lead">Противник: ${enemy.map(e=>`${C[e.id].e} ${C[e.id].pl} ×${e.count}`).join(', ')}.</p>
+    <div class="row"><button class="ghost" id="cNo">Отойти</button><button class="danger" id="cYes">В бой!</button></div>`);
+  document.getElementById('cNo').onclick=closeModal;
+  document.getElementById('cYes').onclick=()=>{closeModal();startBattle(enemy,o.k==='enemy',p);};
+}
+
+// ---------- xp ----------
+function gainXp(n){const h=S.hero;h.xp+=n;
+  while(h.xp>=xpNeed(h.lvl)){h.lvl++;const up=Math.random()<.5?'att':'def';h[up]++;
+    log(`⭐ <em>Катерина достигла ${h.lvl} уровня!</em> ${up==='att'?'Атака':'Защита'} +1.`);}
+  renderSide();}
+
+// ---------- battle ----------
+let B=null;
+function startBattle(enemyDefs,isCastle,pos){
+  busy=true;
+  B={pl:S.hero.army.filter(a=>a.count>0).map(a=>{a.hp=a.hp||C[a.id].hp;a.side='pl';a.defending=false;a.ret=0;return a;}),
+     en:enemyDefs.map(e=>({id:e.id,count:e.count,hp:C[e.id].hp,side:'en',defending:false,ret:0})),
+     round:0,order:[],idx:0,log:[],isCastle,pos,killedXp:0,waiting:false};
+  modal(`<h2 id="bTitle">Бой</h2><div class="field"><div class="side" id="bPl"><h3>Армия Катерины</h3></div><div class="side enemy" id="bEn"><h3>Противник</h3></div></div>
+    <div class="blog" id="bLog"></div>
+    <div class="bctrl"><span class="turn" id="bTurn"></span><span><button class="ghost" id="bDef">Защита 🛡</button> <button class="danger" id="bRun">Отступить</button></span></div>`);
+  document.getElementById('bDef').onclick=()=>{if(!B.waiting)return;const s=B.order[B.idx];s.defending=true;blog(`${C[s.id].pl} встают в защиту.`);B.waiting=false;B.idx++;nextAct();};
+  document.getElementById('bRun').onclick=()=>{if(!B.waiting)return;endBattle(false,true);};
+  blog(`Бой начинается. Атака героини +${S.hero.att}, защита +${S.hero.def}.`);
+  newRound();
+}
+function blog(m){B.log.push(m);const el=document.getElementById('bLog');if(el){el.innerHTML=B.log.slice(-30).map(x=>`<p>${x}</p>`).join('');el.scrollTop=el.scrollHeight;}}
+function alive(a){return a.filter(s=>s.count>0)}
+function newRound(){B.round++;B.order=[...alive(B.pl),...alive(B.en)].sort((a,b)=>C[b.id].spd-C[a.id].spd||(a.side==='pl'?-1:1));
+  B.order.forEach(s=>{s.defending=false;s.ret=0;});B.idx=0;blog(`— Раунд ${B.round} —`);nextAct();}
+function nextAct(){
+  if(!alive(B.en).length){endBattle(true);return;}
+  if(!alive(B.pl).length){endBattle(false);return;}
+  while(B.idx<B.order.length&&B.order[B.idx].count<=0)B.idx++;
+  if(B.idx>=B.order.length){newRound();return;}
+  const s=B.order[B.idx];renderBattle();
+  if(s.side==='pl'){B.waiting=true;renderBattle();}
+  else setTimeout(()=>{enemyAct(s);},520);
+}
+function avgDmg(s){const t=C[s.id];return s.count*(t.dmg[0]+t.dmg[1])/2}
+function enemyAct(s){
+  const targets=alive(B.pl);if(!targets.length)return nextAct();
+  const t=targets.reduce((a,b)=>avgDmg(b)>avgDmg(a)?b:a);
+  attack(s,t);B.idx++;nextAct();
+}
+function calcDmg(att,def){
+  const ta=C[att.id],td=C[def.id];
+  const a=ta.att+(att.side==='pl'?S.hero.att:0),d=td.def+(def.side==='pl'?S.hero.def:0)+(def.defending?Math.round(td.def*0.5):0);
+  let base=0;if(att.count<=40){for(let i=0;i<att.count;i++)base+=rnd(ta.dmg[0],ta.dmg[1]);}else base=att.count*(ta.dmg[0]+ta.dmg[1])/2;
+  const diff=a-d;const mult=diff>=0?Math.min(1+.05*diff,3):Math.max(1-.025*(-diff),.3);
+  return Math.max(1,Math.round(base*mult));
+}
+function applyDmg(s,dmg){const hp=C[s.id].hp;let total=(s.count-1)*hp+s.hp-dmg;const before=s.count;
+  if(total<=0){s.count=0;s.hp=0;}else{s.count=Math.ceil(total/hp);s.hp=total-(s.count-1)*hp;}
+  return before-s.count;}
+function attack(att,def,isRet){
+  const dmg=calcDmg(att,def),k=applyDmg(def,dmg);
+  if(def.side==='en')B.killedXp+=k*C[def.id].xp;
+  blog(`${att.side==='pl'?'🟡':'🔴'} ${C[att.id].pl} ${isRet?'отвечают':C[att.id].ranged?'стреляют':'бьют'} по ${C[def.id].pl}: <b>${dmg}</b> урона${k?`, убито ${k}`:''}.${def.count<=0?' Отряд уничтожен!':''}`);
+  if(!isRet&&!C[att.id].ranged&&def.count>0&&def.ret===0){def.ret=1;attack(def,att,true);}
+}
+function renderBattle(){
+  const cur=B.order[B.idx];
+  const card=(s,side)=>{const t=C[s.id];const isCur=cur===s;const tgt=B.waiting&&side==='en'&&s.count>0;
+    return `<button class="stack ${isCur?'active':''} ${tgt?'target':''} ${s.count<=0?'dead':''} ${s.defending?'def':''}" ${tgt?`data-t="${B.en.indexOf(s)}"`:'tabindex="-1"'}>
+      <span class="e">${t.e}</span><span class="n">${t.pl}<small>⚔${t.att} 🛡${t.def} · ${t.dmg[0]}–${t.dmg[1]} · ❤${s.count>0?s.hp:0}/${t.hp}</small></span><span class="c">${s.count}</span></button>`;};
+  document.getElementById('bPl').innerHTML='<h3>Армия Катерины</h3>'+B.pl.map(s=>card(s,'pl')).join('');
+  document.getElementById('bEn').innerHTML='<h3>Противник</h3>'+B.en.map(s=>card(s,'en')).join('');
+  document.getElementById('bTurn').textContent=B.waiting?`Ходят ${C[cur.id].pl} — выбери цель`:cur?`Ходит противник: ${C[cur.id].pl}`:'';
+  document.getElementById('bDef').disabled=!B.waiting;
+  document.querySelectorAll('#bEn .target').forEach(el=>el.onclick=()=>{if(!B.waiting)return;B.waiting=false;
+    attack(B.order[B.idx],B.en[+el.dataset.t]);B.idx++;nextAct();});
+}
+function endBattle(win,fled){
+  S.hero.army=S.hero.army.filter(a=>a.count>0);
+  renderBattle();
+  const btn=`<div class="row"><button id="bOk">${win?'Слава!':'Продолжить'}</button></div>`;
+  if(win){
+    const xp=B.killedXp;const t=S.tiles[B.pos.y][B.pos.x];
+    if(B.isCastle){S.won=true;t.obj=null;
+      document.getElementById('bTurn').innerHTML=`<b>Победа! Цитадель пала.</b>`;
+      document.getElementById('bTitle').textContent='Цитадель взята';
+      document.querySelector('.bctrl span:last-child').innerHTML=`<button id="bOk">К летописи</button>`;
+      document.getElementById('bOk').onclick=()=>{closeModal();gainXp(xp);showVictory();};
+      return;
+    }
+    t.obj=null;log(`⚔️ Победа над отрядом! +${fmt(xp)} опыта.`);
+    document.getElementById('bTurn').innerHTML=`<b>Победа! +${fmt(xp)} опыта</b>`;
+  } else {
+    S.hero.army=[];S.hero.x=1;S.hero.y=1;S.hero.mp=0;
+    log(fled?'Катерина отступила, бросив армию, и вернулась в замок.':'💀 Армия разбита. Катерина бежала в замок без войск.');
+    document.getElementById('bTurn').innerHTML=`<b>${fled?'Отступление':'Поражение'}</b>. Героиня возвращается в замок.`;
+  }
+  document.querySelector('.bctrl span:last-child').innerHTML=btn;
+  document.getElementById('bOk').onclick=()=>{closeModal();busy=false;if(win)gainXp(B.killedXp);B=null;draw();renderSide();save();};
+}
+function showVictory(){
+  modal(`<div class="big"><div class="e">👑</div><h2>Серебряная Марка свободна</h2>
+   <p>Цитадель лорда Хаарта пала на <b>${S.day}-й день</b> (неделя ${week()}). Катерина — ${S.hero.lvl} уровня, атака ${S.hero.att}, защита ${S.hero.def}.</p>
+   <p class="lead">${S.day<=21?'Блестяще — молниеносная кампания.':S.day<=35?'Достойная победа.':'Победа есть победа — а в следующий раз попробуй быстрее.'}</p>
+   <div class="row" style="justify-content:center"><button id="vNew">Сыграть ещё раз</button></div></div>`);
+  document.getElementById('vNew').onclick=()=>{try{localStorage.removeItem(SAVE_KEY)}catch(e){};newGame();closeModal();busy=false;renderAll();};
+}
+
+// ---------- town ----------
+function canPay(c){return S.gold>=(c.gold||0)&&S.wood>=(c.wood||0)&&S.ore>=(c.ore||0)}
+function pay(c){S.gold-=c.gold||0;S.wood-=c.wood||0;S.ore-=c.ore||0}
+function openTown(){
+  const T=S.town;
+  const bRows=Object.entries(BUILD).map(([k,b])=>{const built=T.b[k];const can=!built&&T.builtDay!==S.day&&canPay(b.cost);
+    return `<div class="trow ${built?'built':''}"><span class="e">${b.e}</span><span class="n">${b.name} ${built?'— построено':''}<small>${b.desc}</small></span>
+     <span class="a"><span class="cost">💰${fmt(b.cost.gold)} 🪵${b.cost.wood} 🪨${b.cost.ore}</span> <button data-b="${k}" ${can?'':'disabled'}>${built?'✓':'Строить'}</button></span></div>`;}).join('');
+  const rRows=RECRUIT.map(id=>{const t=C[id];const locked=t.needs&&!T.b[t.needs];const av=locked?0:T.avail[id];
+    const max=Math.min(av,Math.floor(S.gold/t.cost));
+    return `<div class="trow"><span class="e">${t.e}</span><span class="n">${t.pl}<small>⚔${t.att} 🛡${t.def} · урон ${t.dmg[0]}–${t.dmg[1]} · ❤${t.hp} · ${fmt(t.cost)} 💰${locked?' · нужен Портал славы':''}</small></span>
+     <span class="a"><span class="cost">есть ${av}</span><input type="number" min="0" max="${max}" value="${max}" data-i="${id}"><button data-r="${id}" ${max?'':'disabled'}>Нанять</button></span></div>`;}).join('');
+  modal(`<div class="town"><h2>🏰 Замок Катерины</h2><p class="lead">Неделя ${week()}, день ${dayOfWeek()}. ${T.builtDay===S.day?'Сегодня уже строили — стройка одна в день.':'Можно построить одно здание.'} Прирост войск обновляется в понедельник.</p>
+   <h3>Найм войск</h3><div class="rows">${rRows}</div>
+   <h3>Строительство</h3><div class="rows">${bRows}</div>
+   <div class="row"><button id="tClose">Выйти из замка</button></div></div>`);
+  document.getElementById('tClose').onclick=()=>{closeModal();busy=false;renderAll();};
+  document.querySelectorAll('[data-b]').forEach(el=>el.onclick=()=>{const k=el.dataset.b,b=BUILD[k];if(!canPay(b.cost))return;pay(b.cost);T.b[k]=true;T.builtDay=S.day;
+    if(k==='portal')T.avail.angel=growthOf('angel');log(`${b.e} Построено: ${b.name}.`);renderTop();openTown();});
+  document.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{const id=el.dataset.r,t=C[id];
+    const n=Math.max(0,Math.min(+document.querySelector(`[data-i="${id}"]`).value||0,T.avail[id],Math.floor(S.gold/t.cost)));if(!n)return;
+    S.gold-=n*t.cost;T.avail[id]-=n;const st=S.hero.army.find(a=>a.id===id);if(st)st.count+=n;else S.hero.army.push({id,count:n,hp:t.hp});
+    log(`${t.e} Нанято: ${t.pl} ×${n}.`);renderTop();renderSide();openTown();});
+}
+
+// ---------- turn ----------
+function endTurn(){
+  if(busy||S.won)return;
+  const inc=income();S.gold+=inc.gold;S.wood+=inc.wood;S.ore+=inc.ore;S.day++;S.hero.mp=S.hero.maxMp;
+  let m=`День ${S.day}. Доход: 💰${fmt(inc.gold)}${inc.wood?` 🪵${inc.wood}`:''}${inc.ore?` 🪨${inc.ore}`:''}.`;
+  if(dayOfWeek()===1){RECRUIT.forEach(id=>{if(C[id].needs&&!S.town.b[C[id].needs])return;S.town.avail[id]+=growthOf(id);});m+=` <em>Новая неделя — в замке пополнение.</em>`;}
+  log(m);hoverPath=null;renderAll();save();
+}
+document.getElementById('btnEnd').onclick=endTurn;
+document.getElementById('btnNew').onclick=()=>{
+  modal(`<h2>Начать заново?</h2><p class="lead">Текущий поход будет забыт.</p><div class="row"><button class="ghost" id="nNo">Отмена</button><button class="danger" id="nYes">Новая игра</button></div>`);
+  document.getElementById('nNo').onclick=closeModal;
+  document.getElementById('nYes').onclick=()=>{try{localStorage.removeItem(SAVE_KEY)}catch(e){};B=null;busy=false;newGame();closeModal();renderAll();};
+};
+
+// ---------- ui ----------
+function modal(html){document.getElementById('modal').innerHTML=`<div class="overlay"><div class="scroll">${html}</div></div>`;}
+function closeModal(){document.getElementById('modal').innerHTML='';}
+function renderTop(){const inc=income();
+  document.getElementById('rGold').textContent=fmt(S.gold);document.getElementById('rWood').textContent=S.wood;document.getElementById('rOre').textContent=S.ore;
+  document.getElementById('rInc').textContent=fmt(inc.gold);
+  document.getElementById('dayBox').textContent=`Неделя ${week()}, день ${dayOfWeek()} · день ${S.day}`;}
+function renderSide(){
+  const h=S.hero,need=xpNeed(h.lvl),prevNeed=h.lvl>1?xpNeed(h.lvl-1):0;
+  const pct=Math.min(100,Math.round((h.xp-prevNeed)/(need-prevNeed)*100));
+  const inTown=S.tiles[h.y][h.x].obj&&S.tiles[h.y][h.x].obj.k==='town';
+  const army=h.army.filter(a=>a.count>0);
+  document.getElementById('side').innerHTML=`<h2>Катерина, ${h.lvl} ур.</h2>
+   <div class="hero"><div class="face">🏇</div><div class="stats"><span>Атака <b>${h.att}</b></span><span>Защита <b>${h.def}</b></span><span>Опыт <b>${fmt(h.xp)}</b></span><span>до ур. <b>${fmt(need)}</b></span></div></div>
+   <div class="xpbar"><i style="width:${pct}%"></i></div>
+   <div style="font-size:14px;color:var(--ink2)">Очки хода: <b style="color:var(--ink)">${h.mp}/${h.maxMp}</b></div>
+   <div class="mpbar">${Array.from({length:h.maxMp},(_,i)=>`<i class="${i<h.mp?'':'off'}"></i>`).join('')}</div>
+   <div class="army">${army.length?army.map(a=>`<div class="u"><span class="e">${C[a.id].e}</span><span class="n">${C[a.id].pl}<small>⚔${C[a.id].att} 🛡${C[a.id].def} · ❤${C[a.id].hp}</small></span><span class="c">${a.count}</span></div>`).join(''):'<div class="empty">Армии нет — найми войска в замке.</div>'}</div>
+   <div class="btns">${inTown?'<button id="btnTown">🏰 Войти в замок</button>':''}<button class="ghost" id="btnHome">Показать замок на карте</button></div>
+   <div class="hint">${inTown?'Ты в замке: найми войска и построй что-нибудь.':'Тапни по клетке карты — героиня пойдёт туда. Пунктир показывает путь, красные точки — куда не хватит хода.'}</div>`;
+  const bt=document.getElementById('btnTown');if(bt)bt.onclick=openTown;
+  document.getElementById('btnHome').onclick=()=>{hoverPath=[{x:1,y:1,cost:0}];draw();setTimeout(()=>{hoverPath=null;draw();},900);};
+}
+function renderAll(){renderTop();renderSide();renderLog();draw();}
+
+// ---------- boot ----------
+document.fonts&&document.fonts.ready.then(()=>draw());
+const saved=load();
+if(saved){S=saved;S.log.unshift('Поход продолжается с того места, где ты остановился.');}
+else newGame();
+renderAll();
+if(S.won){busy=true;showVictory();}
+</script>
