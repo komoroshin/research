@@ -65,6 +65,7 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .toast{position:absolute;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));background:var(--forest);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:0 18px 40px rgba(1,71,46,.2);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
 .toast.show{opacity:1}
 .chip{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
+.pips{display:flex;gap:6px}.pips div{width:8px;height:8px;border-radius:4px;background:var(--sage300)}.pips div.on{width:24px;background:var(--forest)}.pips.dark div{background:var(--sage600)}.pips.dark div.on{background:var(--cream50)}
 .stack{display:flex;flex-direction:column;gap:8px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -84,55 +85,67 @@ en:{
  demoData:'demo data', today:'Today', map:'Map', ask:'Ask', ok:'Got it', closeDay:'Close the day',
  g:{fructans:'fructans',gos:'GOS',lactose:'lactose',fructose:'fructose',sorbitol:'sorbitol',mannitol:'mannitol'},
  food:{lactose:'dairy',fructans:'wheat and onion'},
- onbTitle:"For the first days we don't restrict anything — we watch",
+ intro:[
+  {eye:'The problem',title:'Something is off with your gut — and nobody can say what',body:'People live with this for years. They cut foods on a guess, feel better, and then are afraid to bring anything back. Half the plate is off-limits, and there is still no answer.'},
+  {eye:'Our approach',title:'Not cutting everything — finding what is yours',body:'We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine.'},
+  {eye:'How it works',title:'Three steps',steps:[['Three weeks of watching','Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat.'],['A suspect from your data','With an honest note: some patterns are coincidences. You decide whether to test.'],['Eight days — and an answer','Five days without one group, then bringing it back in three doses. One line with a dose goes into your map.']]},
+  {eye:'Before we start',title:'Live as usual',body:'Change nothing in your food. Do not skip the evening — it takes thirty seconds. A missed day is a pause, not a failure. We observe, we do not diagnose: treatment decisions stay with your doctor.'}],
+ next:'Next', skip:'Skip', begin:"Let's begin",
+ onbTitle:"For the first days we don't restrict anything — we watch",
  q1:'What bothers you', q1a:['bloating','pain','bowel habits'], q2:'How often', q2a:['less than weekly','a few times a week','almost daily'], q3:"What you've tried", q3a:['nothing yet','cut foods on my own','with a dietitian'],
  health:'Allow Health', healthOn:'Health connected', start:'Start', disclaimer:'Observations, not a diagnosis. Treatment decisions stay with your doctor.',
- day0:'Tonight — your first day card', day0body:'Live as usual. In the evening, three questions and thirty seconds.', closed:n=>`Day saved. First insight in ${n} days.`, obsFrom:d=>`Observation from ${d}`,
+ day0:'Tonight — your first day card', day0body:'Live as usual. In the evening, three questions and thirty seconds.', closed:n=>`Day saved. First insight in ${n} days.`, obsFrom:d=>`Observation from ${d}`,
  dayTitle:d=>`Day card · ${d}`, howToday:'How was today', belly:'Belly', stool:'Bowel', heavy:'Heaviness', calm:'calm', strong:'strong',
  bg:(s,st,hr,src)=>`Sleep ${s} · ${st} steps · resting HR ${hr} · ${src}`, alcohol:'Alcohol', illness:'Unwell', blood:'Blood in stool', report:'Report', addMeal:'Add a meal', daySaved:'Day saved',
- mealTitle:'What did you eat', photo:'Photo', voice:'Voice', type:'Type', recognized:'Recognized', isProbe:"This is today's test dose — counted.", correct:'Correct', fix:'Fix', mealSaved:'Saved', presets:['Oatmeal with milk','Caesar salad','Garlic pasta','Apple','Chicken and rice'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
- insightEye:'One week in', insightTitle:'The first thing we see', insightBody:'In four of your five rough days, the night was shorter than six hours.', insightCaveat:"For now this is an observation, not a conclusion — there isn't much data yet. Too early to talk about food, and we won't guess.",
- confLabel:'of the data we need', daysLeft:n=>`About ${n} more days before we can name a suspect`, nextInsight:n=>`First insight in ${n} ${n===1?'day':'days'}`, needLine:(r,g)=>`We need 10 rough and 10 good days with meals — so far ${r} and ${g}. The estimate depends on how your days go.`, fullDays:'full days', rough:'rough', good:'good', observing:'Observing',
- askQ:['What should I order at a café?','Is yogurt okay?','What can replace milk?'], askA:["While we're observing there are no restrictions — order as usual and snap a photo if it's convenient.","Right now everything's on the table. If yogurt ever comes under suspicion, we'll suggest testing it — not banning it.","You'll only need swaps during a test, and we'll pick them from foods you already eat."], askNote:'Limited to the protocol and your own data. Not a source of medical advice.',
- suspEye:'A suspect', suspTitle:f=>`${cap(f)} keeps showing up on your rough days`, suspBody:(f,a,b,c,d)=>`${cap(f)} showed up in ${a} of your ${b} rough days. On good days — ${c} of ${d}.`, roughWith:f=>`rough days with ${f}`, goodWith:f=>`good days with ${f}`,
- suspCaveat:'This could be a coincidence — about a quarter of patterns like this turn out to be. Want to test it over eight days?', check:"Let's test it", notNow:'Not now', other:'Another suspect', willReturn:"We'll come back to this. Observation continues.", otherTitle:'Other patterns',
+ mealTitle:'What did you eat', photo:'Photo', voice:'Voice', type:'Type', recognized:'Recognized', isProbe:"This is today's test dose — counted.", correct:'Correct', fix:'Fix', mealSaved:'Saved', presets:['Oatmeal with milk','Caesar salad','Garlic pasta','Apple','Chicken and rice'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
+ insightEye:'One week in', insightTitle:'The first thing we see', insightBody:'In four of your five rough days, the night was shorter than six hours.', insightCaveat:"For now this is an observation, not a conclusion — there isn't much data yet. Too early to talk about food, and we won't guess.",
+ confLabel:'of the data we need', daysLeft:n=>`About ${n} more days before we can name a suspect`, nextInsight:n=>`First insight in ${n} ${n===1?'day':'days'}`, needLine:(r,g)=>`We need 10 rough and 10 good days with meals — so far ${r} and ${g}. The estimate depends on how your days go.`, fullDays:'full days', rough:'rough', good:'good', observing:'Observing',
+ askQ:['What should I order at a café?','Is yogurt okay?','What can replace milk?'], askA:["While we're observing there are no restrictions — order as usual and snap a photo if it's convenient.","Right now everything's on the table. If yogurt ever comes under suspicion, we'll suggest testing it — not banning it.","You'll only need swaps during a test, and we'll pick them from foods you already eat."], askNote:'Limited to the protocol and your own data. Not a source of medical advice.',
+ suspEye:'A suspect', suspTitle:f=>`${cap(f)} keeps showing up on your rough days`, suspBody:(f,a,b,c,d)=>`${cap(f)} showed up in ${a} of your ${b} rough days. On good days — ${c} of ${d}.`, roughWith:f=>`rough days with ${f}`, goodWith:f=>`good days with ${f}`,
+ suspCaveat:'This could be a coincidence — about a quarter of patterns like this turn out to be. Want to test it over eight days?', check:"Let's test it", notNow:'Not now', other:'Another suspect', willReturn:"We'll come back to this. Observation continues.", otherTitle:'Other patterns',
  checkHeader:f=>`Test: ${f}`, phaseR:f=>`without ${f}`, phaseB:'bringing it back', dayN:n=>`Day ${n}`, returnWhen:'return starts when calm', ends:d=>`ends ~${d}`,
  restrictionTask:f=>`Today without ${f}`, swapsLead:'Swaps from your own meals:', swaps:{lactose:['oatmeal with water','lactose-free cheese','coffee with oat milk'],fructans:['rice instead of pasta','garlic-infused oil instead of garlic','sourdough spelt bread']}, returnTask:(s,d)=>`Bringing it back, dose ${s} of 3: ${d}`, doses:['a quarter cup','half a cup','a full cup'],
  dayCounted:(n,s)=>`Day ${n} counted · sleep ${s}`, discarded:'No test dose today', lastNight:s=>`Last night: ${s}`, discardBody:f=>`Short sleep causes symptoms on its own, and we couldn't tell it apart from ${f}.`, moved:'The dose moves to tomorrow. Eat as usual.', sleep:'Sleep', threshold:'Threshold', rule:'protocol rule', notCounted:'today · not counted',
  paused:'Paused', noEntries:'No entries yesterday', pausedBody:'The test is paused, not failed. Continue today.', resume:'Continue today',
- verdictEye:'The answer', verdict:'Milk: up to 125 ml is fine, 250 ml brings symptoms', how:'The threshold was measured against your own day-to-day variation, with one control day inside the test.', notConfirmed:'Not confirmed: the difference stayed within your usual range', notConfirmedWhy:f=>`You can bring ${f} back. The restriction you were keeping wasn't needed — and that's an answer too.`, nextSuspect:'Next suspect', nextBtn:f=>`Next suspect: ${f}`, toMap:'To the map',
- mapTitle:'Your tolerance map', mapSub:'What you tolerate — and how much', tested:t=>`tested: ${t}`, testedFine:'tested: tolerated', threshText:'up to 125 ml', obs:'observing', mapEmpty:'Your first answer will appear after the first test.', doctorPage:'Page for your doctor', nOf6:n=>`${n} of 6 tested`,
- docTitle:'Participant observations', protocol:'Protocol', protocolBody:'Observation Sep 1–Sep 27. Test of "lactose" Sep 30–Oct 7: 5 days without the group, return in three doses, one control day.', results:'Results by group', symptoms:'Symptom score, daily median', before:'before the test', during:'during restriction', after:'during return', docDisc:"Participant's own observations. Not a diagnosis, not a prescription.", share:'Share', copied:'Copied to clipboard', onePage:'1 page', lactoseRes:'up to 125 ml tolerated; 250 ml — symptoms',
- redEye:'Protocol paused', redTitle:'This could be more serious than IBS', redBody:r=>`You noted: ${r}. Please see a doctor — here's what to show them.`, redNote:"The protocol stays paused until you've talked to a doctor. We don't interpret this sign.", redBtn:'Open the page for your doctor', redBlood:'blood in stool',
+ verdictEye:'The answer', verdict:'Milk: up to 125 ml is fine, 250 ml brings symptoms', how:'The threshold was measured against your own day-to-day variation, with one control day inside the test.', notConfirmed:'Not confirmed: the difference stayed within your usual range', notConfirmedWhy:f=>`You can bring ${f} back. The restriction you were keeping wasn't needed — and that's an answer too.`, nextSuspect:'Next suspect', nextBtn:f=>`Next suspect: ${f}`, toMap:'To the map',
+ mapTitle:'Your tolerance map', mapSub:'What you tolerate — and how much', tested:t=>`tested: ${t}`, testedFine:'tested: tolerated', threshText:'up to 125 ml', obs:'observing', mapEmpty:'Your first answer will appear after the first test.', doctorPage:'Page for your doctor', nOf6:n=>`${n} of 6 tested`,
+ docTitle:'Participant observations', protocol:'Protocol', protocolBody:'Observation Sep 1–Sep 27. Test of "lactose" Sep 30–Oct 7: 5 days without the group, return in three doses, one control day.', results:'Results by group', symptoms:'Symptom score, daily median', before:'before the test', during:'during restriction', after:'during return', docDisc:"Participant's own observations. Not a diagnosis, not a prescription.", share:'Share', copied:'Copied to clipboard', onePage:'1 page', lactoseRes:'up to 125 ml tolerated; 250 ml — symptoms',
+ redEye:'Protocol paused', redTitle:'This could be more serious than IBS', redBody:r=>`You noted: ${r}. Please see a doctor — here's what to show them.`, redNote:"The protocol stays paused until you've talked to a doctor. We don't interpret this sign.", redBtn:'Open the page for your doctor', redBlood:'blood in stool',
  dates:{insight:'Sep 7',card:'Sep 28',ends:'Oct 7'}, steps:'6,200', sleepFmt:(h,m)=>m?`${h} h ${String(m).padStart(2,'0')} min`:`${h} h`,
- momentTitle:'Moment', moments:{day0:'Day 0 — start',day7:'Day 7 — first insight',background:'Background, 60%',suspicion:'Suspect',check3:'Test, day 3',check6:'Test, day 6 — not counted',paused:'Test, day 4 — paused',verdict:'Answer — threshold',verdictNo:'Answer — not confirmed',map:'Map',red:'Red flag'}, momentLabel:m=>`Moment: ${m}`, close:'Close', language:'Language'
+ momentTitle:'Moment', moments:{day0:'Day 0 — start',day7:'Day 7 — first insight',background:'Background, 60%',suspicion:'Suspect',check3:'Test, day 3',check6:'Test, day 6 — not counted',paused:'Test, day 4 — paused',verdict:'Answer — threshold',verdictNo:'Answer — not confirmed',map:'Map',red:'Red flag'}, momentLabel:m=>`Moment: ${m}`, close:'Close', language:'Language'
 },
 ru:{
  demoData:'демо-данные', today:'Сегодня', map:'Карта', ask:'Спросить', ok:'Понятно', closeDay:'Закрыть день',
  g:{fructans:'фруктаны',gos:'ГОС',lactose:'лактоза',fructose:'фруктоза',sorbitol:'сорбит',mannitol:'маннит'},
  food:{lactose:'молочное',fructans:'пшеница и лук'},
- onbTitle:'Первые дни мы ничего не запрещаем — мы смотрим',
+ intro:[
+  {eye:'Проблема',title:'Что-то не так с животом — а с чем, никто не говорит',body:'С этим живут годами. Убирают продукты наугад, становится легче — и страшно что-то возвращать. Половина тарелки под запретом, а ответа так и нет.'},
+  {eye:'Наш подход',title:'Не убирать всё — найти своё',body:'Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем одного подозреваемого по вашим данным и проверяем только его. Ответ — с дозой: сколько можно.'},
+  {eye:'Как это работает',title:'Три шага',steps:[['Три недели наблюдения','Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется.'],['Подозрение по вашим данным','С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы.'],['Восемь дней — и ответ','Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту.']]},
+  {eye:'Перед стартом',title:'Живите как обычно',body:'Ничего не меняйте в еде. Не пропускайте вечер — это тридцать секунд. Пропущенный день — пауза, а не провал. Мы наблюдаем, а не ставим диагноз: решения о лечении — у врача.'}],
+ next:'Дальше', skip:'Пропустить', begin:'Начать',
+ onbTitle:'Первые дни мы ничего не запрещаем — мы смотрим',
  q1:'Что беспокоит', q1a:['вздутие','боль','стул'], q2:'Как часто', q2a:['реже раза в неделю','несколько раз в неделю','почти каждый день'], q3:'Что уже пробовали', q3a:['ничего','убирал продукты сам','с диетологом'],
- health:'Разрешить Health', healthOn:'Health подключён', start:'Начать', disclaimer:'Наблюдения, не диагноз. Решения о лечении — у врача.',
- day0:'Сегодня вечером — первая карта дня', day0body:'Живите как обычно. Вечером — три вопроса и тридцать секунд.', closed:n=>`День записан. Первый вывод — через ${n} дн.`, obsFrom:d=>`Наблюдение от ${d}`,
+ health:'Разрешить Health', healthOn:'Health подключён', start:'Начать', disclaimer:'Наблюдения, не диагноз. Решения о лечении — у врача.',
+ day0:'Сегодня вечером — первая карта дня', day0body:'Живите как обычно. Вечером — три вопроса и тридцать секунд.', closed:n=>`День записан. Первый вывод — через ${n} дн.`, obsFrom:d=>`Наблюдение от ${d}`,
  dayTitle:d=>`Карта дня · ${d}`, howToday:'Как прошёл день', belly:'Живот', stool:'Стул', heavy:'Тяжесть', calm:'спокойно', strong:'сильно',
  bg:(s,st,hr,src)=>`Сон ${s} · ${st} шагов · пульс ${hr} · ${src}`, alcohol:'Алкоголь', illness:'Болел', blood:'Кровь в стуле', report:'Отметить', addMeal:'Добавить еду', daySaved:'День записан',
- mealTitle:'Что вы ели', photo:'Фото', voice:'Голосом', type:'Текстом', recognized:'Распознано', isProbe:'Это ваша проба на сегодня — засчитано.', correct:'Верно', fix:'Исправить', mealSaved:'Записано', presets:['Овсянка с молоком','Салат цезарь','Паста с чесноком','Яблоко','Рис с курицей'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
- insightEye:'Неделя данных', insightTitle:'Первое, что видно', insightBody:'В четырёх из пяти плохих дней ночь была короче шести часов.', insightCaveat:'Пока это наблюдение, не вывод — данных мало. Про еду говорить рано, и мы не будем гадать.',
- confLabel:'данных достаточно', daysLeft:n=>`Ещё около ${n} дней, чтобы назвать подозреваемого`, nextInsight:n=>`Первый вывод через ${n} ${n===1?'день':n<5?'дня':'дней'}`, needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}. Оценка зависит от того, как пойдут дни.`, fullDays:'полных дней', rough:'плохих', good:'хороших', observing:'Наблюдение',
- askQ:['Что взять в кафе?','Можно ли йогурт?','Чем заменить молоко?'], askA:['Пока мы наблюдаем, ограничений нет — берите как обычно и сфотографируйте, если удобно.','Сейчас можно всё. Если йогурт попадёт под подозрение, мы предложим это проверить, а не запретим.','Замены понадобятся только во время проверки, и мы возьмём их из того, что вы и так едите.'], askNote:'Тема ограничена протоколом и вашими данными. Не источник медицинских советов.',
- suspEye:'Подозрение', suspTitle:f=>`${cap(f)} слишком часто попадает на плохие дни`, suspBody:(f,a,b,c,d)=>`В ${a} из ${b} ваших плохих дней было ${f}. В хороших днях — в ${c} из ${d}.`, roughWith:f=>`плохих дней с: ${f}`, goodWith:f=>`хороших дней с: ${f}`,
+ mealTitle:'Что вы ели', photo:'Фото', voice:'Голосом', type:'Текстом', recognized:'Распознано', isProbe:'Это ваша проба на сегодня — засчитано.', correct:'Верно', fix:'Исправить', mealSaved:'Записано', presets:['Овсянка с молоком','Салат цезарь','Паста с чесноком','Яблоко','Рис с курицей'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
+ insightEye:'Неделя данных', insightTitle:'Первое, что видно', insightBody:'В четырёх из пяти плохих дней ночь была короче шести часов.', insightCaveat:'Пока это наблюдение, не вывод — данных мало. Про еду говорить рано, и мы не будем гадать.',
+ confLabel:'данных достаточно', daysLeft:n=>`Ещё около ${n} дней, чтобы назвать подозреваемого`, nextInsight:n=>`Первый вывод через ${n} ${n===1?'день':n<5?'дня':'дней'}`, needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}. Оценка зависит от того, как пойдут дни.`, fullDays:'полных дней', rough:'плохих', good:'хороших', observing:'Наблюдение',
+ askQ:['Что взять в кафе?','Можно ли йогурт?','Чем заменить молоко?'], askA:['Пока мы наблюдаем, ограничений нет — берите как обычно и сфотографируйте, если удобно.','Сейчас можно всё. Если йогурт попадёт под подозрение, мы предложим это проверить, а не запретим.','Замены понадобятся только во время проверки, и мы возьмём их из того, что вы и так едите.'], askNote:'Тема ограничена протоколом и вашими данными. Не источник медицинских советов.',
+ suspEye:'Подозрение', suspTitle:f=>`${cap(f)} слишком часто попадает на плохие дни`, suspBody:(f,a,b,c,d)=>`В ${a} из ${b} ваших плохих дней было ${f}. В хороших днях — в ${c} из ${d}.`, roughWith:f=>`плохих дней с: ${f}`, goodWith:f=>`хороших дней с: ${f}`,
  suspCaveat:'Это может оказаться совпадением: примерно четверть таких совпадений ложные. Проверим за восемь дней?', check:'Проверим', notNow:'Не сейчас', other:'Другой подозреваемый', willReturn:'Вернёмся с этим позже. Наблюдение продолжается.', otherTitle:'Другие совпадения',
- checkHeader:f=>`Проверка: ${f}`, phaseR:f=>`без: ${f}`, phaseB:'возврат', dayN:n=>`День ${n}`, returnWhen:'возврат — когда уляжется', ends:d=>`до ~${d}`,
- restrictionTask:f=>`Сегодня без: ${f}`, swapsLead:'Замены — из вашего рациона:', swaps:{lactose:['овсянка на воде','безлактозный сыр','кофе с овсяным молоком'],fructans:['рис вместо пасты','масло с чесноком вместо чеснока','хлеб на закваске из спельты']}, returnTask:(s,d)=>`Возврат, доза ${s} из 3: ${d}`, doses:['четверть стакана','полстакана','стакан'],
+ checkHeader:f=>`Проверка: ${f}`, phaseR:f=>`без: ${f}`, phaseB:'возврат', dayN:n=>`День ${n}`, returnWhen:'возврат — когда уляжется', ends:d=>`до ~${d}`,
+ restrictionTask:f=>`Сегодня без: ${f}`, swapsLead:'Замены — из вашего рациона:', swaps:{lactose:['овсянка на воде','безлактозный сыр','кофе с овсяным молоком'],fructans:['рис вместо пасты','масло с чесноком вместо чеснока','хлеб на закваске из спельты']}, returnTask:(s,d)=>`Возврат, доза ${s} из 3: ${d}`, doses:['четверть стакана','полстакана','стакан'],
  dayCounted:(n,s)=>`День ${n} засчитан · сон ${s}`, discarded:'Сегодня без пробы', lastNight:s=>`Ночь ${s}`, discardBody:f=>`Короткий сон сам даёт симптомы, и мы не отличим его от: ${f}.`, moved:'Доза переносится на завтра. Ешьте как обычно.', sleep:'Сон', threshold:'Порог', rule:'правило протокола', notCounted:'сегодня · не засчитан',
  paused:'Пауза', noEntries:'Вчера без записей', pausedBody:'Проверка на паузе, не провалена. Продолжим сегодня.', resume:'Продолжить сегодня',
- verdictEye:'Ответ', verdict:'Молоко: до 125 мл переносится, 250 мл даёт симптомы', how:'Порог считался от вашего обычного разброса, с одним контрольным днём внутри проверки.', notConfirmed:'Не подтвердилось: разница в пределах вашего обычного разброса', notConfirmedWhy:f=>`${cap(f)} можно вернуть. Ограничение, которое вы держали, было лишним — и это тоже ответ.`, nextSuspect:'Следующий подозреваемый', nextBtn:f=>`Следующий подозреваемый: ${f}`, toMap:'В карту',
- mapTitle:'Карта переносимости', mapSub:'Что переносится — и сколько', tested:t=>`проверено: ${t}`, testedFine:'проверено: переносится', threshText:'до 125 мл', obs:'в наблюдении', mapEmpty:'Первый ответ появится после первой проверки.', doctorPage:'Страница для врача', nOf6:n=>`проверено ${n} из 6`,
- docTitle:'Наблюдения участника', protocol:'Протокол', protocolBody:'Наблюдение 1–27 сентября. Проверка группы «лактоза» 30 сентября — 7 октября: 5 дней без группы, возврат в три дозы, один контрольный день.', results:'Результаты по группам', symptoms:'Самочувствие, медиана за день', before:'до проверки', during:'без группы', after:'при возврате', docDisc:'Наблюдения участника. Не диагноз и не назначение.', share:'Поделиться', copied:'Скопировано', onePage:'1 страница', lactoseRes:'до 125 мл переносится; 250 мл — симптомы',
- redEye:'Протокол на паузе', redTitle:'Это может быть серьёзнее СРК', redBody:r=>`Вы отметили: ${r}. Обратитесь к врачу — вот что ему показать.`, redNote:'Протокол на паузе, пока вы не поговорите с врачом. Мы не интерпретируем этот признак.', redBtn:'Открыть страницу для врача', redBlood:'кровь в стуле',
+ verdictEye:'Ответ', verdict:'Молоко: до 125 мл переносится, 250 мл даёт симптомы', how:'Порог считался от вашего обычного разброса, с одним контрольным днём внутри проверки.', notConfirmed:'Не подтвердилось: разница в пределах вашего обычного разброса', notConfirmedWhy:f=>`${cap(f)} можно вернуть. Ограничение, которое вы держали, было лишним — и это тоже ответ.`, nextSuspect:'Следующий подозреваемый', nextBtn:f=>`Следующий подозреваемый: ${f}`, toMap:'В карту',
+ mapTitle:'Карта переносимости', mapSub:'Что переносится — и сколько', tested:t=>`проверено: ${t}`, testedFine:'проверено: переносится', threshText:'до 125 мл', obs:'в наблюдении', mapEmpty:'Первый ответ появится после первой проверки.', doctorPage:'Страница для врача', nOf6:n=>`проверено ${n} из 6`,
+ docTitle:'Наблюдения участника', protocol:'Протокол', protocolBody:'Наблюдение 1–27 сентября. Проверка группы «лактоза» 30 сентября — 7 октября: 5 дней без группы, возврат в три дозы, один контрольный день.', results:'Результаты по группам', symptoms:'Самочувствие, медиана за день', before:'до проверки', during:'без группы', after:'при возврате', docDisc:'Наблюдения участника. Не диагноз и не назначение.', share:'Поделиться', copied:'Скопировано', onePage:'1 страница', lactoseRes:'до 125 мл переносится; 250 мл — симптомы',
+ redEye:'Протокол на паузе', redTitle:'Это может быть серьёзнее СРК', redBody:r=>`Вы отметили: ${r}. Обратитесь к врачу — вот что ему показать.`, redNote:'Протокол на паузе, пока вы не поговорите с врачом. Мы не интерпретируем этот признак.', redBtn:'Открыть страницу для врача', redBlood:'кровь в стуле',
  dates:{insight:'7 сент',card:'28 сент',ends:'7 окт'}, steps:'6 200', sleepFmt:(h,m)=>m?`${h} ч ${String(m).padStart(2,'0')} мин`:`${h} ч`,
- momentTitle:'Момент', moments:{day0:'День 0 — вход',day7:'День 7 — первый вывод',background:'Фон, 60%',suspicion:'Подозрение',check3:'Проверка, день 3',check6:'Проверка, день 6 — не засчитан',paused:'Проверка, день 4 — пауза',verdict:'Ответ — порог',verdictNo:'Ответ — не подтвердилось',map:'Карта',red:'Красный флаг'}, momentLabel:m=>`Момент: ${m}`, close:'Закрыть', language:'Язык'
+ momentTitle:'Момент', moments:{day0:'День 0 — вход',day7:'День 7 — первый вывод',background:'Фон, 60%',suspicion:'Подозрение',check3:'Проверка, день 3',check6:'Проверка, день 6 — не засчитан',paused:'Проверка, день 4 — пауза',verdict:'Ответ — порог',verdictNo:'Ответ — не подтвердилось',map:'Карта',red:'Красный флаг'}, momentLabel:m=>`Момент: ${m}`, close:'Закрыть', language:'Язык'
 }};
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -143,7 +156,7 @@ const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:
 const LANG=(()=>{const q=new URLSearchParams(location.search).get('lang');const m=document.querySelector('meta[name="ths-lang"]');const f=q||(m&&m.content);if(f&&S[f]){ls.set('ths-lang',f);return f}return ls.get('ths-lang')||((navigator.language||'').toLowerCase().startsWith('ru')?'ru':'en')})();
 const base=()=>({lang:LANG,screen:'onboarding',tab:'today',modal:null,moment:'day0',onboarded:false,health:false,
  q:[0,1,1],scores:{belly:1,stool:0,heavy:2},alcohol:false,illness:false,dayClosed:false,insightSeen:false,askOpen:0,
- day:0, suspOfferedDay:-99, tested:{}, lastGroup:null,
+ day:0, suspOfferedDay:-99, tested:{}, lastGroup:null, intro:0, introDone:false,
  susp:{group:'lactose',a:8,b:10,c:2,d:11},
  check:null, verdictType:'threshold', meals:[], mealPick:null, toast:''});
 /* scripted diary: which days were rough, and which days had each group (prototype data, one fixed story) */
@@ -190,6 +203,19 @@ const curDay=()=>st.day;
 const healthLine=()=>{const t=T();const src=st.health?'Health':t.demoData;const s=st.check?st.check.sleep:430;return t.bg(fmtSleep(s),t.steps,'61',src)};
 
 /* ---------- screens ---------- */
+function intro(){const t=T();const i=st.intro;const sl=t.intro[i];const last=i===t.intro.length-1;const dark=i===1;
+ const pips=`<div class="pips${dark?' dark':''}">${t.intro.map((_,k)=>`<div class="${k===i?'on':''}"></div>`).join('')}</div>`;
+ const body=sl.steps?`<div class="stack">${sl.steps.map(([h,b],k)=>`<div class="card${k===2?' accent':' quiet'}" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px"><div class="numeral" style="font-size:26px;flex:none;width:22px;margin-top:2px">${k+1}</div><div><div class="body" style="font-weight:700;font-size:14px">${h}</div><div class="body soft" style="font-size:13px;margin-top:3px;line-height:1.4">${b}</div></div></div>`).join('')}</div>`:
+  `<div class="body${dark?' dark':''}" style="font-size:17px">${sl.body}</div>`;
+ return `<div class="screen${dark?' dark':''}" data-intro>
+  ${topRow('Threshold',`${i+1} / ${t.intro.length}`,dark)}
+  <div class="eyebrow${dark?' dark':''}" style="margin-top:${sl.steps?'4':'18'}px">${sl.eye}</div>
+  <div class="display${dark?' dark':''}" style="font-size:${sl.steps?'26':'34'}px">${sl.title}</div><div class="rule${dark?' dark':''}"></div>
+  ${body}
+  <div class="stack" style="margin-top:auto">${pips}<div style="height:${sl.steps?'0':'6'}px"></div>
+   <button class="btn ${dark?'cream':'primary'}" data-act="${last?'introDone':'introNext'}">${last?t.begin:t.next}</button>
+   ${last?'':`<div class="link${dark?' dark':''}" style="color:${dark?'var(--sage300)':'var(--forest)'}" data-act="introDone">${t.skip}</div>`}
+  </div></div>`}
 function onboarding(){const t=T();
  const seg=(i,opts)=>`<div class="seg">${opts.map((o,j)=>`<div class="${st.q[i]===j?'on':''}" data-seg="${i}:${j}">${o}</div>`).join('')}</div>`;
  return `<div class="screen">
@@ -289,7 +315,7 @@ function switcher(){const t=T();return `<div class="screen modal"><div class="ca
 
 /* ---------- render ---------- */
 function render(){const t=T();let html='';
- if(!st.onboarded) html=onboarding();
+ if(!st.onboarded) html=st.introDone?onboarding():intro();
  else html=st.tab==='map'?mapScreen():st.tab==='ask'?askScreen():today();
  const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,red:redFlag,switcher};
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
@@ -314,6 +340,8 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
  const a=el.dataset.act;
  switch(a){
   case 'health': st.health=!st.health;break;
+  case 'introNext': st.intro=Math.min(st.intro+1,T().intro.length-1);break;
+  case 'introDone': st.introDone=true;st.intro=0;break;
   case 'start': st.onboarded=true;st.moment='day0';break;
   case 'openDay': st.modal='dayCard';break;
   case 'closeDay': st.modal=null;st.moment='';st.day++;
@@ -345,6 +373,10 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
  }
  render();
 });
+let sx=null,sy=null;
+document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-intro]'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx))return;const t=T();if(dx<0)st.intro=Math.min(st.intro+1,t.intro.length-1);else st.intro=Math.max(st.intro-1,0);render()},{passive:true});
+document.addEventListener('keydown',e=>{if(st.introDone||st.onboarded)return;const t=T();if(e.key==='ArrowRight')st.intro=Math.min(st.intro+1,t.intro.length-1);else if(e.key==='ArrowLeft')st.intro=Math.max(st.intro-1,0);else return;render()});
 document.addEventListener('input',e=>{const k=e.target.dataset.slider;if(k){st.scores[k]=+e.target.value;e.target.closest('.slider').querySelector('.numeral').textContent=e.target.value}});
 st=base();render();
 </script>
