@@ -31,6 +31,28 @@
 | group.lactose.food | молочное | dairy |
 | group.fructans.food | пшеница и лук | wheat and onion |
 
+## Интро · intro (карусель перед Э0)
+
+| Ключ | RU | EN |
+|---|---|---|
+| intro.1.eye | Проблема | The problem |
+| intro.1.title | Что-то не так с животом — а с чем, никто не говорит | Something is off with your gut — and nobody can say what |
+| intro.1.body | С этим живут годами. Убирают продукты наугад, становится легче — и страшно что-то возвращать. Половина тарелки под запретом, а ответа так и нет. | People live with this for years. They cut foods on a guess, feel better, and then are afraid to bring anything back. Half the plate is off-limits, and there is still no answer. |
+| intro.2.eye | Наш подход | Our approach |
+| intro.2.title | Не убирать всё — найти своё | Not cutting everything — finding what is yours |
+| intro.2.body | Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем одного подозреваемого по вашим данным и проверяем только его. Ответ — с дозой: сколько можно. | We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine. |
+| intro.3.eye | Как это работает | How it works |
+| intro.3.title | Три шага | Three steps |
+| intro.3.step1 | Три недели наблюдения — Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется. | Three weeks of watching — Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat. |
+| intro.3.step2 | Подозрение по вашим данным — С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы. | A suspect from your data — With an honest note: some patterns are coincidences. You decide whether to test. |
+| intro.3.step3 | Восемь дней — и ответ — Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту. | Eight days — and an answer — Five days without one group, then bringing it back in three doses. One line with a dose goes into your map. |
+| intro.4.eye | Перед стартом | Before we start |
+| intro.4.title | Живите как обычно | Live as usual |
+| intro.4.body | Ничего не меняйте в еде. Не пропускайте вечер — это тридцать секунд. Пропущенный день — пауза, а не провал. Мы наблюдаем, а не ставим диагноз: решения о лечении — у врача. | Change nothing in your food. Do not skip the evening — it takes thirty seconds. A missed day is a pause, not a failure. We observe, we do not diagnose: treatment decisions stay with your doctor. |
+| intro.next | Дальше | Next |
+| intro.skip | Пропустить | Skip |
+| intro.begin | Начать | Let's begin |
+
 ## Э0 · onb
 
 | Ключ | RU | EN |
