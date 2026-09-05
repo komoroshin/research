@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Простая браузерная стратегия в духе Heroes of Might and Magic III: карта, гексовые бои, магия, замок и вражеский герой.">
 <title>Герои Серебряной Марки</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <style>
@@ -130,6 +136,9 @@ details.help ul{padding-left:20px;margin:6px 0}
 @media (max-width:480px){.choice{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
 
 <div class="frame">
   <div class="masthead">
@@ -896,3 +905,6 @@ computeVis();renderAll();requestAnimationFrame(loop);
 setTimeout(scrollToHero,200);
 if(S.won){busy=true;showVictory();}else if(S.lost){busy=true;showDefeat();}
 </script>
+
+</body>
+</html>
