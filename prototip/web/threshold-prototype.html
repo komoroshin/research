@@ -12,7 +12,7 @@
 <style>
 :root{--cream50:#FEFAE0;--cream100:#F3F1DC;--sage100:#E9EDC9;--sage300:#CCD5AE;--sage500:#A3B18A;--sage600:#7E9276;--ink700:#2A4A3A;--ink600:#4E6B57;--forest:#01472E;--forest800:#0A5637;
 --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
-*{box-sizing:border-box}
+*{box-sizing:border-box;touch-action:manipulation}
 [data-act],[data-tab],[data-seg],[data-switch],[data-ask],[data-meal],[data-pick],[data-moment],[data-lang],[data-taptop]{cursor:pointer}
 html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink700);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 #stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px}
@@ -74,7 +74,7 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .toast.show{opacity:1}
 .chip{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
 .momentbar{position:absolute;top:calc(14px + env(safe-area-inset-top));left:20px;right:20px;z-index:8;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
-.momentbar span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage600);background:rgba(233,237,201,.9);border-radius:10px;padding:4px 8px}
+.momentbar span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage600);background:rgba(233,237,201,.9);border-radius:10px;padding:6px 10px;pointer-events:auto;cursor:pointer;min-height:28px;display:inline-flex;align-items:center}
 .stack{display:flex;flex-direction:column;gap:8px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -90,7 +90,7 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
     <div class="body soft" style="font-size:12px">Prototype, level A. Pick a moment:</div>
     <div id="devmoments"></div>
     <div class="lang"><div id="lang-en">EN</div><div id="lang-ru">RU</div></div>
-    <p>On a phone: open in Safari → Share → «Add to Home Screen». Five quick taps on any screen's top row open this switcher.</p>
+    <p>On a phone: open in Safari → Share → «Add to Home Screen». Tap the «Moment» chip at the top of any screen to open this switcher.</p>
   </aside>
   <div id="phone"><div class="screen" style="justify-content:center"><div class="eyebrow">Threshold</div><h1>This preview can't run the prototype</h1><p class="body">The file opened in a viewer without JavaScript. Open the link in Safari or Chrome, or save the file and open it from Files.</p><p class="body">Файл открылся в просмотрщике без JavaScript. Откройте ссылку в Safari или Chrome либо сохраните файл и откройте из «Файлов».</p></div></div>
 </div>
@@ -294,7 +294,7 @@ function render(){const t=T();let html='';
  const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,red:redFlag,switcher};
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
  if(st.modal==='red'&&st.docOverRed) html+=doctorPage();
- html+=`<div class="momentbar"><span>${t.momentLabel(t.moments[st.moment])}</span></div><div class="toast${st.toast?' show':''}">${st.toast}</div>`;
+ html+=`<div class="momentbar"><span data-act="switcher">${t.momentLabel(t.moments[st.moment])} ▾</span></div><div class="toast${st.toast?' show':''}">${st.toast}</div>`;
  document.getElementById('phone').innerHTML=html;
  document.getElementById('devmoments').innerHTML=MOMENTS.map(m=>`<div class="m${st.moment===m?' on':''}" data-moment="${m}">${t.moments[m]}</div>`).join('');
  document.getElementById('lang-en').className=st.lang==='en'?'on':'';document.getElementById('lang-ru').className=st.lang==='ru'?'on':'';
@@ -304,7 +304,7 @@ function render(){const t=T();let html='';
 /* ---------- events ---------- */
 let taps=[];
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[data-tab],[data-seg],[data-switch],[data-ask],[data-meal],[data-pick],[data-moment],[data-lang],[data-taptop]');if(!el)return;const t=T();
- if(el.dataset.taptop!==undefined&&!el.dataset.act){const now=Date.now();taps=taps.filter(x=>now-x<1500);taps.push(now);if(taps.length>=5){taps=[];st.modal='switcher';render()}return}
+ if(el.dataset.taptop!==undefined&&!el.dataset.act){const now=Date.now();taps=taps.filter(x=>now-x<2500);taps.push(now);if(taps.length>=5){taps=[];st.modal='switcher';render()}return}
  if(el.dataset.moment){setMoment(el.dataset.moment);return}
  if(el.dataset.lang){st.lang=el.dataset.lang;ls.set('ths-lang',st.lang);render();return}
  if(el.dataset.tab){st.tab=el.dataset.tab;st.modal=null;render();return}
@@ -339,6 +339,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
   case 'closeDoc': st.modal=null;break;
   case 'redDoc': st.docOverRed=true;break;
   case 'share': {const txt=`${t.docTitle}\n${t.protocolBody}\n${t.results}: ${cap(t.g.lactose)} — ${st.mapChecked?t.lactoseRes:t.obs}\n${t.docDisc}`;if(navigator.share){navigator.share({title:t.docTitle,text:txt}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>toast(t.copied)).catch(()=>{})}return}
+  case 'switcher': st.modal=st.modal==='switcher'?null:'switcher';break;
   case 'closeSwitcher': st.modal=null;st.docOverRed=false;break;
  }
  render();
