@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Простая браузерная стратегия в духе Heroes of Might and Magic III: карта, гексовые бои, магия, замок и вражеский герой.">
+<meta name="description" content="Браузерная стратегия в духе Heroes of Might and Magic III: карта, гексовые бои, магия, замок, герои и вражеский лорд.">
 <title>Герои Серебряной Марки</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
 <style>
@@ -415,7 +415,7 @@ function buildTerrain(){
     }
   }
 }
-function emo(g,e,x,y,size,flip){g.save();g.font=`${size}px ${EMO}`;g.textAlign='center';g.textBaseline='middle';
+function emo(g,e,x,y,size,flip){g.save();g.fillStyle='#000';g.globalAlpha=Math.max(g.globalAlpha,0.999)>0?g.globalAlpha:1;g.font=`${size}px ${EMO}`;g.textAlign='center';g.textBaseline='middle';
   if(flip){g.translate(x,y);g.scale(-1,1);g.fillText(e,0,2);}else g.fillText(e,x,y+2);g.restore();}
 function pill(g,text,cx,cy,bg,fg){g.font=`bold 11px ${TXT}`;const w=g.measureText(text).width+10;g.fillStyle=bg;
   g.beginPath();g.roundRect(cx-w/2,cy-8,w,16,8);g.fill();g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(text,cx,cy+1);}
