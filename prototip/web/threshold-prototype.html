@@ -92,6 +92,7 @@ en:{
   {eye:'How it works',title:'Three steps',steps:[['Three weeks of watching','Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat.'],['A suspect from your data','With an honest note: some patterns are coincidences. You decide whether to test.'],['Eight days — and an answer','Five days without one group, then bringing it back in three doses. One line with a dose goes into your map.']]},
   {eye:'Before we start',title:'Live as usual',body:'Change nothing in your food. Do not skip the evening — it takes thirty seconds. A missed day is a pause, not a failure. We observe, we do not diagnose: treatment decisions stay with your doctor.'}],
  next:'Next', skip:'Skip', begin:"Let's begin", healthWhy:'Sleep, steps and resting heart rate from Apple Health, so a short night is not mistaken for a food reaction. Optional: without it we ask about sleep in the evening.',
+ hint:{onb:'Pick one in each row. You can change it later.', today0:'Nothing to do until the evening. Then tap «Close the day» and answer three questions.', today:'Eat as usual. In the evening, tap «Close the day» — thirty seconds.', todayCheck:'Close the day in the evening as usual. Meals are what make the test count.', scale:'Rate today from 0 (calm) to 5 (strong). Roughly is fine.', belly:'bloating, pain, discomfort', stool:'anything unusual today', heavy:'heaviness or fullness after meals', bg:'Background for the day — pulled in automatically', flags:'Mark if it happened: such days are counted separately.', meals:'What you ate today. Optional, but without meals the day counts for wellbeing only, not for finding a suspect.', close:'Saves the day. You can fix it tomorrow from the Today screen.', mealHow:'Photo, voice or text — whichever is easier. We recognise the food group and remember it.', mealProto:'In this prototype, pick a dish from the list.', mealConfirm:'Check the recognised dish and the group, then confirm.'},
  yesterday:n=>`Yesterday · day ${n}`, edit:'Edit', saveEdit:'Save changes', cancel:'Cancel', updated:n=>`Day ${n} updated`, editTitle:n=>`Day ${n} · editing`, entry:(b,s,h)=>`belly ${b} · bowel ${s} · heaviness ${h}`,
  onbTitle:"For the first days we don't restrict anything — we watch",
  q1:'What bothers you', q1a:['bloating','pain','bowel habits'], q2:'How often', q2a:['less than weekly','a few times a week','almost daily'], q3:"What you've tried", q3a:['nothing yet','cut foods on my own','with a dietitian'],
@@ -126,6 +127,7 @@ ru:{
   {eye:'Как это работает',title:'Три шага',steps:[['Три недели наблюдения','Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется.'],['Подозрение по вашим данным','С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы.'],['Восемь дней — и ответ','Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту.']]},
   {eye:'Перед стартом',title:'Живите как обычно',body:'Ничего не меняйте в еде. Не пропускайте вечер — это тридцать секунд. Пропущенный день — пауза, а не провал. Мы наблюдаем, а не ставим диагноз: решения о лечении — у врача.'}],
  next:'Дальше', skip:'Пропустить', begin:'Начать', healthWhy:'Сон, шаги и пульс из Apple Health, чтобы не спутать короткую ночь с реакцией на еду. Необязательно: без этого спросим про сон вечером.',
+ hint:{onb:'Одно из трёх в каждой строке. Потом можно поменять.', today0:'До вечера делать ничего не нужно. Вечером нажмите «Закрыть день» и ответьте на три вопроса.', today:'Ешьте как обычно. Вечером — «Закрыть день», это тридцать секунд.', todayCheck:'Вечером закройте день как обычно. Еда — то, из чего складывается проверка.', scale:'Оцените день от 0 (спокойно) до 5 (сильно). Примерно — нормально.', belly:'вздутие, боль, дискомфорт', stool:'что-то необычное сегодня', heavy:'тяжесть или распирание после еды', bg:'Фон за день — подтянулся сам', flags:'Отметьте, если было: такие дни считаются отдельно.', meals:'Что вы сегодня ели. Необязательно, но без еды день идёт в самочувствие, а не в поиск подозреваемого.', close:'Сохраняет день. Поправить можно завтра с экрана «Сегодня».', mealHow:'Фото, голосом или текстом — как удобнее. Распознаем группу и запомним.', mealProto:'В прототипе — выберите блюдо из списка.', mealConfirm:'Проверьте распознанное блюдо и группу, потом подтвердите.'},
  yesterday:n=>`Вчера · день ${n}`, edit:'Изменить', saveEdit:'Сохранить', cancel:'Отмена', updated:n=>`День ${n} обновлён`, editTitle:n=>`День ${n} · правка`, entry:(b,s,h)=>`живот ${b} · стул ${s} · тяжесть ${h}`,
  onbTitle:'Первые дни мы ничего не запрещаем — мы смотрим',
  q1:'Что беспокоит', q1a:['вздутие','боль','стул'], q2:'Как часто', q2a:['реже раза в неделю','несколько раз в неделю','почти каждый день'], q3:'Что уже пробовали', q3a:['ничего','убирал продукты сам','с диетологом'],
@@ -201,8 +203,9 @@ const topRow=(l,r,dark)=>`<div class="top" data-taptop><div class="eyebrow${dark
 const nav=on=>{const t=T();return `<div class="nav"><div class="${on==='today'?'on':''}" data-tab="today">${t.today}</div><div class="${on==='map'?'on':''}" data-tab="map">${t.map}</div><div class="${on==='ask'?'on':''}" data-tab="ask">${t.ask}</div></div>`};
 const dots=p=>{const m={d:'d-done',t:'d-today',a:'d-ahead',s:'d-skip'};return `<div class="dots">${[...p].map(c=>`<div class="${m[c]}"></div>`).join('')}</div>`};
 const sw=(key,on)=>`<div class="switch${on?' on':''}" data-switch="${key}"><i></i></div>`;
-const slider=(key,label,v)=>{const t=T();return `<div class="slider"><div class="row"><div class="eyebrow">${label}</div><div class="numeral" style="font-size:18px">${v}</div></div><input type="range" min="0" max="5" step="1" value="${v}" data-slider="${key}"><div class="anchors"><div class="eyebrow" style="letter-spacing:.12em">${t.calm}</div><div class="eyebrow" style="letter-spacing:.12em">${t.strong}</div></div></div>`};
+const slider=(key,label,v)=>{const t=T();return `<div class="slider"><div class="row"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${t.hint[key]}</div></div><div class="numeral" style="font-size:18px">${v}</div></div><input type="range" min="0" max="5" step="1" value="${v}" data-slider="${key}"><div class="anchors"><div class="eyebrow" style="letter-spacing:.12em">${t.calm}</div><div class="eyebrow" style="letter-spacing:.12em">${t.strong}</div></div></div>`};
 const curDay=()=>st.day;
+const hint=(x,extra='')=>`<div class="body soft" style="font-size:12px;line-height:1.4;${extra}">${x}</div>`;
 const snapshot=()=>({scores:Object.assign({},st.scores),alcohol:st.alcohol,illness:st.illness,meals:st.meals.slice()});
 const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)return '';return `<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="editPrev"><div><div class="eyebrow" style="letter-spacing:.12em">${t.yesterday(y)}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.entry(e.scores.belly,e.scores.stool,e.scores.heavy)}</div></div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em;flex:none">${t.edit}</div></div>`};
 const healthLine=()=>{const t=T();const src=st.health?'Health':t.demoData;const s=st.check?st.check.sleep:430;return t.bg(fmtSleep(s),t.steps,'61',src)};
@@ -223,13 +226,14 @@ function intro(){const t=T();const i=st.intro;const sl=t.intro[i];const last=i==
   </div></div>`}
 function onboarding(){const t=T();
  const seg=(i,opts)=>`<div class="seg">${opts.map((o,j)=>`<div class="${st.q[i]===j?'on':''}" data-seg="${i}:${j}">${o}</div>`).join('')}</div>`;
- return `<div class="screen" style="gap:10px">
+ return `<div class="screen pinned" style="gap:10px">
   <div class="eyebrow" data-taptop>Threshold</div>
-  <div class="display" style="font-size:24px">${t.onbTitle}</div><div class="rule"></div>
+  <div class="feed" style="gap:10px"><div class="display" style="font-size:24px">${t.onbTitle}</div><div class="rule"></div>
+  ${hint(t.hint.onb)}
   <div class="stack"><div class="eyebrow">${t.q1}</div>${seg(0,t.q1a)}</div>
   <div class="stack"><div class="eyebrow">${t.q2}</div>${seg(1,t.q2a)}</div>
-  <div class="stack"><div class="eyebrow">${t.q3}</div>${seg(2,t.q3a)}</div>
-  <div class="stack" style="margin-top:auto">
+  <div class="stack"><div class="eyebrow">${t.q3}</div>${seg(2,t.q3a)}</div></div>
+  <div class="stack">
    <button class="btn ghost" data-act="health">${st.health?t.healthOn:t.health}</button>
    <div class="body soft" style="font-size:11px;line-height:1.35;padding:0 4px">${t.healthWhy}</div>
    <button class="btn primary" data-act="start">${t.start}</button>
@@ -247,7 +251,7 @@ function today(){const t=T();const d=st.day;
   <div class="grid3">${[['full',t.fullDays],['rough',t.rough],['good',t.good]].map(([k,l])=>`<div class="card quiet" style="padding:14px 16px"><div class="numeral" style="font-size:24px">${c[k]}<small> / ${need[k]}</small></div><div class="eyebrow" style="margin-top:8px;letter-spacing:.12em">${l}</div></div>`).join('')}</div>`;
  const ask=d>0?`<div class="stack"><div class="eyebrow">${t.ask}</div>${t.askQ.map((q,i)=>`<div class="card${st.askOpen===i?'':' quiet'}" style="padding:14px 18px;cursor:pointer" data-ask="${i}"><div class="body" style="font-size:14px;${st.askOpen===i?'font-weight:700':''}">${q}</div>${st.askOpen===i?`<div class="body soft" style="font-size:14px;margin-top:8px">${t.askA[i]}</div>`:''}</div>`).join('')}</div>`:'';
  return `<div class="screen pinned">${topRow(`${t.today} · ${t.dayN(d)}`,t.observing)}<div class="feed">${body}${d===0?'':conf}${ask}${yesterdayRow()}</div>
-  <button class="btn primary" data-act="openDay">${t.closeDay}</button>${nav('today')}</div>`}
+  ${hint(d===0?t.hint.today0:t.hint.today,'text-align:center;padding:0 8px')}<button class="btn primary" data-act="openDay">${t.closeDay}</button>${nav('today')}</div>`}
 
 function checkScreen(){const t=T();const c=st.check;const f=t.food[c.group];const d=c.day;
  const pat=[...Array(8)].map((_,i)=>i+1<d?'d':i+1===d?(c.discard?'s':'t'):'a').join('');
@@ -260,22 +264,24 @@ function checkScreen(){const t=T();const c=st.check;const f=t.food[c.group];cons
    ${d>1?`<div class="card quiet" style="padding:12px 16px"><div class="body soft" style="font-size:13px">${t.dayCounted(d-1,fmtSleep(c.sleep))}</div></div>`:''}`;
  else {const step=d-5;card=`<div class="card dark"><div class="eyebrow dark">${t.today}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.returnTask(step,t.doses[step-1])}</div><div class="rule dark" style="margin:14px 0"></div><div class="numeral dark" style="font-size:48px">${['¼','½','1'][step-1]}<small> ${t.doses[step-1]}</small></div></div>`}
  const btn=c.paused?`<button class="btn primary" data-act="resume">${t.resume}</button>`:c.discard?`<button class="btn primary" data-act="discardOk">${t.ok}</button>`:`<button class="btn primary" data-act="openDay">${t.closeDay}</button>`;
- return `<div class="screen pinned">${topRow(t.checkHeader(f),`${t.dayN(d)} · ${phase}`)}${dots(pat)}<div class="row"><div class="eyebrow" style="letter-spacing:.12em">${c.discard?t.notCounted:t.returnWhen}</div><div class="eyebrow" style="letter-spacing:.12em">${t.ends(t.dates.ends)}</div></div><div class="feed">${card}${yesterdayRow()}</div>${btn}${nav('today')}</div>`}
+ return `<div class="screen pinned">${topRow(t.checkHeader(f),`${t.dayN(d)} · ${phase}`)}${dots(pat)}<div class="row"><div class="eyebrow" style="letter-spacing:.12em">${c.discard?t.notCounted:t.returnWhen}</div><div class="eyebrow" style="letter-spacing:.12em">${t.ends(t.dates.ends)}</div></div><div class="feed">${card}${yesterdayRow()}</div>${c.paused||c.discard?'':hint(t.hint.todayCheck,'text-align:center;padding:0 8px')}${btn}${nav('today')}</div>`}
 
 function dayCard(){const t=T();const s=st.scores;const ed=st.editDay!==null;
- return `<div class="screen modal">${topRow(ed?t.editTitle(st.editDay):t.dayTitle(t.dates.card),t.dayN(ed?st.editDay:curDay()))}<div class="display" style="font-size:24px">${t.howToday}</div>
+ return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayTitle(t.dates.card),t.dayN(ed?st.editDay:curDay()))}<div class="feed"><div class="display" style="font-size:24px">${t.howToday}</div>${hint(t.hint.scale)}
   ${slider('belly',t.belly,s.belly)}${slider('stool',t.stool,s.stool)}${slider('heavy',t.heavy,s.heavy)}
-  <div class="card quiet" style="padding:12px 16px"><div class="body soft" style="font-size:12px">${healthLine()}</div></div>
+  <div class="card quiet" style="padding:12px 16px"><div class="eyebrow" style="letter-spacing:.12em;margin-bottom:4px">${t.hint.bg}</div><div class="body soft" style="font-size:12px">${healthLine()}</div></div>
+  ${hint(t.hint.flags)}
   <div class="grid2"><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.alcohol}</div>${sw('alcohol',st.alcohol)}</div><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.illness}</div>${sw('illness',st.illness)}</div></div>
   <div class="row" style="border-radius:24px;padding:12px 16px;box-shadow:inset 0 0 0 2px var(--sage500);cursor:pointer" data-act="blood"><div class="body soft" style="font-size:14px">${t.blood}</div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em">${t.report}</div></div>
-  <div class="stack" style="margin-top:auto"><button class="btn ghost" data-act="addMeal">${t.addMeal}</button>${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>`}</div></div>`}
+  ${hint(t.hint.meals)}</div>
+  <div class="stack"><button class="btn ghost" data-act="addMeal">${t.addMeal}</button>${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>${hint(t.hint.close,'text-align:center')}`}</div></div>`}
 
 function addMeal(){const t=T();const p=st.mealPick;
  const tile=(k,l)=>`<div class="card" style="height:96px;display:flex;align-items:flex-end;cursor:pointer" data-meal="${k}"><div class="display" style="font-size:18px">${l}</div></div>`;
  const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.recognized}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
   `<div class="stack">${t.presets.map((n,i)=>`<div class="card quiet" style="padding:12px 16px;cursor:pointer" data-pick="${i}"><div class="body" style="font-size:14px">${n}</div></div>`).join('')}</div>`;
- return `<div class="screen modal">${topRow(t.addMeal,t.dayN(curDay()))}<div class="display" style="font-size:24px">${t.mealTitle}</div><div class="grid3">${tile('photo',t.photo)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${rec}
-  <div class="stack" style="margin-top:auto"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.correct}</button><button class="btn ghost" data-act="mealFix">${p===null?t.close:t.fix}</button></div></div>`}
+ return `<div class="screen modal pinned">${topRow(t.addMeal,t.dayN(curDay()))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${hint(t.hint.mealHow)}<div class="grid3">${tile('photo',t.photo)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${hint(p===null?t.hint.mealProto:t.hint.mealConfirm)}${rec}</div>
+  <div class="stack"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.correct}</button><button class="btn ghost" data-act="mealFix">${p===null?t.close:t.fix}</button></div></div>`}
 
 function suspicion(){const t=T();const s=st.susp;const f=t.food[s.group];
  return `<div class="screen modal">${topRow(t.suspEye,t.dayN(st.day))}<div class="display" style="font-size:26px">${t.suspTitle(f)}</div><div class="rule"></div>
