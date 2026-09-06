@@ -62,7 +62,7 @@
   --text-body-soft:var(--ink-600);
   --text-body-on-dark:var(--pine-on-dark);
   --text-muted:var(--sage-500);
-  --text-unit:var(--ink-600);        /* the half-size suffix on a Numeral: survives cream, sage and slate grounds */
+  --text-unit:var(--ink-700);        /* the half-size suffix on a Numeral: clears 4.5:1 on cream, sage AND slate grounds */
   --text-unit-on-dark:var(--sage-500);
   --text-eyebrow:var(--ink-600);
   --text-eyebrow-soft:var(--sage-600);

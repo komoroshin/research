@@ -208,8 +208,9 @@ half-pill for shapes · 44 phone frame. Nothing is a rectangle; the only true ci
 the switch knob, slider thumb, path pins and the photo tile's lens.
 
 **Contrast floor.** The half-size unit on a `Numeral` is content ("125 **ml is fine**"), so it has
-its own token, `--text-unit` (ink-600), rather than the muted sage that was there before — sage-500
-reached only 1.5:1 on the slate accent card. On `accent` surfaces keep body text at full ink:
+its own token, `--text-unit` (ink-700), rather than the muted sage that was there before — sage-500
+reached only 1.5:1 on the slate accent card, and ink-600 only 3.87:1. Ink-700 clears 6.45:1 there
+and 9.1:1 on cream. On `accent` surfaces keep body text at full ink:
 `tone="soft"` measures 3.87:1 there and `tone="muted"` fails.
 
 **Ornament: exactly one.** A 64×2px sage rule under a headline, marking the boundary
