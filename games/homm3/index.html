@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="description" content="Герои Эрафии — браузерная пошаговая стратегия в духе Heroes of Might and Magic III: восемь фракций, гексовые бои, магия, осады, ИИ-противники.">
+<title>Герои Эрафии</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="screen">
+    <!-- главное меню -->
+    <div id="menu" class="screen"></div>
+    <!-- карта приключений -->
+    <div id="adv" class="screen hidden">
+      <div id="advMain"><canvas id="mapCanvas"></canvas><div id="advOverlay" class="hidden"></div></div>
+      <div id="sidebar">
+        <div id="resbar"></div>
+        <div id="datebar"></div>
+        <canvas id="minimap" width="220" height="220"></canvas>
+        <div id="heroPanel" class="inset"></div>
+        <div id="objList"></div>
+        <div id="advButtons"></div>
+        <div id="log"></div>
+      </div>
+    </div>
+    <!-- бой -->
+    <div id="battle" class="screen hidden">
+      <div id="battleMain"><canvas id="battleCanvas"></canvas></div>
+      <div id="battleBar"></div>
+    </div>
+  </div>
+  <div id="modals"></div>
+  <div id="toasts"></div>
+  <div id="tip" class="hidden"></div>
+</div>
+
+<script src="js/core/util.js"></script>
+<script src="js/data/creatures.js"></script>
+<script src="js/data/factions.js"></script>
+<script src="js/data/buildings.js"></script>
+<script src="js/data/skills.js"></script>
+<script src="js/data/spells.js"></script>
+<script src="js/data/artifacts.js"></script>
+<script src="js/data/heroes.js"></script>
+<script src="js/data/objects.js"></script>
+<script src="js/model/rules.js"></script>
+<script src="js/model/pathfind.js"></script>
+<script src="js/model/state.js"></script>
+<script src="js/model/mapgen.js"></script>
+<script src="js/model/battle.js"></script>
+<script src="js/model/battleai.js"></script>
+<script src="js/model/adventure.js"></script>
+<script src="js/model/ai.js"></script>
+<script src="js/view/sprites.js"></script>
+<script src="js/view/sprites_castle.js"></script>
+<script src="js/view/sprites_rampart.js"></script>
+<script src="js/view/sprites_tower.js"></script>
+<script src="js/view/sprites_inferno.js"></script>
+<script src="js/view/sprites_necropolis.js"></script>
+<script src="js/view/sprites_dungeon.js"></script>
+<script src="js/view/sprites_stronghold.js"></script>
+<script src="js/view/sprites_fortress.js"></script>
+<script src="js/view/sprites_objects.js"></script>
+<script src="js/view/sprites_towns.js"></script>
+<script src="js/view/sprites_heroes.js"></script>
+<script src="js/view/sprites_icons.js"></script>
+<script src="js/view/terrain.js"></script>
+<script src="js/view/audio.js"></script>
+<script src="js/view/ui.js"></script>
+<script src="js/view/adventure.js"></script>
+<script src="js/view/battle.js"></script>
+<script src="js/view/town.js"></script>
+<script src="js/view/hero.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
