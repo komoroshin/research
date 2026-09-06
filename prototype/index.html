@@ -23,7 +23,11 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .screen.paper{background:#fff;background-image:none}
 .modal{z-index:5}
 .screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}
-.eyebrow{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--sage600)}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink600)}
+.eyebrow.soft{color:var(--sage600)}
+.act{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);display:inline-flex;align-items:center;min-height:44px;padding:0 2px;cursor:pointer;white-space:nowrap}.act::after{content:'›';margin-left:6px;font-size:18px;line-height:1}.act.dark{color:var(--sage300)}
+.card.tap{position:relative}.card.tap::after{content:'›';position:absolute;right:16px;top:10px;font-size:22px;line-height:1;color:var(--forest)}
+[tabindex="0"]:focus-visible{outline:3px solid var(--sage500);outline-offset:2px}
 .eyebrow.dark{color:var(--sage500)}
 .display{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;line-height:1.04;letter-spacing:-.02em;color:var(--forest);text-wrap:balance}
 .display.dark{color:var(--cream50)}
@@ -46,13 +50,13 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .btn.ghost{background:transparent;color:var(--forest);box-shadow:inset 0 0 0 2px var(--sage500)}
 .btn.cream{background:var(--cream50);color:var(--forest)}
 .btn:focus-visible{outline:3px solid var(--sage500);outline-offset:2px}
-.link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--forest);cursor:pointer}
+.link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--forest);cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center}
 .top{display:flex;justify-content:space-between;align-items:baseline;user-select:none}
 .nav{display:flex;gap:6px;padding-top:14px;border-top:2px solid var(--sage500)}
-.nav div{flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage600);padding:10px 0;text-align:center;border-radius:12px;cursor:pointer}
+.nav div{flex:1;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink600);min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;cursor:pointer}
 .nav div.on{background:var(--sage100);color:var(--forest)}
 .seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--cream100);border-radius:20px;padding:4px}
-.seg div{font-size:13px;font-weight:500;color:var(--ink600);text-align:center;padding:9px 6px;border-radius:16px;cursor:pointer}
+.seg div{font-size:13px;font-weight:500;color:var(--ink600);text-align:center;padding:6px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:16px;cursor:pointer}
 .seg div.on{background:var(--forest);color:var(--cream50);font-weight:700}
 .scale{border-radius:24px;padding:16px 18px 12px;background:var(--cream100);display:flex;flex-direction:column;gap:6px}
 .scale .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
@@ -61,12 +65,13 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .scale input::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50);box-shadow:0 8px 20px rgba(1,71,46,.25);cursor:pointer}
 .scale input::-moz-range-thumb{width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50)}
 .anchors{display:flex;justify-content:space-between}
+.segs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.segs div{min-height:44px;border-radius:14px;background:var(--cream50);box-shadow:inset 0 0 0 2px var(--sage300);display:flex;align-items:center;justify-content:center;font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:18px;color:var(--forest);cursor:pointer}.segs div.on{background:var(--forest);color:var(--cream50);box-shadow:none}
 .stool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .stool div.t{border-radius:18px;background:var(--cream50);box-shadow:inset 0 0 0 2px var(--sage300);padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-height:84px}
 .stool div.t.on{background:var(--forest);box-shadow:none}
 .stool .n{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:16px;color:var(--forest);line-height:1}
 .stool .t.on .n{color:var(--cream50)}
-.stool .l{font-size:10px;line-height:1.2;text-align:center;color:var(--ink600)}
+.stool .l{font-size:11px;line-height:1.2;text-align:center;color:var(--ink600)}
 .stool .t.on .l{color:var(--sage100)}
 .shape{width:44px;height:16px;position:relative;--c:var(--forest)}.t.on .shape{--c:var(--cream50)}
 .s0{height:2px;width:24px;background:var(--sage500);border-radius:2px;margin:7px 0}
@@ -83,9 +88,9 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .dots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
 .dots div{height:10px;border-radius:12px}
 .d-done{background:var(--sage500)}.d-today{background:var(--forest)}.d-ahead{box-shadow:inset 0 0 0 2px var(--sage500)}.d-skip{background:var(--cream100);box-shadow:inset 0 0 0 2px var(--sage500)}
-.toast{position:absolute;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));background:var(--forest);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:0 18px 40px rgba(1,71,46,.2);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
+.toast{position:absolute;left:20px;right:20px;top:calc(46px + env(safe-area-inset-top));background:var(--forest);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:0 18px 40px rgba(1,71,46,.2);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
 .toast.show{opacity:1}
-.chip{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
+.chip{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
 .chip.sage{background:var(--sage100)}
 .pips{display:flex;gap:6px}.pips div{width:8px;height:8px;border-radius:4px;background:var(--sage300)}.pips div.on{width:24px;background:var(--forest)}.pips.dark div{background:var(--sage600)}.pips.dark div.on{background:var(--cream50)}
 .stack{display:flex;flex-direction:column;gap:8px}
@@ -145,7 +150,7 @@ en:{
  tipOfDay:'Tip of the day', allTips:'All tips',
  yesterday:n=>`Yesterday · day ${n}`, edit:'Edit', saveEdit:'Save changes', cancel:'Cancel', updated:n=>`Day ${n} updated`, editTitle:n=>`Day ${n} · editing`, entry:(b,bl,s)=>`belly ${b} · bloating ${bl} · stool ${s}`, stoolNone:'none',
  closeHint:'Three questions, thirty seconds.', closeSaves:'Saves the day. You can fix it tomorrow from Today.',
- dayTitle:d=>`Day card · ${d}`, howToday:'How was today', worst:'At the worst moment today', belly:'Belly', bellySub:'pain or discomfort', bloat:'Bloating', bloatSub:'fullness, tight belly', stool:'Stool', stoolSub:'pick the closest',
+ dayCardTitle:'Day card', howToday:'How was today', worst:'At the worst moment today', belly:'Belly', bellySub:'pain or discomfort', bloat:'Bloating', bloatSub:'fullness, tight belly', stool:'Stool', stoolSub:'pick the closest',
  lvl:['none','mild','mild','mild','got in the way','got in the way','got in the way','strong','strong','strong','worst ever'],
  stoolTypes:['none','hard lumps','lumpy sausage','cracked surface','smooth, soft','soft pieces','mushy','liquid'], stoolKey:'1–2 constipation · 3–5 normal · 6–7 loose',
  alcohol:'Alcohol', illness:'Unwell', flagsHint:'Mark if it happened: such days are counted separately.', blood:'Blood in stool', report:'Report',
@@ -192,7 +197,7 @@ ru:{
  tipOfDay:'Совет дня', allTips:'Все советы',
  yesterday:n=>`Вчера · день ${n}`, edit:'Изменить', saveEdit:'Сохранить', cancel:'Отмена', updated:n=>`День ${n} обновлён`, editTitle:n=>`День ${n} · правка`, entry:(b,bl,s)=>`живот ${b} · вздутие ${bl} · стул ${s}`, stoolNone:'не было',
  closeHint:'Три вопроса, тридцать секунд.', closeSaves:'Сохраняет день. Поправить можно завтра с экрана «Сегодня».',
- dayTitle:d=>`Карта дня · ${d}`, howToday:'Как прошёл день', worst:'В худший момент сегодня', belly:'Живот', bellySub:'боль или дискомфорт', bloat:'Вздутие', bloatSub:'распирает, живот тугой', stool:'Стул', stoolSub:'выберите ближайший',
+ dayCardTitle:'Карта дня', howToday:'Как прошёл день', worst:'В худший момент сегодня', belly:'Живот', bellySub:'боль или дискомфорт', bloat:'Вздутие', bloatSub:'распирает, живот тугой', stool:'Стул', stoolSub:'выберите ближайший',
  lvl:['не было','слабо','слабо','слабо','мешало','мешало','мешало','сильно','сильно','сильно','хуже некуда'],
  stoolTypes:['не было','твёрдые комочки','плотный, комками','с трещинами','гладкий, мягкий','мягкие кусочки','кашицей','жидкий'], stoolKey:'1–2 запор · 3–5 норма · 6–7 жидко',
  alcohol:'Алкоголь', illness:'Болел', flagsHint:'Отметьте, если было: такие дни считаются отдельно.', blood:'Кровь в стуле', report:'Отметить',
@@ -227,7 +232,7 @@ const LANG=(()=>{const q=new URLSearchParams(location.search).get('lang');const 
 const base=()=>({lang:LANG,tab:'today',modal:null,moment:'day0',onboarded:false,health:false,
  q:[0,1,1],scores:{belly:2,bloat:3,stool:4},alcohol:false,illness:false,insightSeen:false,tipOpen:-1,
  day:0, suspOfferedDay:-99, tested:{}, lastGroup:null, intro:0, introDone:false, log:{}, editDay:null, editBackup:null,
- susp:{group:'lactose',a:8,b:10,c:2,d:11}, swapsOpen:false, redPaused:false, rhythm:false, mealFrom:'today',
+ susp:{group:'lactose',a:8,b:10,c:2,d:11}, swapsOpen:false, tipDayOpen:false, redPaused:false, rhythm:false, mealFrom:'today',
  check:null, verdictType:'threshold', meals:[], mealPick:null, toast:''});
 /* scripted diary: which days were rough, and which days had each group */
 const ROUGH=new Set([2,4,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45]);
@@ -276,8 +281,8 @@ const snapshot=()=>({scores:Object.assign({},st.scores),alcohol:st.alcohol,illne
 const sleepNow=()=>st.check?st.check.sleep:430;
 const bgSource=()=>{const t=T();return st.health?t.fromHealth:t.demoData};
 const stoolText=v=>{const t=T();return v>0?`${v}`:t.stoolNone};
-const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)return '';return `<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="editPrev"><div><div class="eyebrow" style="letter-spacing:.12em">${t.yesterday(y)}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.entry(e.scores.belly,e.scores.bloat,stoolText(e.scores.stool))}</div></div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em;flex:none">${t.edit}</div></div>`};
-const bgCard=(compact)=>{const t=T();const s=fmtSleep(sleepNow());return `<div class="card quiet"><div class="row" style="align-items:baseline"><div class="eyebrow">${t.bgTitle}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${bgSource()}</div></div>
+const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)return '';return `<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="editPrev"><div><div class="eyebrow" style="letter-spacing:.12em">${t.yesterday(y)}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.entry(e.scores.belly,e.scores.bloat,stoolText(e.scores.stool))}</div></div><div class="act" style="flex:none">${t.edit}</div></div>`};
+const bgCard=(compact)=>{const t=T();const s=fmtSleep(sleepNow());return `<div class="card quiet"><div class="row" style="align-items:baseline"><div class="eyebrow">${t.bgTitle}</div><div class="eyebrow" style="color:var(--forest)">${bgSource()}</div></div>
  <div class="grid3" style="margin-top:10px"><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${s}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.sleep}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${t.steps}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.stepsL}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">61</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.hr}</div></div></div>
  ${compact?'':`<div class="body soft" style="font-size:12px;margin-top:10px">${t.bgWhy}</div>`}</div>`};
 const mealsFeed=()=>{const t=T();if(!st.meals.length)return `<div class="body soft" style="font-size:13px;padding:2px 4px">${t.mealsEmpty}</div>`;
@@ -287,7 +292,7 @@ const mealsBlock=()=>{const t=T();const recent=[0,2,4];
  <div class="grid2"><div class="phototile" data-act="addMeal"><div class="display dark" style="font-size:22px;position:relative;padding-right:30px">${t.photoTile}</div><div class="body muted" style="font-size:12px;margin-top:4px;position:relative">${t.photoSub}</div></div>
  <div class="quick" data-quick="${recent[st.meals.length%3]}"><div class="eyebrow" style="letter-spacing:.12em">${t.recent}</div><div><div class="body">${t.presets[recent[st.meals.length%3]]}</div><div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">${t.presetGroups[recent[st.meals.length%3]].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div></div></div></div>
  ${mealsFeed()}</div>`};
-const tipCard=()=>{const t=T();const set=t.tipSets[stageKey()];const tip=set[st.day%set.length];return `<div class="card line" data-tab="tips" style="cursor:pointer"><div class="row"><div class="eyebrow">${t.tipOfDay}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.allTips}</div></div><div class="body" style="font-weight:700;font-size:14px;margin-top:8px">${tip[0]}</div><div class="body soft" style="font-size:13px;margin-top:4px">${tip[1]}</div></div>`};
+const tipCard=()=>{const t=T();const set=t.tipSets[stageKey()];const tip=set[st.day%set.length];return `<div class="card line" data-act="tipToggle" style="cursor:pointer;padding:4px 20px 14px"><div class="row"><div class="eyebrow">${t.tipOfDay}</div><div class="act" data-tab="tips">${t.allTips}</div></div><div class="body" style="font-weight:700;font-size:14px;margin-top:2px">${tip[0]}</div>${st.tipDayOpen?`<div class="body soft" style="font-size:13px;margin-top:4px">${tip[1]}</div>`:''}</div>`};
 const pauseBanner=()=>{const t=T();if(!st.redPaused)return '';return `<div class="card accent"><div class="body" style="font-weight:700">${t.pauseBanner}</div><div class="body" style="font-size:13px;margin-top:4px">${t.pauseBody}</div><div class="grid2" style="margin-top:12px"><button class="btn cream" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="doctor">${t.doctorPage}</button><button class="btn primary" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="resumeDoctor">${t.resumeDoctor}</button></div></div>`};
 const rhythmCard=()=>{const t=T();if(!st.rhythm)return '';const n=streak();const done=!!st.log[st.day];return `<div class="card quiet row" style="padding:12px 16px"><div><div class="eyebrow" style="letter-spacing:.12em">${t.rhythm.title} · ${t.rhythm.freeze}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:4px">${t.rhythm.streak(n)}</div><div class="body soft" style="font-size:12px;margin-top:2px">${done?t.rhythm.goalDone:t.rhythm.goal} · ${t.rhythm.remind}</div></div><div class="numeral" style="font-size:34px">${n}</div></div>`};
 
@@ -324,41 +329,41 @@ function onboarding(){const t=T();
 function heroObs(){const t=T();const d=st.day;const h=t.hero;
  if(d===0) return `<div class="card dark"><div class="eyebrow dark">${t.today} · ${t.dayN(0)}</div><div class="display dark" style="font-size:24px;margin-top:10px">${h.day0}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${h.day0body}</div></div>`;
  if(d>=7&&!st.insightSeen) return `<div class="card dark"><div class="eyebrow dark">${h.insightEye}</div><div class="display dark" style="font-size:22px;margin-top:10px">${h.insightTitle}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark">${h.insightBody}</div><div class="body muted" style="font-size:14px;margin-top:12px">${h.insightCaveat}</div><button class="btn cream" style="margin-top:16px" data-act="insightOk">${t.ok}</button></div>`;
- return `<div class="card dark"><div class="eyebrow dark">${t.stage.obs}</div><div class="display dark" style="font-size:24px;margin-top:10px">${h.obs}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${h.obsBody}</div></div>`}
+ return `<div class="card dark" style="padding:14px 20px"><div class="eyebrow dark">${t.stage.obs}</div><div class="display dark" style="font-size:20px;margin-top:6px">${h.obs}</div><div class="body dark" style="font-size:13px;margin-top:6px">${h.obsBody}</div></div>`}
 function heroCheck(){const t=T();const c=st.check;const f=t.food[c.group];const d=c.day;
  if(c.paused) return `<div class="card quiet"><div class="eyebrow">${t.paused}</div><div class="display" style="font-size:22px;margin-top:10px">${t.noEntries}</div><div class="rule" style="margin:14px 0"></div><div class="body">${t.pausedBody}</div></div>`;
- if(c.discard) return `<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.discarded}</div><div class="display" style="font-size:22px;margin-top:10px">${t.lastNight(fmtSleep(c.sleep))}</div><div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.discardBody(f)}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:10px">${t.moved}</div>
+ if(c.discard) return `<div class="card accent"><div class="eyebrow" style="color:var(--forest)">${t.discarded}</div><div class="display" style="font-size:22px;margin-top:10px">${t.lastNight(fmtSleep(c.sleep))}</div><div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.discardBody(f)}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:10px">${t.moved}</div>
    <div class="grid2" style="margin-top:14px"><div class="card quiet" style="padding:12px 14px"><div class="eyebrow" style="letter-spacing:.12em">${t.sleep}</div><div class="numeral" style="font-size:30px;margin-top:6px">4:40</div><div class="body soft" style="font-size:11px;margin-top:4px">${bgSource()}</div></div><div class="card quiet" style="padding:12px 14px"><div class="eyebrow" style="letter-spacing:.12em">${t.threshold}</div><div class="numeral" style="font-size:30px;margin-top:6px">6:00</div><div class="body soft" style="font-size:11px;margin-top:4px">${t.rule}</div></div></div></div>`;
- if(d<=5){const list=t.swaps[c.group];const shown=st.swapsOpen?list:list.slice(0,3);return `<div class="card dark"><div class="eyebrow dark">${t.stage.check(f)} · ${t.dayN(d)}</div><div class="display dark" style="font-size:24px;margin-top:10px">${t.restrictionTask(f)}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:13px">${t.swapsLead}</div><div class="stack" style="margin-top:10px;gap:6px">${shown.map(s=>`<div class="card lift" style="padding:11px 16px"><div class="body dark" style="font-size:14px">${s}</div></div>`).join('')}</div><div class="link" style="color:var(--sage300);padding:10px 0 0" data-act="swaps">${st.swapsOpen?t.lessSwaps:t.moreSwaps}</div></div>`}
+ if(d<=5){const list=t.swaps[c.group];const shown=st.swapsOpen?list:list.slice(0,3);return `<div class="card dark"><div class="eyebrow dark">${t.stage.check(f)} · ${t.dayN(d)}</div><div class="display dark" style="font-size:24px;margin-top:10px">${t.restrictionTask(f)}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:13px">${t.swapsLead}</div><div class="stack" style="margin-top:10px;gap:6px">${shown.map(s=>`<div class="card lift" style="padding:11px 16px"><div class="body dark" style="font-size:14px">${s}</div></div>`).join('')}</div><div class="link" style="color:var(--sage300);padding:6px 0 0;min-height:44px" data-act="swaps">${st.swapsOpen?t.lessSwaps:t.moreSwaps}</div></div>`}
  const step=d-5;return `<div class="card dark"><div class="eyebrow dark">${t.stage.check(f)} · ${t.dayN(d)}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.returnTask(step,t.doses[step-1])}</div><div class="rule dark" style="margin:14px 0"></div><div class="numeral dark" style="font-size:48px">${['¼','½','1'][step-1]}<small> ${t.doses[step-1]}</small></div></div>`}
 function progressRow(){const t=T();const d=st.day;const p=t.progress;
  if(st.check){const c=st.check;const pat=[...Array(8)].map((_,i)=>i+1<c.day?'d':i+1===c.day?(c.discard?'s':'t'):'a').join('');const ph=c.day<=5?t.phaseR(t.food[c.group]):t.phaseB;
-  return `<div class="card quiet" style="padding:14px 18px;cursor:pointer" data-act="plan">${dots(pat)}<div class="row" style="margin-top:10px"><div class="body" style="font-size:13px;font-weight:700">${p.checkDay(c.day,ph)}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.planBtn}</div></div></div>`}
+  return `<div class="card quiet" style="padding:14px 18px 4px;cursor:pointer" data-act="plan">${dots(pat)}<div class="row" style="margin-top:6px"><div class="body" style="font-size:13px;font-weight:700">${p.checkDay(c.day,ph)}</div><div class="act">${t.planBtn}</div></div></div>`}
  if(d===0) return '';
  const s=stats(d);const line=d<7?p.insightIn(7-d):s.ready?p.enough:p.suspectIn(s.left);const pct=Math.min(100,Math.round(100*d/21));
- return `<div class="card quiet" style="padding:14px 18px;cursor:pointer" data-tab="path"><div class="row"><div class="body" style="font-size:13px;font-weight:700">${p.collected(d)}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${p.open}</div></div><div class="bar" style="margin:10px 0 8px"><i style="width:${pct}%"></i></div><div class="body soft" style="font-size:13px">${line}</div></div>`}
+ return `<div class="card quiet" style="padding:4px 18px 14px;cursor:pointer" data-tab="path"><div class="row"><div class="body" style="font-size:13px;font-weight:700">${p.collected(d)}</div><div class="act">${p.open}</div></div><div class="bar" style="margin:2px 0 8px"><i style="width:${pct}%"></i></div><div class="body soft" style="font-size:13px">${line}</div></div>`}
 function today(){const t=T();const c=st.check;
  const hero=c?heroCheck():heroObs();
  const btn=c&&c.paused?`<button class="btn primary" data-act="resume">${t.resume}</button>`:c&&c.discard?`<button class="btn primary" data-act="discardOk">${t.ok}</button>`:`${hint(t.closeHint,'text-align:center')}<button class="btn primary" data-act="openDay">${t.closeDay}</button>`;
  return `<div class="screen pinned">${topRow(`${t.today} · ${t.dayN(st.day)}`,stageLabel())}<div class="feed">${pauseBanner()}${rhythmCard()}${hero}${progressRow()}${mealsBlock()}${bgCard(true)}${tipCard()}${yesterdayRow()}</div>${btn}${nav('today')}</div>`}
 
-const scale=(key,label,sub,v)=>{const t=T();return `<div class="scale"><div class="head"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${sub}</div></div><div class="val"><div class="numeral" style="font-size:40px" data-num="${key}">${v}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)" data-lvl="${key}">${t.lvl[v]}</div></div></div><input type="range" min="0" max="10" step="1" value="${v}" data-slider="${key}"><div class="anchors"><div class="eyebrow" style="letter-spacing:.12em">0 · ${t.lvl[0]}</div><div class="eyebrow" style="letter-spacing:.12em">10 · ${t.lvl[10]}</div></div></div>`};
+const scale=(key,label,sub,v)=>{const t=T();return `<div class="scale"><div class="head"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${sub}</div></div><div class="val"><div class="numeral" style="font-size:40px">${v}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.lvl[v]}</div></div></div><div class="segs" style="margin-top:6px">${[0,1,2,3,4,5,6,7,8,9,10].map(i=>`<div class="${v===i?'on':''}" data-segscale="${key}:${i}">${i}</div>`).join('')}</div><div class="anchors" style="margin-top:4px"><div class="eyebrow soft" style="letter-spacing:.12em">0 · ${t.lvl[0]}</div><div class="eyebrow soft" style="letter-spacing:.12em">10 · ${t.lvl[10]}</div></div></div>`};
 const stoolPicker=v=>{const t=T();return `<div class="stack" style="gap:6px"><div class="row" style="align-items:baseline"><div><div class="eyebrow">${t.stool}</div><div class="body soft" style="font-size:12px;margin-top:2px">${t.stoolSub}</div></div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${v>0?`${v} · ${t.stoolTypes[v]}`:t.stoolTypes[0]}</div></div>
  <div class="stool">${[0,1,2,3,4,5,6,7].map(i=>`<div class="t${v===i?' on':''}" data-stool="${i}"><div class="n">${i===0?'—':i}</div><div class="shape s${i}"></div><div class="l">${t.stoolTypes[i]}</div></div>`).join('')}</div>
  <div class="body soft" style="font-size:11px;text-align:center">${t.stoolKey}</div></div>`};
 function dayCard(){const t=T();const s=st.scores;const ed=st.editDay!==null;
- return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayTitle(t.dates.card),t.dayN(ed?st.editDay:st.day))}<div class="feed"><div><div class="display" style="font-size:26px">${t.howToday}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.worst}</div></div>
+ return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayCardTitle,t.dayN(ed?st.editDay:st.day))}<div class="feed"><div class="row" style="align-items:flex-start"><div><div class="display" style="font-size:26px">${t.howToday}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.worst}</div></div><div class="act" data-act="${ed?'cancelEdit':'closeCard'}" style="margin-top:-8px">${t.back}</div></div>
   ${scale('belly',t.belly,t.bellySub,s.belly)}${scale('bloat',t.bloat,t.bloatSub,s.bloat)}${stoolPicker(s.stool)}
   ${bgCard(true)}
   ${hint(t.flagsHint)}
-  <div class="grid2"><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.alcohol}</div>${sw('alcohol',st.alcohol)}</div><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.illness}</div>${sw('illness',st.illness)}</div></div>
-  <div class="row" style="border-radius:24px;padding:12px 16px;box-shadow:inset 0 0 0 2px var(--sage500);cursor:pointer" data-act="blood"><div class="body soft" style="font-size:14px">${t.blood}</div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em">${t.report}</div></div>
-  <div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="addMealCard"><div class="body" style="font-size:14px">${t.mealsInCard(st.meals.length)}</div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em">${t.addMeal}</div></div></div>
+  <div class="grid2"><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="alcohol"><div class="body" style="font-size:14px">${t.alcohol}</div><div class="switch${st.alcohol?' on':''}"><i></i></div></div><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="illness"><div class="body" style="font-size:14px">${t.illness}</div><div class="switch${st.illness?' on':''}"><i></i></div></div></div>
+  <div class="row" style="border-radius:24px;padding:4px 16px;min-height:52px;box-shadow:inset 0 0 0 2px var(--sage500);cursor:pointer" data-act="blood"><div class="body soft" style="font-size:14px">${t.blood}</div><div class="act">${t.report}</div></div>
+  <div class="card quiet row" style="padding:4px 16px;min-height:52px;cursor:pointer" data-act="addMealCard"><div class="body" style="font-size:14px">${t.mealsInCard(st.meals.length)}</div><div class="act">${t.addMeal}</div></div></div>
   <div class="stack">${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>${hint(t.closeSaves,'text-align:center')}`}</div></div>`}
 
 function addMeal(){const t=T();const p=st.mealPick;
  const tile=(k,l,dark)=>`<div class="card${dark?' dark':''}" style="height:92px;display:flex;align-items:flex-end;cursor:pointer" data-meal="${k}"><div class="display${dark?' dark':''}" style="font-size:18px">${l}</div></div>`;
- const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.recognized} · ${t.times[st.meals.length%5]}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
+ const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--forest)">${t.recognized} · ${t.times[st.meals.length%5]}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
   `<div class="stack"><div class="eyebrow">${t.recent}</div>${t.presets.map((n,i)=>`<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-pick="${i}"><div class="body" style="font-size:14px">${n}</div><div style="display:flex;gap:4px">${t.presetGroups[i].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div></div>`).join('')}</div>`;
  return `<div class="screen modal pinned">${topRow(t.addMealFull,t.dayN(st.day))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${hint(t.mealHow)}<div class="grid3">${tile('photo',t.photo,true)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${hint(p===null?t.mealProto:t.mealConfirm)}${rec}</div>
   <div class="stack"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.save}</button><button class="btn ghost" data-act="mealFix">${p===null?t.back:t.fix}</button></div></div>`}
@@ -385,7 +390,7 @@ function pathScreen(){const t=T();const d=st.day;const s=stats(d);const n=t.node
  const suspDone=nT>0||!!c||st.suspOfferedDay>0;
  const obsBody=`<div class="bar" style="margin-bottom:8px"><i style="width:${Math.min(100,Math.round(100*d/21))}%"></i></div><div class="grid3">${[['full',t.fullDays,20],['rough',t.rough,10],['good',t.good,10]].map(([k,l,m])=>`<div><div class="numeral" style="font-size:22px">${s[k]}<small> / ${m}</small></div><div class="eyebrow" style="margin-top:4px;letter-spacing:.12em">${l}</div></div>`).join('')}</div>${s.ready?'':`<div class="body soft" style="font-size:12px;margin-top:8px">${t.needLine(s.rough,s.good)}</div>`}`;
  const checkNode=(g,i)=>{const r=st.tested[g];const active=c&&c.group===g;
-  if(active){const pat=[...Array(8)].map((_,k)=>k+1<c.day?'d':k+1===c.day?(c.discard?'s':'t'):'a').join('');const stt=c.paused?t.checkStatus.paused:c.discard?t.checkStatus.discard:t.checkStatus.run;return node('cur',`${n.check(i)} · ${t.food[g]}`,t.daysRange(c.startDay,c.startDay+7),`<div data-act="plan" style="cursor:pointer">${dots(pat)}<div class="body soft" style="font-size:12px;margin-top:8px">${t.progress.checkDay(c.day,stt)} · ${t.planBtn}</div></div>`)}
+  if(active){const pat=[...Array(8)].map((_,k)=>k+1<c.day?'d':k+1===c.day?(c.discard?'s':'t'):'a').join('');const stt=c.paused?t.checkStatus.paused:c.discard?t.checkStatus.discard:t.checkStatus.run;return node('cur',`${n.check(i)} · ${t.food[g]}`,t.daysRange(c.startDay,c.startDay+7),`<div data-act="plan" style="cursor:pointer">${dots(pat)}<div class="row" style="margin-top:4px"><div class="body soft" style="font-size:12px">${t.progress.checkDay(c.day,stt)}</div><div class="act">${t.planBtn}</div></div></div>`)}
   if(r) return node('done',`${n.check(i)} · ${t.food[g]}`,t.checkStatus.done,`<div class="body soft" style="font-size:13px">${r==='threshold'?t.lactoseRes:t.testedFine}</div>`);
   return node('ahead',i===1?`${n.check(1)}`:n.next,i===1?(s.ready?t.whenReady:t.whenReady):t.afterAnswer,'')};
  const nodes=[
@@ -438,6 +443,7 @@ function render(){let html='';
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
  html+=`<div class="toast${st.toast?' show':''}">${st.toast}</div>`;
  document.getElementById('phone').innerHTML=html;
+ document.querySelectorAll('#phone '+SEL.split(',').join(',#phone ')).forEach(el=>{if(el.tagName==='BUTTON'||el.tagName==='INPUT')return;if(el.dataset.taptop!==undefined&&!el.dataset.act)return;el.setAttribute('role','button');el.setAttribute('tabindex','0')});
  document.documentElement.lang=st.lang;
 }
 
@@ -445,7 +451,8 @@ function render(){let html='';
 let taps=[];
 const restore=()=>{const b=st.editBackup;if(b){st.scores=b.scores;st.alcohol=b.alcohol;st.illness=b.illness;st.meals=b.meals}st.editDay=null;st.editBackup=null};
 const addMealNow=(pick)=>{const t=T();st.meals.push({pick,time:t.times[st.meals.length%5]});toast(t.mealSaved)};
-document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-moment],[data-lang],[data-taptop]');if(!el)return;const t=T();
+const SEL='[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-segscale],[data-moment],[data-lang],[data-taptop]';
+document.addEventListener('click',e=>{const el=e.target.closest(SEL);if(!el)return;const t=T();
  if(el.dataset.taptop!==undefined&&!el.dataset.act){const now=Date.now();taps=taps.filter(x=>now-x<2500);taps.push(now);if(taps.length>=5){taps=[];st.modal='switcher';render()}return}
  if(el.dataset.moment){setMoment(el.dataset.moment);return}
  if(el.dataset.lang){st.lang=el.dataset.lang;ls.set('ths-lang',st.lang);render();return}
@@ -454,6 +461,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
  if(el.dataset.switch){st[el.dataset.switch]=!st[el.dataset.switch];render();return}
  if(el.dataset.tip!==undefined){st.tipOpen=st.tipOpen===+el.dataset.tip?-1:+el.dataset.tip;render();return}
  if(el.dataset.stool!==undefined){st.scores.stool=+el.dataset.stool;render();return}
+ if(el.dataset.segscale){const [k,v]=el.dataset.segscale.split(':');st.scores[k]=+v;render();return}
  if(el.dataset.quick!==undefined){addMealNow(+el.dataset.quick);return}
  if(el.dataset.meal){st.mealPick=null;render();return}
  if(el.dataset.pick!==undefined){st.mealPick=+el.dataset.pick;render();return}
@@ -464,6 +472,8 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
   case 'introDone': st.introDone=true;st.intro=0;break;
   case 'start': st.onboarded=true;st.moment='day0';break;
   case 'openDay': st.modal='dayCard';break;
+  case 'closeCard': st.modal=null;break;
+  case 'tipToggle': st.tipDayOpen=!st.tipDayOpen;break;
   case 'editPrev': {const e=st.log[st.day-1];if(!e)break;st.editDay=st.day-1;st.editBackup=snapshot();st.scores=Object.assign({},e.scores);st.alcohol=e.alcohol;st.illness=e.illness;st.meals=e.meals.slice();st.modal='dayCard';break}
   case 'saveEdit': {st.log[st.editDay]=snapshot();const d=st.editDay;restore();toast(t.updated(d));st.modal=null;break}
   case 'cancelEdit': restore();st.modal=null;break;
@@ -506,7 +516,8 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
 let sx=null,sy=null;
 document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-intro]'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
 document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx))return;const t=T();if(dx<0)st.intro=Math.min(st.intro+1,t.intro.length-1);else st.intro=Math.max(st.intro-1,0);render()},{passive:true});
-document.addEventListener('keydown',e=>{if(st.introDone||st.onboarded)return;const t=T();if(e.key==='ArrowRight')st.intro=Math.min(st.intro+1,t.intro.length-1);else if(e.key==='ArrowLeft')st.intro=Math.max(st.intro-1,0);else return;render()});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest&&e.target.closest(SEL)&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();e.target.click();return}
+ if(st.introDone||st.onboarded)return;const t=T();if(e.key==='ArrowRight')st.intro=Math.min(st.intro+1,t.intro.length-1);else if(e.key==='ArrowLeft')st.intro=Math.max(st.intro-1,0);else return;render()});
 document.addEventListener('input',e=>{const k=e.target.dataset.slider;if(k){const v=+e.target.value;st.scores[k]=v;const sc=e.target.closest('.scale');sc.querySelector('[data-num]').textContent=v;sc.querySelector('[data-lvl]').textContent=T().lvl[v]}});
 st=base();render();
 </script>
