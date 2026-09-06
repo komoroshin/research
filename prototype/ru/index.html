@@ -14,16 +14,16 @@
 :root{--cream50:#FEFAE0;--cream100:#F3F1DC;--sage100:#E9EDC9;--sage300:#CCD5AE;--sage500:#A3B18A;--sage600:#7E9276;--ink700:#2A4A3A;--ink600:#4E6B57;--forest:#01472E;--forest800:#0A5637;
 --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
 *{box-sizing:border-box;touch-action:manipulation}
-[data-act],[data-tab],[data-seg],[data-switch],[data-ask],[data-meal],[data-pick],[data-moment],[data-lang],[data-taptop]{cursor:pointer}
+[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-moment],[data-lang],[data-taptop]{cursor:pointer}
 html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink700);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-#stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px}
+#stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
 #phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--cream50);background-image:var(--noise);box-shadow:0 30px 60px rgba(1,71,46,.2)}
-@media (max-width:760px){body{background:var(--cream50)}#stage{padding:0}#phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}#dev{display:none}}
+@media (max-width:760px){body{background:var(--cream50)}#stage{padding:0}#phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;gap:16px;padding:calc(54px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));overflow-y:auto;background:var(--cream50);background-image:var(--noise)}
 .screen.dark{background-color:var(--forest)}
 .screen.paper{background:#fff;background-image:none}
 .modal{z-index:5}
-.screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;margin:0 -20px;padding:0 20px 8px}
+.screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}
 .eyebrow{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--sage600)}
 .eyebrow.dark{color:var(--sage500)}
 .display{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;line-height:1.04;letter-spacing:-.02em;color:var(--forest);text-wrap:balance}
@@ -39,6 +39,7 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .card.dark{background:var(--forest);box-shadow:0 18px 40px rgba(1,71,46,.2)}
 .card.lift{background:var(--forest800)}
 .card.accent{background:var(--sage300);box-shadow:0 18px 40px rgba(1,71,46,.2)}
+.card.line{background:transparent;box-shadow:inset 0 0 0 2px var(--sage300)}
 .rule{height:2px;width:64px;background:var(--sage500)}.rule.dark{background:var(--sage300)}
 .btn{border:0;border-radius:20px;padding:15px 22px;min-height:52px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.06em;width:100%;cursor:pointer;transition:background 200ms cubic-bezier(.4,0,.2,1)}
 .btn.primary{background:var(--forest);color:var(--cream50)}.btn.primary:hover{background:var(--forest800)}
@@ -48,16 +49,35 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .btn:focus-visible{outline:3px solid var(--sage500);outline-offset:2px}
 .link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--forest);cursor:pointer}
 .top{display:flex;justify-content:space-between;align-items:baseline;user-select:none}
-.nav{display:flex;gap:6px;margin-top:auto;padding-top:14px;border-top:2px solid var(--sage500)}
+.nav{display:flex;gap:6px;padding-top:14px;border-top:2px solid var(--sage500)}
 .nav div{flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage600);padding:10px 0;text-align:center;border-radius:12px;cursor:pointer}
 .nav div.on{background:var(--sage100);color:var(--forest)}
 .seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--cream100);border-radius:20px;padding:4px}
 .seg div{font-size:13px;font-weight:500;color:var(--ink600);text-align:center;padding:9px 6px;border-radius:16px;cursor:pointer}
 .seg div.on{background:var(--forest);color:var(--cream50);font-weight:700}
-.slider{display:flex;flex-direction:column;gap:10px}
-.slider input{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:6px;background:var(--cream100);outline:none;margin:10px 0}
-.slider input::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:14px;background:var(--forest);box-shadow:0 18px 40px rgba(1,71,46,.2);cursor:pointer}
+.scale{border-radius:24px;padding:16px 18px 12px;background:var(--cream100);display:flex;flex-direction:column;gap:6px}
+.scale .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.scale .val{display:flex;align-items:baseline;gap:8px;justify-content:flex-end;min-width:110px}
+.scale input{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:6px;background:linear-gradient(90deg,var(--sage300),var(--sage500));outline:none;margin:8px 0 2px}
+.scale input::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50);box-shadow:0 8px 20px rgba(1,71,46,.25);cursor:pointer}
+.scale input::-moz-range-thumb{width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50)}
 .anchors{display:flex;justify-content:space-between}
+.stool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.stool div.t{border-radius:18px;background:var(--cream50);box-shadow:inset 0 0 0 2px var(--sage300);padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-height:84px}
+.stool div.t.on{background:var(--forest);box-shadow:none}
+.stool .n{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:16px;color:var(--forest);line-height:1}
+.stool .t.on .n{color:var(--cream50)}
+.stool .l{font-size:10px;line-height:1.2;text-align:center;color:var(--ink600)}
+.stool .t.on .l{color:var(--sage100)}
+.shape{width:44px;height:16px;position:relative;--c:var(--forest)}.t.on .shape{--c:var(--cream50)}
+.s0{height:2px;width:24px;background:var(--sage500);border-radius:2px;margin:7px 0}
+.s1{background:radial-gradient(circle 4px,var(--c) 96%,transparent 100%) 0 0/14px 16px repeat-x}
+.s2{border-radius:8px;background:var(--c);mask:radial-gradient(circle 3px at 8px 5px,transparent 95%,#000 100%),radial-gradient(circle 3px at 24px 11px,transparent 95%,#000 100%),radial-gradient(circle 3px at 36px 5px,transparent 95%,#000 100%);-webkit-mask:radial-gradient(circle 3px at 8px 5px,transparent 95%,#000 100%),radial-gradient(circle 3px at 24px 11px,transparent 95%,#000 100%),radial-gradient(circle 3px at 36px 5px,transparent 95%,#000 100%);mask-composite:intersect;-webkit-mask-composite:source-in}
+.s3{border-radius:8px;background:repeating-linear-gradient(90deg,var(--c) 0 9px,transparent 9px 11px)}
+.s4{border-radius:8px;background:var(--c)}
+.s5{background:radial-gradient(ellipse 7px 6px,var(--c) 96%,transparent 100%) 0 0/15px 16px repeat-x}
+.s6{border-radius:60% 40% 55% 45%/50% 65% 35% 50%;background:var(--c);opacity:.85}
+.s7{background:linear-gradient(var(--c),var(--c)) 0 3px/44px 3px no-repeat,linear-gradient(var(--c),var(--c)) 6px 10px/30px 3px no-repeat}
 .switch{width:51px;height:31px;border-radius:16px;background:var(--sage500);position:relative;flex:none;cursor:pointer;transition:background 200ms}
 .switch i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:14px;background:var(--cream50);transition:left 200ms}
 .switch.on{background:var(--forest)}.switch.on i{left:22px}
@@ -67,6 +87,7 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .toast{position:absolute;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));background:var(--forest);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:0 18px 40px rgba(1,71,46,.2);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
 .toast.show{opacity:1}
 .chip{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
+.chip.sage{background:var(--sage100)}
 .pips{display:flex;gap:6px}.pips div{width:8px;height:8px;border-radius:4px;background:var(--sage300)}.pips div.on{width:24px;background:var(--forest)}.pips.dark div{background:var(--sage600)}.pips.dark div.on{background:var(--cream50)}
 .stack{display:flex;flex-direction:column;gap:8px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -74,6 +95,27 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .list .m{padding:12px 16px;border-radius:24px;background:var(--cream100);font-size:14px;cursor:pointer}
 .list .m.on{background:var(--sage100);font-weight:700}
+.bar{height:8px;border-radius:6px;background:var(--cream100);overflow:hidden}.bar i{display:block;height:100%;background:var(--forest);border-radius:6px}
+.bar.dark{background:var(--forest800)}.bar.dark i{background:var(--sage300)}
+.phototile{border-radius:24px;background:var(--forest);color:var(--cream50);padding:16px 18px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 18px 40px rgba(1,71,46,.2);cursor:pointer;position:relative;overflow:hidden}
+.phototile:before{content:'';position:absolute;right:-26px;top:-36px;width:104px;height:104px;border-radius:50%;background:var(--forest800)}
+.phototile:after{content:'';position:absolute;right:16px;top:14px;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--sage300)}
+.quick{border-radius:20px;background:var(--sage100);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:118px}
+.quick .body{font-size:13px;font-weight:700}
+.mealrow{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sage100)}
+.mealrow:last-child{border-bottom:0}
+.mealrow .time{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:16px;color:var(--forest);width:44px;flex:none}
+.node{display:grid;grid-template-columns:28px 1fr;gap:12px}
+.node .pin{display:flex;flex-direction:column;align-items:center}
+.node .pin i{width:16px;height:16px;border-radius:8px;box-shadow:inset 0 0 0 2px var(--sage500);background:var(--cream50);flex:none;margin-top:4px}
+.node.done .pin i{background:var(--sage500);box-shadow:none}
+.node.cur .pin i{background:var(--forest);box-shadow:0 0 0 4px var(--sage100)}
+.node .pin b{flex:1;width:2px;background:var(--sage300);margin:4px 0;min-height:18px}
+.node:last-child .pin b{display:none}
+.node .box{border-radius:20px;padding:12px 14px;background:var(--cream100);margin-bottom:6px}
+.node.cur .box{background:var(--sage100)}
+.node.ahead .box{background:transparent;box-shadow:inset 0 0 0 2px var(--cream100)}
+.node.ahead .box .body,.node.ahead .box .eyebrow{color:var(--sage500)}
 </style>
 </head>
 <body>
@@ -84,132 +126,171 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 /* ---------- strings ---------- */
 const S = {
 en:{
- demoData:'demo data', today:'Today', map:'Map', ask:'Ask', ok:'Got it', closeDay:'Close the day',
+ demoData:'demo data', fromHealth:'from Apple Health', today:'Today', path:'Path', tips:'Tips', ok:'Got it', closeDay:'Close the day', back:'Back',
  g:{fructans:'fructans',gos:'GOS',lactose:'lactose',fructose:'fructose',sorbitol:'sorbitol',mannitol:'mannitol'},
  food:{lactose:'dairy',fructans:'wheat and onion'},
  intro:[
-  {eye:'The problem',title:'Something is off with your gut — and nobody can say what',body:'People live with this for years. They cut foods on a guess, feel better, and then are afraid to bring anything back. Half the plate is off-limits, and there is still no answer.'},
-  {eye:'Our approach',title:'Not cutting everything — finding what is yours',body:'We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine.'},
-  {eye:'How it works',title:'Three steps',steps:[['Three weeks of watching','Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat.'],['A suspect from your data','With an honest note: some patterns are coincidences. You decide whether to test.'],['Eight days — and an answer','Five days without one group, then bringing it back in three doses. One line with a dose goes into your map.']]},
-  {eye:'Before we start',title:'Live as usual',body:'Change nothing in your food. Do not skip the evening — it takes thirty seconds. A missed day is a pause, not a failure. We observe, we do not diagnose: treatment decisions stay with your doctor.'}],
+  {eye:'The problem',title:'Something is off with your gut — and nobody can say what',body:'People live with this for years. They cut foods on a guess, feel better, and then are afraid to bring anything back. Half the plate is off-limits, and there is still no answer.'},
+  {eye:'Our approach',title:'Not cutting everything — finding what is yours',body:'We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine.'},
+  {eye:'How it works',title:'Three steps',steps:[['Three weeks of watching','Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat.'],['A suspect from your data','With an honest note: some patterns are coincidences. You decide whether to test.'],['Eight days — and an answer','Five days without one group, then bringing it back in three doses. One line with a dose goes into your map.']]},
+  {eye:'Before we start',title:'Live as usual',body:'Change nothing in your food. Do not skip the evening — it takes thirty seconds. A missed day is a pause, not a failure. We observe, we do not diagnose: treatment decisions stay with your doctor.'}],
  next:'Next', skip:'Skip', begin:"Let's begin", healthWhy:'Sleep, steps and resting heart rate from Apple Health, so a short night is not mistaken for a food reaction. Optional: without it we ask about sleep in the evening.',
- hint:{onb:'Pick one in each row. You can change it later.', today0:'Nothing to do until the evening. Then tap «Close the day» and answer three questions.', today:'Eat as usual. In the evening, tap «Close the day» — thirty seconds.', todayCheck:'Close the day in the evening as usual. Meals are what make the test count.', scale:'Rate today from 0 (calm) to 5 (strong). Roughly is fine.', belly:'bloating, pain, discomfort', stool:'anything unusual today', heavy:'heaviness or fullness after meals', bg:'Background for the day — pulled in automatically', flags:'Mark if it happened: such days are counted separately.', meals:'What you ate today. Optional, but without meals the day counts for wellbeing only, not for finding a suspect.', close:'Saves the day. You can fix it tomorrow from the Today screen.', mealHow:'Photo, voice or text — whichever is easier. We recognise the food group and remember it.', mealProto:'In this prototype, pick a dish from the list.', mealConfirm:'Check the recognised dish and the group, then confirm.'},
- yesterday:n=>`Yesterday · day ${n}`, edit:'Edit', saveEdit:'Save changes', cancel:'Cancel', updated:n=>`Day ${n} updated`, editTitle:n=>`Day ${n} · editing`, entry:(b,s,h)=>`belly ${b} · bowel ${s} · heaviness ${h}`,
- onbTitle:"For the first days we don't restrict anything — we watch",
+ onbTitle:"For the first days we don't restrict anything — we watch", onbHint:'Pick one in each row. You can change it later.',
  q1:'What bothers you', q1a:['bloating','pain','bowel habits'], q2:'How often', q2a:['less than weekly','a few times a week','almost daily'], q3:"What you've tried", q3a:['nothing yet','cut foods on my own','with a dietitian'],
  health:'Allow Health', healthOn:'Health connected', start:'Start', disclaimer:'Observations, not a diagnosis. Treatment decisions stay with your doctor.',
- day0:'Tonight — your first day card', day0body:'Live as usual. In the evening, three questions and thirty seconds.', closed:n=>`Day saved. First insight in ${n} days.`, obsFrom:d=>`Observation from ${d}`,
- dayTitle:d=>`Day card · ${d}`, howToday:'How was today', belly:'Belly', stool:'Bowel', heavy:'Heaviness', calm:'calm', strong:'strong',
- bg:(s,st,hr,src)=>`Sleep ${s} · ${st} steps · resting HR ${hr} · ${src}`, alcohol:'Alcohol', illness:'Unwell', blood:'Blood in stool', report:'Report', addMeal:'Add a meal', daySaved:'Day saved',
- mealTitle:'What did you eat', photo:'Photo', voice:'Voice', type:'Type', recognized:'Recognized', isProbe:"This is today's test dose — counted.", correct:'Correct', fix:'Fix', mealSaved:'Saved', presets:['Oatmeal with milk','Caesar salad','Garlic pasta','Apple','Chicken and rice'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
- insightEye:'One week in', insightTitle:'The first thing we see', insightBody:'In four of your five rough days, the night was shorter than six hours.', insightCaveat:"For now this is an observation, not a conclusion — there isn't much data yet. Too early to talk about food, and we won't guess.",
- confLabel:'of the data we need', daysLeft:n=>`About ${n} more days before we can name a suspect`, nextInsight:n=>`First insight in ${n} ${n===1?'day':'days'}`, needLine:(r,g)=>`We need 10 rough and 10 good days with meals — so far ${r} and ${g}. The estimate depends on how your days go.`, fullDays:'full days', rough:'rough', good:'good', observing:'Observing',
- askQ:['What should I order at a café?','Is yogurt okay?','What can replace milk?'], askA:["While we're observing there are no restrictions — order as usual and snap a photo if it's convenient.","Right now everything's on the table. If yogurt ever comes under suspicion, we'll suggest testing it — not banning it.","You'll only need swaps during a test, and we'll pick them from foods you already eat."], askNote:'Limited to the protocol and your own data. Not a source of medical advice.',
- suspEye:'A suspect', suspTitle:f=>`${cap(f)} keeps showing up on your rough days`, suspBody:(f,a,b,c,d)=>`${cap(f)} showed up in ${a} of your ${b} rough days. On good days — ${c} of ${d}.`, roughWith:f=>`rough days with ${f}`, goodWith:f=>`good days with ${f}`,
- suspCaveat:'This could be a coincidence — about a quarter of patterns like this turn out to be. Want to test it over eight days?', check:"Let's test it", notNow:'Not now', other:'Another suspect', willReturn:"We'll come back to this. Observation continues.", otherTitle:'Other patterns',
- checkHeader:f=>`Test: ${f}`, phaseR:f=>`without ${f}`, phaseB:'bringing it back', dayN:n=>`Day ${n}`, returnWhen:'return starts when calm', ends:d=>`ends ~${d}`,
- restrictionTask:f=>`Today without ${f}`, swapsLead:'Swaps from your own meals:', swaps:{lactose:['oatmeal with water','lactose-free cheese','coffee with oat milk'],fructans:['rice instead of pasta','garlic-infused oil instead of garlic','sourdough spelt bread']}, returnTask:(s,d)=>`Bringing it back, dose ${s} of 3: ${d}`, doses:['a quarter cup','half a cup','a full cup'],
- dayCounted:(n,s)=>`Day ${n} counted · sleep ${s}`, discarded:'No test dose today', lastNight:s=>`Last night: ${s}`, discardBody:f=>`Short sleep causes symptoms on its own, and we couldn't tell it apart from ${f}.`, moved:'The dose moves to tomorrow. Eat as usual.', sleep:'Sleep', threshold:'Threshold', rule:'protocol rule', notCounted:'today · not counted',
+ stage:{obs:'Observing',check:f=>`Test: ${f}`,paused:'Paused'},
+ hero:{day0:'Tonight — your first day card', day0body:'Live as usual. In the evening, three questions and thirty seconds.', obs:'Eat as usual', obsBody:'Nothing to restrict. Tonight: three questions and thirty seconds. A photo of a meal when it is convenient.', insightEye:'One week in', insightTitle:'The first thing we see', insightBody:'In four of your five rough days, the night was shorter than six hours.', insightCaveat:"For now this is an observation, not a conclusion — there isn't much data yet. Too early to talk about food, and we won't guess."},
+ progress:{collected:n=>`${n} ${n===1?'day':'days'} collected`, insightIn:n=>`first insight in ${n} ${n===1?'day':'days'}`, suspectIn:n=>`about ${n} more days to a suspect`, enough:'enough data — checking the pattern', checkDay:(d,ph)=>`day ${d} of 8 · ${ph}`, open:'Open the path'},
+ mealsTitle:'Meals today', photoTile:'Snap a meal', photoSub:'photo · voice · text', recent:'Recent', mealsEmpty:'Nothing yet. One photo — and the day counts as full.', mealsCount:n=>`${n} ${n===1?'meal':'meals'}`,
+ bgTitle:'Background for the day', sleep:'Sleep', stepsL:'steps', hr:'resting HR', bgWhy:'Pulled in automatically. Short nights are told apart from food reactions.',
+ tipOfDay:'Tip of the day', allTips:'All tips',
+ yesterday:n=>`Yesterday · day ${n}`, edit:'Edit', saveEdit:'Save changes', cancel:'Cancel', updated:n=>`Day ${n} updated`, editTitle:n=>`Day ${n} · editing`, entry:(b,bl,s)=>`belly ${b} · bloating ${bl} · stool ${s}`, stoolNone:'none',
+ closeHint:'Three questions, thirty seconds.', closeSaves:'Saves the day. You can fix it tomorrow from Today.',
+ dayTitle:d=>`Day card · ${d}`, howToday:'How was today', worst:'At the worst moment today', belly:'Belly', bellySub:'pain or discomfort', bloat:'Bloating', bloatSub:'fullness, tight belly', stool:'Stool', stoolSub:'pick the closest',
+ lvl:['none','mild','mild','mild','got in the way','got in the way','got in the way','strong','strong','strong','worst ever'],
+ stoolTypes:['none','hard lumps','lumpy sausage','cracked surface','smooth, soft','soft pieces','mushy','liquid'], stoolKey:'1–2 constipation · 3–5 normal · 6–7 loose',
+ alcohol:'Alcohol', illness:'Unwell', flagsHint:'Mark if it happened: such days are counted separately.', blood:'Blood in stool', report:'Report',
+ mealsInCard:n=>n?`Meals today: ${n}`:'No meals yet today', addMeal:'Add', addMealFull:'Add a meal',
+ mealTitle:'What did you eat', photo:'Photo', voice:'Voice', type:'Text', mealHow:'Photo, voice or text — whichever is easier. We recognise the food group and remember it.', mealProto:'In this prototype — pick from recent dishes.', mealConfirm:'Check the dish and the group, then save.', recognized:'Recognized', isProbe:"This is today's test dose — counted.", save:'Save', fix:'Fix', mealSaved:'Meal saved',
+ presets:['Oatmeal with milk','Caesar salad','Garlic pasta','Apple','Chicken and rice'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]], times:['08:30','13:10','16:00','19:20','21:00'],
+ pathTitle:'Your path', pathPos:(s,d)=>`${s} · day ${d}`, nodes:{obs:'Observing',obsDone:'completed',insight:'First insight',susp:'Suspect',check:n=>`Test ${n}`,answer:n=>`Answer ${n}`,next:'Next test'}, fullDays:'full', rough:'rough', good:'good', needLine:(r,g)=>`Need 10 rough and 10 good days with meals — so far ${r} and ${g}.`, obsDays:n=>`day ${n} of ~21`, aheadDay:'day 7', whenReady:'when the data is in', afterAnswer:'after the answer', daysRange:(a,b)=>`days ${a}–${b}`, checkStatus:{run:'in progress',done:'completed',discard:'one day not counted',paused:'paused'},
+ mapTitle:'Tolerance map', tested:t=>`tested: ${t}`, testedFine:'tested: tolerated', threshText:'up to 125 ml', obs:'observing', mapEmpty:'Your first answer will appear after the first test.', doctorPage:'Page for your doctor', nOf6:n=>`${n} of 6 tested`,
+ tipsTitle:s=>`Tips · ${s}`, tipSets:{obs:[['Eating out — as usual','No restrictions while we watch. Order what you like and snap a photo if it is convenient.'],['Is yogurt okay?','Right now everything is on the table. If dairy ever comes under suspicion, we will suggest testing it — not banning it.'],['Why photos of meals','A day with meals counts towards finding a suspect. A day without meals counts for wellbeing only.'],['Why the first insight is about sleep','A week of data is enough to see sleep, not food. We do not guess about food early.']],check:[['Swaps for today','Oatmeal with water, lactose-free cheese, coffee with oat milk — all from what you already eat.'],['At a party','Ask what is in the dish. If you cannot avoid the group, note it — the day will simply not count.'],['Ate it by accident','Nothing is lost. Mark the meal, the day is not counted, the test continues tomorrow.'],['Why a short night is not counted','Short sleep causes symptoms on its own. We cannot tell it apart from the food, so the dose moves to the next day.']],after:[['How to use the threshold','Up to the dose that was fine — freely. Above it — expect symptoms. The threshold is yours, not a general rule.'],['What is next','Observation continues. The next suspect appears when the data is in.']]}, assistantNote:'An assistant that answers from your own data comes in the next version.',
+ suspEye:'A suspect', suspTitle:f=>`${cap(f)} keeps showing up on your rough days`, suspBody:(f,a,b,c,d)=>`${cap(f)} showed up in ${a} of your ${b} rough days. On good days — ${c} of ${d}.`, roughWith:f=>`rough days with ${f}`, goodWith:f=>`good days with ${f}`,
+ suspCaveat:'This could be a coincidence — about a quarter of patterns like this turn out to be. Want to test it over eight days?', check:"Let's test it", notNow:'Not now', other:'Another suspect', willReturn:"We'll come back to this. Observation continues.", otherTitle:'Other patterns',
+ phaseR:f=>`without ${f}`, phaseB:'bringing it back', dayN:n=>`Day ${n}`, returnWhen:'return starts when calm', ends:d=>`ends ~${d}`, planBtn:'Test plan',
+ restrictionTask:f=>`Today without ${f}`, swapsLead:'Swaps from your own meals', moreSwaps:'More swaps', lessSwaps:'Fewer', swaps:{lactose:['oatmeal with water','lactose-free cheese','coffee with oat milk','hard cheese (aged)','butter is fine','plain rice pudding on water'],fructans:['rice instead of pasta','garlic-infused oil instead of garlic','sourdough spelt bread','green part of spring onion','quinoa','oat crackers']}, returnTask:(s,d)=>`Bringing it back, dose ${s} of 3: ${d}`, doses:['a quarter cup','half a cup','a full cup'],
+ dayCounted:(n,s)=>`Day ${n} counted · sleep ${s}`, discarded:'No test dose today', lastNight:s=>`Last night: ${s}`, discardBody:f=>`Short sleep causes symptoms on its own, and we couldn't tell it apart from ${f}.`, moved:'The dose moves to tomorrow. Eat as usual.', threshold:'Threshold', rule:'protocol rule', notCounted:'today · not counted',
  paused:'Paused', noEntries:'No entries yesterday', pausedBody:'The test is paused, not failed. Continue today.', resume:'Continue today',
- verdictEye:'The answer', verdict:'Milk: up to 125 ml is fine, 250 ml brings symptoms', how:'The threshold was measured against your own day-to-day variation, with one control day inside the test.', notConfirmed:'Not confirmed: the difference stayed within your usual range', notConfirmedWhy:f=>`You can bring ${f} back. The restriction you were keeping wasn't needed — and that's an answer too.`, nextSuspect:'Next suspect', nextBtn:f=>`Next suspect: ${f}`, toMap:'To the map',
- mapTitle:'Your tolerance map', mapSub:'What you tolerate — and how much', tested:t=>`tested: ${t}`, testedFine:'tested: tolerated', threshText:'up to 125 ml', obs:'observing', mapEmpty:'Your first answer will appear after the first test.', doctorPage:'Page for your doctor', nOf6:n=>`${n} of 6 tested`,
- docTitle:'Participant observations', protocol:'Protocol', protocolBody:'Observation Sep 1–Sep 27. Test of "lactose" Sep 30–Oct 7: 5 days without the group, return in three doses, one control day.', results:'Results by group', symptoms:'Symptom score, daily median', before:'before the test', during:'during restriction', after:'during return', docDisc:"Participant's own observations. Not a diagnosis, not a prescription.", share:'Share', copied:'Copied to clipboard', onePage:'1 page', lactoseRes:'up to 125 ml tolerated; 250 ml — symptoms',
- redEye:'Protocol paused', redTitle:'This could be more serious than IBS', redBody:r=>`You noted: ${r}. Please see a doctor — here's what to show them.`, redNote:"The protocol stays paused until you've talked to a doctor. We don't interpret this sign.", redBtn:'Open the page for your doctor', redBlood:'blood in stool',
+ planTitle:'Test plan', planDays:[['1–5','Without the group','Swaps from your own meals. Everything else as usual.'],['6','Bringing it back, ¼','Starts when the days are calm.'],['7','Bringing it back, ½',''],['8','Bringing it back, full dose','Then the answer.']], planRules:'A day after a short night (under 6 h), alcohol or illness is not counted — the dose moves. A missed day pauses the test, it does not fail it.',
+ verdictEye:'The answer', verdict:'Milk: up to 125 ml is fine, 250 ml brings symptoms', how:'The threshold was measured against your own day-to-day variation, with one control day inside the test.', notConfirmed:'Not confirmed: the difference stayed within your usual range', notConfirmedWhy:f=>`You can bring ${f} back. The restriction you were keeping wasn't needed — and that's an answer too.`, nextSuspect:'Next suspect', nextBtn:f=>`Next suspect: ${f}`, toPath:'To the path',
+ docTitle:'Participant observations', protocol:'Protocol', protocolBody:'Observation Sep 1–Sep 27. Test of "lactose" Sep 30–Oct 7: 5 days without the group, return in three doses, one control day.', results:'Results by group', symptoms:'Symptom score, daily median', before:'before the test', during:'during restriction', after:'during return', docDisc:"Participant's own observations. Not a diagnosis, not a prescription.", share:'Share', copied:'Copied to clipboard', onePage:'1 page', lactoseRes:'up to 125 ml tolerated; 250 ml — symptoms',
+ redConfirmEye:'This matters', redConfirmTitle:'Mark blood in stool?', redConfirmBody:'We will pause the protocol and prepare a page for your doctor. Nothing else changes — the diary keeps working.', redYes:'Yes, it happened', redNo:'Tapped by accident',
+ redEye:'Protocol paused', redTitle:'This could be more serious than IBS', redBody:'Please see a doctor — here is what to show them. We do not interpret this sign, we only make sure it is not missed.', redBtn:'Page for your doctor', redBack:'Back to the diary',
+ pauseBanner:'Protocol paused — show your doctor', pauseBody:'The diary keeps working. Tests wait until you have talked to a doctor.', resumeDoctor:'I talked to a doctor — continue',
+ rhythm:{title:'Rhythm', streak:n=>`${n} ${n===1?'day':'days'} in a row`, freeze:'1 freeze', goal:'Today: day card + one photo', goalDone:'Today: done', remind:'Reminder at 21:00', on:'Rhythm on', off:'Rhythm off'},
  dates:{insight:'Sep 7',card:'Sep 28',ends:'Oct 7'}, steps:'6,200', sleepFmt:(h,m)=>m?`${h} h ${String(m).padStart(2,'0')} min`:`${h} h`,
- momentTitle:'Moment', moments:{day0:'Day 0 — start',day7:'Day 7 — first insight',background:'Background, 60%',suspicion:'Suspect',check3:'Test, day 3',check6:'Test, day 6 — not counted',paused:'Test, day 4 — paused',verdict:'Answer — threshold',verdictNo:'Answer — not confirmed',map:'Map',red:'Red flag'}, momentLabel:m=>`Moment: ${m}`, close:'Close', language:'Language'
+ momentTitle:'Moment', moments:{day0:'Day 0 — start',day7:'Day 7 — first insight',background:'Background, day 14',suspicion:'Suspect',check3:'Test, day 3',check6:'Test, day 6 — not counted',paused:'Test, day 4 — paused',verdict:'Answer — threshold',verdictNo:'Answer — not confirmed',map:'Path with an answer',red:'Red flag'}, momentLabel:m=>`Moment: ${m}`, close:'Close', language:'Language'
 },
 ru:{
- demoData:'демо-данные', today:'Сегодня', map:'Карта', ask:'Спросить', ok:'Понятно', closeDay:'Закрыть день',
+ demoData:'демо-данные', fromHealth:'из Apple Health', today:'Сегодня', path:'Путь', tips:'Советы', ok:'Понятно', closeDay:'Закрыть день', back:'Назад',
  g:{fructans:'фруктаны',gos:'ГОС',lactose:'лактоза',fructose:'фруктоза',sorbitol:'сорбит',mannitol:'маннит'},
  food:{lactose:'молочное',fructans:'пшеница и лук'},
  intro:[
-  {eye:'Проблема',title:'Что-то не так с животом — а с чем, никто не говорит',body:'С этим живут годами. Убирают продукты наугад, становится легче — и страшно что-то возвращать. Половина тарелки под запретом, а ответа так и нет.'},
-  {eye:'Наш подход',title:'Не убирать всё — найти своё',body:'Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем одного подозреваемого по вашим данным и проверяем только его. Ответ — с дозой: сколько можно.'},
-  {eye:'Как это работает',title:'Три шага',steps:[['Три недели наблюдения','Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется.'],['Подозрение по вашим данным','С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы.'],['Восемь дней — и ответ','Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту.']]},
-  {eye:'Перед стартом',title:'Живите как обычно',body:'Ничего не меняйте в еде. Не пропускайте вечер — это тридцать секунд. Пропущенный день — пауза, а не провал. Мы наблюдаем, а не ставим диагноз: решения о лечении — у врача.'}],
+  {eye:'Проблема',title:'Что-то не так с животом — а с чем, никто не говорит',body:'С этим живут годами. Убирают продукты наугад, становится легче — и страшно что-то возвращать. Половина тарелки под запретом, а ответа так и нет.'},
+  {eye:'Наш подход',title:'Не убирать всё — найти своё',body:'Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем одного подозреваемого по вашим данным и проверяем только его. Ответ — с дозой: сколько можно.'},
+  {eye:'Как это работает',title:'Три шага',steps:[['Три недели наблюдения','Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется.'],['Подозрение по вашим данным','С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы.'],['Восемь дней — и ответ','Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту.']]},
+  {eye:'Перед стартом',title:'Живите как обычно',body:'Ничего не меняйте в еде. Не пропускайте вечер — это тридцать секунд. Пропущенный день — пауза, а не провал. Мы наблюдаем, а не ставим диагноз: решения о лечении — у врача.'}],
  next:'Дальше', skip:'Пропустить', begin:'Начать', healthWhy:'Сон, шаги и пульс из Apple Health, чтобы не спутать короткую ночь с реакцией на еду. Необязательно: без этого спросим про сон вечером.',
- hint:{onb:'Одно из трёх в каждой строке. Потом можно поменять.', today0:'До вечера делать ничего не нужно. Вечером нажмите «Закрыть день» и ответьте на три вопроса.', today:'Ешьте как обычно. Вечером — «Закрыть день», это тридцать секунд.', todayCheck:'Вечером закройте день как обычно. Еда — то, из чего складывается проверка.', scale:'Оцените день от 0 (спокойно) до 5 (сильно). Примерно — нормально.', belly:'вздутие, боль, дискомфорт', stool:'что-то необычное сегодня', heavy:'тяжесть или распирание после еды', bg:'Фон за день — подтянулся сам', flags:'Отметьте, если было: такие дни считаются отдельно.', meals:'Что вы сегодня ели. Необязательно, но без еды день идёт в самочувствие, а не в поиск подозреваемого.', close:'Сохраняет день. Поправить можно завтра с экрана «Сегодня».', mealHow:'Фото, голосом или текстом — как удобнее. Распознаем группу и запомним.', mealProto:'В прототипе — выберите блюдо из списка.', mealConfirm:'Проверьте распознанное блюдо и группу, потом подтвердите.'},
- yesterday:n=>`Вчера · день ${n}`, edit:'Изменить', saveEdit:'Сохранить', cancel:'Отмена', updated:n=>`День ${n} обновлён`, editTitle:n=>`День ${n} · правка`, entry:(b,s,h)=>`живот ${b} · стул ${s} · тяжесть ${h}`,
- onbTitle:'Первые дни мы ничего не запрещаем — мы смотрим',
+ onbTitle:'Первые дни мы ничего не запрещаем — мы смотрим', onbHint:'Одно из трёх в каждой строке. Потом можно поменять.',
  q1:'Что беспокоит', q1a:['вздутие','боль','стул'], q2:'Как часто', q2a:['реже раза в неделю','несколько раз в неделю','почти каждый день'], q3:'Что уже пробовали', q3a:['ничего','убирал продукты сам','с диетологом'],
- health:'Разрешить Health', healthOn:'Health подключён', start:'Начать', disclaimer:'Наблюдения, не диагноз. Решения о лечении — у врача.',
- day0:'Сегодня вечером — первая карта дня', day0body:'Живите как обычно. Вечером — три вопроса и тридцать секунд.', closed:n=>`День записан. Первый вывод — через ${n} дн.`, obsFrom:d=>`Наблюдение от ${d}`,
- dayTitle:d=>`Карта дня · ${d}`, howToday:'Как прошёл день', belly:'Живот', stool:'Стул', heavy:'Тяжесть', calm:'спокойно', strong:'сильно',
- bg:(s,st,hr,src)=>`Сон ${s} · ${st} шагов · пульс ${hr} · ${src}`, alcohol:'Алкоголь', illness:'Болел', blood:'Кровь в стуле', report:'Отметить', addMeal:'Добавить еду', daySaved:'День записан',
- mealTitle:'Что вы ели', photo:'Фото', voice:'Голосом', type:'Текстом', recognized:'Распознано', isProbe:'Это ваша проба на сегодня — засчитано.', correct:'Верно', fix:'Исправить', mealSaved:'Записано', presets:['Овсянка с молоком','Салат цезарь','Паста с чесноком','Яблоко','Рис с курицей'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]],
- insightEye:'Неделя данных', insightTitle:'Первое, что видно', insightBody:'В четырёх из пяти плохих дней ночь была короче шести часов.', insightCaveat:'Пока это наблюдение, не вывод — данных мало. Про еду говорить рано, и мы не будем гадать.',
- confLabel:'данных достаточно', daysLeft:n=>`Ещё около ${n} дней, чтобы назвать подозреваемого`, nextInsight:n=>`Первый вывод через ${n} ${n===1?'день':n<5?'дня':'дней'}`, needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}. Оценка зависит от того, как пойдут дни.`, fullDays:'полных дней', rough:'плохих', good:'хороших', observing:'Наблюдение',
- askQ:['Что взять в кафе?','Можно ли йогурт?','Чем заменить молоко?'], askA:['Пока мы наблюдаем, ограничений нет — берите как обычно и сфотографируйте, если удобно.','Сейчас можно всё. Если йогурт попадёт под подозрение, мы предложим это проверить, а не запретим.','Замены понадобятся только во время проверки, и мы возьмём их из того, что вы и так едите.'], askNote:'Тема ограничена протоколом и вашими данными. Не источник медицинских советов.',
- suspEye:'Подозрение', suspTitle:f=>`${cap(f)} слишком часто попадает на плохие дни`, suspBody:(f,a,b,c,d)=>`В ${a} из ${b} ваших плохих дней было ${f}. В хороших днях — в ${c} из ${d}.`, roughWith:f=>`плохих дней с: ${f}`, goodWith:f=>`хороших дней с: ${f}`,
+ health:'Разрешить Health', healthOn:'Health подключён', start:'Начать', disclaimer:'Наблюдения, не диагноз. Решения о лечении — у врача.',
+ stage:{obs:'Наблюдение',check:f=>`Проверка: ${f}`,paused:'Пауза'},
+ hero:{day0:'Сегодня вечером — первая карта дня', day0body:'Живите как обычно. Вечером — три вопроса и тридцать секунд.', obs:'Ешьте как обычно', obsBody:'Ограничений нет. Вечером — три вопроса и тридцать секунд. Фото еды — когда удобно.', insightEye:'Неделя данных', insightTitle:'Первое, что видно', insightBody:'В четырёх из пяти плохих дней ночь была короче шести часов.', insightCaveat:'Пока это наблюдение, не вывод — данных мало. Про еду говорить рано, и мы не будем гадать.'},
+ progress:{collected:n=>`Собрано ${n} ${n%10===1&&n%100!==11?'день':n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'дня':'дней'}`, insightIn:n=>`первый вывод через ${n} ${n===1?'день':n<5?'дня':'дней'}`, suspectIn:n=>`ещё около ${n} дней до подозрения`, enough:'данных достаточно — проверяем закономерность', checkDay:(d,ph)=>`день ${d} из 8 · ${ph}`, open:'Открыть путь'},
+ mealsTitle:'Еда сегодня', photoTile:'Фото еды', photoSub:'фото · голосом · текстом', recent:'Недавнее', mealsEmpty:'Пока ничего. Одно фото — и день считается полным.', mealsCount:n=>`${n} ${n===1?'приём':n<5?'приёма':'приёмов'}`,
+ bgTitle:'Фон за день', sleep:'Сон', stepsL:'шагов', hr:'пульс покоя', bgWhy:'Подтягивается само. Короткая ночь отличается от реакции на еду.',
+ tipOfDay:'Совет дня', allTips:'Все советы',
+ yesterday:n=>`Вчера · день ${n}`, edit:'Изменить', saveEdit:'Сохранить', cancel:'Отмена', updated:n=>`День ${n} обновлён`, editTitle:n=>`День ${n} · правка`, entry:(b,bl,s)=>`живот ${b} · вздутие ${bl} · стул ${s}`, stoolNone:'не было',
+ closeHint:'Три вопроса, тридцать секунд.', closeSaves:'Сохраняет день. Поправить можно завтра с экрана «Сегодня».',
+ dayTitle:d=>`Карта дня · ${d}`, howToday:'Как прошёл день', worst:'В худший момент сегодня', belly:'Живот', bellySub:'боль или дискомфорт', bloat:'Вздутие', bloatSub:'распирает, живот тугой', stool:'Стул', stoolSub:'выберите ближайший',
+ lvl:['не было','слабо','слабо','слабо','мешало','мешало','мешало','сильно','сильно','сильно','хуже некуда'],
+ stoolTypes:['не было','твёрдые комочки','плотный, комками','с трещинами','гладкий, мягкий','мягкие кусочки','кашицей','жидкий'], stoolKey:'1–2 запор · 3–5 норма · 6–7 жидко',
+ alcohol:'Алкоголь', illness:'Болел', flagsHint:'Отметьте, если было: такие дни считаются отдельно.', blood:'Кровь в стуле', report:'Отметить',
+ mealsInCard:n=>n?`Еда за день: ${n}`:'Еды за день пока нет', addMeal:'Добавить', addMealFull:'Добавить еду',
+ mealTitle:'Что вы ели', photo:'Фото', voice:'Голосом', type:'Текстом', mealHow:'Фото, голосом или текстом — как удобнее. Распознаем группу и запомним.', mealProto:'В прототипе — выберите из недавних блюд.', mealConfirm:'Проверьте блюдо и группу, потом запишите.', recognized:'Распознано', isProbe:'Это ваша проба на сегодня — засчитано.', save:'Записать', fix:'Исправить', mealSaved:'Еда записана',
+ presets:['Овсянка с молоком','Салат цезарь','Паста с чесноком','Яблоко','Рис с курицей'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]], times:['08:30','13:10','16:00','19:20','21:00'],
+ pathTitle:'Ваш путь', pathPos:(s,d)=>`${s} · день ${d}`, nodes:{obs:'Наблюдение',obsDone:'пройдено',insight:'Первый вывод',susp:'Подозрение',check:n=>`Проверка ${n}`,answer:n=>`Ответ ${n}`,next:'Следующая проверка'}, fullDays:'полных', rough:'плохих', good:'хороших', needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}.`, obsDays:n=>`день ${n} из ~21`, aheadDay:'день 7', whenReady:'когда наберутся данные', afterAnswer:'после ответа', daysRange:(a,b)=>`дни ${a}–${b}`, checkStatus:{run:'идёт',done:'завершена',discard:'один день не засчитан',paused:'пауза'},
+ mapTitle:'Карта переносимости', tested:t=>`проверено: ${t}`, testedFine:'проверено: переносится', threshText:'до 125 мл', obs:'в наблюдении', mapEmpty:'Первый ответ появится после первой проверки.', doctorPage:'Страница для врача', nOf6:n=>`проверено ${n} из 6`,
+ tipsTitle:s=>`Советы · ${s}`, tipSets:{obs:[['В кафе — как обычно','Пока мы наблюдаем, ограничений нет. Берите что хотите и сфотографируйте, если удобно.'],['Можно ли йогурт?','Сейчас можно всё. Если молочное попадёт под подозрение, мы предложим это проверить, а не запретим.'],['Зачем фото еды','День с едой идёт в поиск подозреваемого. День без еды — только в самочувствие.'],['Почему первый вывод про сон','Недели данных хватает, чтобы увидеть сон, но не еду. Про еду мы рано не гадаем.']],check:[['Замены на сегодня','Овсянка на воде, безлактозный сыр, кофе с овсяным молоком — всё из того, что вы и так едите.'],['В гостях','Спросите, что в блюде. Если группу не обойти — отметьте, день просто не засчитается.'],['Съел случайно','Ничего не пропало. Отметьте приём пищи, день не засчитан, проверка продолжается завтра.'],['Почему короткая ночь не считается','Короткий сон сам даёт симптомы. Мы не отличим его от еды, поэтому доза переносится.']],after:[['Как пользоваться порогом','До дозы, которая переносилась, — свободно. Выше — ждите симптомов. Порог ваш, не общее правило.'],['Что дальше','Наблюдение продолжается. Следующий подозреваемый появится, когда наберутся данные.']]}, assistantNote:'Ассистент, который отвечает по вашим данным, появится в следующей версии.',
+ suspEye:'Подозрение', suspTitle:f=>`${cap(f)} слишком часто попадает на плохие дни`, suspBody:(f,a,b,c,d)=>`В ${a} из ${b} ваших плохих дней было ${f}. В хороших днях — в ${c} из ${d}.`, roughWith:f=>`плохих дней с: ${f}`, goodWith:f=>`хороших дней с: ${f}`,
  suspCaveat:'Это может оказаться совпадением: примерно четверть таких совпадений ложные. Проверим за восемь дней?', check:'Проверим', notNow:'Не сейчас', other:'Другой подозреваемый', willReturn:'Вернёмся с этим позже. Наблюдение продолжается.', otherTitle:'Другие совпадения',
- checkHeader:f=>`Проверка: ${f}`, phaseR:f=>`без: ${f}`, phaseB:'возврат', dayN:n=>`День ${n}`, returnWhen:'возврат — когда уляжется', ends:d=>`до ~${d}`,
- restrictionTask:f=>`Сегодня без: ${f}`, swapsLead:'Замены — из вашего рациона:', swaps:{lactose:['овсянка на воде','безлактозный сыр','кофе с овсяным молоком'],fructans:['рис вместо пасты','масло с чесноком вместо чеснока','хлеб на закваске из спельты']}, returnTask:(s,d)=>`Возврат, доза ${s} из 3: ${d}`, doses:['четверть стакана','полстакана','стакан'],
- dayCounted:(n,s)=>`День ${n} засчитан · сон ${s}`, discarded:'Сегодня без пробы', lastNight:s=>`Ночь ${s}`, discardBody:f=>`Короткий сон сам даёт симптомы, и мы не отличим его от: ${f}.`, moved:'Доза переносится на завтра. Ешьте как обычно.', sleep:'Сон', threshold:'Порог', rule:'правило протокола', notCounted:'сегодня · не засчитан',
+ phaseR:f=>`без: ${f}`, phaseB:'возврат', dayN:n=>`День ${n}`, returnWhen:'возврат — когда уляжется', ends:d=>`до ~${d}`, planBtn:'План проверки',
+ restrictionTask:f=>`Сегодня без: ${f}`, swapsLead:'Замены — из вашего рациона', moreSwaps:'Ещё замены', lessSwaps:'Свернуть', swaps:{lactose:['овсянка на воде','безлактозный сыр','кофе с овсяным молоком','твёрдый выдержанный сыр','сливочное масло — можно','рисовая каша на воде'],fructans:['рис вместо пасты','масло с чесноком вместо чеснока','хлеб на закваске из спельты','зелёная часть лука','киноа','овсяные хлебцы']}, returnTask:(s,d)=>`Возврат, доза ${s} из 3: ${d}`, doses:['четверть стакана','полстакана','стакан'],
+ dayCounted:(n,s)=>`День ${n} засчитан · сон ${s}`, discarded:'Сегодня без пробы', lastNight:s=>`Ночь ${s}`, discardBody:f=>`Короткий сон сам даёт симптомы, и мы не отличим его от: ${f}.`, moved:'Доза переносится на завтра. Ешьте как обычно.', threshold:'Порог', rule:'правило протокола', notCounted:'сегодня · не засчитан',
  paused:'Пауза', noEntries:'Вчера без записей', pausedBody:'Проверка на паузе, не провалена. Продолжим сегодня.', resume:'Продолжить сегодня',
- verdictEye:'Ответ', verdict:'Молоко: до 125 мл переносится, 250 мл даёт симптомы', how:'Порог считался от вашего обычного разброса, с одним контрольным днём внутри проверки.', notConfirmed:'Не подтвердилось: разница в пределах вашего обычного разброса', notConfirmedWhy:f=>`${cap(f)} можно вернуть. Ограничение, которое вы держали, было лишним — и это тоже ответ.`, nextSuspect:'Следующий подозреваемый', nextBtn:f=>`Следующий подозреваемый: ${f}`, toMap:'В карту',
- mapTitle:'Карта переносимости', mapSub:'Что переносится — и сколько', tested:t=>`проверено: ${t}`, testedFine:'проверено: переносится', threshText:'до 125 мл', obs:'в наблюдении', mapEmpty:'Первый ответ появится после первой проверки.', doctorPage:'Страница для врача', nOf6:n=>`проверено ${n} из 6`,
- docTitle:'Наблюдения участника', protocol:'Протокол', protocolBody:'Наблюдение 1–27 сентября. Проверка группы «лактоза» 30 сентября — 7 октября: 5 дней без группы, возврат в три дозы, один контрольный день.', results:'Результаты по группам', symptoms:'Самочувствие, медиана за день', before:'до проверки', during:'без группы', after:'при возврате', docDisc:'Наблюдения участника. Не диагноз и не назначение.', share:'Поделиться', copied:'Скопировано', onePage:'1 страница', lactoseRes:'до 125 мл переносится; 250 мл — симптомы',
- redEye:'Протокол на паузе', redTitle:'Это может быть серьёзнее СРК', redBody:r=>`Вы отметили: ${r}. Обратитесь к врачу — вот что ему показать.`, redNote:'Протокол на паузе, пока вы не поговорите с врачом. Мы не интерпретируем этот признак.', redBtn:'Открыть страницу для врача', redBlood:'кровь в стуле',
+ planTitle:'План проверки', planDays:[['1–5','Без группы','Замены — из вашего рациона. Остальное как обычно.'],['6','Возврат, ¼','Начинается, когда дни спокойные.'],['7','Возврат, ½',''],['8','Возврат, полная доза','Потом — ответ.']], planRules:'День после короткой ночи (меньше 6 ч), алкоголя или болезни не засчитывается — доза переносится. Пропущенный день ставит проверку на паузу, а не проваливает.',
+ verdictEye:'Ответ', verdict:'Молоко: до 125 мл переносится, 250 мл даёт симптомы', how:'Порог считался от вашего обычного разброса, с одним контрольным днём внутри проверки.', notConfirmed:'Не подтвердилось: разница в пределах вашего обычного разброса', notConfirmedWhy:f=>`${cap(f)} можно вернуть. Ограничение, которое вы держали, было лишним — и это тоже ответ.`, nextSuspect:'Следующий подозреваемый', nextBtn:f=>`Следующий подозреваемый: ${f}`, toPath:'В путь',
+ docTitle:'Наблюдения участника', protocol:'Протокол', protocolBody:'Наблюдение 1–27 сентября. Проверка группы «лактоза» 30 сентября — 7 октября: 5 дней без группы, возврат в три дозы, один контрольный день.', results:'Результаты по группам', symptoms:'Самочувствие, медиана за день', before:'до проверки', during:'без группы', after:'при возврате', docDisc:'Наблюдения участника. Не диагноз и не назначение.', share:'Поделиться', copied:'Скопировано', onePage:'1 страница', lactoseRes:'до 125 мл переносится; 250 мл — симптомы',
+ redConfirmEye:'Это важно', redConfirmTitle:'Отметить кровь в стуле?', redConfirmBody:'Мы поставим протокол на паузу и подготовим страницу для врача. Больше ничего не меняется — дневник работает.', redYes:'Да, было', redNo:'Нажал случайно',
+ redEye:'Протокол на паузе', redTitle:'Это может быть серьёзнее СРК', redBody:'Обратитесь к врачу — вот что ему показать. Мы не интерпретируем этот признак, только следим, чтобы он не потерялся.', redBtn:'Страница для врача', redBack:'Вернуться в дневник',
+ pauseBanner:'Протокол на паузе — покажите врачу', pauseBody:'Дневник работает. Проверки ждут, пока вы не поговорите с врачом.', resumeDoctor:'Я поговорил с врачом — продолжить',
+ rhythm:{title:'Ритм', streak:n=>`${n} ${n%10===1&&n%100!==11?'день':n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'дня':'дней'} подряд`, freeze:'1 заморозка', goal:'Сегодня: карта дня + одно фото', goalDone:'Сегодня: выполнено', remind:'Напоминание в 21:00', on:'Ритм включён', off:'Ритм выключен'},
  dates:{insight:'7 сент',card:'28 сент',ends:'7 окт'}, steps:'6 200', sleepFmt:(h,m)=>m?`${h} ч ${String(m).padStart(2,'0')} мин`:`${h} ч`,
- momentTitle:'Момент', moments:{day0:'День 0 — вход',day7:'День 7 — первый вывод',background:'Фон, 60%',suspicion:'Подозрение',check3:'Проверка, день 3',check6:'Проверка, день 6 — не засчитан',paused:'Проверка, день 4 — пауза',verdict:'Ответ — порог',verdictNo:'Ответ — не подтвердилось',map:'Карта',red:'Красный флаг'}, momentLabel:m=>`Момент: ${m}`, close:'Закрыть', language:'Язык'
+ momentTitle:'Момент', moments:{day0:'День 0 — вход',day7:'День 7 — первый вывод',background:'Фон, день 14',suspicion:'Подозрение',check3:'Проверка, день 3',check6:'Проверка, день 6 — не засчитан',paused:'Проверка, день 4 — пауза',verdict:'Ответ — порог',verdictNo:'Ответ — не подтвердилось',map:'Путь с ответом',red:'Красный флаг'}, momentLabel:m=>`Момент: ${m}`, close:'Закрыть', language:'Язык'
 }};
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
 /* ---------- state ---------- */
 let st;
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
 const LANG=(()=>{const q=new URLSearchParams(location.search).get('lang');const m=document.querySelector('meta[name="ths-lang"]');const f=q||(m&&m.content);if(f&&S[f]){ls.set('ths-lang',f);return f}return ls.get('ths-lang')||((navigator.language||'').toLowerCase().startsWith('ru')?'ru':'en')})();
-const base=()=>({lang:LANG,screen:'onboarding',tab:'today',modal:null,moment:'day0',onboarded:false,health:false,
- q:[0,1,1],scores:{belly:1,stool:0,heavy:2},alcohol:false,illness:false,dayClosed:false,insightSeen:false,askOpen:-1,
+const base=()=>({lang:LANG,tab:'today',modal:null,moment:'day0',onboarded:false,health:false,
+ q:[0,1,1],scores:{belly:2,bloat:3,stool:4},alcohol:false,illness:false,insightSeen:false,tipOpen:-1,
  day:0, suspOfferedDay:-99, tested:{}, lastGroup:null, intro:0, introDone:false, log:{}, editDay:null, editBackup:null,
- susp:{group:'lactose',a:8,b:10,c:2,d:11},
+ susp:{group:'lactose',a:8,b:10,c:2,d:11}, swapsOpen:false, redPaused:false, rhythm:false, mealFrom:'today',
  check:null, verdictType:'threshold', meals:[], mealPick:null, toast:''});
-/* scripted diary: which days were rough, and which days had each group (prototype data, one fixed story) */
+/* scripted diary: which days were rough, and which days had each group */
 const ROUGH=new Set([2,4,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45]);
 const HAD={lactose:new Set([2,4,6,7,9,11,14,15,17,19,23,25,27,29,31,33,35]),fructans:new Set([3,7,8,12,13,16,19,20,21,24,26,30,34,38])};
 function stats(d){let rough=0,good=0;const w={lactose:[0,0],fructans:[0,0]};
  for(let i=1;i<=d;i++){const r=ROUGH.has(i);if(r)rough++;else good++;for(const g in w){if(HAD[g].has(i))w[g][r?0:1]++}}
- const full=d;const pct=Math.round(100*Math.min(1,full/20,rough/10,good/10));
- const left=Math.max(20-full,(10-rough)*2,(10-good)*2,0);const ready=full>=20&&rough>=10&&good>=10;
+ const full=d;const left=Math.max(20-full,(10-rough)*2,(10-good)*2,0);const ready=full>=20&&rough>=10&&good>=10;
  const num=g=>({group:g,a:w[g][0],b:rough,c:w[g][1],d:good});
- return {full,rough,good,pct,left,ready,lactose:num('lactose'),fructans:num('fructans')}}
+ return {full,rough,good,left,ready,lactose:num('lactose'),fructans:num('fructans')}}
 const nextGroup=()=>st.tested.lactose?(st.tested.fructans?null:'fructans'):'lactose';
-function startCheck(g){st.modal=null;st.check={group:g,day:1,sleep:440,discard:false,paused:false,demoDiscard:!Object.keys(st.tested).length};st.moment=''}
+function startCheck(g){st.modal=null;st.check={group:g,day:1,sleep:440,discard:false,paused:false,demoDiscard:!Object.keys(st.tested).length,startDay:st.day+1,discardedOnce:false};st.moment=''}
 function finishCheck(){const g=st.check.group;st.lastGroup=g;st.verdictType=g==='lactose'?'threshold':'notConfirmed';st.tested[g]=g==='lactose'?'threshold':'ok';st.modal='verdict'}
 const MOMENTS=['day0','day7','background','suspicion','check3','check6','paused','verdict','verdictNo','map','red'];
 function setMoment(m){
-  const keep={lang:st.lang};
-  st=Object.assign(base(),keep,{onboarded:true,moment:m,screen:'today'});
-  const chk=(day,x)=>Object.assign({group:'lactose',day,sleep:440,discard:false,paused:false,demoDiscard:true},x);
+  const keep={lang:st.lang,rhythm:st.rhythm};
+  st=Object.assign(base(),keep,{onboarded:true,moment:m});
+  const chk=(day,x)=>Object.assign({group:'lactose',day,sleep:440,discard:false,paused:false,demoDiscard:true,startDay:22,discardedOnce:false},x);
+  const seedLog=n=>{for(let i=0;i<n;i++)st.log[i]={scores:{belly:ROUGH.has(i)?6:1,bloat:ROUGH.has(i)?5:2,stool:ROUGH.has(i)?6:4},alcohol:false,illness:false,meals:HAD.lactose.has(i)?[{pick:0,time:'08:30'}]:HAD.fructans.has(i)?[{pick:2,time:'13:10'}]:[{pick:4,time:'19:20'}]}};
   if(m==='day0'){st.day=0}
-  if(m==='day7'){st.day=7}
-  if(m==='background'){st.day=14;st.insightSeen=true}
-  if(m==='suspicion'){st.day=21;st.insightSeen=true;st.susp=stats(21).lactose;st.suspOfferedDay=21;st.modal='suspicion'}
-  if(m==='check3'){st.day=24;st.insightSeen=true;st.check=chk(3,{})}
-  if(m==='check6'){st.day=27;st.insightSeen=true;st.check=chk(6,{sleep:280,discard:true})}
-  if(m==='paused'){st.day=25;st.insightSeen=true;st.check=chk(4,{sleep:425,paused:true})}
-  if(m==='verdict'){st.day=29;st.insightSeen=true;st.check=chk(8,{sleep:420});finishCheck()}
-  if(m==='verdictNo'){st.day=29;st.insightSeen=true;st.check=chk(8,{sleep:420});finishCheck();st.verdictType='notConfirmed';st.tested.lactose='ok'}
-  if(m==='map'){st.day=35;st.insightSeen=true;st.tested={lactose:'threshold'};st.lastGroup='lactose';st.tab='map'}
-  if(m==='red'){st.day=21;st.insightSeen=true;st.modal='red'}
+  if(m==='day7'){st.day=7;seedLog(7)}
+  if(m==='background'){st.day=14;st.insightSeen=true;seedLog(14)}
+  if(m==='suspicion'){st.day=21;st.insightSeen=true;seedLog(21);st.susp=stats(21).lactose;st.suspOfferedDay=21;st.modal='suspicion'}
+  if(m==='check3'){st.day=24;st.insightSeen=true;seedLog(24);st.check=chk(3,{})}
+  if(m==='check6'){st.day=27;st.insightSeen=true;seedLog(27);st.check=chk(6,{sleep:280,discard:true})}
+  if(m==='paused'){st.day=25;st.insightSeen=true;seedLog(24);st.check=chk(4,{sleep:425,paused:true})}
+  if(m==='verdict'){st.day=29;st.insightSeen=true;seedLog(29);st.check=chk(8,{sleep:420});finishCheck()}
+  if(m==='verdictNo'){st.day=29;st.insightSeen=true;seedLog(29);st.check=chk(8,{sleep:420});finishCheck();st.verdictType='notConfirmed';st.tested.lactose='ok'}
+  if(m==='map'){st.day=35;st.insightSeen=true;seedLog(35);st.tested={lactose:'threshold'};st.lastGroup='lactose';st.tab='path'}
+  if(m==='red'){st.day=21;st.insightSeen=true;seedLog(21);st.redPaused=true;st.modal='red'}
   render();
 }
 function toast(t){st.toast=t;render();clearTimeout(toast.t);toast.t=setTimeout(()=>{st.toast='';render()},1800)}
 const T=()=>S[st.lang];
 const fmtSleep=m=>T().sleepFmt(Math.floor(m/60),m%60);
+const stageKey=()=>st.check?'check':Object.keys(st.tested).length?'after':'obs';
+const stageLabel=()=>{const t=T();if(st.redPaused)return t.stage.paused;return st.check?t.stage.check(t.food[st.check.group]):t.stage.obs};
+const streak=()=>{let n=0;for(let i=st.day-1;i>=0&&st.log[i];i--)n++;return n};
 
 /* ---------- pieces ---------- */
 const topRow=(l,r,dark)=>`<div class="top" data-taptop><div class="eyebrow${dark?' dark':''}">${l}</div><div class="eyebrow${dark?' dark':''}">${r}</div></div>`;
-const nav=on=>{const t=T();return `<div class="nav"><div class="${on==='today'?'on':''}" data-tab="today">${t.today}</div><div class="${on==='map'?'on':''}" data-tab="map">${t.map}</div><div class="${on==='ask'?'on':''}" data-tab="ask">${t.ask}</div></div>`};
+const nav=on=>{const t=T();return `<div class="nav"><div class="${on==='today'?'on':''}" data-tab="today">${t.today}</div><div class="${on==='path'?'on':''}" data-tab="path">${t.path}</div><div class="${on==='tips'?'on':''}" data-tab="tips">${t.tips}</div></div>`};
 const dots=p=>{const m={d:'d-done',t:'d-today',a:'d-ahead',s:'d-skip'};return `<div class="dots">${[...p].map(c=>`<div class="${m[c]}"></div>`).join('')}</div>`};
 const sw=(key,on)=>`<div class="switch${on?' on':''}" data-switch="${key}"><i></i></div>`;
-const slider=(key,label,v)=>{const t=T();return `<div class="slider"><div class="row"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${t.hint[key]}</div></div><div class="numeral" style="font-size:18px">${v}</div></div><input type="range" min="0" max="5" step="1" value="${v}" data-slider="${key}"><div class="anchors"><div class="eyebrow" style="letter-spacing:.12em">${t.calm}</div><div class="eyebrow" style="letter-spacing:.12em">${t.strong}</div></div></div>`};
-const curDay=()=>st.day;
 const hint=(x,extra='')=>`<div class="body soft" style="font-size:12px;line-height:1.4;${extra}">${x}</div>`;
 const snapshot=()=>({scores:Object.assign({},st.scores),alcohol:st.alcohol,illness:st.illness,meals:st.meals.slice()});
-const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)return '';return `<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="editPrev"><div><div class="eyebrow" style="letter-spacing:.12em">${t.yesterday(y)}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.entry(e.scores.belly,e.scores.stool,e.scores.heavy)}</div></div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em;flex:none">${t.edit}</div></div>`};
-const healthLine=()=>{const t=T();const src=st.health?'Health':t.demoData;const s=st.check?st.check.sleep:430;return t.bg(fmtSleep(s),t.steps,'61',src)};
+const sleepNow=()=>st.check?st.check.sleep:430;
+const bgSource=()=>{const t=T();return st.health?t.fromHealth:t.demoData};
+const stoolText=v=>{const t=T();return v>0?`${v}`:t.stoolNone};
+const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)return '';return `<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="editPrev"><div><div class="eyebrow" style="letter-spacing:.12em">${t.yesterday(y)}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.entry(e.scores.belly,e.scores.bloat,stoolText(e.scores.stool))}</div></div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em;flex:none">${t.edit}</div></div>`};
+const bgCard=(compact)=>{const t=T();const s=fmtSleep(sleepNow());return `<div class="card quiet"><div class="row" style="align-items:baseline"><div class="eyebrow">${t.bgTitle}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${bgSource()}</div></div>
+ <div class="grid3" style="margin-top:10px"><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${s}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.sleep}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${t.steps}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.stepsL}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">61</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.hr}</div></div></div>
+ ${compact?'':`<div class="body soft" style="font-size:12px;margin-top:10px">${t.bgWhy}</div>`}</div>`};
+const mealsFeed=()=>{const t=T();if(!st.meals.length)return `<div class="body soft" style="font-size:13px;padding:2px 4px">${t.mealsEmpty}</div>`;
+ return `<div class="card quiet" style="padding:6px 18px">${st.meals.map(m=>`<div class="mealrow"><div class="time">${m.time}</div><div style="flex:1"><div class="body" style="font-size:14px;font-weight:700">${t.presets[m.pick]}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${t.presetGroups[m.pick].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div></div>`).join('')}</div>`};
+const mealsBlock=()=>{const t=T();const recent=[0,2,4];
+ return `<div class="stack"><div class="row"><div class="eyebrow">${t.mealsTitle}</div><div class="eyebrow" style="letter-spacing:.12em">${st.meals.length?t.mealsCount(st.meals.length):''}</div></div>
+ <div class="grid2"><div class="phototile" data-act="addMeal"><div class="display dark" style="font-size:22px;position:relative;padding-right:30px">${t.photoTile}</div><div class="body muted" style="font-size:12px;margin-top:4px;position:relative">${t.photoSub}</div></div>
+ <div class="quick" data-quick="${recent[st.meals.length%3]}"><div class="eyebrow" style="letter-spacing:.12em">${t.recent}</div><div><div class="body">${t.presets[recent[st.meals.length%3]]}</div><div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">${t.presetGroups[recent[st.meals.length%3]].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div></div></div></div>
+ ${mealsFeed()}</div>`};
+const tipCard=()=>{const t=T();const set=t.tipSets[stageKey()];const tip=set[st.day%set.length];return `<div class="card line" data-tab="tips" style="cursor:pointer"><div class="row"><div class="eyebrow">${t.tipOfDay}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.allTips}</div></div><div class="body" style="font-weight:700;font-size:14px;margin-top:8px">${tip[0]}</div><div class="body soft" style="font-size:13px;margin-top:4px">${tip[1]}</div></div>`};
+const pauseBanner=()=>{const t=T();if(!st.redPaused)return '';return `<div class="card accent"><div class="body" style="font-weight:700">${t.pauseBanner}</div><div class="body" style="font-size:13px;margin-top:4px">${t.pauseBody}</div><div class="grid2" style="margin-top:12px"><button class="btn cream" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="doctor">${t.doctorPage}</button><button class="btn primary" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="resumeDoctor">${t.resumeDoctor}</button></div></div>`};
+const rhythmCard=()=>{const t=T();if(!st.rhythm)return '';const n=streak();const done=!!st.log[st.day];return `<div class="card quiet row" style="padding:12px 16px"><div><div class="eyebrow" style="letter-spacing:.12em">${t.rhythm.title} · ${t.rhythm.freeze}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:4px">${t.rhythm.streak(n)}</div><div class="body soft" style="font-size:12px;margin-top:2px">${done?t.rhythm.goalDone:t.rhythm.goal} · ${t.rhythm.remind}</div></div><div class="numeral" style="font-size:34px">${n}</div></div>`};
 
 /* ---------- screens ---------- */
 function intro(){const t=T();const i=st.intro;const sl=t.intro[i];const last=i===t.intro.length-1;const dark=i===1;
@@ -223,14 +304,14 @@ function intro(){const t=T();const i=st.intro;const sl=t.intro[i];const last=i==
   ${body}
   <div class="stack" style="margin-top:auto">${pips}<div style="height:${sl.steps?'0':'6'}px"></div>
    <button class="btn ${dark?'cream':'primary'}" data-act="${last?'introDone':'introNext'}">${last?t.begin:t.next}</button>
-   ${last?'':`<div class="link${dark?' dark':''}" style="color:${dark?'var(--sage300)':'var(--forest)'}" data-act="introDone">${t.skip}</div>`}
+   ${last?'':`<div class="link" style="color:${dark?'var(--sage300)':'var(--forest)'}" data-act="introDone">${t.skip}</div>`}
   </div></div>`}
 function onboarding(){const t=T();
  const seg=(i,opts)=>`<div class="seg">${opts.map((o,j)=>`<div class="${st.q[i]===j?'on':''}" data-seg="${i}:${j}">${o}</div>`).join('')}</div>`;
  return `<div class="screen pinned" style="gap:10px">
   <div class="eyebrow" data-taptop>Threshold</div>
   <div class="feed" style="gap:10px"><div class="display" style="font-size:24px">${t.onbTitle}</div><div class="rule"></div>
-  ${hint(t.hint.onb)}
+  ${hint(t.onbHint)}
   <div class="stack"><div class="eyebrow">${t.q1}</div>${seg(0,t.q1a)}</div>
   <div class="stack"><div class="eyebrow">${t.q2}</div>${seg(1,t.q2a)}</div>
   <div class="stack"><div class="eyebrow">${t.q3}</div>${seg(2,t.q3a)}</div></div>
@@ -241,74 +322,93 @@ function onboarding(){const t=T();
    <div class="body soft" style="font-size:11px;text-align:center;padding:2px 8px 0">${t.disclaimer}</div>
   </div></div>`}
 
-function today(){const t=T();const d=st.day;
- if(st.check) return checkScreen();
- let body='';
- if(d===0){body=`<div class="card dark"><div class="eyebrow dark">${t.today} · ${t.dayN(0)}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.day0}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${t.day0body}</div></div>`}
- else if(d>=7){body=st.insightSeen?`<div class="card quiet" style="padding:12px 16px"><div class="body soft" style="font-size:13px">${t.obsFrom(t.dates.insight)} — ${t.insightBody}</div></div>`:
-  `<div class="card dark"><div class="eyebrow dark">${t.insightEye}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.insightTitle}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark">${t.insightBody}</div><div class="body muted" style="font-size:14px;margin-top:12px">${t.insightCaveat}</div><button class="btn cream" style="margin-top:16px" data-act="insightOk">${t.ok}</button></div>`}
- const c=stats(d);const need={full:20,rough:10,good:10};
- const conf=`<div style="display:flex;align-items:flex-end;gap:12px"><div class="numeral" style="font-size:${d<14?'44':'96'}px">${c.pct}%</div><div class="eyebrow" style="padding-bottom:12px">${t.confLabel}</div></div><div class="body soft">${d<7?t.nextInsight(7-d):c.ready?'':`${t.daysLeft(c.left)}<div class="body soft" style="font-size:13px;margin-top:6px">${t.needLine(c.rough,c.good)}</div>`}</div>
-  <div class="grid3">${[['full',t.fullDays],['rough',t.rough],['good',t.good]].map(([k,l])=>`<div class="card quiet" style="padding:14px 16px"><div class="numeral" style="font-size:24px">${c[k]}<small> / ${need[k]}</small></div><div class="eyebrow" style="margin-top:8px;letter-spacing:.12em">${l}</div></div>`).join('')}</div>`;
- const ask=d>0?`<div class="stack"><div class="eyebrow">${t.ask}</div>${t.askQ.map((q,i)=>`<div class="card${st.askOpen===i?'':' quiet'}" style="padding:14px 18px;cursor:pointer" data-ask="${i}"><div class="body" style="font-size:14px;${st.askOpen===i?'font-weight:700':''}">${q}</div>${st.askOpen===i?`<div class="body soft" style="font-size:14px;margin-top:8px">${t.askA[i]}</div>`:''}</div>`).join('')}</div>`:'';
- return `<div class="screen pinned">${topRow(`${t.today} · ${t.dayN(d)}`,t.observing)}<div class="feed">${body}${d===0?'':conf}${ask}${yesterdayRow()}</div>
-  ${hint(d===0?t.hint.today0:t.hint.today,'text-align:center;padding:0 8px')}<button class="btn primary" data-act="openDay">${t.closeDay}</button>${nav('today')}</div>`}
+function heroObs(){const t=T();const d=st.day;const h=t.hero;
+ if(d===0) return `<div class="card dark"><div class="eyebrow dark">${t.today} · ${t.dayN(0)}</div><div class="display dark" style="font-size:24px;margin-top:10px">${h.day0}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${h.day0body}</div></div>`;
+ if(d>=7&&!st.insightSeen) return `<div class="card dark"><div class="eyebrow dark">${h.insightEye}</div><div class="display dark" style="font-size:22px;margin-top:10px">${h.insightTitle}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark">${h.insightBody}</div><div class="body muted" style="font-size:14px;margin-top:12px">${h.insightCaveat}</div><button class="btn cream" style="margin-top:16px" data-act="insightOk">${t.ok}</button></div>`;
+ return `<div class="card dark"><div class="eyebrow dark">${t.stage.obs}</div><div class="display dark" style="font-size:24px;margin-top:10px">${h.obs}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${h.obsBody}</div></div>`}
+function heroCheck(){const t=T();const c=st.check;const f=t.food[c.group];const d=c.day;
+ if(c.paused) return `<div class="card quiet"><div class="eyebrow">${t.paused}</div><div class="display" style="font-size:22px;margin-top:10px">${t.noEntries}</div><div class="rule" style="margin:14px 0"></div><div class="body">${t.pausedBody}</div></div>`;
+ if(c.discard) return `<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.discarded}</div><div class="display" style="font-size:22px;margin-top:10px">${t.lastNight(fmtSleep(c.sleep))}</div><div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.discardBody(f)}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:10px">${t.moved}</div>
+   <div class="grid2" style="margin-top:14px"><div class="card quiet" style="padding:12px 14px"><div class="eyebrow" style="letter-spacing:.12em">${t.sleep}</div><div class="numeral" style="font-size:30px;margin-top:6px">4:40</div><div class="body soft" style="font-size:11px;margin-top:4px">${bgSource()}</div></div><div class="card quiet" style="padding:12px 14px"><div class="eyebrow" style="letter-spacing:.12em">${t.threshold}</div><div class="numeral" style="font-size:30px;margin-top:6px">6:00</div><div class="body soft" style="font-size:11px;margin-top:4px">${t.rule}</div></div></div></div>`;
+ if(d<=5){const list=t.swaps[c.group];const shown=st.swapsOpen?list:list.slice(0,3);return `<div class="card dark"><div class="eyebrow dark">${t.stage.check(f)} · ${t.dayN(d)}</div><div class="display dark" style="font-size:24px;margin-top:10px">${t.restrictionTask(f)}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:13px">${t.swapsLead}</div><div class="stack" style="margin-top:10px;gap:6px">${shown.map(s=>`<div class="card lift" style="padding:11px 16px"><div class="body dark" style="font-size:14px">${s}</div></div>`).join('')}</div><div class="link" style="color:var(--sage300);padding:10px 0 0" data-act="swaps">${st.swapsOpen?t.lessSwaps:t.moreSwaps}</div></div>`}
+ const step=d-5;return `<div class="card dark"><div class="eyebrow dark">${t.stage.check(f)} · ${t.dayN(d)}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.returnTask(step,t.doses[step-1])}</div><div class="rule dark" style="margin:14px 0"></div><div class="numeral dark" style="font-size:48px">${['¼','½','1'][step-1]}<small> ${t.doses[step-1]}</small></div></div>`}
+function progressRow(){const t=T();const d=st.day;const p=t.progress;
+ if(st.check){const c=st.check;const pat=[...Array(8)].map((_,i)=>i+1<c.day?'d':i+1===c.day?(c.discard?'s':'t'):'a').join('');const ph=c.day<=5?t.phaseR(t.food[c.group]):t.phaseB;
+  return `<div class="card quiet" style="padding:14px 18px;cursor:pointer" data-act="plan">${dots(pat)}<div class="row" style="margin-top:10px"><div class="body" style="font-size:13px;font-weight:700">${p.checkDay(c.day,ph)}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.planBtn}</div></div></div>`}
+ if(d===0) return '';
+ const s=stats(d);const line=d<7?p.insightIn(7-d):s.ready?p.enough:p.suspectIn(s.left);const pct=Math.min(100,Math.round(100*d/21));
+ return `<div class="card quiet" style="padding:14px 18px;cursor:pointer" data-tab="path"><div class="row"><div class="body" style="font-size:13px;font-weight:700">${p.collected(d)}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${p.open}</div></div><div class="bar" style="margin:10px 0 8px"><i style="width:${pct}%"></i></div><div class="body soft" style="font-size:13px">${line}</div></div>`}
+function today(){const t=T();const c=st.check;
+ const hero=c?heroCheck():heroObs();
+ const btn=c&&c.paused?`<button class="btn primary" data-act="resume">${t.resume}</button>`:c&&c.discard?`<button class="btn primary" data-act="discardOk">${t.ok}</button>`:`${hint(t.closeHint,'text-align:center')}<button class="btn primary" data-act="openDay">${t.closeDay}</button>`;
+ return `<div class="screen pinned">${topRow(`${t.today} · ${t.dayN(st.day)}`,stageLabel())}<div class="feed">${pauseBanner()}${rhythmCard()}${hero}${progressRow()}${mealsBlock()}${bgCard(true)}${tipCard()}${yesterdayRow()}</div>${btn}${nav('today')}</div>`}
 
-function checkScreen(){const t=T();const c=st.check;const f=t.food[c.group];const d=c.day;
- const pat=[...Array(8)].map((_,i)=>i+1<d?'d':i+1===d?(c.discard?'s':'t'):'a').join('');
- const phase=d<=5?t.phaseR(f):t.phaseB;
- let card;
- if(c.paused) card=`<div class="card quiet"><div class="eyebrow">${t.paused}</div><div class="display" style="font-size:22px;margin-top:10px">${t.noEntries}</div><div class="rule" style="margin:14px 0"></div><div class="body">${t.pausedBody}</div></div>`;
- else if(c.discard) card=`<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.discarded}</div><div class="display" style="font-size:22px;margin-top:10px">${t.lastNight(fmtSleep(c.sleep))}</div><div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.discardBody(f)}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:10px">${t.moved}</div></div>
-   <div class="grid2"><div class="card quiet"><div class="eyebrow">${t.sleep}</div><div class="numeral" style="font-size:34px;margin-top:8px">4:40</div><div class="body soft" style="font-size:12px;margin-top:6px">${st.health?'Health':t.demoData}</div></div><div class="card quiet"><div class="eyebrow">${t.threshold}</div><div class="numeral" style="font-size:34px;margin-top:8px">6:00</div><div class="body soft" style="font-size:12px;margin-top:6px">${t.rule}</div></div></div>`;
- else if(d<=5) card=`<div class="card dark"><div class="eyebrow dark">${t.today}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.restrictionTask(f)}</div><div class="rule dark" style="margin:14px 0"></div><div class="body dark" style="font-size:14px">${t.swapsLead}</div><div class="stack" style="margin-top:10px;gap:6px">${t.swaps[c.group].map(s=>`<div class="card lift" style="padding:12px 16px"><div class="body dark" style="font-size:14px">${s}</div></div>`).join('')}</div></div>
-   ${d>1?`<div class="card quiet" style="padding:12px 16px"><div class="body soft" style="font-size:13px">${t.dayCounted(d-1,fmtSleep(c.sleep))}</div></div>`:''}`;
- else {const step=d-5;card=`<div class="card dark"><div class="eyebrow dark">${t.today}</div><div class="display dark" style="font-size:22px;margin-top:10px">${t.returnTask(step,t.doses[step-1])}</div><div class="rule dark" style="margin:14px 0"></div><div class="numeral dark" style="font-size:48px">${['¼','½','1'][step-1]}<small> ${t.doses[step-1]}</small></div></div>`}
- const btn=c.paused?`<button class="btn primary" data-act="resume">${t.resume}</button>`:c.discard?`<button class="btn primary" data-act="discardOk">${t.ok}</button>`:`<button class="btn primary" data-act="openDay">${t.closeDay}</button>`;
- return `<div class="screen pinned">${topRow(t.checkHeader(f),`${t.dayN(d)} · ${phase}`)}${dots(pat)}<div class="row"><div class="eyebrow" style="letter-spacing:.12em">${c.discard?t.notCounted:t.returnWhen}</div><div class="eyebrow" style="letter-spacing:.12em">${t.ends(t.dates.ends)}</div></div><div class="feed">${card}${yesterdayRow()}</div>${c.paused||c.discard?'':hint(t.hint.todayCheck,'text-align:center;padding:0 8px')}${btn}${nav('today')}</div>`}
-
+const scale=(key,label,sub,v)=>{const t=T();return `<div class="scale"><div class="head"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${sub}</div></div><div class="val"><div class="numeral" style="font-size:40px" data-num="${key}">${v}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)" data-lvl="${key}">${t.lvl[v]}</div></div></div><input type="range" min="0" max="10" step="1" value="${v}" data-slider="${key}"><div class="anchors"><div class="eyebrow" style="letter-spacing:.12em">0 · ${t.lvl[0]}</div><div class="eyebrow" style="letter-spacing:.12em">10 · ${t.lvl[10]}</div></div></div>`};
+const stoolPicker=v=>{const t=T();return `<div class="stack" style="gap:6px"><div class="row" style="align-items:baseline"><div><div class="eyebrow">${t.stool}</div><div class="body soft" style="font-size:12px;margin-top:2px">${t.stoolSub}</div></div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${v>0?`${v} · ${t.stoolTypes[v]}`:t.stoolTypes[0]}</div></div>
+ <div class="stool">${[0,1,2,3,4,5,6,7].map(i=>`<div class="t${v===i?' on':''}" data-stool="${i}"><div class="n">${i===0?'—':i}</div><div class="shape s${i}"></div><div class="l">${t.stoolTypes[i]}</div></div>`).join('')}</div>
+ <div class="body soft" style="font-size:11px;text-align:center">${t.stoolKey}</div></div>`};
 function dayCard(){const t=T();const s=st.scores;const ed=st.editDay!==null;
- return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayTitle(t.dates.card),t.dayN(ed?st.editDay:curDay()))}<div class="feed"><div class="display" style="font-size:24px">${t.howToday}</div>${hint(t.hint.scale)}
-  ${slider('belly',t.belly,s.belly)}${slider('stool',t.stool,s.stool)}${slider('heavy',t.heavy,s.heavy)}
-  <div class="card quiet" style="padding:12px 16px"><div class="eyebrow" style="letter-spacing:.12em;margin-bottom:4px">${t.hint.bg}</div><div class="body soft" style="font-size:12px">${healthLine()}</div></div>
-  ${hint(t.hint.flags)}
+ return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayTitle(t.dates.card),t.dayN(ed?st.editDay:st.day))}<div class="feed"><div><div class="display" style="font-size:26px">${t.howToday}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.worst}</div></div>
+  ${scale('belly',t.belly,t.bellySub,s.belly)}${scale('bloat',t.bloat,t.bloatSub,s.bloat)}${stoolPicker(s.stool)}
+  ${bgCard(true)}
+  ${hint(t.flagsHint)}
   <div class="grid2"><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.alcohol}</div>${sw('alcohol',st.alcohol)}</div><div class="card quiet row" style="padding:12px 16px"><div class="body" style="font-size:14px">${t.illness}</div>${sw('illness',st.illness)}</div></div>
   <div class="row" style="border-radius:24px;padding:12px 16px;box-shadow:inset 0 0 0 2px var(--sage500);cursor:pointer" data-act="blood"><div class="body soft" style="font-size:14px">${t.blood}</div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em">${t.report}</div></div>
-  ${hint(t.hint.meals)}</div>
-  <div class="stack"><button class="btn ghost" data-act="addMeal">${t.addMeal}</button>${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>${hint(t.hint.close,'text-align:center')}`}</div></div>`}
+  <div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-act="addMealCard"><div class="body" style="font-size:14px">${t.mealsInCard(st.meals.length)}</div><div class="eyebrow" style="color:var(--forest);letter-spacing:.12em">${t.addMeal}</div></div></div>
+  <div class="stack">${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>${hint(t.closeSaves,'text-align:center')}`}</div></div>`}
 
 function addMeal(){const t=T();const p=st.mealPick;
- const tile=(k,l)=>`<div class="card" style="height:96px;display:flex;align-items:flex-end;cursor:pointer" data-meal="${k}"><div class="display" style="font-size:18px">${l}</div></div>`;
- const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.recognized}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
-  `<div class="stack">${t.presets.map((n,i)=>`<div class="card quiet" style="padding:12px 16px;cursor:pointer" data-pick="${i}"><div class="body" style="font-size:14px">${n}</div></div>`).join('')}</div>`;
- return `<div class="screen modal pinned">${topRow(t.addMeal,t.dayN(curDay()))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${hint(t.hint.mealHow)}<div class="grid3">${tile('photo',t.photo)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${hint(p===null?t.hint.mealProto:t.hint.mealConfirm)}${rec}</div>
-  <div class="stack"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.correct}</button><button class="btn ghost" data-act="mealFix">${p===null?t.close:t.fix}</button></div></div>`}
+ const tile=(k,l,dark)=>`<div class="card${dark?' dark':''}" style="height:92px;display:flex;align-items:flex-end;cursor:pointer" data-meal="${k}"><div class="display${dark?' dark':''}" style="font-size:18px">${l}</div></div>`;
+ const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--ink600)">${t.recognized} · ${t.times[st.meals.length%5]}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
+  `<div class="stack"><div class="eyebrow">${t.recent}</div>${t.presets.map((n,i)=>`<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-pick="${i}"><div class="body" style="font-size:14px">${n}</div><div style="display:flex;gap:4px">${t.presetGroups[i].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div></div>`).join('')}</div>`;
+ return `<div class="screen modal pinned">${topRow(t.addMealFull,t.dayN(st.day))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${hint(t.mealHow)}<div class="grid3">${tile('photo',t.photo,true)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${hint(p===null?t.mealProto:t.mealConfirm)}${rec}</div>
+  <div class="stack"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.save}</button><button class="btn ghost" data-act="mealFix">${p===null?t.back:t.fix}</button></div></div>`}
 
 function suspicion(){const t=T();const s=st.susp;const f=t.food[s.group];
  return `<div class="screen modal">${topRow(t.suspEye,t.dayN(st.day))}<div class="display" style="font-size:26px">${t.suspTitle(f)}</div><div class="rule"></div>
   <div class="grid2"><div class="card dark"><div class="numeral dark" style="font-size:48px">${s.a}<small> / ${s.b}</small></div><div class="eyebrow dark" style="margin-top:10px;letter-spacing:.12em">${t.roughWith(f)}</div></div><div class="card quiet"><div class="numeral" style="font-size:48px">${s.c}<small> / ${s.d}</small></div><div class="eyebrow" style="margin-top:10px;letter-spacing:.12em">${t.goodWith(f)}</div></div></div>
   <div class="body" style="font-size:16px">${t.suspBody(f,s.a,s.b,s.c,s.d)}</div><div class="body">${t.suspCaveat}</div>
   <div class="stack" style="margin-top:auto"><button class="btn accent" data-act="startCheck">${t.check}</button><button class="btn accent" data-act="notNow">${t.notNow}</button>${st.tested.fructans||s.group==='fructans'?'':`<button class="btn accent" data-act="other">${t.other}</button>`}</div></div>`}
-
 function otherSuspects(){const t=T();return `<div class="screen modal">${topRow(t.otherTitle,'')}<div class="display" style="font-size:24px">${t.otherTitle}</div><div class="rule"></div>
  <div class="card" style="cursor:pointer" data-act="pickFructans"><div class="body" style="font-size:15px;font-weight:700">${cap(t.food.fructans)}</div><div class="body soft" style="font-size:14px;margin-top:6px">${(x=>t.suspBody(t.food.fructans,x.a,x.b,x.c,x.d))(stats(st.day).fructans)}</div></div>
  <button class="btn ghost" style="margin-top:auto" data-act="backSusp">${t.close}</button></div>`}
-
 function verdict(){const t=T();const g=st.lastGroup||'lactose';const f=t.food[g];const nc=st.verdictType==='notConfirmed';const ng=nextGroup();const nx=ng?stats(st.day)[ng]:null;
  return `<div class="screen modal">${topRow(t.verdictEye,`${cap(f)} · ${t.dayN(8)}`)}<div class="display" style="font-size:34px;margin-top:24px">${nc?t.notConfirmed:t.verdict}</div><div class="rule"></div><div class="body${nc?'':' soft'}">${nc?t.notConfirmedWhy(f):t.how}</div>
   ${nx?`<div class="card quiet" style="margin-top:8px"><div class="eyebrow">${t.nextSuspect}</div><div class="body" style="margin-top:8px">${t.suspBody(t.food[ng],nx.a,nx.b,nx.c,nx.d)}</div></div>`:''}
-  <div class="stack" style="margin-top:auto">${nx?`<button class="btn primary" data-act="nextSuspect">${t.nextBtn(t.g[ng])}</button><div class="link" data-act="toMap">${t.toMap}</div>`:`<button class="btn primary" data-act="toMap">${t.toMap}</button>`}</div></div>`}
+  <div class="stack" style="margin-top:auto">${nx?`<button class="btn primary" data-act="nextSuspect">${t.nextBtn(t.g[ng])}</button><div class="link" data-act="toPath">${t.toPath}</div>`:`<button class="btn primary" data-act="toPath">${t.toPath}</button>`}</div></div>`}
+function checkPlan(){const t=T();return `<div class="screen modal pinned">${topRow(t.planTitle,st.check?t.dayN(st.check.day):'')}<div class="feed"><div class="display" style="font-size:26px">${t.planTitle}</div><div class="rule"></div>
+ <div class="stack">${t.planDays.map(([d,h,b],i)=>`<div class="card${st.check&&((i===0&&st.check.day<=5)||(i>0&&st.check.day===5+i))?'':' quiet'}" style="display:flex;gap:12px;align-items:flex-start;padding:13px 16px"><div class="numeral" style="font-size:22px;flex:none;width:36px;margin-top:2px">${d}</div><div><div class="body" style="font-weight:700;font-size:14px">${h}</div>${b?`<div class="body soft" style="font-size:13px;margin-top:3px">${b}</div>`:''}</div></div>`).join('')}</div>
+ <div class="card quiet"><div class="body soft" style="font-size:13px">${t.planRules}</div></div></div>
+ <button class="btn ghost" data-act="closeModal">${t.close}</button></div>`}
 
-function mapScreen(){const t=T();const groups=['lactose','fructans','gos','fructose','sorbitol','mannitol'];
- const nT=Object.keys(st.tested).length;
- const row=(g,i)=>{const r=st.tested[g];const on=!!r;const status=r==='threshold'?t.tested(t.threshText):r==='ok'?t.testedFine:t.obs;return `<div class="card${on?'':' quiet'} row" style="padding:14px 18px;align-items:baseline"><div class="body" style="font-size:14px;font-weight:700">${cap(t.g[g])}</div><div class="body soft" style="font-size:12px;text-align:right">${status}</div></div>`};
- return `<div class="screen">${topRow(t.mapTitle,nT?t.nOf6(nT):t.observing)}<div class="display" style="font-size:26px">${t.mapSub}</div><div class="rule"></div><div class="stack">${groups.map(row).join('')}</div>
-  ${nT?'':`<div class="card quiet" style="padding:12px 16px"><div class="body soft" style="font-size:13px">${t.mapEmpty}</div></div>`}
-  <button class="btn ${nT?'primary':'ghost'}" style="margin-top:auto" data-act="doctor">${t.doctorPage}</button>${nav('map')}</div>`}
+function pathScreen(){const t=T();const d=st.day;const s=stats(d);const n=t.nodes;const c=st.check;const nT=Object.keys(st.tested).length;
+ const node=(cls,title,sub,body)=>`<div class="node ${cls}"><div class="pin"><i></i><b></b></div><div class="box"><div class="row" style="align-items:baseline"><div class="body" style="font-weight:700;font-size:14px">${title}</div><div class="eyebrow" style="letter-spacing:.12em">${sub}</div></div>${body?`<div style="margin-top:8px">${body}</div>`:''}</div></div>`;
+ const suspDone=nT>0||!!c||st.suspOfferedDay>0;
+ const obsBody=`<div class="bar" style="margin-bottom:8px"><i style="width:${Math.min(100,Math.round(100*d/21))}%"></i></div><div class="grid3">${[['full',t.fullDays,20],['rough',t.rough,10],['good',t.good,10]].map(([k,l,m])=>`<div><div class="numeral" style="font-size:22px">${s[k]}<small> / ${m}</small></div><div class="eyebrow" style="margin-top:4px;letter-spacing:.12em">${l}</div></div>`).join('')}</div>${s.ready?'':`<div class="body soft" style="font-size:12px;margin-top:8px">${t.needLine(s.rough,s.good)}</div>`}`;
+ const checkNode=(g,i)=>{const r=st.tested[g];const active=c&&c.group===g;
+  if(active){const pat=[...Array(8)].map((_,k)=>k+1<c.day?'d':k+1===c.day?(c.discard?'s':'t'):'a').join('');const stt=c.paused?t.checkStatus.paused:c.discard?t.checkStatus.discard:t.checkStatus.run;return node('cur',`${n.check(i)} · ${t.food[g]}`,t.daysRange(c.startDay,c.startDay+7),`<div data-act="plan" style="cursor:pointer">${dots(pat)}<div class="body soft" style="font-size:12px;margin-top:8px">${t.progress.checkDay(c.day,stt)} · ${t.planBtn}</div></div>`)}
+  if(r) return node('done',`${n.check(i)} · ${t.food[g]}`,t.checkStatus.done,`<div class="body soft" style="font-size:13px">${r==='threshold'?t.lactoseRes:t.testedFine}</div>`);
+  return node('ahead',i===1?`${n.check(1)}`:n.next,i===1?(s.ready?t.whenReady:t.whenReady):t.afterAnswer,'')};
+ const nodes=[
+  node(suspDone?'done':'cur',n.obs,suspDone?n.obsDone:t.obsDays(d),obsBody),
+  node(d>=7?'done':'ahead',n.insight,d>=7?t.dates.insight:t.aheadDay,d>=7?`<div class="body soft" style="font-size:13px">${t.hero.insightBody}</div>`:''),
+  node(suspDone?'done':(s.ready?'cur':'ahead'),n.susp,suspDone?`${t.food.lactose}`:t.whenReady,suspDone?`<div class="body soft" style="font-size:13px">${(x=>t.suspBody(t.food.lactose,x.a,x.b,x.c,x.d))(stats(Math.max(21,Math.min(d,21))).lactose)}</div>`:''),
+  checkNode('lactose',1),
+  st.tested.lactose?node('done',n.answer(1),'',`<div class="body" style="font-size:13px;font-weight:700">${st.tested.lactose==='threshold'?t.verdict:t.notConfirmed}</div>`):node('ahead',n.answer(1),t.afterAnswer,''),
+  checkNode('fructans',2)];
+ const groups=['lactose','fructans','gos','fructose','sorbitol','mannitol'];
+ const row=g=>{const r=st.tested[g];const status=r==='threshold'?t.tested(t.threshText):r==='ok'?t.testedFine:t.obs;return `<div class="card${r?'':' quiet'} row" style="padding:12px 16px;align-items:baseline"><div class="body" style="font-size:14px;font-weight:700">${cap(t.g[g])}</div><div class="body soft" style="font-size:12px;text-align:right">${status}</div></div>`};
+ return `<div class="screen pinned">${topRow(t.pathTitle,t.dayN(d))}<div class="feed"><div><div class="display" style="font-size:26px">${t.pathTitle}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.pathPos(stageLabel(),d)}</div></div>
+  <div>${nodes.join('')}</div>
+  <div class="row" style="margin-top:6px"><div class="eyebrow">${t.mapTitle}</div><div class="eyebrow" style="letter-spacing:.12em">${nT?t.nOf6(nT):t.observing}</div></div>
+  <div class="stack" style="gap:6px">${groups.map(row).join('')}</div>
+  ${nT?'':`<div class="body soft" style="font-size:13px;padding:0 4px">${t.mapEmpty}</div>`}
+  <button class="btn ${nT?'primary':'ghost'}" data-act="doctor">${t.doctorPage}</button></div>${nav('path')}</div>`}
 
-function askScreen(){const t=T();return `<div class="screen">${topRow(t.ask,'')}<div class="display" style="font-size:26px">${t.ask}</div><div class="rule"></div>
- <div class="stack">${t.askQ.map((q,i)=>`<div class="card${st.askOpen===i?'':' quiet'}" style="padding:14px 18px;cursor:pointer" data-ask="${i}"><div class="body" style="font-size:14px;${st.askOpen===i?'font-weight:700':''}">${q}</div>${st.askOpen===i?`<div class="body soft" style="font-size:14px;margin-top:8px">${t.askA[i]}</div>`:''}</div>`).join('')}</div>
- <div class="card dark" style="padding:14px 18px;margin-top:auto"><div class="body dark" style="font-size:12px">${t.askNote}</div></div>${nav('ask')}</div>`}
+function tipsScreen(){const t=T();const set=t.tipSets[stageKey()];
+ return `<div class="screen pinned">${topRow(t.tips,stageLabel())}<div class="feed"><div class="display" style="font-size:26px">${t.tipsTitle(stageLabel())}</div><div class="rule"></div>
+ <div class="stack">${set.map(([q,a],i)=>`<div class="card${st.tipOpen===i?'':' quiet'}" style="padding:14px 18px;cursor:pointer" data-tip="${i}"><div class="body" style="font-size:14px;${st.tipOpen===i?'font-weight:700':''}">${q}</div>${st.tipOpen===i?`<div class="body soft" style="font-size:14px;margin-top:8px">${a}</div>`:''}</div>`).join('')}</div>
+ <div class="card line"><div class="body soft" style="font-size:13px">${t.assistantNote}</div></div></div>${nav('tips')}</div>`}
 
 function doctorPage(){const t=T();const res=g=>st.tested[g]==='threshold'?t.lactoseRes:st.tested[g]==='ok'?t.testedFine:t.obs;
  const eb=x=>`<div class="eyebrow" style="color:var(--ink600)">${x}</div>`;
@@ -316,23 +416,27 @@ function doctorPage(){const t=T();const res=g=>st.tested[g]==='threshold'?t.lact
   <div class="stack" style="gap:6px">${eb(t.protocol)}<div style="font-size:13px;line-height:1.45;color:#1F2A24">${t.protocolBody}</div></div>
   <div class="stack" style="gap:6px">${eb(t.results)}<div style="font-size:13px;line-height:1.45;color:#1F2A24" class="stack"><div class="row" style="align-items:baseline"><b>${cap(t.g.lactose)}</b><span style="text-align:right">${res('lactose')}</span></div><div class="row" style="align-items:baseline"><b>${cap(t.g.fructans)}</b><span>${res('fructans')}</span></div><div class="row" style="align-items:baseline"><b>${t.g.gos} · ${t.g.fructose} · ${t.g.sorbitol} · ${t.g.mannitol}</b><span>${t.obs}</span></div></div></div>
   <div class="stack" style="gap:6px">${eb(t.symptoms)}<div class="grid3">${[[6,t.before],[3,t.during],[5,t.after]].map(([n,l])=>`<div><div class="numeral" style="font-size:30px;color:#1F2A24">${n}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em;color:var(--ink600)">${l}</div></div>`).join('')}</div></div>
+  ${st.redPaused?`<div class="stack" style="gap:6px">${eb(t.redEye)}<div style="font-size:13px;line-height:1.45;color:#1F2A24">${t.blood} — ${t.dayN(st.day)}</div></div>`:''}
   <div style="font-size:12px;line-height:1.45;color:var(--ink600);margin-top:auto;border-top:1px solid var(--sage500);padding-top:12px">${t.docDisc}</div>
-  <div class="stack"><button class="btn primary" data-act="share">${t.share}</button>${st.modal==='red'?'':`<button class="btn ghost" data-act="closeDoc">${t.close}</button>`}</div></div>`}
+  <div class="stack"><button class="btn primary" data-act="share">${t.share}</button><button class="btn ghost" data-act="closeDoc">${t.close}</button></div></div>`}
 
-function redFlag(){const t=T();return `<div class="screen dark modal"><div class="eyebrow dark" data-taptop>${t.redEye}</div><div class="display dark" style="font-size:34px;margin-top:24px">${t.redTitle}</div><div class="rule dark"></div><div class="body dark" style="font-size:16px">${t.redBody(t.redBlood)}</div><div class="body muted" style="font-size:14px">${t.redNote}</div><button class="btn cream" style="margin-top:auto" data-act="redDoc">${t.redBtn}</button></div>`}
+function redConfirm(){const t=T();return `<div class="screen modal" style="justify-content:flex-end;background:rgba(1,71,46,.35);background-image:none"><div class="card" style="background:var(--cream50);padding:22px 20px"><div class="eyebrow">${t.redConfirmEye}</div><div class="display" style="font-size:26px;margin-top:8px">${t.redConfirmTitle}</div><div class="body soft" style="margin-top:10px;font-size:14px">${t.redConfirmBody}</div><div class="stack" style="margin-top:16px"><button class="btn primary" data-act="redYes">${t.redYes}</button><button class="btn ghost" data-act="closeModalToCard">${t.redNo}</button></div></div></div>`}
+function redFlag(){const t=T();return `<div class="screen dark modal"><div class="eyebrow dark" data-taptop>${t.redEye}</div><div class="display dark" style="font-size:34px;margin-top:24px">${t.redTitle}</div><div class="rule dark"></div><div class="body dark" style="font-size:16px">${t.redBody}</div><div class="stack" style="margin-top:auto"><button class="btn cream" data-act="doctor">${t.redBtn}</button><div class="link" style="color:var(--sage300)" data-act="redBack">${t.redBack}</div></div></div>`}
 
-function switcher(){const t=T();return `<div class="screen modal"><div class="card dark" style="padding:10px 16px"><div class="body dark" style="font-size:12px">${t.momentLabel(st.moment?t.moments[st.moment]:t.dayN(st.day))}</div></div><div class="eyebrow">${t.momentTitle}</div>
+function switcher(){const t=T();return `<div class="screen modal pinned"><div class="card dark" style="padding:10px 16px"><div class="body dark" style="font-size:12px">${t.momentLabel(st.moment?t.moments[st.moment]:t.dayN(st.day))}</div></div><div class="feed"><div class="eyebrow">${t.momentTitle}</div>
  <div class="stack list" style="gap:6px">${MOMENTS.map(m=>`<div class="m${st.moment===m?' on':''}" data-moment="${m}">${t.moments[m]}</div>`).join('')}</div>
  <div class="row" style="margin-top:8px"><div class="eyebrow">${t.language}</div><div class="seg" style="width:140px;grid-template-columns:1fr 1fr"><div class="${st.lang==='en'?'on':''}" data-lang="en">EN</div><div class="${st.lang==='ru'?'on':''}" data-lang="ru">RU</div></div></div>
- <button class="btn ghost" style="margin-top:auto" data-act="closeSwitcher">${t.close}</button></div>`}
+ <div class="row"><div class="eyebrow">${st.rhythm?t.rhythm.on:t.rhythm.off}</div>${sw('rhythm',st.rhythm)}</div></div>
+ <button class="btn ghost" data-act="closeModal">${t.close}</button></div>`}
 
 /* ---------- render ---------- */
-function render(){const t=T();let html='';
+function render(){let html='';
  if(!st.onboarded) html=st.introDone?onboarding():intro();
- else html=st.tab==='map'?mapScreen():st.tab==='ask'?askScreen():today();
- const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,red:redFlag,switcher};
+ else html=st.tab==='path'?pathScreen():st.tab==='tips'?tipsScreen():today();
+ const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,red:redFlag,redConfirm,plan:checkPlan,switcher};
+ if(st.modal==='redConfirm'||(st.modal==='doctor'&&st.docFrom==='card')||(st.modal==='addMeal'&&st.mealFrom==='card')) html+=dayCard();
+ if(st.modal==='doctor'&&st.docFrom==='red') html+=redFlag();
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
- if(st.modal==='red'&&st.docOverRed) html+=doctorPage();
  html+=`<div class="toast${st.toast?' show':''}">${st.toast}</div>`;
  document.getElementById('phone').innerHTML=html;
  document.documentElement.lang=st.lang;
@@ -340,14 +444,18 @@ function render(){const t=T();let html='';
 
 /* ---------- events ---------- */
 let taps=[];
-document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[data-tab],[data-seg],[data-switch],[data-ask],[data-meal],[data-pick],[data-moment],[data-lang],[data-taptop]');if(!el)return;const t=T();
+const restore=()=>{const b=st.editBackup;if(b){st.scores=b.scores;st.alcohol=b.alcohol;st.illness=b.illness;st.meals=b.meals}st.editDay=null;st.editBackup=null};
+const addMealNow=(pick)=>{const t=T();st.meals.push({pick,time:t.times[st.meals.length%5]});toast(t.mealSaved)};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-moment],[data-lang],[data-taptop]');if(!el)return;const t=T();
  if(el.dataset.taptop!==undefined&&!el.dataset.act){const now=Date.now();taps=taps.filter(x=>now-x<2500);taps.push(now);if(taps.length>=5){taps=[];st.modal='switcher';render()}return}
  if(el.dataset.moment){setMoment(el.dataset.moment);return}
  if(el.dataset.lang){st.lang=el.dataset.lang;ls.set('ths-lang',st.lang);render();return}
- if(el.dataset.tab){st.tab=el.dataset.tab;st.modal=null;render();return}
+ if(el.dataset.tab){st.tab=el.dataset.tab;st.modal=null;st.tipOpen=-1;render();return}
  if(el.dataset.seg){const [i,j]=el.dataset.seg.split(':').map(Number);st.q[i]=j;render();return}
  if(el.dataset.switch){st[el.dataset.switch]=!st[el.dataset.switch];render();return}
- if(el.dataset.ask!==undefined){st.askOpen=st.askOpen===+el.dataset.ask?-1:+el.dataset.ask;render();return}
+ if(el.dataset.tip!==undefined){st.tipOpen=st.tipOpen===+el.dataset.tip?-1:+el.dataset.tip;render();return}
+ if(el.dataset.stool!==undefined){st.scores.stool=+el.dataset.stool;render();return}
+ if(el.dataset.quick!==undefined){addMealNow(+el.dataset.quick);return}
  if(el.dataset.meal){st.mealPick=null;render();return}
  if(el.dataset.pick!==undefined){st.mealPick=+el.dataset.pick;render();return}
  const a=el.dataset.act;
@@ -358,19 +466,25 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
   case 'start': st.onboarded=true;st.moment='day0';break;
   case 'openDay': st.modal='dayCard';break;
   case 'editPrev': {const e=st.log[st.day-1];if(!e)break;st.editDay=st.day-1;st.editBackup=snapshot();st.scores=Object.assign({},e.scores);st.alcohol=e.alcohol;st.illness=e.illness;st.meals=e.meals.slice();st.modal='dayCard';break}
-  case 'saveEdit': {st.log[st.editDay]=snapshot();const b=st.editBackup;st.scores=b.scores;st.alcohol=b.alcohol;st.illness=b.illness;st.meals=b.meals;toast(t.updated(st.editDay));st.editDay=null;st.editBackup=null;st.modal=null;break}
-  case 'cancelEdit': {const b=st.editBackup;st.scores=b.scores;st.alcohol=b.alcohol;st.illness=b.illness;st.meals=b.meals;st.editDay=null;st.editBackup=null;st.modal=null;break}
+  case 'saveEdit': {st.log[st.editDay]=snapshot();const d=st.editDay;restore();toast(t.updated(d));st.modal=null;break}
+  case 'cancelEdit': restore();st.modal=null;break;
   case 'closeDay': st.log[st.day]=snapshot();st.meals=[];st.modal=null;st.moment='';st.day++;
-    if(st.check){const c=st.check;c.day=Math.min(c.day+1,8);
-      if(c.day===6&&c.demoDiscard){c.demoDiscard=false;c.discard=true;c.sleep=280}
+    if(st.check&&!st.redPaused){const c=st.check;c.day=Math.min(c.day+1,8);
+      if(c.day===6&&c.demoDiscard){c.demoDiscard=false;c.discard=true;c.discardedOnce=true;c.sleep=280}
       else if(c.day===8){finishCheck()} else toast(t.dayCounted(c.day-1,fmtSleep(c.sleep)))}
+    else if(st.check){toast(`${t.today} · ${t.dayN(st.day)}`)}
     else{const g=nextGroup();
-      if(g&&stats(st.day).ready&&st.day-st.suspOfferedDay>=3){st.susp=stats(st.day)[g];st.suspOfferedDay=st.day;st.modal='suspicion'}
-      else toast(st.day<7?t.closed(7-st.day):`${t.daySaved} · ${t.dayN(st.day)}`)} break;
-  case 'addMeal': st.modal='addMeal';st.mealPick=null;break;
-  case 'mealOk': st.meals.push(st.mealPick);st.modal='dayCard';toast(t.mealSaved);break;
-  case 'mealFix': st.mealPick===null?(st.modal='dayCard'):(st.mealPick=null);break;
-  case 'blood': st.modal='red';break;
+      if(g&&!st.redPaused&&stats(st.day).ready&&st.day-st.suspOfferedDay>=3){st.susp=stats(st.day)[g];st.suspOfferedDay=st.day;st.modal='suspicion'}
+      else toast(st.day<7?`${t.progress.collected(st.day)} · ${t.progress.insightIn(7-st.day)}`:`${t.progress.collected(st.day)}`)} break;
+  case 'addMeal': st.modal='addMeal';st.mealPick=null;st.mealFrom='today';break;
+  case 'addMealCard': st.modal='addMeal';st.mealPick=null;st.mealFrom='card';break;
+  case 'mealOk': addMealNow(st.mealPick);st.modal=st.mealFrom==='card'?'dayCard':null;return;
+  case 'mealFix': if(st.mealPick===null){st.modal=st.mealFrom==='card'?'dayCard':null}else st.mealPick=null;break;
+  case 'blood': st.modal='redConfirm';break;
+  case 'closeModalToCard': st.modal='dayCard';break;
+  case 'redYes': st.redPaused=true;st.modal='red';break;
+  case 'redBack': st.modal='dayCard';break;
+  case 'resumeDoctor': st.redPaused=false;break;
   case 'insightOk': st.insightSeen=true;break;
   case 'startCheck': startCheck(st.susp.group);break;
   case 'notNow': st.modal=null;st.suspOfferedDay=st.day;toast(t.willReturn);break;
@@ -379,13 +493,14 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act],[dat
   case 'pickFructans': st.susp=stats(st.day).fructans;st.modal='suspicion';break;
   case 'discardOk': st.check.discard=false;st.check.sleep=420;toast(t.moved);break;
   case 'resume': st.check.paused=false;break;
+  case 'swaps': st.swapsOpen=!st.swapsOpen;break;
+  case 'plan': st.modal='plan';break;
+  case 'closeModal': st.modal=null;break;
   case 'nextSuspect': {const g=nextGroup();st.check=null;st.susp=stats(st.day)[g];st.suspOfferedDay=st.day;st.modal='suspicion';break}
-  case 'toMap': st.check=null;st.modal=null;st.tab='map';break;
-  case 'doctor': st.modal='doctor';break;
-  case 'closeDoc': st.modal=null;break;
-  case 'redDoc': st.docOverRed=true;break;
+  case 'toPath': st.check=null;st.modal=null;st.tab='path';break;
+  case 'doctor': st.docFrom=st.modal==='red'?'red':st.modal==='dayCard'?'card':'';st.modal='doctor';break;
+  case 'closeDoc': st.modal=st.docFrom==='red'?'red':st.docFrom==='card'?'dayCard':null;st.docFrom='';break;
   case 'share': {const txt=`${t.docTitle}\n${t.protocolBody}\n${t.results}: ${cap(t.g.lactose)} — ${st.tested.lactose==='threshold'?t.lactoseRes:st.tested.lactose==='ok'?t.testedFine:t.obs}\n${t.docDisc}`;if(navigator.share){navigator.share({title:t.docTitle,text:txt}).catch(()=>{})}else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>toast(t.copied)).catch(()=>{})}return}
-  case 'closeSwitcher': st.modal=null;st.docOverRed=false;break;
  }
  render();
 });
@@ -393,7 +508,7 @@ let sx=null,sy=null;
 document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-intro]'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
 document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx))return;const t=T();if(dx<0)st.intro=Math.min(st.intro+1,t.intro.length-1);else st.intro=Math.max(st.intro-1,0);render()},{passive:true});
 document.addEventListener('keydown',e=>{if(st.introDone||st.onboarded)return;const t=T();if(e.key==='ArrowRight')st.intro=Math.min(st.intro+1,t.intro.length-1);else if(e.key==='ArrowLeft')st.intro=Math.max(st.intro-1,0);else return;render()});
-document.addEventListener('input',e=>{const k=e.target.dataset.slider;if(k){st.scores[k]=+e.target.value;e.target.closest('.slider').querySelector('.numeral').textContent=e.target.value}});
+document.addEventListener('input',e=>{const k=e.target.dataset.slider;if(k){const v=+e.target.value;st.scores[k]=v;const sc=e.target.closest('.scale');sc.querySelector('[data-num]').textContent=v;sc.querySelector('[data-lvl]').textContent=T().lvl[v]}});
 st=base();render();
 </script>
 </body>
