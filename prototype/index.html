@@ -10,68 +10,94 @@
 <meta name="theme-color" content="#FEFAE0">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500;700&display=swap">
 <style>
-:root{--cream50:#FEFAE0;--cream100:#F3F1DC;--sage100:#E9EDC9;--sage300:#CCD5AE;--sage500:#A3B18A;--sage600:#7E9276;--ink700:#2A4A3A;--ink600:#4E6B57;--forest:#01472E;--forest800:#0A5637;
---noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* Tokens — Threshold design system (пакет Threshold_Design_System, взвешивание B3).
+   Базовая палитра прежняя; насыщенный зелёный остаётся только там, где можно действовать.
+   Крупные поверхности — интерфейсный ряд пониженной насыщенности. */
+:root{
+  /* базовый ряд */
+  --cream50:#FEFAE0;--cream100:#F3F1DC;--sage100:#E9EDC9;--sage300:#CCD5AE;--sage500:#A3B18A;--sage600:#7E9276;
+  --ink600:#4E6B57;--ink700:#2A4A3A;--forest800:#0A5637;--forest:#01472E;--paper:#fff;--paper-ink:#1F2A24;--stage:#E6E3CC;
+  /* интерфейсный ряд */
+  --paper-warm:oklch(0.982 0.012 85);--paper-warm-100:oklch(0.975 0.014 85);--paper-warm-200:oklch(0.955 0.016 85);
+  --pine:oklch(0.36 0.045 156);--pine-lift:oklch(0.42 0.045 156);--pine-screen:oklch(0.34 0.042 156);--pine-on-dark:oklch(0.90 0.045 120);
+  /* второй тон — «на это есть ответ» */
+  --slate100:oklch(0.90 0.032 245);--slate300:oklch(0.86 0.045 245);--slate500:oklch(0.62 0.080 245);--slate700:oklch(0.46 0.075 245);
+  /* тревога — только «мы не смогли» и красный флаг */
+  --alert:oklch(0.48 0.15 28);--alert-tint:oklch(0.93 0.04 38);
+  /* поверхности */
+  --surface-screen:var(--paper-warm);--surface-card:var(--cream100);--surface-quiet:var(--paper-warm-100);
+  --surface-accent:var(--slate300);--surface-answered:var(--slate100);--surface-dark:var(--pine);--surface-lift:var(--pine-lift);
+  /* текст */
+  --text-display:var(--ink700);--text-body:var(--ink700);--text-soft:var(--ink600);--text-muted:var(--sage500);
+  --text-unit:var(--ink600);--text-eyebrow:var(--ink600);--text-eyebrow-soft:var(--sage600);--text-action:var(--forest);
+  --text-answered:var(--slate700);--text-on-dark:var(--pine-on-dark);
+  /* прогресс, линии, управление */
+  --day-done:var(--slate500);--day-today:var(--forest);--track-empty:var(--paper-warm-200);--track-fill:var(--forest);
+  --line-rule:var(--sage500);--border-hairline:var(--sage300);--border-strong:var(--sage500);
+  --ring-hairline:inset 0 0 0 2px var(--border-hairline);--ring-strong:inset 0 0 0 2px var(--border-strong);
+  --shadow-card:0 18px 40px rgba(1,71,46,.2);--shadow-device:0 30px 60px rgba(1,71,46,.2);
+  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
 *{box-sizing:border-box;touch-action:manipulation}
-[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-moment],[data-lang],[data-taptop]{cursor:pointer}
-html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink700);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+[data-act],[data-tab],[data-seg],[data-switch],[data-tip],[data-meal],[data-pick],[data-quick],[data-stool],[data-segscale],[data-group],[data-moment],[data-lang],[data-taptop]{cursor:pointer}
+html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--text-body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 #stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
-#phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--cream50);background-image:var(--noise);box-shadow:0 30px 60px rgba(1,71,46,.2)}
-@media (max-width:760px){body{background:var(--cream50)}#stage{padding:0}#phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}}
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;gap:16px;padding:calc(54px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));overflow-y:auto;background:var(--cream50);background-image:var(--noise)}
-.screen.dark{background-color:var(--forest)}
-.screen.paper{background:#fff;background-image:none}
+#phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--surface-screen);background-image:var(--noise);box-shadow:var(--shadow-device)}
+@media (max-width:760px){body{background:var(--surface-screen)}#stage{padding:0}#phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;gap:16px;padding:calc(54px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));overflow-y:auto;background:var(--surface-screen);background-image:var(--noise)}
+.screen.dark{background-color:var(--pine-screen)}
+.screen.paper{background:var(--paper);background-image:none}
 .modal{z-index:5}
 .screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}
-.eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink600)}
-.eyebrow.soft{color:var(--sage600)}
-.act{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--forest);display:inline-flex;align-items:center;min-height:44px;padding:0 2px;cursor:pointer;white-space:nowrap}.act::after{content:'›';margin-left:6px;font-size:18px;line-height:1}.act.dark{color:var(--sage300)}
-.card.tap{position:relative}.card.tap::after{content:'›';position:absolute;right:16px;top:10px;font-size:22px;line-height:1;color:var(--forest)}
-[tabindex="0"]:focus-visible{outline:3px solid var(--sage500);outline-offset:2px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-eyebrow)}
+.eyebrow.soft{color:var(--text-eyebrow-soft)}
 .eyebrow.dark{color:var(--sage500)}
-.display{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;line-height:1.04;letter-spacing:-.02em;color:var(--forest);text-wrap:balance}
+.act{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action);display:inline-flex;align-items:center;min-height:44px;padding:0 2px;cursor:pointer;white-space:nowrap}.act::after{content:'›';margin-left:6px;font-size:18px;line-height:1}.act.dark{color:var(--sage300)}
+[tabindex="0"]:focus-visible{outline:3px solid var(--border-strong);outline-offset:2px}
+.display{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;line-height:1.04;letter-spacing:-.02em;color:var(--text-display);text-wrap:balance}
+.display.second{font-weight:500}
 .display.dark{color:var(--cream50)}
-.numeral{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;line-height:.9;letter-spacing:-.03em;color:var(--forest)}
+.numeral{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;line-height:.9;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--text-display)}
+.numeral.act-c{color:var(--forest)}
 .numeral.dark{color:var(--cream50)}
-.numeral small{font-size:.5em;color:var(--sage600)}
+.numeral small{font-size:.5em;color:var(--text-unit)}
 .numeral.dark small{color:var(--sage500)}
-.body{font-size:15px;line-height:1.45;color:var(--ink700);text-wrap:pretty}
-.body.soft{color:var(--ink600)}.body.dark{color:var(--sage100)}.body.muted{color:var(--sage500)}
-.card{border-radius:24px;padding:18px 20px;background:var(--sage100)}
-.card.quiet{background:var(--cream100)}
-.card.dark{background:var(--forest);box-shadow:0 18px 40px rgba(1,71,46,.2)}
-.card.lift{background:var(--forest800)}
-.card.accent{background:var(--sage300);box-shadow:0 18px 40px rgba(1,71,46,.2)}
-.card.line{background:transparent;box-shadow:inset 0 0 0 2px var(--sage300)}
-.rule{height:2px;width:64px;background:var(--sage500)}.rule.dark{background:var(--sage300)}
+.body{font-size:15px;line-height:1.45;color:var(--text-body);text-wrap:pretty}
+.body.soft{color:var(--text-soft)}.body.dark{color:var(--text-on-dark)}.body.muted{color:var(--text-muted)}
+.card{border-radius:24px;padding:18px 20px;background:var(--surface-card)}
+.card.quiet{background:var(--surface-quiet);box-shadow:var(--ring-hairline)}
+.card.dark{background:var(--surface-dark);box-shadow:var(--shadow-card)}
+.card.lift{background:var(--surface-lift)}
+.card.accent{background:var(--surface-accent);box-shadow:var(--shadow-card)}
+.card.answered{background:var(--surface-answered)}
+.card.line{background:transparent;box-shadow:var(--ring-hairline)}
+.card.notice{background:var(--alert-tint);box-shadow:none}
+.card.tap{position:relative}.card.tap::after{content:'›';position:absolute;right:16px;top:10px;font-size:22px;line-height:1;color:var(--text-action)}
+.rule{height:2px;width:64px;background:var(--line-rule)}.rule.dark{background:var(--sage300)}.rule.alert{background:var(--alert)}
 .btn{border:0;border-radius:20px;padding:15px 22px;min-height:52px;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.06em;width:100%;cursor:pointer;transition:background 200ms cubic-bezier(.4,0,.2,1)}
 .btn.primary{background:var(--forest);color:var(--cream50)}.btn.primary:hover{background:var(--forest800)}
 .btn.accent{background:var(--sage300);color:var(--forest)}.btn.accent:hover{background:var(--sage100)}
-.btn.ghost{background:transparent;color:var(--forest);box-shadow:inset 0 0 0 2px var(--sage500)}
+.btn.ghost{background:transparent;color:var(--forest);box-shadow:var(--ring-strong)}
 .btn.cream{background:var(--cream50);color:var(--forest)}
-.btn:focus-visible{outline:3px solid var(--sage500);outline-offset:2px}
-.link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--forest);cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center}
+.btn:focus-visible{outline:3px solid var(--border-strong);outline-offset:2px}
+.link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--text-action);cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center}
 .top{display:flex;justify-content:space-between;align-items:baseline;user-select:none}
-.nav{display:flex;gap:6px;padding-top:14px;border-top:2px solid var(--sage500)}
-.nav div{flex:1;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink600);min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;cursor:pointer}
-.nav div.on{background:var(--sage100);color:var(--forest)}
-.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--cream100);border-radius:20px;padding:4px}
-.seg div{font-size:13px;font-weight:500;color:var(--ink600);text-align:center;padding:6px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:16px;cursor:pointer}
+.nav{display:flex;gap:6px;padding-top:14px;border-top:2px solid var(--border-strong)}
+.nav div{flex:1;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-eyebrow);min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;cursor:pointer}
+.nav div.on{background:var(--surface-card);color:var(--forest)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--surface-quiet);border-radius:20px;padding:4px}
+.seg div{font-size:13px;font-weight:500;color:var(--text-soft);text-align:center;padding:6px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:16px;cursor:pointer}
 .seg div.on{background:var(--forest);color:var(--cream50);font-weight:700}
-.scale{border-radius:24px;padding:16px 18px 12px;background:var(--cream100);display:flex;flex-direction:column;gap:6px}
+.scale{border-radius:24px;padding:16px 18px 12px;background:var(--surface-quiet);box-shadow:var(--ring-hairline);display:flex;flex-direction:column;gap:6px}
 .scale .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
 .scale .val{display:flex;align-items:baseline;gap:8px;justify-content:flex-end;min-width:110px}
-.scale input{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:6px;background:linear-gradient(90deg,var(--sage300),var(--sage500));outline:none;margin:8px 0 2px}
-.scale input::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50);box-shadow:0 8px 20px rgba(1,71,46,.25);cursor:pointer}
-.scale input::-moz-range-thumb{width:32px;height:32px;border-radius:16px;background:var(--forest);border:3px solid var(--cream50)}
 .anchors{display:flex;justify-content:space-between}
-.segs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.segs div{min-height:44px;border-radius:14px;background:var(--cream50);box-shadow:inset 0 0 0 2px var(--sage300);display:flex;align-items:center;justify-content:center;font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:18px;color:var(--forest);cursor:pointer}.segs div.on{background:var(--forest);color:var(--cream50);box-shadow:none}
+.segs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.segs div{min-height:44px;border-radius:14px;background:var(--cream50);box-shadow:var(--ring-hairline);display:flex;align-items:center;justify-content:center;font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:18px;color:var(--forest);cursor:pointer}.segs div.on{background:var(--forest);color:var(--cream50);box-shadow:none}
 .stool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.stool div.t{border-radius:18px;background:var(--cream50);box-shadow:inset 0 0 0 2px var(--sage300);padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-height:84px}
+.stool div.t{border-radius:18px;background:var(--cream50);box-shadow:var(--ring-hairline);padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-height:84px}
 .stool div.t.on{background:var(--forest);box-shadow:none}
 .stool .n{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:16px;color:var(--forest);line-height:1}
 .stool .t.on .n{color:var(--cream50)}
-.stool .l{font-size:11px;line-height:1.2;text-align:center;color:var(--ink600)}
+.stool .l{font-size:11px;line-height:1.2;text-align:center;color:var(--text-soft)}
 .stool .t.on .l{color:var(--sage100)}
 .shape{width:44px;height:16px;position:relative;--c:var(--forest)}.t.on .shape{--c:var(--cream50)}
 .s0{height:2px;width:24px;background:var(--sage500);border-radius:2px;margin:7px 0}
@@ -82,13 +108,13 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .s5{background:radial-gradient(ellipse 7px 6px,var(--c) 96%,transparent 100%) 0 0/15px 16px repeat-x}
 .s6{border-radius:60% 40% 55% 45%/50% 65% 35% 50%;background:var(--c);opacity:.85}
 .s7{background:linear-gradient(var(--c),var(--c)) 0 3px/44px 3px no-repeat,linear-gradient(var(--c),var(--c)) 6px 10px/30px 3px no-repeat}
-.switch{width:51px;height:31px;border-radius:16px;background:var(--sage500);position:relative;flex:none;cursor:pointer;transition:background 200ms}
+.switch{width:51px;height:31px;border-radius:16px;background:var(--border-strong);position:relative;flex:none;cursor:pointer;transition:background 200ms}
 .switch i{position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:14px;background:var(--cream50);transition:left 200ms}
 .switch.on{background:var(--forest)}.switch.on i{left:22px}
 .dots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
 .dots div{height:10px;border-radius:12px}
-.d-done{background:var(--sage500)}.d-today{background:var(--forest)}.d-ahead{box-shadow:inset 0 0 0 2px var(--sage500)}.d-skip{background:var(--cream100);box-shadow:inset 0 0 0 2px var(--sage500)}
-.toast{position:absolute;left:20px;right:20px;top:calc(8px + env(safe-area-inset-top));background:var(--forest);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:0 18px 40px rgba(1,71,46,.2);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
+.d-done{background:var(--day-done)}.d-today{background:var(--day-today)}.d-ahead{box-shadow:var(--ring-strong)}.d-skip{background:var(--surface-quiet);box-shadow:var(--ring-strong)}
+.toast{position:absolute;left:20px;right:20px;top:calc(84px + env(safe-area-inset-top));background:var(--surface-dark);color:var(--cream50);border-radius:20px;padding:14px 18px;font-size:14px;line-height:1.4;box-shadow:var(--shadow-card);z-index:9;opacity:0;transition:opacity 200ms;pointer-events:none}
 .toast.show{opacity:1}
 .chip{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
 .chip.sage{background:var(--sage100)}
@@ -97,29 +123,37 @@ html,body{margin:0;height:100%;background:#E6E3CC;font-family:Inter,system-ui,-a
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.list .m{padding:12px 16px;border-radius:24px;background:var(--cream100);font-size:14px;cursor:pointer}
-.list .m.on{background:var(--sage100);font-weight:700}
-.bar{height:8px;border-radius:6px;background:var(--cream100);overflow:hidden}.bar i{display:block;height:100%;background:var(--forest);border-radius:6px}
-.bar.dark{background:var(--forest800)}.bar.dark i{background:var(--sage300)}
-.phototile{border-radius:24px;background:var(--forest);color:var(--cream50);padding:16px 18px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 18px 40px rgba(1,71,46,.2);cursor:pointer;position:relative;overflow:hidden}
-.phototile:before{content:'';position:absolute;right:-26px;top:-36px;width:104px;height:104px;border-radius:50%;background:var(--forest800)}
+.list .m{padding:12px 16px;border-radius:24px;background:var(--surface-quiet);font-size:14px;cursor:pointer}
+.list .m.on{background:var(--surface-card);font-weight:700}
+.bar{height:8px;border-radius:6px;background:var(--track-empty);overflow:hidden}.bar i{display:block;height:100%;background:var(--track-fill);border-radius:6px}
+.bar.dark{background:var(--pine-lift)}.bar.dark i{background:var(--sage300)}
+/* лента дня: полоса 06:00–24:00 и плитки приёмов пищи */
+.daystrip{position:relative;height:22px}
+.daystrip .track{position:absolute;left:0;right:0;top:7px;height:8px;border-radius:6px;background:var(--track-empty)}
+.daystrip .mark{position:absolute;top:0;width:22px;height:22px;border-radius:11px;background:var(--forest);box-shadow:0 0 0 4px var(--surface-screen)}
+.mealrow2{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:0 20px 2px}
+.mealtile{width:132px;flex:none;min-height:116px;border-radius:24px;background:var(--surface-quiet);box-shadow:var(--ring-hairline);padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+.capture{width:132px;flex:none;min-height:116px;border-radius:24px;background:var(--surface-dark);box-shadow:var(--shadow-card);cursor:pointer;position:relative;overflow:hidden;padding:12px 14px;display:flex;align-items:flex-end}
+.capture:before{content:'';position:absolute;right:-20px;top:-28px;width:84px;height:84px;border-radius:50%;background:var(--surface-lift)}
+.capture:after{content:'';position:absolute;right:14px;top:12px;width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--sage300)}
+.phototile{border-radius:24px;background:var(--surface-dark);color:var(--cream50);padding:16px 18px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:var(--shadow-card);cursor:pointer;position:relative;overflow:hidden}
+.phototile:before{content:'';position:absolute;right:-26px;top:-36px;width:104px;height:104px;border-radius:50%;background:var(--surface-lift)}
 .phototile:after{content:'';position:absolute;right:16px;top:14px;width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 3px var(--sage300)}
-.quick{border-radius:20px;background:var(--sage100);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:118px}
-.quick .body{font-size:13px;font-weight:700}
-.mealrow{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sage100)}
+.quick{border-radius:20px;background:var(--surface-card);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:118px}
+.mealrow{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-hairline)}
 .mealrow:last-child{border-bottom:0}
 .mealrow .time{font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:16px;color:var(--forest);width:44px;flex:none}
 .node{display:grid;grid-template-columns:28px 1fr;gap:12px}
 .node .pin{display:flex;flex-direction:column;align-items:center}
-.node .pin i{width:16px;height:16px;border-radius:8px;box-shadow:inset 0 0 0 2px var(--sage500);background:var(--cream50);flex:none;margin-top:4px}
-.node.done .pin i{background:var(--sage500);box-shadow:none}
+.node .pin i{width:16px;height:16px;border-radius:8px;box-shadow:var(--ring-strong);background:var(--surface-screen);flex:none;margin-top:4px}
+.node.done .pin i{background:var(--day-done);box-shadow:none}
 .node.cur .pin i{background:var(--forest);box-shadow:0 0 0 4px var(--sage100)}
 .node .pin b{flex:1;width:2px;background:var(--sage300);margin:4px 0;min-height:18px}
 .node:last-child .pin b{display:none}
-.node .box{border-radius:20px;padding:12px 14px;background:var(--cream100);margin-bottom:6px}
-.node.cur .box{background:var(--sage100)}
-.node.ahead .box{background:transparent;box-shadow:inset 0 0 0 2px var(--cream100)}
-.node.ahead .box .body,.node.ahead .box .eyebrow{color:var(--sage500)}
+.node .box{border-radius:20px;padding:12px 14px;background:var(--surface-quiet);margin-bottom:6px}
+.node.cur .box{background:var(--surface-card);box-shadow:none}
+.node.ahead .box{background:transparent;box-shadow:inset 0 0 0 2px var(--surface-quiet)}
+.node.ahead .box .body,.node.ahead .box .eyebrow{color:var(--text-muted)}
 </style>
 </head>
 <body>
@@ -145,7 +179,11 @@ en:{
  stage:{obs:'Observing',check:f=>`Test: ${f}`,paused:'Paused'},
  hero:{day0:'Tonight — your first day card', day0body:'Live as usual. In the evening, three questions and thirty seconds.', obs:'Eat as usual', obsBody:'Nothing to restrict. Tonight: three questions and thirty seconds. A photo of a meal when it is convenient.', insightEye:'One week in', insightTitle:'The first thing we see', insightBody:'In four of your five rough days, the night was shorter than six hours.', insightCaveat:"For now this is an observation, not a conclusion — there isn't much data yet. Too early to talk about food, and we won't guess."},
  progress:{collected:n=>`${n} ${n===1?'day':'days'} collected`, insightIn:n=>`first insight in ${n} ${n===1?'day':'days'}`, suspectIn:n=>`about ${n} more days to a suspect`, enough:'enough data — checking the pattern', checkDay:(d,ph)=>`day ${d} of 8 · ${ph}`, open:'Open the path'},
+ yourDay:'Your day', logged:n=>`${n} logged`, nothingYet:'nothing yet', addMealTile:'Add a meal',
+ photosNote:'Photos are read and discarded — we keep the dish and the hour, not the picture.', photosNoteEmpty:'One meal — and the day counts as full. Photos are read and discarded.',
  mealsTitle:'Meals today', photoTile:'Snap a meal', photoSub:'photo · voice · text', recent:'Recent', mealsEmpty:'Nothing yet. One photo — and the day counts as full.', mealsCount:n=>`${n} ${n===1?'meal':'meals'}`,
+ restaurant:'In a restaurant', restTitle:'For the kitchen', restLead:'I am testing food groups with my doctor. This is not an allergy — small amounts are fine.', restAvoid:'Please leave out', restDose:'Fine in a small amount', restFree:'No restriction', restUnknown:'Not tested yet', restThanks:'Thank you — it helps a lot.', restShow:'Show this to the waiter', restGroups:{lactose:'Milk and cream',fructans:'Wheat, onion, garlic',gos:'Beans and lentils',fructose:'Apple, pear, honey',sorbitol:'Stone fruit, sugar-free',mannitol:'Mushrooms, cauliflower'}, testingNow:'testing now',
+ docId:'Participant', docPeriod:'Period covered', docIssued:'Issued', docVersion:'Protocol version', docExcluded:'Days excluded', docExcludedBody:(n,r)=>`${n} of the test days were not counted (${r}).`, docExcludedNone:'No days were excluded.', docShortSleep:'short sleep', docRed:'Red flags', docRedNo:'None reported.', docRedYes:'Blood in stool reported — protocol paused.',
  bgTitle:'Background for the day', sleep:'Sleep', stepsL:'steps', hr:'resting HR', bgWhy:'Pulled in automatically. Short nights are told apart from food reactions.',
  tipOfDay:'Tip of the day', allTips:'All tips',
  yesterday:n=>`Yesterday · day ${n}`, edit:'Edit', saveEdit:'Save changes', cancel:'Cancel', updated:n=>`Day ${n} updated`, editTitle:n=>`Day ${n} · editing`, entry:(b,bl,s)=>`belly ${b} · bloating ${bl} · stool ${s}`, stoolNone:'none',
@@ -192,7 +230,11 @@ ru:{
  stage:{obs:'Наблюдение',check:f=>`Проверка: ${f}`,paused:'Пауза'},
  hero:{day0:'Сегодня вечером — первая карта дня', day0body:'Живите как обычно. Вечером — три вопроса и тридцать секунд.', obs:'Ешьте как обычно', obsBody:'Ограничений нет. Вечером — три вопроса и тридцать секунд. Фото еды — когда удобно.', insightEye:'Неделя данных', insightTitle:'Первое, что видно', insightBody:'В четырёх из пяти плохих дней ночь была короче шести часов.', insightCaveat:'Пока это наблюдение, не вывод — данных мало. Про еду говорить рано, и мы не будем гадать.'},
  progress:{collected:n=>`Собрано ${n} ${n%10===1&&n%100!==11?'день':n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'дня':'дней'}`, insightIn:n=>`первый вывод через ${n} ${n===1?'день':n<5?'дня':'дней'}`, suspectIn:n=>`ещё около ${n} дней до подозрения`, enough:'данных достаточно — проверяем закономерность', checkDay:(d,ph)=>`день ${d} из 8 · ${ph}`, open:'Открыть путь'},
+ yourDay:'Ваш день', logged:n=>`записано ${n}`, nothingYet:'пока ничего', addMealTile:'Добавить',
+ photosNote:'Фото распознаются и удаляются — остаются блюдо и время, не снимок.', photosNoteEmpty:'Один приём пищи — и день считается полным. Фото распознаются и удаляются.',
  mealsTitle:'Еда сегодня', photoTile:'Фото еды', photoSub:'фото · голосом · текстом', recent:'Недавнее', mealsEmpty:'Пока ничего. Одно фото — и день считается полным.', mealsCount:n=>`${n} ${n===1?'приём':n<5?'приёма':'приёмов'}`,
+ restaurant:'В ресторане', restTitle:'Для кухни', restLead:'Я проверяю группы продуктов вместе с врачом. Это не аллергия — небольшое количество можно.', restAvoid:'Прошу без этого', restDose:'Немного можно', restFree:'Без ограничений', restUnknown:'Пока не проверено', restThanks:'Спасибо — это очень помогает.', restShow:'Показать официанту', restGroups:{lactose:'Молоко и сливки',fructans:'Пшеница, лук, чеснок',gos:'Бобовые',fructose:'Яблоко, груша, мёд',sorbitol:'Косточковые, без сахара',mannitol:'Грибы, цветная капуста'}, testingNow:'проверяем сейчас',
+ docId:'Участник', docPeriod:'Период', docIssued:'Выдано', docVersion:'Версия протокола', docExcluded:'Исключённые дни', docExcludedBody:(n,r)=>`${n} день проверки не засчитан (${r}).`, docExcludedNone:'Исключённых дней нет.', docShortSleep:'короткий сон', docRed:'Красные флаги', docRedNo:'Не отмечались.', docRedYes:'Отмечена кровь в стуле — протокол на паузе.',
  bgTitle:'Фон за день', sleep:'Сон', stepsL:'шагов', hr:'пульс покоя', bgWhy:'Подтягивается само. Короткая ночь отличается от реакции на еду.',
  tipOfDay:'Совет дня', allTips:'Все советы',
  yesterday:n=>`Вчера · день ${n}`, edit:'Изменить', saveEdit:'Сохранить', cancel:'Отмена', updated:n=>`День ${n} обновлён`, editTitle:n=>`День ${n} · правка`, entry:(b,bl,s)=>`живот ${b} · вздутие ${bl} · стул ${s}`, stoolNone:'не было',
@@ -285,13 +327,15 @@ const yesterdayRow=()=>{const t=T();const y=st.day-1;const e=st.log[y];if(!e)ret
 const bgCard=(compact)=>{const t=T();const s=fmtSleep(sleepNow());return `<div class="card quiet"><div class="row" style="align-items:baseline"><div class="eyebrow">${t.bgTitle}</div><div class="eyebrow" style="color:var(--forest)">${bgSource()}</div></div>
  <div class="grid3" style="margin-top:10px"><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${s}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.sleep}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">${t.steps}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.stepsL}</div></div><div><div class="numeral" style="font-size:${compact?'22':'28'}px">61</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em">${t.hr}</div></div></div>
  ${compact?'':`<div class="body soft" style="font-size:12px;margin-top:10px">${t.bgWhy}</div>`}</div>`};
-const mealsFeed=()=>{const t=T();if(!st.meals.length)return `<div class="body soft" style="font-size:13px;padding:2px 4px">${t.mealsEmpty}</div>`;
- return `<div class="card quiet" style="padding:6px 18px">${st.meals.map(m=>`<div class="mealrow"><div class="time">${m.time}</div><div style="flex:1"><div class="body" style="font-size:14px;font-weight:700">${t.presets[m.pick]}</div></div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${t.presetGroups[m.pick].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div></div>`).join('')}</div>`};
-const mealsBlock=()=>{const t=T();const recent=[0,2,4];
- return `<div class="stack"><div class="row"><div class="eyebrow">${t.mealsTitle}</div><div class="eyebrow" style="letter-spacing:.12em">${st.meals.length?t.mealsCount(st.meals.length):''}</div></div>
- <div class="grid2"><div class="phototile" data-act="addMeal"><div class="display dark" style="font-size:22px;position:relative;padding-right:30px">${t.photoTile}</div><div class="body muted" style="font-size:12px;margin-top:4px;position:relative">${t.photoSub}</div></div>
- <div class="quick" data-quick="${recent[st.meals.length%3]}"><div class="eyebrow" style="letter-spacing:.12em">${t.recent}</div><div><div class="body">${t.presets[recent[st.meals.length%3]]}</div><div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">${t.presetGroups[recent[st.meals.length%3]].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div></div></div></div>
- ${mealsFeed()}</div>`};
+const mealPos=time=>{const [h,m]=String(time).split(':').map(Number);return Math.max(0,Math.min(100,((h+(m||0)/60-6)/18)*100))};
+const mealsFeed=()=>{const t=T();
+ const tiles=st.meals.map(m=>`<div class="mealtile"><div class="numeral" style="font-size:22px">${m.time}</div><div><div class="body" style="font-size:12px;font-weight:700;line-height:1.25">${t.presets[m.pick]}</div>${t.presetGroups[m.pick].length?`<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">${t.presetGroups[m.pick].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div>`:''}</div></div>`).join('');
+ return `<div class="stack" style="gap:10px"><div class="row" style="align-items:baseline"><div class="eyebrow">${t.yourDay}</div><div class="eyebrow soft" style="letter-spacing:.12em">${st.meals.length?t.logged(st.meals.length):t.nothingYet}</div></div>
+  <div class="stack" style="gap:6px"><div class="daystrip"><div class="track"></div>${st.meals.map(m=>`<div class="mark" style="left:calc(${mealPos(m.time)}% - 11px)"></div>`).join('')}</div>
+   <div class="row">${['06','12','18','24'].map(h=>`<div class="eyebrow soft" style="letter-spacing:.12em">${h}</div>`).join('')}</div></div>
+  <div class="mealrow2">${tiles}<div class="capture" data-act="addMeal"><div class="display dark" style="font-size:18px;position:relative;line-height:1.05">${t.addMealTile}</div></div></div>
+  <div class="body soft" style="font-size:11px">${st.meals.length?t.photosNote:t.photosNoteEmpty}</div></div>`};
+const mealsBlock=()=>mealsFeed();
 const tipCard=()=>{const t=T();const set=t.tipSets[stageKey()];const tip=set[st.day%set.length];return `<div class="card line" data-act="tipToggle" style="cursor:pointer;padding:4px 20px 14px"><div class="row"><div class="eyebrow">${t.tipOfDay}</div><div class="act" data-tab="tips">${t.allTips}</div></div><div class="body" style="font-weight:700;font-size:14px;margin-top:2px">${tip[0]}</div>${st.tipDayOpen?`<div class="body soft" style="font-size:13px;margin-top:4px">${tip[1]}</div>`:''}</div>`};
 const pauseBanner=()=>{const t=T();if(!st.redPaused)return '';return `<div class="card accent"><div class="body" style="font-weight:700">${t.pauseBanner}</div><div class="body" style="font-size:13px;margin-top:4px">${t.pauseBody}</div><div class="grid2" style="margin-top:12px"><button class="btn cream" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="doctor">${t.doctorPage}</button><button class="btn primary" style="min-height:44px;padding:10px 12px;font-size:13px" data-act="resumeDoctor">${t.resumeDoctor}</button></div></div>`};
 const rhythmCard=()=>{const t=T();if(!st.rhythm)return '';const n=streak();const done=!!st.log[st.day];return `<div class="card quiet row" style="padding:12px 16px"><div><div class="eyebrow" style="letter-spacing:.12em">${t.rhythm.title} · ${t.rhythm.freeze}</div><div class="body" style="font-size:14px;font-weight:700;margin-top:4px">${t.rhythm.streak(n)}</div><div class="body soft" style="font-size:12px;margin-top:2px">${done?t.rhythm.goalDone:t.rhythm.goal} · ${t.rhythm.remind}</div></div><div class="numeral" style="font-size:34px">${n}</div></div>`};
@@ -365,7 +409,7 @@ function addMeal(){const t=T();const p=st.mealPick;
  const tile=(k,l,dark)=>`<div class="card${dark?' dark':''}" style="height:92px;display:flex;align-items:flex-end;cursor:pointer" data-meal="${k}"><div class="display${dark?' dark':''}" style="font-size:18px">${l}</div></div>`;
  const rec=p!==null?`<div class="card accent"><div class="eyebrow" style="color:var(--forest)">${t.recognized} · ${t.times[st.meals.length%5]}</div><div class="display" style="font-size:22px;margin-top:8px">${t.presets[p]}</div><div style="display:flex;gap:6px;margin-top:10px">${t.presetGroups[p].map(g=>`<span class="chip">${t.g[g]}</span>`).join('')||`<span class="chip" style="opacity:.6">—</span>`}</div>${st.check&&t.presetGroups[p].includes(st.check.group)?`<div class="rule" style="margin:14px 0"></div><div class="body" style="font-size:14px">${t.isProbe}</div>`:''}</div>`:
   `<div class="stack"><div class="eyebrow">${t.recent}</div>${t.presets.map((n,i)=>`<div class="card quiet row" style="padding:12px 16px;cursor:pointer" data-pick="${i}"><div class="body" style="font-size:14px">${n}</div><div style="display:flex;gap:4px">${t.presetGroups[i].map(g=>`<span class="chip sage">${t.g[g]}</span>`).join('')}</div></div>`).join('')}</div>`;
- return `<div class="screen modal pinned">${topRow(t.addMealFull,t.dayN(st.day))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${hint(t.mealHow)}<div class="grid3">${tile('photo',t.photo,true)}${tile('voice',t.voice)}${tile('type',t.type)}</div>${hint(p===null?t.mealProto:t.mealConfirm)}${rec}</div>
+ return `<div class="screen modal pinned">${topRow(t.addMealFull,t.dayN(st.day))}<div class="feed"><div class="display" style="font-size:24px">${t.mealTitle}</div>${p===null?'':hint(t.mealConfirm)}${rec}${hint(t.mealHow)}<div class="grid3">${tile('photo',t.photo,true)}${tile('voice',t.voice)}${tile('type',t.type)}</div></div>
   <div class="stack"><button class="btn primary" data-act="mealOk" ${p===null?'disabled style="opacity:.5"':''}>${t.save}</button><button class="btn ghost" data-act="mealFix">${p===null?t.back:t.fix}</button></div></div>`}
 
 function suspicion(){const t=T();const s=st.susp;const f=t.food[s.group];
@@ -377,7 +421,7 @@ function otherSuspects(){const t=T();return `<div class="screen modal">${topRow(
  <div class="card" style="cursor:pointer" data-act="pickFructans"><div class="body" style="font-size:15px;font-weight:700">${cap(t.food.fructans)}</div><div class="body soft" style="font-size:14px;margin-top:6px">${(x=>t.suspBody(t.food.fructans,x.a,x.b,x.c,x.d))(stats(st.day).fructans)}</div></div>
  <button class="btn ghost" style="margin-top:auto" data-act="backSusp">${t.close}</button></div>`}
 function verdict(){const t=T();const g=st.lastGroup||'lactose';const f=t.food[g];const nc=st.verdictType==='notConfirmed';const ng=nextGroup();const nx=ng?stats(st.day)[ng]:null;
- return `<div class="screen modal">${topRow(t.verdictEye,`${cap(f)} · ${t.dayN(8)}`)}<div class="display" style="font-size:34px;margin-top:24px">${nc?t.notConfirmed:t.verdict}</div><div class="rule"></div><div class="body${nc?'':' soft'}">${nc?t.notConfirmedWhy(f):t.how}</div>
+ return `<div class="screen modal">${topRow(t.verdictEye,`${cap(f)} · ${t.dayN(8)}`)}<div class="card${nc?' quiet':' accent'}" style="margin-top:12px"><div class="display" style="font-size:34px">${nc?t.notConfirmed:t.verdict}</div><div class="rule" style="margin:14px 0"></div><div class="body">${nc?t.notConfirmedWhy(f):t.how}</div></div>
   ${nx?`<div class="card quiet" style="margin-top:8px"><div class="eyebrow">${t.nextSuspect}</div><div class="body" style="margin-top:8px">${t.suspBody(t.food[ng],nx.a,nx.b,nx.c,nx.d)}</div></div>`:''}
   <div class="stack" style="margin-top:auto">${nx?`<button class="btn primary" data-act="nextSuspect">${t.nextBtn(t.g[ng])}</button><div class="link" data-act="toPath">${t.toPath}</div>`:`<button class="btn primary" data-act="toPath">${t.toPath}</button>`}</div></div>`}
 function checkPlan(){const t=T();return `<div class="screen modal pinned">${topRow(t.planTitle,st.check?t.dayN(st.check.day):'')}<div class="feed"><div class="display" style="font-size:26px">${t.planTitle}</div><div class="rule"></div>
@@ -401,27 +445,40 @@ function pathScreen(){const t=T();const d=st.day;const s=stats(d);const n=t.node
   st.tested.lactose?node('done',n.answer(1),'',`<div class="body" style="font-size:13px;font-weight:700">${st.tested.lactose==='threshold'?t.verdict:t.notConfirmed}</div>`):node('ahead',n.answer(1),t.afterAnswer,''),
   checkNode('fructans',2)];
  const groups=['lactose','fructans','gos','fructose','sorbitol','mannitol'];
- const row=g=>{const r=st.tested[g];const status=r==='threshold'?t.tested(t.threshText):r==='ok'?t.testedFine:t.obs;return `<div class="card${r?'':' quiet'} row" style="padding:12px 16px;align-items:baseline"><div class="body" style="font-size:14px;font-weight:700">${cap(t.g[g])}</div><div class="body soft" style="font-size:12px;text-align:right">${status}</div></div>`};
+ const row=g=>{const r=st.tested[g];const status=r==='threshold'?t.tested(t.threshText):r==='ok'?t.testedFine:t.obs;return `<div class="card${r?' answered':' quiet'} row" style="padding:12px 16px;align-items:baseline"><div class="body" style="font-size:14px;font-weight:700">${cap(t.g[g])}</div><div class="body${r?'':' soft'}" style="font-size:12px;text-align:right;${r?'color:var(--text-answered);font-weight:700':''}">${status}</div></div>`};
  return `<div class="screen pinned">${topRow(t.pathTitle,t.dayN(d))}<div class="feed"><div><div class="display" style="font-size:26px">${t.pathTitle}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.pathPos(stageLabel(),d)}</div></div>
   <div>${nodes.join('')}</div>
   <div class="row" style="margin-top:6px"><div class="eyebrow">${t.mapTitle}</div><div class="eyebrow" style="letter-spacing:.12em">${nT?t.nOf6(nT):t.observing}</div></div>
   <div class="stack" style="gap:6px">${groups.map(row).join('')}</div>
   ${nT?'':`<div class="body soft" style="font-size:13px;padding:0 4px">${t.mapEmpty}</div>`}
-  <button class="btn ${nT?'primary':'ghost'}" data-act="doctor">${t.doctorPage}</button></div>${nav('path')}</div>`}
+  <button class="btn ${nT?'primary':'ghost'}" data-act="doctor">${t.doctorPage}</button>
+  <button class="btn ghost" data-act="restaurant">${t.restaurant}</button></div>${nav('path')}</div>`}
 
 function tipsScreen(){const t=T();const set=t.tipSets[stageKey()];
  return `<div class="screen pinned">${topRow(t.tips,stageLabel())}<div class="feed"><div class="display" style="font-size:26px">${t.tipsTitle(stageLabel())}</div><div class="rule"></div>
  <div class="stack">${set.map(([q,a],i)=>`<div class="card${st.tipOpen===i?'':' quiet'}" style="padding:14px 18px;cursor:pointer" data-tip="${i}"><div class="body" style="font-size:14px;${st.tipOpen===i?'font-weight:700':''}">${q}</div>${st.tipOpen===i?`<div class="body soft" style="font-size:14px;margin-top:8px">${a}</div>`:''}</div>`).join('')}</div>
  <div class="card line"><div class="body soft" style="font-size:13px">${t.assistantNote}</div></div></div>${nav('tips')}</div>`}
 
+function restaurantCard(){const t=T();const groups=['lactose','fructans','gos','fructose','sorbitol','mannitol'];
+ const line=g=>{const r=st.tested[g];const testing=st.check&&st.check.group===g;
+  const label=testing?t.restAvoid:r==='threshold'?t.restDose:r==='ok'?t.restFree:t.restUnknown;
+  const detail=testing?t.testingNow:r==='threshold'?t.threshText:'';
+  return `<div class="row" style="align-items:baseline;padding:10px 0;border-bottom:1px solid var(--border-hairline)"><div><div class="body" style="font-size:15px;font-weight:700;color:var(--paper-ink)">${t.restGroups[g]}</div>${detail?`<div class="body soft" style="font-size:12px;margin-top:2px">${detail}</div>`:''}</div><div class="body soft" style="font-size:13px;text-align:right;flex:none">${label}</div></div>`};
+ return `<div class="screen paper modal pinned">${topRow('Threshold',t.restShow)}<div class="feed"><div class="row" style="align-items:flex-start"><div class="display" style="font-size:24px;color:var(--paper-ink)">${t.restTitle}</div><div class="act" data-act="closeModal" style="margin-top:-8px">${t.close}</div></div><div class="rule" style="background:var(--forest)"></div>
+  <div class="body" style="font-size:15px;color:var(--paper-ink)">${t.restLead}</div>
+  <div>${groups.map(line).join('')}</div>
+  <div class="body soft" style="font-size:13px">${t.restThanks}</div></div>
+  <button class="btn ghost" data-act="closeModal">${t.close}</button></div>`}
 function doctorPage(){const t=T();const res=g=>st.tested[g]==='threshold'?t.lactoseRes:st.tested[g]==='ok'?t.testedFine:t.obs;
  const eb=x=>`<div class="eyebrow" style="color:var(--ink600)">${x}</div>`;
- return `<div class="screen paper modal">${topRow('Threshold',t.onePage)}<div class="display" style="font-size:24px;color:#1F2A24">${t.docTitle}</div><div class="rule" style="background:var(--forest)"></div>
-  <div class="stack" style="gap:6px">${eb(t.protocol)}<div style="font-size:13px;line-height:1.45;color:#1F2A24">${t.protocolBody}</div></div>
-  <div class="stack" style="gap:6px">${eb(t.results)}<div style="font-size:13px;line-height:1.45;color:#1F2A24" class="stack"><div class="row" style="align-items:baseline"><b>${cap(t.g.lactose)}</b><span style="text-align:right">${res('lactose')}</span></div><div class="row" style="align-items:baseline"><b>${cap(t.g.fructans)}</b><span>${res('fructans')}</span></div><div class="row" style="align-items:baseline"><b>${t.g.gos} · ${t.g.fructose} · ${t.g.sorbitol} · ${t.g.mannitol}</b><span>${t.obs}</span></div></div></div>
-  <div class="stack" style="gap:6px">${eb(t.symptoms)}<div class="grid3">${[[6,t.before],[3,t.during],[5,t.after]].map(([n,l])=>`<div><div class="numeral" style="font-size:30px;color:#1F2A24">${n}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em;color:var(--ink600)">${l}</div></div>`).join('')}</div></div>
-  ${st.redPaused?`<div class="stack" style="gap:6px">${eb(t.redEye)}<div style="font-size:13px;line-height:1.45;color:#1F2A24">${t.blood} — ${t.dayN(st.day)}</div></div>`:''}
-  <div style="font-size:12px;line-height:1.45;color:var(--ink600);margin-top:auto;border-top:1px solid var(--sage500);padding-top:12px">${t.docDisc}</div>
+ return `<div class="screen paper modal pinned">${topRow('Threshold',t.onePage)}<div class="feed"><div class="display" style="font-size:24px;color:var(--paper-ink)">${t.docTitle}</div><div class="rule" style="background:var(--forest)"></div>
+  <div class="grid2" style="gap:6px 12px">${[[t.docId,'TH-0428'],[t.docIssued,t.dates.ends],[t.docPeriod,`${t.dates.insight} — ${t.dates.ends}`],[t.docVersion,'1.0']].map(([k,v])=>`<div>${eb(k)}<div style="font-size:13px;line-height:1.45;color:var(--paper-ink);margin-top:2px">${v}</div></div>`).join('')}</div>
+  <div class="stack" style="gap:6px">${eb(t.protocol)}<div style="font-size:13px;line-height:1.45;color:var(--paper-ink)">${t.protocolBody}</div></div>
+  <div class="stack" style="gap:6px">${eb(t.results)}<div style="font-size:13px;line-height:1.45;color:var(--paper-ink)" class="stack"><div class="row" style="align-items:baseline"><b>${cap(t.g.lactose)}</b><span style="text-align:right">${res('lactose')}</span></div><div class="row" style="align-items:baseline"><b>${cap(t.g.fructans)}</b><span>${res('fructans')}</span></div><div class="row" style="align-items:baseline"><b>${t.g.gos} · ${t.g.fructose} · ${t.g.sorbitol} · ${t.g.mannitol}</b><span>${t.obs}</span></div></div></div>
+  <div class="stack" style="gap:6px">${eb(t.symptoms)}<div class="grid3">${[[6,t.before],[3,t.during],[5,t.after]].map(([n,l])=>`<div><div class="numeral" style="font-size:30px;color:var(--paper-ink)">${n}</div><div class="eyebrow" style="margin-top:6px;letter-spacing:.12em;color:var(--ink600)">${l}</div></div>`).join('')}</div></div>
+  <div class="stack" style="gap:6px">${eb(t.docExcluded)}<div style="font-size:13px;line-height:1.45;color:var(--paper-ink)">${st.check&&st.check.discardedOnce||st.tested.lactose?t.docExcludedBody(1,t.docShortSleep):t.docExcludedNone}</div></div>
+  <div class="stack" style="gap:6px">${eb(t.docRed)}<div style="font-size:13px;line-height:1.45;color:${st.redPaused?'var(--alert)':'var(--paper-ink)'}">${st.redPaused?t.docRedYes:t.docRedNo}</div></div>
+  <div style="font-size:12px;line-height:1.45;color:var(--text-soft);border-top:1px solid var(--border-strong);padding-top:12px">${t.docDisc}</div></div>
   <div class="stack"><button class="btn primary" data-act="share">${t.share}</button><button class="btn ghost" data-act="closeDoc">${t.close}</button></div></div>`}
 
 function redConfirm(){const t=T();return `<div class="screen modal" style="justify-content:flex-end;background:rgba(1,71,46,.35);background-image:none"><div class="card" style="background:var(--cream50);padding:22px 20px"><div class="eyebrow">${t.redConfirmEye}</div><div class="display" style="font-size:26px;margin-top:8px">${t.redConfirmTitle}</div><div class="body soft" style="margin-top:10px;font-size:14px">${t.redConfirmBody}</div><div class="stack" style="margin-top:16px"><button class="btn primary" data-act="redYes">${t.redYes}</button><button class="btn ghost" data-act="closeModalToCard">${t.redNo}</button></div></div></div>`}
@@ -437,7 +494,7 @@ function switcher(){const t=T();return `<div class="screen modal pinned"><div cl
 function render(){let html='';
  if(!st.onboarded) html=st.introDone?onboarding():intro();
  else html=st.tab==='path'?pathScreen():st.tab==='tips'?tipsScreen():today();
- const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,red:redFlag,redConfirm,plan:checkPlan,switcher};
+ const modals={dayCard,addMeal,suspicion,otherSuspects,verdict,doctor:doctorPage,restaurant:restaurantCard,red:redFlag,redConfirm,plan:checkPlan,switcher};
  if(st.modal==='redConfirm'||(st.modal==='doctor'&&st.docFrom==='card')||(st.modal==='addMeal'&&st.mealFrom==='card')) html+=dayCard();
  if(st.modal==='doctor'&&st.docFrom==='red') html+=redFlag();
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
@@ -504,6 +561,7 @@ document.addEventListener('click',e=>{const el=e.target.closest(SEL);if(!el)retu
   case 'resume': st.check.paused=false;break;
   case 'swaps': st.swapsOpen=!st.swapsOpen;break;
   case 'plan': st.modal='plan';break;
+  case 'restaurant': st.modal='restaurant';break;
   case 'closeModal': st.modal=null;break;
   case 'nextSuspect': {const g=nextGroup();st.check=null;st.susp=stats(st.day)[g];st.suspOfferedDay=st.day;st.modal='suspicion';break}
   case 'toPath': st.check=null;st.modal=null;st.tab='path';break;
