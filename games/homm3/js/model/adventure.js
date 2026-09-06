@@ -106,7 +106,7 @@
     if (pay) state.players[hero.owner].res.gold -= pay;
     R.addToArmy(hero.army, obj.cid, obj.n);
     removeObject(state, obj);
-    S.addLog(state, C.get(obj.cid).name + ' ×' + obj.n + ' присоединились к ' + hero.name + '.', 'good');
+    S.addLog(state, C.get(obj.cid).name + ' ×' + obj.n + ' присоединились к ' + hero.name + '.', 'good', hero.owner);
   }
   function removeObject(state, obj) {
     delete state.objects[obj.id];
@@ -135,7 +135,7 @@
     switch (obj.type) {
       case 'resource': {
         p.res[obj.res] += obj.amount; removeObject(state, obj);
-        S.addLog(state, hero.name + ' подобрал ' + obj.amount + ' ' + RESN[obj.res] + '.');
+        S.addLog(state, hero.name + ' подобрал ' + obj.amount + ' ' + RESN[obj.res] + '.', '', hero.owner);
         return Object.assign(base, { text: 'Вы нашли ' + obj.amount + ' ' + RESN[obj.res] + '.', icon: 'res_' + obj.res, toast: true });
       }
       case 'campfire': {
@@ -151,13 +151,13 @@
       }
       case 'artifact': {
         const art = AR.get(obj.art); giveArtifact(hero, art.id); removeObject(state, obj);
-        S.addLog(state, hero.name + ' нашёл артефакт: ' + art.name + '.', 'good');
+        S.addLog(state, hero.name + ' нашёл артефакт: ' + art.name + '.', 'good', hero.owner);
         return Object.assign(base, { text: art.name + ' (' + AR.CLASS_NAMES[art.cls] + '): ' + art.desc + '.', icon: 'art_' + art.id });
       }
       case 'mine': {
         if (obj.owner === hero.owner) return Object.assign(base, { text: 'Шахта уже ваша. Доход: ' + O.MINE_INCOME[obj.res] + ' ' + RESN[obj.res] + ' в день.', toast: true });
         obj.owner = hero.owner; S.computeVisibility(state, hero.owner);
-        S.addLog(state, hero.name + ' захватил: ' + name + '.', 'good');
+        S.addLog(state, hero.name + ' захватил: ' + name + '.', 'good', hero.owner);
         return Object.assign(base, { text: 'Шахта захвачена! Теперь она приносит ' + O.MINE_INCOME[obj.res] + ' ' + RESN[obj.res] + ' в день.', toast: true });
       }
       case 'dwelling': {
@@ -246,8 +246,8 @@
     if (obj.type === 'chest') {
       const r = obj.roll; const gold = r < 0.32 ? 1000 : r < 0.64 ? 1500 : 2000;
       removeObject(state, obj);
-      if (choice === 'gold') { p.res.gold += gold; S.addLog(state, hero.name + ' взял ' + gold + ' золота из сундука.'); return { text: '+' + gold + ' золота' }; }
-      const lv = R.gainXp(hero, gold - 500); S.addLog(state, hero.name + ' получил ' + (gold - 500) + ' опыта.'); return { text: '+' + (gold - 500) + ' опыта', levelUps: lv };
+      if (choice === 'gold') { p.res.gold += gold; S.addLog(state, hero.name + ' взял ' + gold + ' золота из сундука.', '', hero.owner); return { text: '+' + gold + ' золота' }; }
+      const lv = R.gainXp(hero, gold - 500); S.addLog(state, hero.name + ' получил ' + (gold - 500) + ' опыта.', '', hero.owner); return { text: '+' + (gold - 500) + ' опыта', levelUps: lv };
     }
     if (obj.type === 'tree_knowledge' && choice === 'pay') {
       const cost = obj.price === 'gold' ? { gold: 2000 } : { gems: 10 };
@@ -390,7 +390,7 @@
     }
     if (attHero && !attHero.dead) S.computeVisibility(state, attHero.owner);
     if (defHero && !defHero.dead) S.computeVisibility(state, defHero.owner);
-    S.addLog(state, (attHero ? attHero.name : '?') + ' — бой: ' + (attWon ? 'победа' : 'поражение') + (summary.xp ? ' (+' + summary.xp + ' опыта)' : ''), attWon ? 'good' : 'warn');
+    S.addLog(state, (attHero ? attHero.name : '?') + ' — бой с ' + b.sides[1].name + ': ' + (attWon ? 'победа' : 'поражение') + (summary.xp ? ' (+' + summary.xp + ' опыта)' : ''), attWon ? 'good' : 'warn', (defHero && !state.players[attHero.owner].isAI) || (attHero && !state.players[attHero.owner].isAI) ? -1 : (defHero ? defHero.owner : attHero.owner));
     checkPlayersAlive(state);
     return summary;
   }
@@ -445,7 +445,7 @@
     town.tavern = town.tavern.filter(x => x !== tid);
     const more = R.tavernCandidates(state, town, 1); if (more.length) town.tavern.push(more[0]);
     S.computeVisibility(state, town.owner);
-    S.addLog(state, 'Нанят герой ' + hero.name + ' в городе ' + town.name + '.');
+    S.addLog(state, 'Нанят герой ' + hero.name + ' в городе ' + town.name + '.', '', town.owner);
     return { ok: true, hero };
   }
   function dismissHero(state, hero) { killHero(state, hero); }

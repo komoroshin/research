@@ -249,6 +249,7 @@
       for (let dy = -2; dy <= 2 && ok; dy++) for (let dx = -2; dx <= 2; dx++) {
         const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= ctx.h) continue;
         if (map.objAt[ny * w + nx] >= 0 && Math.max(Math.abs(dx), Math.abs(dy)) <= 1) { ok = false; break; }
+        if (ctx.corridor[ny * w + nx] && Math.max(Math.abs(dx), Math.abs(dy)) <= 1) { ok = false; break; }
         if (Math.max(Math.abs(dx), Math.abs(dy)) === 1 && free(ctx, nx, ny)) freeNb++;
       }
       if (ok && freeNb >= 3) return [x, y];
@@ -274,7 +275,12 @@
     const cand = [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1]];
     for (const [dx, dy] of cand) {
       const x = obj.x + dx, y = obj.y + dy;
-      if (free(ctx, x, y) && ctx.map.objAt[y * w + x] < 0) return placeGuardAt(ctx, x, y, value, character);
+      if (!free(ctx, x, y) || ctx.map.objAt[y * w + x] >= 0) continue;
+      // страж не должен стоять рядом с чужим объектом (иначе охраняет и его)
+      let clash = false;
+      for (let ny = y - 1; ny <= y + 1 && !clash; ny++) for (let nx = x - 1; nx <= x + 1; nx++) { if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue; const id = ctx.map.objAt[ny * w + nx]; if (id >= 0 && id !== obj.id) { clash = true; break; } if (ctx.corridor[ny * w + nx]) { clash = true; break; } }
+      if (clash) continue;
+      return placeGuardAt(ctx, x, y, value, character);
     }
     return null;
   }

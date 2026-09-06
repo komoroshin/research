@@ -261,6 +261,7 @@
   /** Наносит урон; возвращает число убитых. */
   function applyDamage(b, t, dmg, src) {
     if (!t.alive) return 0;
+    const full = dmg;
     let killed = 0;
     if (dmg >= totalHp(t)) { killed = t.count; t.count = 0; t.hp = 0; t.alive = false; }
     else {
@@ -269,7 +270,7 @@
     }
     b.sides[1 - t.side].killedValue = (b.sides[1 - t.side].killedValue || 0) + killed * C.aiValue(cre(t));
     t.killed += killed;
-    b.events.push({ t: 'damage', unit: t.id, dmg, killed, src: src || null, dead: !t.alive });
+    b.events.push({ t: 'damage', unit: t.id, dmg: full, killed, src: src || null, dead: !t.alive });
     if (!t.alive) b.events.push({ t: 'death', unit: t.id });
     return killed;
   }

@@ -172,8 +172,8 @@
   }
 
   /* ---------- Лог ---------- */
-  function addLog(state, text, cls) {
-    state.log.push({ day: state.day, text, cls: cls || '' });
+  function addLog(state, text, cls, pid) {
+    state.log.push({ day: state.day, text, cls: cls || '', p: pid === undefined ? -1 : pid });
     if (state.log.length > 300) state.log.splice(0, state.log.length - 300);
   }
   function dateStr(day) {
