@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><title>Sprite sheet</title>
+<style>body{background:#2a2f3a;color:#ddd;font:12px monospace;margin:0;padding:8px}#c{image-rendering:pixelated;background:#3c4452}</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="../js/core/util.js"></script>
+<script src="../js/view/sprites.js"></script>
+<script>
+// ?files=view/sprites_castle.js,view/sprites_rampart.js&scale=3&filter=prefix&cols=8&names=a,b,c
+const q = new URLSearchParams(location.search);
+const files = (q.get('files') || '').split(',').filter(Boolean);
+const scale = +(q.get('scale') || 3);
+const filter = q.get('filter') || '';
+const only = (q.get('names') || '').split(',').filter(Boolean);
+const cols = +(q.get('cols') || 8);
+const cs = +(q.get('cell') || 34); // размер ячейки в пикселях спрайта (для крупных объектов: cell=100)
+let loaded = 0;
+function go() {
+  const S = H3.Sprites;
+  let names = S.names().filter(n => !filter || n.startsWith(filter));
+  if (only.length) names = only;
+  const cell = cs * scale + 8, cellH = cs * scale + 22;
+  const cv = document.getElementById('c');
+  cv.width = cols * cell; cv.height = Math.max(1, Math.ceil(names.length / cols)) * cellH + 4;
+  const ctx = cv.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  names.forEach((n, i) => {
+    const x = (i % cols) * cell + 4, y = Math.floor(i / cols) * cellH + 4;
+    ctx.fillStyle = '#4a5468'; ctx.fillRect(x, y, cell - 8, cellH - 8);
+    ctx.fillStyle = '#5a6a5a'; ctx.fillRect(x, y + (cs - 2) * scale, cell - 8, 2 * scale);
+    S.draw(ctx, n, x + (cell - 8) / 2, y + (cs - 2) * scale, scale, false);
+    ctx.fillStyle = '#fff'; ctx.font = (9 + scale) + 'px monospace';
+    ctx.fillText(n, x + 2, y + cellH - 12);
+  });
+  window.__sheetDone = names.length;
+  window.__missing = only.filter(n => !S.has(n));
+}
+if (!files.length) go();
+files.forEach(f => { const s = document.createElement('script'); s.src = '../js/' + f; s.onload = () => { if (++loaded === files.length) go(); }; s.onerror = () => { console.error('fail ' + f); if (++loaded === files.length) go(); }; document.body.appendChild(s); });
+</script>
+</body></html>
