@@ -132,7 +132,18 @@ console.log('save');
 test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });
   const s1 = S.serialize(st); const st2 = S.deserialize(s1); assert.equal(S.serialize(st2), s1);
+  // содержимое карты и видимости должно пережить сохранение (типизированные массивы)
+  assert.ok(st2.map.terrain instanceof Uint8Array && st2.map.objAt instanceof Int32Array && st2.players[0].vis instanceof Uint8Array);
+  for (const k of ['terrain', 'block', 'road', 'obs']) { assert.equal(st2.map[k].length, st.map[k].length, k);
+    for (let i = 0; i < st.map[k].length; i++) if (st2.map[k][i] !== st.map[k][i]) throw new Error('несовпадение ' + k + ' в ' + i); }
+  for (let i = 0; i < st.map.objAt.length; i++) assert.equal(st2.map.objAt[i], st.map.objAt[i]);
+  assert.ok(st.map.terrain.some((v, i) => v !== st.map.terrain[0]) , 'карта не должна быть однородной');
+  // после загрузки герой может ходить
+  const h2 = st2.heroes[st2.players[0].heroes[0]];
+  let ok = false; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (dx || dy) { if (S.moveCost(st2, h2, h2.x + dx, h2.y + dy) < Infinity) ok = true; }
+  assert.ok(ok, 'герой после загрузки заперт');
   assert.throws(() => S.deserialize(JSON.stringify({ version: 99, state: {} })));
+  assert.throws(() => S.deserialize(JSON.stringify({ version: S.VERSION, state: { map: { w: 4, h: 4, terrain: {} }, players: [] } })), /повреждено/);
 });
 
 console.log('adventure');

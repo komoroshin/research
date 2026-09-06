@@ -355,7 +355,14 @@
     try { G.state.selHero = G.selHero; localStorage.setItem(SAVE_KEY + slot, S.serialize(G.state)); return true; } catch (e) { UI.toast('Не удалось сохранить: ' + e.message, 'warn'); return false; }
   }
   function load(slot, probe) {
-    try { const s = localStorage.getItem(SAVE_KEY + slot); if (!s) return null; if (probe) return true; const st = S.deserialize(s); G.selHero = st.selHero !== undefined ? st.selHero : null; return st; } catch (e) { if (!probe) UI.toast('Не удалось загрузить: ' + e.message, 'warn'); return null; }
+    try { const s = localStorage.getItem(SAVE_KEY + slot); if (!s) return null; if (probe) return true; const st = S.deserialize(s); G.selHero = st.selHero !== undefined ? st.selHero : null; return st; }
+    catch (e) {
+      if (!probe) { // битое или несовместимое сохранение убираем, чтобы кнопка не обманывала
+        try { localStorage.removeItem(SAVE_KEY + slot); } catch (x) { /* ignore */ }
+        UI.alert('Сохранение не открылось', 'Это сохранение сделано другой версией игры и больше не читается, поэтому оно удалено. Начните новую игру — новые сохранения будут работать.').then(() => { if (!G.state) menu(); });
+      }
+      return null;
+    }
   }
   function slotInfo(slot) { try { const s = localStorage.getItem(SAVE_KEY + slot); if (!s) return null; const m = /"day":(\d+)/.exec(s); const f = /"faction":"(\w+)"/.exec(s); return { day: m ? +m[1] : '?', faction: f ? f[1] : '' }; } catch (e) { return null; } }
   function saveDialog() {

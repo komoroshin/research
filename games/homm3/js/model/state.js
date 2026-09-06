@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, F = H3.Factions, HE = H3.Heroes;
-  const VERSION = 1;
+  const VERSION = 2;
 
   const DIFFICULTY = {
     easy: { name: 'Лёгкая', res: { gold: 30000, wood: 30, ore: 30, mercury: 15, sulfur: 15, crystal: 15, gems: 15 }, aiGold: -0.25, aiWood: 0, aiRare: 0, guards: 0.8, aiSmart: false, dip: 1,
@@ -187,9 +187,10 @@
     syncRng(state);
     const repl = (k, v) => {
       if (k && k[0] === '_') return undefined;
-      if (v instanceof Uint8Array) return { __u8: U.u8ToB64(v) };
-      if (v instanceof Int32Array) return { __i32: U.u8ToB64(new Uint8Array(v.buffer)) };
-      if (v instanceof Int16Array) return { __i16: U.u8ToB64(new Uint8Array(v.buffer)) };
+      // маркеры не начинаются с '_': иначе их вырежет фильтр служебных полей выше
+      if (v instanceof Uint8Array) return { $u8: U.u8ToB64(v) };
+      if (v instanceof Int32Array) return { $i32: U.u8ToB64(new Uint8Array(v.buffer)) };
+      if (v instanceof Int16Array) return { $i16: U.u8ToB64(new Uint8Array(v.buffer)) };
       return v;
     };
     return JSON.stringify({ version: VERSION, state }, repl);
@@ -197,15 +198,19 @@
   function deserialize(str) {
     const rev = (k, v) => {
       if (v && typeof v === 'object') {
-        if (v.__u8) return U.b64ToU8(v.__u8);
-        if (v.__i32) { const u = U.b64ToU8(v.__i32); return new Int32Array(u.buffer, u.byteOffset, u.length / 4); }
-        if (v.__i16) { const u = U.b64ToU8(v.__i16); return new Int16Array(u.buffer, u.byteOffset, u.length / 2); }
+        if (v.$u8) return U.b64ToU8(v.$u8);
+        if (v.$i32) { const u = U.b64ToU8(v.$i32); return new Int32Array(u.buffer, u.byteOffset, u.length / 4); }
+        if (v.$i16) { const u = U.b64ToU8(v.$i16); return new Int16Array(u.buffer, u.byteOffset, u.length / 2); }
       }
       return v;
     };
     const data = JSON.parse(str, rev);
     if (!data || data.version !== VERSION) throw new Error('Неизвестная версия сохранения: ' + (data && data.version));
     const state = data.state;
+    // карта обязана восстановиться типизированными массивами, иначе сейв битый
+    const m = state.map;
+    if (!m || !(m.terrain instanceof Uint8Array) || !(m.block instanceof Uint8Array) || !(m.objAt instanceof Int32Array) || m.terrain.length !== m.w * m.h) throw new Error('Сохранение повреждено');
+    for (const p of state.players) if (!(p.vis instanceof Uint8Array) || p.vis.length !== m.w * m.h) throw new Error('Сохранение повреждено');
     attachRng(state);
     return state;
   }
