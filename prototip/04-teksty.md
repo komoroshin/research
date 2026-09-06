@@ -254,3 +254,23 @@
 | moment.verdictNotConfirmed | Ответ — не подтвердилось | Answer — not confirmed |
 | moment.map | Карта | Map |
 | moment.redFlag | Красный флаг | Red flag |
+
+
+## Версия 2 · новые ключи (веб-прототип)
+
+Полный набор строк версии 2 живёт в `web/threshold-prototype.html` (объект `S`, ветки `en`/`ru`) и является источником истины для RU/EN. Ниже — только новые сущности, чтобы дизайнер и разработчик знали, что появилось.
+
+| Группа | Ключи | Смысл |
+|---|---|---|
+| stage | obs, check(f), paused | Этап в шапке: Наблюдение / Проверка: молочное / Пауза |
+| hero | day0, day0body, obs, obsBody, insight* | Карточка задачи дня |
+| progress | collected(n), insightIn(n), suspectIn(n), enough, checkDay(d,ph), open | Одна строка прогресса на «Сегодня» |
+| meals | mealsTitle, photoTile, photoSub, recent, mealsEmpty, mealsCount(n) | Блок «Еда сегодня» на главном |
+| bg | bgTitle, sleep, stepsL, hr, bgWhy, fromHealth, demoData | Карточка фона с источником |
+| scales | worst, belly/bellySub, bloat/bloatSub, stool/stoolSub, lvl[0..10], stoolTypes[0..7], stoolKey | Карта дня: шкалы 0–10 с подписями и типы Бристоля |
+| path | pathTitle, pathPos, nodes.*, obsDays, aheadDay, whenReady, afterAnswer, daysRange, checkStatus.* | Вкладка «Путь» |
+| tips | tipsTitle, tipSets.obs/check/after, assistantNote | Вкладка «Советы» по этапу |
+| plan | planTitle, planDays, planRules, planBtn | План проверки (лист) |
+| swaps | moreSwaps, lessSwaps, swaps.* (6 на группу) | Раскрываемые замены |
+| red | redConfirm*, redYes, redNo, redBack, pauseBanner, pauseBody, resumeDoctor | Красный флаг в два шага, пауза и снятие |
+| rhythm | rhythm.* | Вариант «Ритм» (выключен по умолчанию) |
