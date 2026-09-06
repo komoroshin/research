@@ -1,0 +1,8 @@
+/* Threshold motion: one duration, one curve, colour and position only. No bounce, no confetti. */
+:root{
+  --duration:200ms; /* @kind other */
+  --ease:cubic-bezier(.4,0,.2,1); /* @kind other */
+  --transition-color:background var(--duration) var(--ease);
+  --transition-knob:left var(--duration) var(--ease);
+  --transition-fade:opacity var(--duration) var(--ease);
+}

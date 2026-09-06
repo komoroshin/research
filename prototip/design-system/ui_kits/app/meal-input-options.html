@@ -1,0 +1,71 @@
+<!-- @dsCard group="App" viewport="1290x1300" name="Meal input — three options" subtitle="Fixing the inverted hierarchy, the missing time control, and the missing reward" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Threshold — meal input options</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}a{color:var(--text-action)}a:hover{color:var(--forest-800)}
+#root{padding:28px 32px 48px}
+.head{margin-bottom:24px;max-width:920px}
+.h1{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:-.02em;color:var(--text-display)}
+.sub{font-size:14px;line-height:1.45;color:var(--ink-600);margin-top:8px}
+.probs{display:flex;gap:20px;margin-top:14px}
+.prob{flex:1;font-size:12px;line-height:1.45;color:var(--ink-600)}
+.prob b{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action);margin-bottom:4px}
+.cols{display:flex;gap:26px;align-items:flex-start}
+.col{width:390px;display:flex;flex-direction:column;gap:12px}
+.key{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action)}
+.desc{font-size:12px;line-height:1.45;color:var(--ink-600);min-height:118px}
+.phone{position:relative;width:390px;height:844px;border-radius:var(--radius-phone);overflow:hidden;background:var(--surface-screen);background-image:var(--grain);box-shadow:var(--shadow-card-sm)}
+.toast{position:absolute;left:20px;right:20px;top:8px;z-index:9;pointer-events:none}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="MealVariants.jsx"></script>
+<script type="text/babel">
+const { Toast } = window.ThresholdDesignSystem_2ce5e4;
+
+/* Each column owns its own toast, so logging in one option doesn't flash in the others. */
+function Col({ id, name, desc, render }) {
+  const [toast, setToast] = React.useState('');
+  const log = (d) => { setToast(`${d.name} saved`); setTimeout(() => setToast(''), 1800); };
+  return (
+    <div className="col">
+      <div className="key">{id} · {name}</div>
+      <div className="desc">{desc}</div>
+      <div className="phone">
+        {render(log)}
+        <div className="toast"><Toast show={!!toast}>{toast || ' '}</Toast></div>
+      </div>
+    </div>
+  );
+}
+
+function Study() {
+  return (
+    <div>
+      <div className="head">
+        <div className="h1">Adding a meal — three ways out</div>
+        <div className="sub">All three are clickable. They differ on which job the screen is optimised for, not on decoration — there are still no food illustrations, no icons and no emoji.</div>
+        <div className="probs">
+          <div className="prob"><b>Hierarchy</b>Photo is the main path in the brief, but the tile sits at the bottom, under a list of five dishes — and both do the same job with no stated relationship.</div>
+          <div className="prob"><b>Missing time</b>The data model carries a time per meal, but the screen assigns it silently. "This was breakfast" is unsayable.</div>
+          <div className="prob"><b>Missing reward</b>A meal is what makes a day count towards finding a suspect, and during a test it is the dose itself. Both lines exist in the copy; neither is on screen.</div>
+        </div>
+      </div>
+      <div className="cols">
+        <Col id="1" name="Capture first"
+          desc="The smallest change: the photo tile moves to the top and goes full width, voice and text become a quiet secondary row, and the recent list logs in one tap. Keeps the screen's structure, fixes the inverted hierarchy, and states the reward at the bottom. Ship-tomorrow option."
+          render={(log) => <MealCaptureFirst onLog={log} />} />
+        <Col id="2" name="One-tap log"
+          desc="The list is the screen. Rows log immediately — no confirmation step — and the count on the left shows how often you eat each thing, so the six dishes a person actually repeats float to the top. Today's log lives on the same screen. Fastest for the returning user; least room for the test-dose message."
+          render={(log) => <MealOneTap onLog={log} />} />
+        <Col id="3" name="Meal moments"
+          desc="Adds the control the screen is missing: Morning / Day / Evening / Snack set the time by which one you tap, and each moment carries its own recents, so the list is short and right. Picking a dish shows the recognised card with the test-dose line in full. Most structure, most attractive, one extra tap."
+          render={(log) => <MealMoments onLog={log} />} />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Study />);
+</script></body></html>

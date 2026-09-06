@@ -1,0 +1,87 @@
+<!-- @dsCard group="App" viewport="430x900" name="Threshold iOS app" subtitle="Click-through recreation: onboarding → day card → suspect → test → answer → doctor page" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Threshold — app UI kit</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}
+#root{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+a{color:var(--text-action)}a:hover{color:var(--forest-800)}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="MealStrip.jsx"></script>
+<script type="text/babel" src="OnboardingScreen.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="DayCardScreen.jsx"></script>
+<script type="text/babel" src="DecisionScreens.jsx"></script>
+<script type="text/babel" src="PathScreen.jsx"></script>
+<script type="text/babel" src="DoctorPage.jsx"></script>
+<script type="text/babel" src="RestaurantCard.jsx"></script>
+<script type="text/babel">
+const { Toast } = window.ThresholdDesignSystem_2ce5e4;
+
+function App() {
+  const [st, setSt] = React.useState({ onboarded:false, health:null, from:null, day:6, tab:'today', modal:null, check:null, tested:false, insight:false, meals:[], toast:'' });
+  const set = (patch) => setSt((s) => ({ ...s, ...patch }));
+  const toast = (t) => { set({ toast:t }); setTimeout(() => set({ toast:'' }), 1800); };
+  /* Every modal knows where it was opened from, so "back" always lands where the user came from. */
+  const back = () => set({ modal: st.from || null, from: null });
+
+  const closeDay = () => {
+    const day = st.day + 1;
+    if (st.check) {
+      const d = st.check.day + 1;
+      if (d > 8) { set({ day, check:null, tested:true, modal:'verdict' }); return; }
+      set({ day, check:{ day:d }, modal:null, meals:[] }); toast('Day ' + (d - 1) + ' counted · sleep 7 h 10 min'); return;
+    }
+    if (day >= 21 && !st.tested) { set({ day, modal:'suspicion', meals:[] }); return; }
+    set({ day, modal:null, meals:[], insight: day >= 7 && !st.insight ? true : st.insight });
+    toast(day + ' days collected');
+  };
+
+  if (!st.onboarded) return (
+    <Phone><OnboardingScreen health={st.health} onHealth={(v) => set({ health:v })} onStart={() => set({ onboarded:true })} /></Phone>
+  );
+
+  const base = st.tab === 'path'
+    ? <PathScreen day={st.day} tested={st.tested} check={st.check} tab={st.tab} onTab={(t) => set({ tab:t, modal:null })} onDoctor={() => set({ modal:'doctor' })} onRestaurant={() => set({ modal:'restaurant' })} />
+    : st.tab === 'tips'
+    ? <TipsScreen tab={st.tab} onTab={(t) => set({ tab:t, modal:null })} check={st.check} />
+    : <TodayScreen day={st.day} check={st.check} insight={st.insight} meals={st.meals} tab={st.tab} tested={st.tested}
+        onTab={(t) => set({ tab:t, modal:null })}
+        onInsightOk={() => set({ insight:false })}
+        onOpenDay={() => set({ modal:'dayCard' })}
+        onEditYesterday={() => set({ modal:'dayCard' })}
+        onAddMeal={() => set({ modal:'addMeal' })}
+        onOpenPlan={() => set({ modal:'plan' })}
+        onTapTop={() => set({ day: st.day < 21 ? 21 : st.day })} />;
+
+  const modals = {
+    dayCard: <DayCardScreen day={st.day} meals={st.meals} onClose={() => set({ modal:null })} onCloseDay={closeDay}
+      onBlood={() => set({ modal:'red', from:'dayCard' })} onAddMeal={() => set({ modal:'addMeal', from:'dayCard' })} />,
+    addMeal: <AddMealScreen check={st.check} logged={st.meals} onBack={() => back()}
+      onLog={(m) => { set({ meals:[...st.meals, m] }); toast(m.name + ' saved · tap again to undo'); }}
+      onSave={(m) => { set({ modal:st.from || null, from:null, meals:[...st.meals, m] }); toast(m.name + ' saved'); }} />,
+    suspicion: <SuspicionScreen onTest={() => { set({ modal:null, check:{ day:1 } }); toast('Test started · day 1 of 8'); }}
+      onNotNow={() => { set({ modal:null }); toast("We'll come back to this. Observation continues."); }}
+      onOther={() => { set({ modal:null }); toast('Other patterns: fructans'); }} />,
+    verdict: <VerdictScreen onNext={() => { set({ modal:null, check:{ day:1 } }); toast('Test started · fructans'); }} onPath={() => set({ modal:null, tab:'path' })} />,
+    plan: <TestPlanScreen day={st.check ? st.check.day : 1} onClose={() => set({ modal:null })} />,
+    red: <RedFlagScreen onDoctor={() => set({ modal:'doctor', from:'red' })} onBack={() => back()} />,
+    doctor: <DoctorPage tested={st.tested} onClose={() => back()} />,
+    restaurant: <RestaurantCard tested={st.tested} check={st.check} onClose={() => back()} />,
+  };
+
+  return (
+    <Phone>
+      {base}
+      {st.modal ? <div style={{ position:'absolute', inset:0, zIndex:5 }}>{modals[st.modal]}</div> : null}
+      <div style={{ position:'absolute', left:20, right:20, top:8, zIndex:9, pointerEvents:'none' }}>
+        <Toast show={!!st.toast}>{st.toast || ' '}</Toast>
+      </div>
+    </Phone>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script></body></html>

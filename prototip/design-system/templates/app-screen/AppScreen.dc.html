@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Threshold app screen" description="A 390x844 iPhone screen in the Threshold language: top row, hero card, progress, meal capture, primary action, tab bar." -->
+<helmet><script src="./ds-base.js"></script><style>body{margin:0;background:#E6E3CC;font-family:Inter,system-ui,sans-serif}a{color:#01472E}a:hover{color:#0A5637}</style></helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+<div style="position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:#FEFAE0;background-image:var(--grain);box-shadow:0 30px 60px rgba(1,71,46,.2)">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;gap:16px;padding:54px 20px 22px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#4E6B57">Today · day 14</div>
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#4E6B57">Observing</div>
+</div>
+<div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px">
+<div style="border-radius:24px;padding:18px 20px;background:#01472E;box-shadow:0 18px 40px rgba(1,71,46,.2)">
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#A3B18A">Observing</div>
+<div style="font-family:Oswald,Impact,sans-serif;font-weight:700;text-transform:uppercase;font-size:24px;line-height:1.04;letter-spacing:-.02em;color:#FEFAE0;margin-top:10px">Eat as usual</div>
+<div style="height:2px;width:64px;background:#CCD5AE;margin:14px 0"></div>
+<div style="font-size:14px;line-height:1.45;color:#E9EDC9">Nothing to restrict. Tonight: three questions and thirty seconds. A photo of a meal when it is convenient.</div>
+</div>
+<div style="border-radius:24px;padding:12px 16px;background:#F3F1DC;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div style="font-size:13px;font-weight:700;color:#2A4A3A">14 days collected</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#01472E">Open the path ›</div>
+</div>
+<x-import component-from-global-scope="ThresholdDesignSystem_2ce5e4.ProgressBar" value="{{ pct }}" hint-size="100%,8px"></x-import>
+<div style="font-size:13px;line-height:1.45;color:#4E6B57">about 7 more days to a suspect</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#4E6B57">Meals today</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<x-import component-from-global-scope="ThresholdDesignSystem_2ce5e4.PhotoTile" label="Snap a meal" sub="photo · voice · text" hint-size="100%,118px"></x-import>
+<div style="border-radius:24px;padding:12px 14px;background:#E9EDC9;min-height:118px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#4E6B57">Recent</div>
+<div><div style="font-size:13px;font-weight:700;color:#2A4A3A">Oatmeal with milk</div>
+<div style="margin-top:6px"><x-import component-from-global-scope="ThresholdDesignSystem_2ce5e4.Chip" hint-size="70px,26px">lactose</x-import></div></div>
+</div>
+</div>
+</div>
+<div style="border-radius:24px;padding:18px 20px;background:#F3F1DC">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#4E6B57">Background for the day</div>
+<div style="font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#01472E">demo data</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px">
+<div><div style="font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:22px;line-height:.9;letter-spacing:-.03em;color:#01472E">7 h 10 min</div><div style="font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#4E6B57;margin-top:6px">sleep</div></div>
+<div><div style="font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:22px;line-height:.9;letter-spacing:-.03em;color:#01472E">6,200</div><div style="font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#4E6B57;margin-top:6px">steps</div></div>
+<div><div style="font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:22px;line-height:.9;letter-spacing:-.03em;color:#01472E">61</div><div style="font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#4E6B57;margin-top:6px">resting hr</div></div>
+</div>
+</div>
+</div>
+<div style="font-size:12px;line-height:1.4;color:#4E6B57;text-align:center">Three questions, thirty seconds.</div>
+<x-import component-from-global-scope="ThresholdDesignSystem_2ce5e4.Button" hint-size="100%,52px">Close the day</x-import>
+<x-import component-from-global-scope="ThresholdDesignSystem_2ce5e4.TabBar" tabs="{{ tabs }}" value="{{ tab }}" onChange="{{ setTab }}" hint-size="100%,58px"></x-import>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'today' };
+  renderVals() {
+    return {
+      pct: 66,
+      tab: this.state.tab,
+      tabs: [{ id: 'today', label: 'Today' }, { id: 'path', label: 'Path' }, { id: 'tips', label: 'Tips' }],
+      setTab: (id) => this.setState({ tab: id }),
+    };
+  }
+}
+</script>
+</body>
+</html>

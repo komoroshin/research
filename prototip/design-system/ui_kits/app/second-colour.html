@@ -1,0 +1,88 @@
+<!-- @dsCard group="App" viewport="1254x2160" name="Second colour — two candidates" subtitle="Dmitry's note: add a colour to break up the green. Ochre or dusty blue" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Threshold — second colour</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}a{color:var(--text-action)}a:hover{color:var(--forest-800)}
+#root{padding:28px 32px 48px}
+.head{margin-bottom:24px;max-width:920px}
+.h1{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:-.02em;color:var(--text-display)}
+.sub{font-size:14px;line-height:1.45;color:var(--ink-600);margin-top:8px}
+.cols{display:flex;gap:26px;align-items:flex-start}
+.col{width:390px;display:flex;flex-direction:column;gap:12px}
+.key{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action)}
+.desc{font-size:12px;line-height:1.45;color:var(--ink-600);min-height:150px}
+.swatches{display:flex;gap:6px}
+.swatches div{flex:1;height:20px;border-radius:6px;box-shadow:var(--ring-hairline)}
+.phone{position:relative;width:390px;height:844px;border-radius:var(--radius-phone);overflow:hidden;background:var(--surface-screen);background-image:var(--grain);box-shadow:var(--shadow-card-sm)}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="MealStrip.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="PathScreen.jsx"></script>
+<script type="text/babel">
+const noop = () => {};
+const MEALS = [{ time:'08:30', name:'Oatmeal with milk', groups:['lactose'] }, { time:'13:10', name:'Garlic pasta', groups:['fructans'] }];
+
+/* A second hue earns its place only if it carries a MEANING the green cannot: here it marks
+   "answered" — the tested group, its threshold card, the completed path nodes. Everything
+   still-being-watched stays green. That way the colour is information, not decoration. */
+const OPTIONS = [
+  {
+    id: 'None',
+    name: 'As shipped (B3)',
+    desc: 'One hue family. The screen reads calmly, but every state — observing, tested, in progress — is told apart only by lightness, so nothing announces itself. This is the state Dmitry called hard to hold with the eyes.',
+    vars: {},
+    swatches: ['var(--pine)', 'var(--moss-300)', 'var(--cream-100)', 'var(--paper-warm)'],
+  },
+  {
+    id: 'A',
+    name: 'Ochre',
+    desc: 'oklch(0.74 / 0.11 / 72) — a warm, dusty yellow that sits inside the cream family, so it reads as an older, sunnier part of the same palette rather than a new brand colour. Marks answers: the threshold card, the tested group, completed nodes. Risk: on cream it is close in lightness to sage-300, so it needs the ink type to carry contrast.',
+    vars: { '--surface-card-accent': 'oklch(0.86 0.075 76)', '--surface-answered': 'oklch(0.90 0.055 78)', '--day-done': 'oklch(0.74 0.11 72)', '--line-rule': 'oklch(0.70 0.10 72)' },
+    swatches: ['var(--pine)', 'oklch(0.86 0.075 76)', 'oklch(0.74 0.11 72)', 'var(--paper-warm)'],
+  },
+  {
+    id: 'B',
+    name: 'Dusty blue',
+    desc: 'oklch(0.62 / 0.08 / 245) — maximum separation from the green with the lowest chroma that still registers. Reads quiet and clinical, which suits the doctor-facing half of the product, and gives the "answered" state a colour the observing state can never be confused with. Risk: it is the first genuinely cool value in the system and it will look imported on the deck.',
+    vars: { '--surface-card-accent': 'oklch(0.86 0.045 245)', '--surface-answered': 'oklch(0.90 0.032 245)', '--day-done': 'oklch(0.62 0.08 245)', '--line-rule': 'oklch(0.58 0.075 245)' },
+    swatches: ['var(--pine)', 'oklch(0.86 0.045 245)', 'oklch(0.62 0.08 245)', 'var(--paper-warm)'],
+  },
+];
+
+function Col({ opt }) {
+  return (
+    <div className="col" style={opt.vars}>
+      <div className="key">{opt.id} · {opt.name}</div>
+      <div className="swatches">{opt.swatches.map((c, i) => <div key={i} style={{ background: c }} />)}</div>
+      <div className="desc">{opt.desc}</div>
+      <div className="phone">
+        <TodayScreen day={30} check={null} insight={false} meals={MEALS} tested={true} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} onEditYesterday={noop} />
+      </div>
+      <div className="phone">
+        <PathScreen day={30} tested={true} check={null} tab="path" onTab={noop} onDoctor={noop} onRestaurant={noop} />
+      </div>
+    </div>
+  );
+}
+
+function Study() {
+  return (
+    <div>
+      <div className="head">
+        <div className="h1">A second colour</div>
+        <div className="sub">
+          A second hue is only worth adding if it carries a meaning the green cannot. Both candidates use it for one job: <b>this has been answered</b> —
+          the threshold card, the tested group in the map, the completed path nodes and finished days. Everything still under observation stays green,
+          so the colour is information rather than decoration. Shown on the two screens where the distinction actually matters.
+        </div>
+      </div>
+      <div className="cols">{OPTIONS.map((o) => <Col key={o.id} opt={o} />)}</div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Study />);
+</script></body></html>

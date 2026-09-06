@@ -1,0 +1,34 @@
+/* Threshold spacing. Screen geometry is fixed to iPhone 390x844 (design spec: 391x852 safe area). */
+:root{
+  --space-1:2px;
+  --space-2:4px;
+  --space-3:6px;
+  --space-4:8px;
+  --space-5:10px;
+  --space-6:12px;
+  --space-7:14px;
+  --space-8:16px;
+  --space-9:18px;
+  --space-10:20px;
+  --space-12:24px;
+
+  --screen-width:390px;
+  --screen-height:844px;
+  --screen-pad-x:20px;
+  --screen-pad-top:54px;   /* status bar + safe area */
+  --screen-pad-bottom:22px;
+  --screen-gap:16px;       /* between screen-level blocks */
+  --feed-gap:14px;         /* between scrolling cards */
+  --stack-gap:8px;         /* between stacked siblings */
+  --grid-gap:8px;
+  --card-pad-y:18px;
+  --card-pad-x:20px;
+  --card-pad-y-tight:12px;
+  --card-pad-x-tight:16px;
+  --btn-pad-y:15px;
+  --btn-pad-x:22px;
+  --hit-min:44px;          /* every tappable row */
+  --btn-min-height:52px;
+  --rule-width:64px;
+  --rule-height:2px;
+}

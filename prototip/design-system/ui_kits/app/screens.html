@@ -1,0 +1,120 @@
+<!-- @dsCard group="App" viewport="1320x980" name="All screens" subtitle="Every screen and state side by side, at 1:1" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Threshold — all screens</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}a{color:var(--text-action)}a:hover{color:var(--forest-800)}
+#root{padding:28px 32px 48px}
+.head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:22px}
+.h1{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:-.02em;color:var(--forest)}
+.meta{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-600)}
+.grid{display:flex;flex-wrap:wrap;gap:28px}
+.item{display:flex;flex-direction:column;gap:10px;width:390px}
+.cap{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.key{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--forest)}
+.note{font-size:12px;line-height:1.4;color:var(--ink-600)}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="MealStrip.jsx"></script>
+<script type="text/babel" src="OnboardingScreen.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="DayCardScreen.jsx"></script>
+<script type="text/babel" src="DecisionScreens.jsx"></script>
+<script type="text/babel" src="PathScreen.jsx"></script>
+<script type="text/babel" src="DoctorPage.jsx"></script>
+<script type="text/babel" src="RestaurantCard.jsx"></script>
+<script type="text/babel">
+const noop = () => {};
+const MEALS = [{ time:'08:30', name:'Oatmeal with milk', groups:['lactose'] }, { time:'13:10', name:'Garlic pasta', groups:['fructans'] }];
+
+function Item({ id, name, note, children }) {
+  return (
+    <div className="item">
+      <div className="cap"><div className="key">{id} · {name}</div></div>
+      <div style={{ position:'relative', width:390, height:844, borderRadius:'var(--radius-phone)', overflow:'hidden', background:'var(--surface-screen)', backgroundImage:'var(--grain)', boxShadow:'var(--shadow-device)' }}>
+        {children}
+      </div>
+      <div className="note">{note}</div>
+    </div>
+  );
+}
+
+function Gallery() {
+  return (
+    <div>
+      <div className="head">
+        <div className="h1">Threshold — every screen</div>
+        <div className="meta">390 × 844 · light theme · English</div>
+      </div>
+      <div className="grid">
+        <Item id="Э0" name="Onboarding" note="Three segmented questions, then Apple Health explained before it is asked for. One screen, no scroll on device.">
+          <OnboardingScreen health={null} onHealth={noop} onStart={noop} />
+        </Item>
+        <Item id="Э0" name="Onboarding · Health declined" note="The spec's “demo data” state, using Notice: what happens, what still works, the way back.">
+          <OnboardingScreen health="denied" onHealth={noop} onStart={noop} />
+        </Item>
+        <Item id="Э1" name="Today · day 0" note="Before the first day card. Dark hero, no progress row yet.">
+          <TodayScreen day={0} check={null} insight={false} meals={[]} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+        </Item>
+        <Item id="Э2" name="Today · first insight" note="Day 7. The insight card carries the caveat one step down, never smaller.">
+          <TodayScreen day={7} check={null} insight={true} meals={MEALS} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+        </Item>
+        <Item id="Э3" name="Today · observing" note="Day 14, meals logged. Progress row is a day count, never a percentage of achievement.">
+          <TodayScreen day={14} check={null} insight={false} meals={MEALS} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+        </Item>
+        <Item id="Э3" name="Today · with an answer" note="After a test: the threshold gets a permanent card on Today, and “Yesterday · Edit” sits right under the hero.">
+          <TodayScreen day={30} check={null} insight={false} meals={MEALS} tested={true} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} onEditYesterday={noop} />
+        </Item>
+        <Item id="Э1" name="Day card" note="0–10 belly and bloating, Bristol picker, day flags. “Blood in stool” is deliberately not a switch.">
+          <DayCardScreen day={14} meals={MEALS} onClose={noop} onCloseDay={noop} onBlood={noop} onAddMeal={noop} />
+        </Item>
+        <Item id="Э1а" name="Add a meal" note="Photo first and full width, voice and text secondary, the person’s own dishes logging in one tap below.">
+          <AddMealScreen check={null} logged={MEALS} onBack={noop} onLog={noop} onSave={noop} />
+        </Item>
+        <Item id="Э1а" name="Add a meal · during a test" note="The same screen inside a test: the group under test is marked “test dose” in the list.">
+          <AddMealScreen check={{ day:3 }} logged={[]} onBack={noop} onLog={noop} onSave={noop} />
+        </Item>
+        <Item id="Э4" name="Suspect" note="The one screen that breaks the one-action rule: three equal accent buttons.">
+          <SuspicionScreen onTest={noop} onNotNow={noop} onOther={noop} />
+        </Item>
+        <Item id="Э5" name="Today · test, restriction" note="Day 3 of 8. Swaps come from the person’s own meals.">
+          <TodayScreen day={24} check={{ day:3 }} insight={false} meals={[]} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+        </Item>
+        <Item id="Э5" name="Today · test, return" note="Day 7 of 8. The dose is the content — ½, in Oswald at 48px.">
+          <TodayScreen day={28} check={{ day:7 }} insight={false} meals={MEALS} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+        </Item>
+        <Item id="Э5" name="Test plan" note="Modal. Explains why a day can stop counting — without the word “failed”.">
+          <TestPlanScreen day={3} onClose={noop} />
+        </Item>
+        <Item id="Э6" name="Answer · threshold" note="34px Display — the largest type in the product, used exactly here and on Э8.">
+          <VerdictScreen onNext={noop} onPath={noop} />
+        </Item>
+        <Item id="Э6" name="Answer · not confirmed" note="Same size, same neutral colour, no visual sign of failure.">
+          <VerdictScreen notConfirmed onNext={noop} onPath={noop} />
+        </Item>
+        <Item id="Э7" name="Path · observing" note="Empty tolerance map: all six groups observing, one explanatory line.">
+          <PathScreen day={14} tested={false} check={null} tab="path" onTab={noop} onDoctor={noop} onRestaurant={noop} />
+        </Item>
+        <Item id="Э7" name="Path · with an answer" note="Nodes completed, one group carries a threshold, doctor page becomes primary.">
+          <PathScreen day={30} tested={true} check={null} tab="path" onTab={noop} onDoctor={noop} onRestaurant={noop} />
+        </Item>
+        <Item id="—" name="Tips · observing" note="Stage-dependent accordion; the content changes with the phase of the loop.">
+          <TipsScreen tab="tips" onTab={noop} check={null} />
+        </Item>
+        <Item id="Э7а" name="Page for your doctor" note="A document, not an app screen: white paper, no grain, prints on one page.">
+          <DoctorPage tested={true} onClose={noop} />
+        </Item>
+        <Item id="new" name="Card for a restaurant" note="The tolerance map said out loud, in the kitchen's language. No crossed-out foods — the strongest line is “please leave out”.">
+          <RestaurantCard tested={true} check={null} onClose={noop} />
+        </Item>
+        <Item id="Э8" name="Red flag" note="Fully forest, no dismiss, no “continue”. The quietest screen in the app.">
+          <RedFlagScreen onDoctor={noop} onBack={noop} />
+        </Item>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Gallery />);
+</script></body></html>

@@ -1,0 +1,11 @@
+/* Threshold shadows. Only three exist, all forest-tinted; no neutral grey shadows anywhere. */
+:root{
+  --shadow-card:0 18px 40px rgba(1,71,46,0.2);   /* dark + accent cards, toasts, photo tile */
+  --shadow-card-sm:0 8px 20px rgba(1,71,46,0.2);   /* lighter card level, for cards on a small screen */
+  --shadow-knob:0 8px 20px rgba(1,71,46,0.25);   /* slider thumb */
+  --shadow-device:0 30px 60px rgba(1,71,46,0.2); /* phone frame on the web stage */
+  --ring-hairline:inset 0 0 0 2px var(--border-hairline);
+  --ring-strong:inset 0 0 0 2px var(--border-strong);
+  --ring-focus:0 0 0 3px var(--focus-ring);
+  --ring-current:0 0 0 4px var(--sage-100);      /* current path node pin */
+}

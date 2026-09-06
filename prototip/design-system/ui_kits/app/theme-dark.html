@@ -1,0 +1,51 @@
+<!-- @dsCard group="App" viewport="1290x1300" name="Dark theme" subtitle="The same screens under data-theme="dark" — an inversion of the semantic layer, not a second palette" -->
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><title>Threshold — dark theme</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}
+a{color:var(--text-action)}a:hover{color:var(--moss-300)}
+#root{padding:28px 32px 48px}
+.head{margin-bottom:24px;max-width:900px}
+.h1{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:-.02em;color:var(--text-display)}
+.sub{font-size:14px;line-height:1.45;color:var(--text-body-soft);margin-top:8px}
+.cols{display:flex;gap:26px;align-items:flex-start}
+.col{width:390px;display:flex;flex-direction:column;gap:12px}
+.key{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action)}
+.phone{position:relative;width:390px;height:844px;border-radius:var(--radius-phone);overflow:hidden;background:var(--surface-screen);background-image:var(--grain);box-shadow:var(--shadow-card-sm)}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="MealStrip.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="DayCardScreen.jsx"></script>
+<script type="text/babel" src="DecisionScreens.jsx"></script>
+<script type="text/babel">
+const noop = () => {};
+const MEALS = [{ time:'08:30', name:'Oatmeal with milk', groups:['lactose'] }, { time:'13:10', name:'Garlic pasta', groups:['fructans'] }];
+function Study() {
+  return (
+    <div>
+      <div className="head">
+        <div className="h1">Dark theme</div>
+        <div className="sub">
+          The app is opened in the evening, often in bed, so the light-only rule from the brief costs more than it saves.
+          Nothing here is a new palette: <code>tokens/theme-dark.css</code> re-points the same semantic tokens under <code>[data-theme="dark"]</code>,
+          so every component and screen inherits it untouched. The hero card inverts — on light it is the darkest thing on screen, on dark it is the lightest —
+          and moss-300 takes over as the action colour. The doctor page keeps its white paper in both themes.
+        </div>
+      </div>
+      <div className="cols">
+        <div className="col"><div className="key">Today · observing</div>
+          <div className="phone"><TodayScreen day={14} check={null} insight={false} meals={MEALS} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} onEditYesterday={noop} /></div></div>
+        <div className="col"><div className="key">Day card</div>
+          <div className="phone"><DayCardScreen day={14} meals={MEALS} onClose={noop} onCloseDay={noop} onBlood={noop} onAddMeal={noop} /></div></div>
+        <div className="col"><div className="key">The suspect</div>
+          <div className="phone"><SuspicionScreen onTest={noop} onNotNow={noop} onOther={noop} /></div></div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Study />);
+</script></body></html>

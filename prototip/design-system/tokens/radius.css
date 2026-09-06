@@ -1,0 +1,16 @@
+/* Threshold corner radii. Nothing is square; nothing is a circle except knobs and dots. */
+:root{
+  --radius-card:24px;      /* every card, every scale block */
+  --radius-button:20px;    /* buttons, segmented outer, quick tile */
+  --radius-node:20px;      /* path node box */
+  --radius-stool:18px;     /* Bristol tile */
+  --radius-segment:16px;   /* segmented inner selection */
+  --radius-switch:16px;
+  --radius-tile:14px;      /* 0-10 scale cell */
+  --radius-chip:12px;      /* chips, nav items */
+  --radius-knob:14px;      /* switch + slider knob */
+  --radius-dot:12px;       /* day dots (pill) */
+  --radius-bar:6px;        /* progress bar */
+  --radius-phone:44px;     /* device frame in web previews */
+  --border-width:2px;      /* all inset borders are exactly 2px */
+}

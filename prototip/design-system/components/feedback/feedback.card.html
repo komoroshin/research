@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Feedback" subtitle="Notice — the three “we couldn't” states, plus the protocol pause" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;font-family:var(--font-text);background:var(--surface-screen);background-image:var(--grain);color:var(--text-body)}#root{padding:18px 20px}a{color:var(--text-action)}a:hover{color:var(--forest-800)}.lbl{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-eyebrow-soft);margin-bottom:6px}</style></head>
+<body><div id="root"></div>
+<script type="text/babel">
+const { Notice, ActionLink, Button } = window.ThresholdDesignSystem_2ce5e4;
+function Demo(){return (<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+  <div><div className="lbl">Health denied</div>
+    <Notice label="Demo data" action={<ActionLink>Allow Health</ActionLink>}>Health isn't connected, so sleep and steps are stand-in numbers. Everything else works.</Notice></div>
+  <div><div className="lbl">Food not recognised</div>
+    <Notice label="Not recognised" action={<ActionLink>Type it instead</ActionLink>}>We couldn't read the dish from the photo. Name it and we'll remember it for next time.</Notice></div>
+  <div><div className="lbl">Offline</div>
+    <Notice label="No connection">The day is saved on your phone. It will sync by itself — nothing is waiting on you.</Notice></div>
+  <div><div className="lbl">Protocol paused · the one alert use</div>
+    <Notice tone="alert" label="Protocol paused" action={<ActionLink>Page for your doctor</ActionLink>}>The diary keeps working. Tests wait until you have talked to a doctor.</Notice></div>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script></body></html>

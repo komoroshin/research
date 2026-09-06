@@ -1,0 +1,62 @@
+/* Threshold type scale. Display + numerals are Oswald; everything else Inter. */
+:root{
+  /* display — uppercase Oswald, condensed and tight */
+  --display-weight:700;
+  --display-weight-secondary:500; /* @kind font */ /* secondary headings — screen titles under a hero */
+  --display-line:1.04; /* @kind font */
+  --display-tracking:-0.02em;
+  --display-transform:uppercase; /* @kind font */
+  --display-answer:34px;  /* the single largest line in the app (Э6 answer, Э8 headline) */
+  --display-screen:26px;  /* screen titles */
+  --display-hero:24px;    /* hero card headline */
+  --display-card:22px;    /* card headline */
+  --display-inline:20px;  /* compact hero */
+  --display-tile:18px;    /* tile label */
+
+  /* numerals — Oswald, used for every quantity in the product */
+  --numeral-weight:700;
+  --numeral-variant:tabular-nums; /* @kind font */ /* keeps 7 h 10 min / 6,200 / 61 aligned in a 3-up grid */
+  --numeral-line:0.9; /* @kind font */
+  --numeral-tracking:-0.03em;
+  --numeral-xl:48px;  /* "12 / 15" suspicion pair */
+  --numeral-lg:40px;  /* 0–10 scale readout */
+  --numeral-md:34px;  /* streak */
+  --numeral-sm:30px;  /* doctor-page metrics, background pairs */
+  --numeral-xs:22px;  /* inline counters, plan day labels */
+  --numeral-2xs:16px; /* meal times, stool index */
+
+  /* eyebrow — uppercase Inter, wide tracking, the app's only label style */
+  --eyebrow-size:12px;
+  --eyebrow-weight:500;
+  --eyebrow-tracking:0.18em;
+  --eyebrow-tracking-tight:0.12em; /* paired with a numeral */
+  --eyebrow-transform:uppercase; /* @kind font */
+  --eyebrow-size-artboard:11px;    /* SwiftUI artboards use 11px / 0.22em */
+  --eyebrow-tracking-artboard:0.22em;
+
+  /* action link — uppercase, bold, chevron suffix */
+  --action-size:12px;
+  --action-weight:700;
+  --action-tracking:0.12em;
+
+  /* body — Inter, one step down per level of importance */
+  --body-size:15px;
+  --body-line:1.45; /* @kind font */
+  --body-lead:17px;  /* intro slide body */
+  --body-md:14px;
+  --body-sm:13px;
+  --body-xs:12px;    /* hints, disclaimers */
+  --body-2xs:11px;   /* legal, source lines */
+
+  /* nav + chips */
+  --nav-size:11px;
+  --nav-tracking:0.1em;
+  --chip-size:12px;
+  --chip-weight:700;
+  --chip-tracking:0.14em;
+
+  /* buttons */
+  --btn-size:15px;
+  --btn-weight:700;
+  --btn-tracking:0.06em;
+}

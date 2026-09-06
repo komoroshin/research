@@ -1,0 +1,70 @@
+/* Threshold dark theme — an inversion of the B3 semantic layer, not a second palette.
+   The base and interface ramps are unchanged; only what each token points at flips.
+   Opt in with <html data-theme="dark">. The doctor page keeps its white paper in both themes. */
+[data-theme="dark"]{
+  --ink-dark-900:oklch(0.26 0.030 156); /* screen */
+  --ink-dark-800:oklch(0.31 0.028 156); /* quiet card */
+  --ink-dark-700:oklch(0.36 0.030 156); /* card */
+  --ink-dark-600:oklch(0.43 0.034 150); /* accent card */
+  --ink-dark-500:oklch(0.50 0.030 150); /* hairline */
+
+  --surface-screen:var(--ink-dark-900);
+  --surface-screen-dark:var(--ink-dark-900);
+  --surface-card:var(--ink-dark-700);
+  --surface-card-quiet:var(--ink-dark-800);
+  --surface-card-accent:oklch(0.46 0.070 245);
+  --surface-answered:oklch(0.36 0.050 245);
+  --surface-card-dark:var(--moss-300);
+  --surface-card-lift:oklch(0.84 0.035 130);
+  --surface-stage:oklch(0.20 0.024 156);
+
+  --text-display:oklch(0.95 0.020 100);
+  --text-display-on-dark:var(--ink-dark-900);
+  --text-body:oklch(0.91 0.018 100);
+  --text-body-soft:oklch(0.78 0.020 120);
+  --text-body-on-dark:var(--ink-dark-900);
+  --text-muted:oklch(0.62 0.024 140);
+  --text-unit:oklch(0.78 0.020 120);
+  --text-unit-on-dark:oklch(0.40 0.032 150);
+  --text-eyebrow:oklch(0.78 0.020 120);
+  --text-eyebrow-soft:oklch(0.64 0.026 140);
+  --text-eyebrow-on-dark:oklch(0.40 0.032 150);
+  --text-action:var(--moss-300);
+  --text-action-on-dark:var(--ink-dark-900);
+
+  --line-rule:oklch(0.56 0.036 145);
+  --line-rule-on-dark:var(--ink-dark-700);
+  --border-hairline:var(--ink-dark-500);
+  --border-strong:oklch(0.58 0.036 145);
+  --control-off:oklch(0.46 0.028 150);
+  --control-on:var(--moss-300);
+  --control-knob:var(--ink-dark-900);
+  --track-empty:var(--ink-dark-800);
+  --track-fill:var(--moss-300);
+
+  --day-done:oklch(0.66 0.075 245);
+  --day-today:var(--moss-300);
+  --day-skipped:var(--ink-dark-800);
+
+  --btn-primary-bg:var(--moss-300);
+  --btn-primary-fg:var(--ink-dark-900);
+  --btn-primary-bg-hover:oklch(0.94 0.030 130);
+  --btn-accent-bg:var(--ink-dark-600);
+  --btn-accent-fg:oklch(0.95 0.020 100);
+  --btn-accent-bg-hover:oklch(0.48 0.034 150);
+  --btn-ghost-fg:var(--moss-300);
+  --btn-cream-bg:var(--moss-300);
+  --btn-cream-fg:var(--ink-dark-900);
+  --focus-ring:var(--moss-300);
+
+  --text-answered:oklch(0.80 0.060 245);
+  --text-alert:var(--alert-on-dark);
+  --surface-notice:oklch(0.32 0.050 30);
+  --line-alert:var(--alert-on-dark);
+
+  /* shadows lose their point on a dark ground — keep them, drop the intensity */
+  --shadow-card:0 18px 40px rgba(0,0,0,0.28);
+  --shadow-card-sm:0 8px 20px rgba(0,0,0,0.24);
+  --shadow-device:0 30px 60px rgba(0,0,0,0.35);
+  --grain-alpha:0.04; /* @kind other */
+}

@@ -1,0 +1,109 @@
+/* Threshold palette — "Forest & Sage", interface weighting B3.
+   The base ramp is the prototype's, verbatim. The semantic layer is re-pointed so the
+   saturated green appears only where something can be acted on: an investor deck can
+   carry forest in large fields, an evening diary cannot. See readme.md, VISUAL FOUNDATIONS. */
+:root{
+  /* base ramp — from the prototype */
+  --cream-50:#FEFAE0;
+  --cream-100:#F3F1DC;
+  --sage-100:#E9EDC9;
+  --sage-300:#CCD5AE;
+  --sage-500:#A3B18A;
+  --sage-600:#7E9276;
+  --ink-600:#4E6B57;
+  --ink-700:#2A4A3A;
+  --forest-800:#0A5637;
+  --forest:#01472E;
+  --paper:#FFFFFF;
+  --paper-ink:#1F2A24;
+  --stage:#E6E3CC;
+
+  /* alert — the one saturated non-green in the system. Reserved for the red-flag screen
+     and for "we couldn't" states. Never for symptoms, rejected days or a negative verdict. */
+  --alert:oklch(0.48 0.15 28);        /* text + rules on light */
+  --alert-strong:oklch(0.42 0.15 28); /* fill on light surfaces */
+  --alert-on-dark:oklch(0.72 0.14 32);/* text on pine */
+  --alert-tint:oklch(0.93 0.04 38);   /* quiet notice fill */
+
+  /* interface ramp — B3. Same hue family, lower chroma, for surfaces that cover area. */
+  --paper-warm:oklch(0.982 0.012 85);   /* screen: cream-50 at a third of the chroma */
+  --paper-warm-100:oklch(0.975 0.014 85);/* quiet card */
+  --paper-warm-200:oklch(0.955 0.016 85);/* empty track */
+  --moss-300:oklch(0.90 0.035 130);      /* accent card, softened sage-300 */
+  --pine:oklch(0.36 0.045 156);          /* large dark fill, softened forest */
+  --pine-lift:oklch(0.42 0.045 156);     /* card nested inside a dark card */
+  --pine-screen:oklch(0.34 0.042 156);   /* full dark screen (red flag) */
+  --pine-on-dark:oklch(0.90 0.045 120);  /* body text on pine */
+
+  /* second hue — dusty blue. The only cool value in the system, and it has exactly one job:
+     "this has been answered". Threshold card, answered group, completed days and path pins.
+     Anything still under observation stays green. Never used decoratively. */
+  --slate-100:oklch(0.90 0.032 245);
+  --slate-300:oklch(0.86 0.045 245);
+  --slate-500:oklch(0.62 0.080 245);
+  --slate-700:oklch(0.46 0.075 245);
+
+  /* semantic surfaces */
+  --surface-screen:var(--paper-warm);
+  --surface-screen-dark:var(--pine-screen);
+  --surface-screen-paper:var(--paper);
+  --surface-card:var(--cream-100);
+  --surface-card-quiet:var(--paper-warm-100);
+  --surface-card-accent:var(--slate-300);   /* answered moments: threshold, recognised meal, notices */
+  --surface-answered:var(--slate-100);      /* a group that has an answer */
+  --surface-card-dark:var(--pine);
+  --surface-card-lift:var(--pine-lift);
+  --surface-stage:var(--stage);
+
+  /* semantic text — headlines are ink, so forest reads as "tappable" */
+  --text-display:var(--ink-700);
+  --text-display-on-dark:var(--cream-50);
+  --text-body:var(--ink-700);
+  --text-body-soft:var(--ink-600);
+  --text-body-on-dark:var(--pine-on-dark);
+  --text-muted:var(--sage-500);
+  --text-unit:var(--ink-600);        /* the half-size suffix on a Numeral: survives cream, sage and slate grounds */
+  --text-unit-on-dark:var(--sage-500);
+  --text-eyebrow:var(--ink-600);
+  --text-eyebrow-soft:var(--sage-600);
+  --text-eyebrow-on-dark:var(--sage-500);
+  --text-action:var(--forest);
+  --text-action-on-dark:var(--sage-300);
+  --text-paper:var(--paper-ink);
+
+  /* lines, controls, states */
+  --line-rule:var(--sage-500);
+  --line-rule-on-dark:var(--sage-300);
+  --border-hairline:var(--sage-300);
+  --border-strong:var(--sage-500);
+  --control-off:var(--sage-500);
+  --control-on:var(--forest);
+  --control-knob:var(--cream-50);
+  --track-empty:var(--paper-warm-200);
+  --track-fill:var(--forest);
+
+  /* progress states on the 8-day test scale */
+  --day-done:var(--slate-500);
+  --day-today:var(--forest);
+  --day-ahead:transparent;      /* 2px inset ring in --border-strong */
+  --day-skipped:var(--paper-warm-100);/* 2px inset ring in --border-strong */
+
+  /* buttons */
+  --btn-primary-bg:var(--forest);
+  --btn-primary-fg:var(--cream-50);
+  --btn-primary-bg-hover:var(--forest-800);
+  --btn-accent-bg:var(--sage-300);   /* stays green: the three suspicion buttons are choices, not answers */
+  --btn-accent-fg:var(--forest);
+  --btn-accent-bg-hover:oklch(0.94 0.028 130);
+  --btn-ghost-fg:var(--forest);
+  --btn-cream-bg:var(--cream-50);
+  --btn-cream-fg:var(--forest);
+  --focus-ring:var(--sage-500);
+
+  /* alert, semantic */
+  --text-answered:var(--slate-700);
+  --text-alert:var(--alert);
+  --text-alert-on-dark:var(--alert-on-dark);
+  --surface-notice:var(--alert-tint);
+  --line-alert:var(--alert-strong);
+}

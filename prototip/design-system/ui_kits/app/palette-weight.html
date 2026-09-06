@@ -1,0 +1,110 @@
+<!-- @dsCard group="App" viewport="1700x1000" name="Palette weight — three options" subtitle="How to make forest easier to live with: less of it, softer, or ink for type" -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Threshold — palette weight</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>*{box-sizing:border-box}html,body{margin:0;background:var(--surface-stage);font-family:var(--font-text);color:var(--text-body)}a{color:var(--text-action)}a:hover{color:var(--forest-800)}
+#root{padding:28px 32px 48px}
+.head{margin-bottom:24px;max-width:900px}
+.h1{font-family:var(--font-display);font-weight:700;text-transform:uppercase;font-size:26px;letter-spacing:-.02em;color:var(--forest)}
+.sub{font-size:14px;line-height:1.45;color:var(--ink-600);margin-top:8px}
+.cols{display:flex;gap:26px;align-items:flex-start}
+.col{width:390px;display:flex;flex-direction:column;gap:12px}
+.key{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--forest)}
+.desc{font-size:12px;line-height:1.45;color:var(--ink-600);min-height:90px}
+.swatches{display:flex;gap:6px}
+.swatches div{flex:1;height:20px;border-radius:6px;box-shadow:var(--ring-hairline)}
+.phone{position:relative;width:390px;height:844px;border-radius:var(--radius-phone);overflow:hidden;background:var(--surface-screen);background-image:var(--grain);box-shadow:var(--shadow-card-sm)}
+.pair{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-600);margin:6px 0 -4px}</style></head>
+<body><div id="root"></div>
+<script type="text/babel" src="AppShell.jsx"></script>
+<script type="text/babel" src="TodayScreen.jsx"></script>
+<script type="text/babel" src="DecisionScreens.jsx"></script>
+<script type="text/babel">
+const noop = () => {};
+const MEALS = [{ time:'08:30', name:'Oatmeal with milk', groups:['lactose'] }, { time:'13:10', name:'Garlic pasta', groups:['fructans'] }];
+
+/* Each option is nothing but a re-pointing of the semantic tokens — the base ramp is untouched. */
+const OPTIONS = [
+  {
+    id: 'Now',
+    name: 'As shipped',
+    desc: 'Forest carries the hero card, every headline, every button and every selected state. On a phone that is roughly 40% of the screen in the most saturated colour in the palette, seen every evening.',
+    vars: {},
+    swatches: ['var(--forest)', 'var(--forest)', 'var(--forest)', 'var(--sage-300)', 'var(--cream-50)'],
+  },
+  {
+    id: 'A',
+    name: 'Less forest — same forest',
+    desc: 'The palette does not change; the AREA does. Hero cards go sage-100 with forest type, and full-forest surfaces are reserved for the three moments that earn them: the suspect, the answer, the red flag. Forest stays on buttons and selected states, where it is small and means “act”.',
+    vars: {
+      '--surface-card-dark': 'var(--sage-100)',
+      '--surface-card-lift': 'var(--sage-300)',
+      '--text-display-on-dark': 'var(--forest)',
+      '--text-body-on-dark': 'var(--ink-700)',
+      '--text-eyebrow-on-dark': 'var(--sage-600)',
+      '--line-rule-on-dark': 'var(--sage-500)',
+      '--text-muted': 'var(--ink-600)',
+    },
+    swatches: ['var(--sage-100)', 'var(--sage-300)', 'var(--forest)', 'var(--cream-100)', 'var(--cream-50)'],
+  },
+  {
+    id: 'B',
+    name: 'Softer green for large fills',
+    desc: 'Forest keeps its job but loses chroma where it covers area: large surfaces move to a muted deep pine (oklch 0.36 / 0.045), while #01472E stays for type, buttons and small accents. Same hue family, noticeably less pressure on the eye.',
+    vars: {
+      '--surface-card-dark': 'oklch(0.36 0.045 156)',
+      '--surface-card-lift': 'oklch(0.42 0.045 156)',
+      '--surface-screen-dark': 'oklch(0.34 0.042 156)',
+      '--text-body-on-dark': 'oklch(0.90 0.045 120)',
+    },
+    swatches: ['oklch(0.36 0.045 156)', 'oklch(0.42 0.045 156)', 'var(--forest)', 'var(--sage-300)', 'var(--cream-50)'],
+  },
+  {
+    id: 'C',
+    name: 'Ink for type, forest for action',
+    desc: 'Headlines stop being green: Display and Numeral go ink-700, so forest appears only where something is tappable. The single strongest lever if the fatigue comes from reading green text rather than from green surfaces.',
+    vars: {
+      '--text-display': 'var(--ink-700)',
+      '--text-action': 'var(--forest)',
+    },
+    swatches: ['var(--ink-700)', 'var(--ink-600)', 'var(--forest)', 'var(--sage-300)', 'var(--cream-50)'],
+  },
+];
+
+function Col({ opt }) {
+  return (
+    <div className="col" style={opt.vars}>
+      <div className="key">{opt.id} · {opt.name}</div>
+      <div className="swatches">{opt.swatches.map((c, i) => <div key={i} style={{ background: c }} />)}</div>
+      <div className="desc">{opt.desc}</div>
+      <div className="pair">Today · observing</div>
+      <div className="phone">
+        <TodayScreen day={14} check={null} insight={false} meals={MEALS} tab="today" onTab={noop} onInsightOk={noop} onOpenDay={noop} onAddMeal={noop} onOpenPlan={noop} />
+      </div>
+      <div className="pair">The suspect</div>
+      <div className="phone">
+        <SuspicionScreen onTest={noop} onNotNow={noop} onOther={noop} />
+      </div>
+    </div>
+  );
+}
+
+function Study() {
+  return (
+    <div>
+      <div className="head">
+        <div className="h1">Making forest easier to live with</div>
+        <div className="sub">
+          Three independent levers, each shown on the screen a person sees every evening and on the screen that has to feel like an event.
+          None of them adds a colour: every option is the same ten-value ramp, re-pointed at different semantic tokens. They also combine — A + C is the lightest result, B alone is the smallest change to ship.
+        </div>
+      </div>
+      <div className="cols">{OPTIONS.map((o) => <Col key={o.id} opt={o} />)}</div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Study />);
+</script></body></html>

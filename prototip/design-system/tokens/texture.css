@@ -1,0 +1,7 @@
+/* The grain. Every cream and forest screen carries this fractal-noise overlay at 5.5% alpha.
+   Copied verbatim from the prototype; the paper (doctor page) surface is the only one without it. */
+:root{
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"); /* @kind other */
+  --grain-alpha:0.055; /* @kind other */
+  --grain-tile:220px;
+}
