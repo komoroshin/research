@@ -40,11 +40,11 @@
 | intro.1.body | С этим живут годами. Убирают продукты наугад, становится легче — и страшно что-то возвращать. Половина тарелки под запретом, а ответа так и нет. | People live with this for years. They cut foods on a guess, feel better, and then are afraid to bring anything back. Half the plate is off-limits, and there is still no answer. |
 | intro.2.eye | Наш подход | Our approach |
 | intro.2.title | Не убирать всё — найти своё | Not cutting everything — finding what is yours |
-| intro.2.body | Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем одного подозреваемого по вашим данным и проверяем только его. Ответ — с дозой: сколько можно. | We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine. |
+| intro.2.body | Мы не запрещаем еду. Сначала смотрим, как вы живёте. Потом называем первую зацепку в ваших днях и проверяем только его. Ответ — с дозой: сколько можно. | We do not ban food. First we watch how you live. Then we name one suspect from your own data and test only that one. The answer comes with a dose: how much is fine. |
 | intro.3.eye | Как это работает | How it works |
 | intro.3.title | Три шага | Three steps |
 | intro.3.step1 | Три недели наблюдения — Вечером три вопроса, фото еды — когда удобно. В еде ничего не меняется. | Three weeks of watching — Three questions in the evening, a photo of a meal when it is convenient. Nothing changes in what you eat. |
-| intro.3.step2 | Подозрение по вашим данным — С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы. | A suspect from your data — With an honest note: some patterns are coincidences. You decide whether to test. |
+| intro.3.step2 | Зацепка в ваших днях — С честной оговоркой: часть совпадений случайна. Проверять или нет — решаете вы. | A suspect from your data — With an honest note: some patterns are coincidences. You decide whether to test. |
 | intro.3.step3 | Восемь дней — и ответ — Пять дней без одной группы, потом возврат тремя дозами. Одна строка с дозой ложится в вашу карту. | Eight days — and an answer — Five days without one group, then bringing it back in three doses. One line with a dose goes into your map. |
 | intro.4.eye | Перед стартом | Before we start |
 | intro.4.title | Живите как обычно | Live as usual |
@@ -137,7 +137,7 @@
 |---|---|---|
 | bg.confidence | {percent}% | {percent}% |
 | bg.confidenceLabel | данных достаточно | of the data we need |
-| bg.daysLeft | Ещё около {n} дней, чтобы назвать подозреваемого | About {n} more days before we can name a suspect |
+| bg.daysLeft | Ещё около {n} дней, до первой зацепки | About {n} more days before we can name a suspect |
 | bg.fullDays | полных дней | full days |
 | bg.badDays | плохих | rough |
 | bg.goodDays | хороших | good |
@@ -146,7 +146,7 @@
 | ask.q1 | Что взять в кафе? | What should I order at a café? |
 | ask.a1 | Пока мы наблюдаем, ограничений нет — берите как обычно и сфотографируйте, если удобно. | While we're observing there are no restrictions — order as usual and snap a photo if it's convenient. |
 | ask.q2 | Можно ли йогурт? | Is yogurt okay? |
-| ask.a2 | Сейчас можно всё. Если йогурт попадёт под подозрение, мы предложим это проверить, а не запретим. | Right now everything's on the table. If yogurt ever comes under suspicion, we'll suggest testing it — not banning it. |
+| ask.a2 | Сейчас можно всё. Если йогурт станет зацепкой, мы предложим это проверить, а не запретим. | Right now everything's on the table. If yogurt ever comes under suspicion, we'll suggest testing it — not banning it. |
 | ask.q3 | Чем заменить молоко? | What can replace milk? |
 | ask.a3 | Замены понадобятся только во время проверки, и мы возьмём их из того, что вы и так едите. | You'll only need swaps during a test, and we'll pick them from foods you already eat. |
 
@@ -154,12 +154,12 @@
 
 | Ключ | RU | EN |
 |---|---|---|
-| susp.label | Подозрение | A suspect |
+| susp.label | Зацепка | A lead |
 | susp.body | В {badWith} из {badTotal} ваших плохих дней было {food}. В хороших днях — в {goodWith} из {goodTotal}. | {food} showed up in {badWith} of your {badTotal} rough days. On good days — {goodWith} of {goodTotal}. |
 | susp.caveat | Это может оказаться совпадением: примерно четверть таких совпадений ложные. Проверим за восемь дней? | This could be a coincidence — about a quarter of patterns like this turn out to be. Want to test it over eight days? |
 | susp.check | Проверим | Let's test it |
 | susp.notNow | Не сейчас | Not now |
-| susp.other | Другой подозреваемый | Another suspect |
+| susp.other | Другая зацепка | Another lead |
 | susp.willReturn | Вернёмся с этим позже. Наблюдение продолжается. | We'll come back to this. Observation continues. |
 | susp.otherTitle | Другие совпадения | Other patterns |
 | susp.otherItem | {food}: в {badWith} из {badTotal} плохих, в {goodWith} из {goodTotal} хороших | {food}: {badWith} of {badTotal} rough days, {goodWith} of {goodTotal} good |
@@ -203,7 +203,7 @@
 | verdict.how | Порог считался от вашего обычного разброса, с одним контрольным днём внутри проверки. | The threshold was measured against your own day-to-day variation, with one control day inside the test. |
 | verdict.notConfirmed | Не подтвердилось: разница в пределах вашего обычного разброса | Not confirmed: the difference stayed within your usual range |
 | verdict.notConfirmedWhy | {food} можно вернуть. Ограничение, которое вы держали, было лишним — и это тоже ответ. | You can bring {food} back. The restriction you were keeping wasn't needed — and that's an answer too. |
-| verdict.next | Следующий подозреваемый: {food} | Next suspect: {food} |
+| verdict.next | Следующая зацепка: {food} | Next lead: {food} |
 | verdict.toMap | В карту | To the map |
 
 ## Э7 · map, Э7а · doc
@@ -247,7 +247,7 @@
 | moment.day0 | День 0 — вход | Day 0 — start |
 | moment.day7 | День 7 — первый вывод | Day 7 — first insight |
 | moment.background | Фон, 60% | Background, 60% |
-| moment.suspicion | Подозрение | Suspect |
+| moment.suspicion | Зацепка | A lead |
 | moment.check3 | Проверка, день 3 | Test, day 3 |
 | moment.check6discarded | Проверка, день 6 — не засчитан | Test, day 6 — not counted |
 | moment.verdict | Ответ — порог | Answer — threshold |
