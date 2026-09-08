@@ -12,9 +12,9 @@ const path = require('path');
   await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed + '&size=' + size + '&opp=' + opp, { waitUntil: 'load' });
   await page.waitForTimeout(1200);
   const info = await page.evaluate(() => {
-    const st = H3.Game.state, cv = H3.Terrain.renderMap(st);
+    const st = H3.Game.state, cv = H3.Terrain.renderMap(st, 0);
     // ищем участок с максимальным разнообразием местности
-    const T = H3.Rules.TERRAINS, m = st.map; let best = null;
+    const T = H3.Rules.TERRAINS, m = st.levels[0]; let best = null;
     for (let y = 0; y + 20 <= m.h; y += 2) for (let x = 0; x + 20 <= m.w; x += 2) {
       const s = new Set(); for (let j = 0; j < 20; j++) for (let i = 0; i < 20; i++) s.add(m.terrain[(y + j) * m.w + x + i]);
       if (!best || s.size > best.n) best = { x, y, n: s.size };

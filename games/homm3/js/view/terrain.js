@@ -177,8 +177,8 @@
   }
 
   /** Рендер всей карты (местность + дороги + препятствия) в canvas. */
-  function renderMap(state) {
-    const map = state.map;
+  function renderMap(state, z) {
+    const map = H3.State.lvl(state, z);
     const cv = document.createElement('canvas');
     cv.width = map.w * TILE; cv.height = map.h * TILE;
     const ctx = cv.getContext('2d');
@@ -233,6 +233,7 @@
       if (sp) Sp.draw(ctx, sp, x * TILE + 16 + ((x * 3 + y) % 3) - 1, y * TILE + 31, 1, (x + y) % 2 === 0);
     }
     bakeLight(ctx, map, state.seed);
+    if (z) caveGrade(ctx, map);
     return cv;
   }
 
@@ -284,6 +285,23 @@
     ctx.restore();
   }
 
+  /** Подземелье: общий сумрак и тёплые пятна света у лавы. */
+  function caveGrade(ctx, map) {
+    const T = R.TERRAINS;
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = '#5b5568'; ctx.fillRect(0, 0, map.w * TILE, map.h * TILE);
+    ctx.globalCompositeOperation = 'lighter';
+    for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
+      if (T[map.terrain[y * map.w + x]] !== 'lava' || ((x * 17 + y * 31) % 7)) continue;
+      const cx = x * TILE + 16, cy = y * TILE + 16, r = 48;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, 'rgba(255,140,50,0.20)'); g.addColorStop(1, 'rgba(255,140,50,0)');
+      ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    }
+    ctx.restore();
+  }
+
   /* Освещение недели: партия проживает неделю от прохладного утра к золотому
      вечеру. Сдвиг слабый (до ~7 %), чтобы не мешать читаемости карты. */
   const DAYLIGHT = [
@@ -308,8 +326,9 @@
   }
 
   /** Миникарта: 1 пиксель на тайл (с туманом). */
-  function renderMini(state, pid, cv) {
-    const map = state.map, vis = state.players[pid].vis;
+  function renderMini(state, pid, cv, z) {
+    z = z || 0;
+    const map = H3.State.lvl(state, z), vis = state.players[pid].vis[z];
     cv.width = map.w; cv.height = map.h;
     const ctx = cv.getContext('2d');
     const img = ctx.createImageData(map.w, map.h), d = img.data;
@@ -328,12 +347,12 @@
     ctx.putImageData(img, 0, 0);
     // объекты
     for (const id in state.objects) {
-      const o = state.objects[id]; if (!vis[o.y * map.w + o.x]) continue;
+      const o = state.objects[id]; if ((o.z || 0) !== z || !vis[o.y * map.w + o.x]) continue;
       if (o.type === 'town') { const t = state.towns[o.townId]; ctx.fillStyle = t.owner >= 0 ? state.players[t.owner].color : '#aaa'; ctx.fillRect(o.x - 1, o.y - 1, 3, 3); }
       else if (o.type === 'mine') { ctx.fillStyle = o.owner >= 0 ? state.players[o.owner].color : '#ddd'; ctx.fillRect(o.x, o.y, 1, 1); }
       else if (o.type === 'monster') { ctx.fillStyle = '#e04040'; ctx.fillRect(o.x, o.y, 1, 1); }
     }
-    for (const id in state.heroes) { const h = state.heroes[id]; if (h.dead || !vis[h.y * map.w + h.x]) continue; ctx.fillStyle = state.players[h.owner].color; ctx.fillRect(h.x - 1, h.y - 1, 3, 3); ctx.fillStyle = '#fff'; ctx.fillRect(h.x, h.y, 1, 1); }
+    for (const id in state.heroes) { const h = state.heroes[id]; if (h.dead || (h.z || 0) !== z || !vis[h.y * map.w + h.x]) continue; ctx.fillStyle = state.players[h.owner].color; ctx.fillRect(h.x - 1, h.y - 1, 3, 3); ctx.fillStyle = '#fff'; ctx.fillRect(h.x, h.y, 1, 1); }
   }
 
   H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, applyDaylight };

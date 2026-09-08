@@ -204,6 +204,26 @@
     if (!h) { const w = UI.el('div', 'small muted', 'Нужен герой в городе.'); tab.appendChild(d); tab.appendChild(w); return; }
     btn.onclick = () => { U.pay(p.res, m.cost); if (!h.machines) h.machines = {}; h.machines[mid] = true; H3.Audio.play('coin'); UI.toast(m.name + ' куплена'); render(); H3.Game.refresh(false); };
     d.appendChild(btn); tab.appendChild(d);
+    if (t.buildings.shipyard) shipyardRow(tab, t, p, st, h);
+  }
+  /** Верфь в приморском городе: спускает лодку на воду за 1000 золота. */
+  function shipyardRow(tab, t, p, st, h) {
+    const spot = A.waterSpotNear(st, t.x, t.y + 1, t.z || 0);
+    const d = UI.el('div', 'row');
+    d.innerHTML = UI.icon('boat', 2, 'cr') + '<div class="grow"><b>Верфь</b><div class="small muted">Спустить лодку на воду рядом с городом.</div>' + UI.costHtml({ gold: 1000 }, p.res) + '</div>';
+    const btn = UI.el('button', '', 'Построить лодку');
+    btn.disabled = !spot || p.res.gold < 1000;
+    if (!spot) d.querySelector('.muted').textContent = 'У причала тесно — лодку спустить некуда.';
+    btn.onclick = () => {
+      p.res.gold -= 1000;
+      const m = S.lvl(st, t.z || 0), i = spot[1] * m.w + spot[0];
+      const boat = { id: st.nextId++, type: 'boat', x: spot[0], y: spot[1], z: t.z || 0, owner: t.owner };
+      st.objects[boat.id] = boat; m.objAt[i] = boat.id; m.block[i] = 1;
+      H3.Audio.play('coin'); UI.toast('Лодка спущена на воду');
+      render(); H3.Game.refresh(true);
+    };
+    d.appendChild(btn); tab.appendChild(UI.el('h4', '', 'Верфь')); tab.appendChild(d);
+    void h;
   }
   function renderMarket(tab, t, p, st) {
     if (!t.buildings.market) { tab.innerHTML = '<div class="muted">Рынок не построен.</div>'; return; }

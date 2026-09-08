@@ -10,7 +10,7 @@
   const TILE = 32;
 
   const V = {
-    canvas: null, ctx: null, mini: null, state: null, mapCanvas: null, miniCanvas: null,
+    canvas: null, ctx: null, mini: null, state: null, mapCanvas: [null, null], miniCanvas: null, layer: 0,
     cam: { x: 0, y: 0, z: 1.5 }, dirty: true, hover: null, pending: null, path: null, pf: null, pfHero: null,
     anim: null, drag: null, w: 0, h: 0, dpr: 1, lastTime: 0, busy: false, tipTimer: null,
   };
@@ -23,7 +23,7 @@
     c.addEventListener('pointerleave', () => { V.hover = null; if (!isTouch()) { V.path = null; } UI.hideTip(); V.dirty = true; });
     c.addEventListener('wheel', e => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1 : -1, e.offsetX, e.offsetY); }, { passive: false });
     c.addEventListener('contextmenu', e => { e.preventDefault(); const t = tileAt(e.offsetX, e.offsetY); if (t) showInfo(t[0], t[1]); });
-    V.mini.addEventListener('pointerdown', e => { const r = V.mini.getBoundingClientRect(); const m = V.state.map; const x = (e.clientX - r.left) / r.width * m.w, y = (e.clientY - r.top) / r.height * m.h; centerOn(x, y); });
+    V.mini.addEventListener('pointerdown', e => { const r = V.mini.getBoundingClientRect(); const m = S.lvl(V.state, V.layer); const x = (e.clientX - r.left) / r.width * m.w, y = (e.clientY - r.top) / r.height * m.h; centerOn(x, y); });
     requestAnimationFrame(loop);
   }
   function isTouch() { return V.lastPointerType === 'touch'; }
@@ -36,14 +36,26 @@
     clampCam(); V.dirty = true;
   }
   function setState(state) {
-    V.state = state; V.mapCanvas = T.renderMap(state); V.miniCanvas = document.createElement('canvas');
+    V.state = state; V.layer = 0; V.mapCanvas = [T.renderMap(state, 0), null]; V.miniCanvas = document.createElement('canvas');
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     resize(); V.dirty = true;
   }
   function invalidate() { V.pf = null; V.dirty = true; }
+  /** Полотно слоя рисуется лениво: подземелье — только когда туда спустились. */
+  function layerCanvas(z) {
+    if (!V.mapCanvas[z]) V.mapCanvas[z] = T.renderMap(V.state, z);
+    return V.mapCanvas[z];
+  }
+  /** Показать слой z (0 — поверхность, 1 — подземелье). */
+  function setLayer(z) {
+    z = z ? 1 : 0;
+    if (V.layer === z) return;
+    V.layer = z; V.pf = null; V.path = null; V.dirty = true;
+    clampCam();
+  }
   function clampCam() {
     if (!V.state) return;
-    const m = V.state.map, z = V.cam.z;
+    const m = S.lvl(V.state, V.layer), z = V.cam.z;
     const maxX = Math.max(0, m.w * TILE - V.w / z), maxY = Math.max(0, m.h * TILE - V.h / z);
     V.cam.x = U.clamp(V.cam.x, 0, maxX); V.cam.y = U.clamp(V.cam.y, 0, maxY);
   }
@@ -56,7 +68,7 @@
   }
   function tileAt(px, py) {
     const x = Math.floor((V.cam.x + px / V.cam.z) / TILE), y = Math.floor((V.cam.y + py / V.cam.z) / TILE);
-    return S.inMap(V.state, x, y) ? [x, y] : null;
+    return S.inMap(V.state, x, y, V.layer) ? [x, y] : null;
   }
 
   /* ---------- ввод ---------- */
@@ -94,7 +106,7 @@
   function handleClick(x, y, touch) {
     if (V.busy || !V.state) return;
     const G = H3.Game, st = V.state;
-    const hero = S.heroAt(st, x, y), town = S.townAt(st, x, y);
+    const hero = S.heroAt(st, x, y, V.layer), town = S.townAt(st, x, y, V.layer);
     const me = st.turn;
     // клик по своему герою — выбрать (или открыть экран героя при повторном)
     if (hero && hero.owner === me && !(G.selected() && G.selected().id === hero.id && V.pending && V.pending[0] === x && V.pending[1] === y)) {
@@ -122,10 +134,10 @@
     V.dirty = true;
   }
   function describe(x, y) {
-    const st = V.state, vis = S.visible(st, st.turn, x, y);
+    const st = V.state, vis = S.visible(st, st.turn, x, y, V.layer);
     if (!vis) return '<b>Неизведанно</b>';
     const parts = [];
-    const obj = S.objAt(st, x, y), hero = S.heroAt(st, x, y);
+    const obj = S.objAt(st, x, y, V.layer), hero = S.heroAt(st, x, y, V.layer);
     if (hero && (hero.owner === st.turn || vis === 2)) {
       const p = st.players[hero.owner];
       parts.push('<b>' + UI.esc(hero.name) + '</b> — ' + UI.esc(H3.Heroes.getClass(hero.cls).name) + ' ' + hero.level + ' ур.' + (hero.owner !== st.turn ? '<br>' + UI.esc(p.name) + ' · сила ' + powerWord(R.armyPower(hero.army, hero)) : ''));
@@ -141,13 +153,13 @@
       else if (!t.obstacle) { let s = '<b>' + UI.esc(t.name) + '</b>'; if (t.desc) s += '<br><span class="muted">' + UI.esc(t.desc) + '</span>'; const sel = H3.Game.selected(); if (sel && obj.visited && obj.visited['h' + sel.id]) s += '<br><i>уже посещали</i>'; parts.push(s); }
       else parts.push('<b>' + UI.esc(t.name) + '</b>');
     }
-    if (!parts.length) parts.push('<b>' + UI.esc(R.TERRAIN_NAMES[S.terrainAt(st, x, y)]) + '</b>' + (st.map.road[S.idx(st, x, y)] ? ' (дорога)' : ''));
+    if (!parts.length) parts.push('<b>' + UI.esc(R.TERRAIN_NAMES[S.terrainAt(st, x, y, V.layer)]) + '</b>' + (S.lvl(st, V.layer).road[S.idx(st, x, y, V.layer)] ? ' (дорога)' : ''));
     if (V.path && V.path.length) { const last = V.path[V.path.length - 1]; parts.push('<span class="small muted">Путь: ' + (last.turn === 0 ? 'сегодня' : 'через ' + last.turn + ' ' + U.plural(last.turn, 'ход', 'хода', 'ходов')) + '</span>'); }
     return parts.join('<br>');
   }
   function powerWord(v) { return v < 2000 ? 'слабая' : v < 8000 ? 'умеренная' : v < 25000 ? 'сильная' : v < 80000 ? 'очень сильная' : 'огромная'; }
   function showInfo(x, y) {
-    const st = V.state; const obj = S.objAt(st, x, y), hero = S.heroAt(st, x, y);
+    const st = V.state; const obj = S.objAt(st, x, y, V.layer), hero = S.heroAt(st, x, y, V.layer);
     if (obj && obj.type === 'monster') { const c = C.get(obj.cid); UI.modal({ title: c.name, html: UI.creatureCard(c, '<div class="small">На карте: ' + UI.countWord(obj.n) + (H3.Game.selected() && R.skillLvl(H3.Game.selected(), 'scouting') ? ' (' + obj.n + ')' : '') + '</div>') }); return; }
     if (obj && obj.type === 'dwelling') { UI.modal({ title: O.get('dwelling').name, html: UI.creatureCard(C.get(obj.cid)) }); return; }
     if (hero && hero.owner !== st.turn) { UI.modal({ title: hero.name, html: '<div class="row top">' + UI.heroPortrait(hero, 3) + '<div><b class="w">' + UI.esc(H3.Heroes.getClass(hero.cls).name) + '</b> ' + hero.level + ' ур.<br>' + UI.esc(st.players[hero.owner].name) + '<br>Сила армии: ' + powerWord(R.armyPower(hero.army, hero)) + '</div></div>' + UI.armyHtml(hero.army) }); return; }
@@ -196,29 +208,29 @@
     return [h.x, h.y];
   }
   function draw(ts) {
-    const st = V.state, ctx = V.ctx, m = st.map, z = V.cam.z, dpr = V.dpr;
-    const me = st.turn, vis = st.players[me].vis;
+    const st = V.state, ctx = V.ctx, m = S.lvl(st, V.layer), z = V.cam.z, dpr = V.dpr;
+    const me = st.turn, vis = st.players[me].vis[V.layer];
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, V.canvas.width, V.canvas.height);
     ctx.setTransform(z * dpr, 0, 0, z * dpr, -Math.round(V.cam.x * z * dpr), -Math.round(V.cam.y * z * dpr));
     ctx.imageSmoothingEnabled = false;
     const x0 = Math.max(0, Math.floor(V.cam.x / TILE) - 1), y0 = Math.max(0, Math.floor(V.cam.y / TILE) - 2);
     const x1 = Math.min(m.w - 1, Math.ceil((V.cam.x + V.w / z) / TILE) + 1), y1 = Math.min(m.h - 1, Math.ceil((V.cam.y + V.h / z) / TILE) + 2);
     // местность
-    ctx.drawImage(V.mapCanvas, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     // выделение героя
     const sel = H3.Game.selected();
-    if (sel && !sel.dead) { const [hx, hy] = heroDrawPos(sel); ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 200)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(hx * TILE + 16, hy * TILE + 26, 13, 6, 0, 0, Math.PI * 2); ctx.stroke(); }
+    if (sel && !sel.dead && (sel.z || 0) === V.layer) { const [hx, hy] = heroDrawPos(sel); ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 200)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(hx * TILE + 16, hy * TILE + 26, 13, 6, 0, 0, Math.PI * 2); ctx.stroke(); }
     // объекты и герои по рядам
     const items = [];
-    for (const id in st.objects) { const o = st.objects[id]; if (o.x < x0 - 2 || o.x > x1 + 2 || o.y < y0 || o.y > y1 + 2) continue; if (!vis[o.y * m.w + o.x]) continue; items.push({ y: o.y, x: o.x, o }); }
-    for (const id in st.heroes) { const h = st.heroes[id]; if (h.dead) continue; if (h.owner !== me && vis[h.y * m.w + h.x] !== 2) continue; if (h.inTown && h.owner !== me) continue; const [px, py] = heroDrawPos(h); if (px < x0 - 1 || px > x1 + 1 || py < y0 - 1 || py > y1 + 1) continue; items.push({ y: py + 0.01, x: px, h, px, py }); }
+    for (const id in st.objects) { const o = st.objects[id]; if ((o.z || 0) !== V.layer) continue; if (o.x < x0 - 2 || o.x > x1 + 2 || o.y < y0 || o.y > y1 + 2) continue; if (!vis[o.y * m.w + o.x]) continue; items.push({ y: o.y, x: o.x, o }); }
+    for (const id in st.heroes) { const h = st.heroes[id]; if (h.dead || (h.z || 0) !== V.layer) continue; if (h.owner !== me && vis[h.y * m.w + h.x] !== 2) continue; if (h.inTown && h.owner !== me) continue; const [px, py] = heroDrawPos(h); if (px < x0 - 1 || px > x1 + 1 || py < y0 - 1 || py > y1 + 1) continue; items.push({ y: py + 0.01, x: px, h, px, py }); }
     items.sort((a, b) => a.y - b.y);
     for (const it of items) {
       if (it.o) drawObject(ctx, st, it.o, vis, ts);
       else drawHero(ctx, st, it.h, it.px, it.py, ts);
     }
-    // свет дня: неделя проживается от прохладного утра к закату
-    T.applyDaylight(ctx, st.day, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    // свет дня: неделя проживается от прохладного утра к закату (под землёй неба нет)
+    if (!V.layer) T.applyDaylight(ctx, st.day, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     // туман: маска в один пиксель на клетку, растянутая со сглаживанием —
     // граница разведанного получается мягкой, а не лесенкой из квадратов
     drawFog(ctx, st, vis, x0, y0, x1, y1);
@@ -230,7 +242,7 @@
   }
   /** Туман войны мягкой маской (1 px на клетку → растяжение со сглаживанием). */
   function drawFog(ctx, st, vis, x0, y0, x1, y1) {
-    const m = st.map, w = x1 - x0 + 3, h = y1 - y0 + 3;
+    const m = S.lvl(st, V.layer), w = x1 - x0 + 3, h = y1 - y0 + 3;
     let cv = V.fogCanvas;
     if (!cv) { cv = V.fogCanvas = document.createElement('canvas'); }
     if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
@@ -279,8 +291,15 @@
     const x = px * TILE + 16, y = py * TILE + 30;
     const walking = !!(V.anim && V.anim.hero.id === h.id);
     const a = An.state({ t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking });
-    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(x, y, 11 - Math.max(0, -a.dy) * 0.25, 4, 0, 0, Math.PI * 2); ctx.fill();
-    An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { st: a }, { b: color });
+    if (h.boat) {
+      // под парусом: герой стоит в лодке, лодка покачивается на волне
+      const bob = Math.sin(ts / 520 + An.phaseOf(h.id)) * 1.5;
+      Sp.draw(ctx, 'boat', x, y + 4 + bob, 1, h.facing === 'l');
+      An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', { st: An.state({ t: ts, phase: An.phaseOf(h.id), idle: true }) }, { b: color });
+    } else {
+      ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(x, y, 11 - Math.max(0, -a.dy) * 0.25, 4, 0, 0, Math.PI * 2); ctx.fill();
+      An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { st: a }, { b: color });
+    }
     drawFlag(ctx, x + (h.facing === 'l' ? -13 : 8), y - 30, color, true);
     if (h.owner === st.turn && h.move <= 0 && !V.anim) { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(x - 8, y + 1, 16, 2); }
   }
@@ -301,12 +320,17 @@
   }
   function drawMini(st, me) {
     if (!V.miniDirty && V.miniFrame === st.day + ':' + Object.keys(st.objects).length + ':' + me) { /* перерисовываем кадр вьюпорта */ }
-    T.renderMini(st, me, V.miniCanvas);
+    T.renderMini(st, me, V.miniCanvas, V.layer);
     const mc = V.mini, mctx = mc.getContext('2d');
+    const m = S.lvl(st, V.layer);
     mctx.imageSmoothingEnabled = false;
     mctx.fillStyle = '#000'; mctx.fillRect(0, 0, mc.width, mc.height);
-    const scale = Math.min(mc.width / st.map.w, mc.height / st.map.h);
-    mctx.drawImage(V.miniCanvas, 0, 0, st.map.w * scale, st.map.h * scale);
+    const scale = Math.min(mc.width / m.w, mc.height / m.h);
+    mctx.drawImage(V.miniCanvas, 0, 0, m.w * scale, m.h * scale);
+    if (V.layer) { // подпись слоя, чтобы не путаться, где находишься
+      mctx.fillStyle = 'rgba(0,0,0,0.55)'; mctx.fillRect(0, 0, 62, 13);
+      mctx.fillStyle = '#e0c070'; mctx.font = '10px sans-serif'; mctx.fillText('подземелье', 3, 10);
+    }
     const z = V.cam.z;
     mctx.strokeStyle = '#fff'; mctx.lineWidth = 1;
     mctx.strokeRect(V.cam.x / TILE * scale, V.cam.y / TILE * scale, V.w / z / TILE * scale, V.h / z / TILE * scale);
@@ -353,5 +377,5 @@
     V.dirty = true;
   }
 
-  H3.AdvView = { init, setState, invalidate, resize, centerOn, animateMove, renderSidebar, previewPath, V, describe, drawFlag };
+  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -14,19 +14,19 @@ const path = require('path');
   await page.goto(url + '?autostart=1&seed=5', { waitUntil: 'load' }); await page.waitForTimeout(900);
   // походить, закончить ход, чтобы состояние отличалось от стартового
   await ev(() => { const G=H3.Game,S=H3.State,st=G.state,h=G.selected(); const pf=S.pathfield(st,h);
-    const o=Object.values(st.objects).filter(o=>o.type==='resource'&&pf.dist[o.y*st.map.w+o.x]<Infinity).sort((a,b)=>pf.dist[a.y*st.map.w+a.x]-pf.dist[b.y*st.map.w+b.x])[0];
+    const o=Object.values(st.objects).filter(o=>!o.z&&o.type==='resource'&&pf.dist[o.y*st.levels[0].w+o.x]<Infinity).sort((a,b)=>pf.dist[a.y*st.levels[0].w+a.x]-pf.dist[b.y*st.levels[0].w+b.x])[0];
     G.moveAlong(h,H3.Pathfind.annotate(pf,H3.Pathfind.pathTo(pf,o.x,o.y),h.move,H3.Rules.heroMaxMove(h))); });
   await page.waitForTimeout(2500);
   await ev(() => { H3.Game.settings().confirmEndTurn=false; H3.Game.endTurn(); }); await page.waitForTimeout(3000);
   const before = await ev(() => { const st=H3.Game.state,h=H3.State.heroesOf(st,0)[0];
-    return { day:st.day, gold:st.players[0].res.gold, hx:h.x, hy:h.y, seed:st.seed, vis:Array.from(st.players[0].vis).filter(v=>v>0).length, terr:Array.from(st.map.terrain).reduce((a,b)=>a+b,0) }; });
+    return { day:st.day, gold:st.players[0].res.gold, hx:h.x, hy:h.y, seed:st.seed, vis:st.players[0].vis.map(v=>Array.from(v).filter(x=>x>0).length).join('/'), terr:st.levels.map(m=>Array.from(m.terrain).reduce((a,b)=>a+b,0)).join('/') }; });
   // «выход» = перезагрузка страницы, затем «Продолжить»
   await page.goto(url, { waitUntil: 'load' }); await page.waitForTimeout(700);
   await page.screenshot({ path: out + '/s_menu.png' });
   await page.click('#btnCont'); await page.waitForTimeout(1200);
   await page.screenshot({ path: out + '/s_loaded.png' });
   const after = await ev(() => { const st=H3.Game.state; if(!st) return null; const h=H3.State.heroesOf(st,0)[0];
-    return { day:st.day, gold:st.players[0].res.gold, hx:h.x, hy:h.y, seed:st.seed, vis:Array.from(st.players[0].vis).filter(v=>v>0).length, terr:Array.from(st.map.terrain).reduce((a,b)=>a+b,0) }; });
+    return { day:st.day, gold:st.players[0].res.gold, hx:h.x, hy:h.y, seed:st.seed, vis:st.players[0].vis.map(v=>Array.from(v).filter(x=>x>0).length).join('/'), terr:st.levels.map(m=>Array.from(m.terrain).reduce((a,b)=>a+b,0)).join('/') }; });
   console.log('до выхода :', JSON.stringify(before));
   console.log('после     :', JSON.stringify(after));
   console.log('совпало   :', JSON.stringify(before) === JSON.stringify(after));
@@ -35,10 +35,10 @@ const path = require('path');
     const pf=S.pathfield(st,h); const reach=pf.dist.filter(d=>d<Infinity&&d>0).length;
     // цель — самая дальняя клетка, путь к которой не задевает ни одного объекта:
     // иначе откроется диалог (бой, сундук) и прогон будет ждать игрока вечно
-    const cands=[]; for(let y=0;y<st.map.h;y++)for(let x=0;x<st.map.w;x++){const i=y*st.map.w+x,d=pf.dist[i]; if(d<Infinity&&d>0&&d<h.move&&st.map.objAt[i]<0) cands.push([d,x,y]);}
+    const cands=[]; for(let y=0;y<st.levels[0].h;y++)for(let x=0;x<st.levels[0].w;x++){const i=y*st.levels[0].w+x,d=pf.dist[i]; if(d<Infinity&&d>0&&d<h.move&&st.levels[0].objAt[i]<0) cands.push([d,x,y]);}
     cands.sort((a,b)=>b[0]-a[0]);
     let best=null,p=null;
-    for(const c of cands){ const path=H3.Pathfind.pathTo(pf,c[1],c[2]); if(path.every(([x,y])=>st.map.objAt[y*st.map.w+x]<0)){ best=[c[1],c[2]]; p=path; break; } }
+    for(const c of cands){ const path=H3.Pathfind.pathTo(pf,c[1],c[2]); if(path.every(([x,y])=>st.levels[0].objAt[y*st.levels[0].w+x]<0)){ best=[c[1],c[2]]; p=path; break; } }
     if(!best) return {reach, moved:0};
     const from=[h.x,h.y];
     // прогон не должен зависать, если движение вдруг упрётся в диалог

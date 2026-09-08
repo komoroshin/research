@@ -14,6 +14,8 @@
   const TERRAIN_INDEX = Object.create(null);
   TERRAINS.forEach((t, i) => { TERRAIN_INDEX[t] = i; });
   const ROAD_COST = 75;
+  const SEA_COST = 100;    // клетка моря под парусом
+  const LAND_COST = 200;   // высадка на берег
 
   /* ---------- Артефакты и производные статы героя ---------- */
   function artifactFx(hero) {
@@ -162,6 +164,15 @@
   }
   function guildLevel(town) { for (let i = 5; i >= 1; i--) if (town.buildings['guild_' + i]) return i; return 0; }
   function fortLevel(town) { return town.buildings.castle ? 3 : town.buildings.citadel ? 2 : town.buildings.fort ? 1 : 0; }
+  /** Приморский ли город: есть ли вода в трёх клетках от него. */
+  function coastalTown(state, town) {
+    const S = H3.State;
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const x = town.x + dx, y = town.y + dy;
+      if (S.inMap(state, x, y, town.z) && S.terrainAt(state, x, y, town.z) === 'water') return true;
+    }
+    return false;
+  }
   function canBuild(state, town, bid) {
     const b = B.get(town.faction, bid);
     if (!b) return { ok: false, reason: 'Нет такой постройки' };
@@ -172,6 +183,7 @@
       const owner = state.players[town.owner];
       if (owner.towns.some(tid => tid !== town.id && state.towns[tid].buildings.hall_4)) return { ok: false, reason: 'Капитолий может быть только один' };
     }
+    if (bid === 'shipyard' && !coastalTown(state, town)) return { ok: false, reason: 'Город не у воды' };
     const player = state.players[town.owner];
     if (!U.canAfford(player.res, b.cost)) return { ok: false, reason: 'Не хватает ресурсов' };
     return { ok: true };
@@ -256,7 +268,7 @@
     const t = HE.get(tid), cl = HE.getClass(t.cls);
     const rng = state._rng.misc;
     const hero = {
-      id: state.nextId++, tid, name: t.name, cls: t.cls, faction: cl.faction, owner, x, y, level: 1, xp: 0,
+      id: state.nextId++, tid, name: t.name, cls: t.cls, faction: cl.faction, owner, x, y, z: 0, level: 1, xp: 0,
       pri: Object.assign({}, cl.start), skills: {}, spells: [], mana: 0, move: 0,
       army: startingArmy(cl.faction, rng, strong), arts: {}, backpack: [], visited: {}, bonuses: {}, spec: t.spec, portrait: 'portrait_' + t.cls + '_' + t.portrait,
       sleeping: false, hasBook: cl.type === 'magic', dead: false, machines: {},
@@ -293,12 +305,12 @@
   }
 
   H3.Rules = {
-    TERRAINS, TERRAIN_COST, TERRAIN_NAMES, TERRAIN_INDEX, ROAD_COST,
+    TERRAINS, TERRAIN_COST, TERRAIN_NAMES, TERRAIN_INDEX, ROAD_COST, SEA_COST, LAND_COST,
     artifactFx, heroPrimary, skillLvl, skillVal, heroMaxMana, heroMaxMove, slowestSpeed,
     armySize, armyEmpty, addToArmy, canAddToArmy, armyPower, armyCost, cleanArmy, factionsInArmy,
     heroMorale, heroLuck, MORALE_CHANCE, LUCK_CHANCE,
     xpToNext, gainXp, pendingLevels, levelUpOptions, applyLevelUp,
-    townHallLevel, townIncome, growthOf, guildLevel, fortLevel, canBuild, build, fillGuild, townSpells, canLearn,
+    townHallLevel, townIncome, growthOf, guildLevel, fortLevel, coastalTown, canBuild, build, fillGuild, townSpells, canLearn,
     recruitCost, maxRecruit, recruit, upgradeStackCost, canUpgradeIn, newTownWeek,
     startingArmy, makeHero, tavernCandidates, HERO_COST, marketRate,
   };

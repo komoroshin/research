@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, F = H3.Factions, HE = H3.Heroes;
-  const VERSION = 2;
+  const VERSION = 3;
 
   const DIFFICULTY = {
     easy: { name: 'Лёгкая', res: { gold: 30000, wood: 30, ore: 30, mercury: 15, sulfur: 15, crystal: 15, gems: 15 }, aiGold: -0.25, aiWood: 0, aiRare: 0, guards: 0.8, aiSmart: false, dip: 1,
@@ -64,7 +64,7 @@
       hero.inTown = town.id;
       if (R.guildLevel(town)) learnTownSpells(state, hero, town);
       town.tavern = R.tavernCandidates(state, town, 2);
-      p.vis = new Uint8Array(state.map.w * state.map.h);
+      p.vis = [new Uint8Array(state.levels[0].w * state.levels[0].h), new Uint8Array(state.levels[1].w * state.levels[1].h)];
     }
     for (const p of state.players) computeVisibility(state, p.id);
     for (const p of state.players) p.income = playerIncome(state, p.id);
@@ -83,39 +83,49 @@
     return learned;
   }
 
-  /* ---------- Доступ ---------- */
-  const idx = (state, x, y) => y * state.map.w + x;
-  function inMap(state, x, y) { return x >= 0 && y >= 0 && x < state.map.w && y < state.map.h; }
-  function terrainAt(state, x, y) { return R.TERRAINS[state.map.terrain[idx(state, x, y)]]; }
-  function objAt(state, x, y) { const id = state.map.objAt[idx(state, x, y)]; return id >= 0 ? state.objects[id] : null; }
-  function heroAt(state, x, y) { for (const id in state.heroes) { const h = state.heroes[id]; if (!h.dead && h.x === x && h.y === y) return h; } return null; }
-  function townAt(state, x, y) { for (const id in state.towns) { const t = state.towns[id]; if (t.x === x && t.y === y) return t; } return null; }
-  function isBlocked(state, x, y) { return !inMap(state, x, y) || state.map.block[idx(state, x, y)] === 1; }
+  /* ---------- Доступ ----------
+     Карта двухслойная: state.levels[0] — поверхность, [1] — подземелье.
+     У героев, объектов и городов есть z; почти все функции принимают его
+     последним аргументом (по умолчанию поверхность). */
+  function lvl(state, z) { return state.levels[z || 0]; }
+  const idx = (state, x, y, z) => y * lvl(state, z).w + x;
+  function inMap(state, x, y, z) { const m = lvl(state, z); return x >= 0 && y >= 0 && x < m.w && y < m.h; }
+  function terrainAt(state, x, y, z) { return R.TERRAINS[lvl(state, z).terrain[idx(state, x, y, z)]]; }
+  function objAt(state, x, y, z) { const id = lvl(state, z).objAt[idx(state, x, y, z)]; return id >= 0 ? state.objects[id] : null; }
+  function heroAt(state, x, y, z) { z = z || 0; for (const id in state.heroes) { const h = state.heroes[id]; if (!h.dead && h.x === x && h.y === y && (h.z || 0) === z) return h; } return null; }
+  function townAt(state, x, y, z) { z = z || 0; for (const id in state.towns) { const t = state.towns[id]; if (t.x === x && t.y === y && (t.z || 0) === z) return t; } return null; }
+  function isBlocked(state, x, y, z) { return !inMap(state, x, y, z) || lvl(state, z).block[idx(state, x, y, z)] === 1; }
   function player(state, id) { return state.players[id]; }
   function heroesOf(state, pid) { return state.players[pid].heroes.map(id => state.heroes[id]).filter(h => h && !h.dead); }
   function townsOf(state, pid) { return state.players[pid].towns.map(id => state.towns[id]); }
-  function monstersNear(state, x, y) {
+  function monstersNear(state, x, y, z) {
     const out = [];
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-      const o = inMap(state, x + dx, y + dy) ? objAt(state, x + dx, y + dy) : null;
+      const o = inMap(state, x + dx, y + dy, z) ? objAt(state, x + dx, y + dy, z) : null;
       if (o && o.type === 'monster') out.push(o);
     }
     return out;
   }
   /** Стоимость входа в клетку для героя (с учётом дорог, навыка, полёта). */
   function moveCost(state, hero, x, y) {
-    if (!inMap(state, x, y)) return Infinity;
-    const i = idx(state, x, y);
-    if (state.map.block[i]) {
-      const o = objAt(state, x, y);
-      if (!o) return Infinity; // препятствие
-      // объекты проходимы как цель (терминальные), кроме препятствий
-      if (H3.Objects.get(o.type).obstacle) return Infinity;
+    const z = hero.z || 0;
+    if (!inMap(state, x, y, z)) return Infinity;
+    const m = lvl(state, z), i = idx(state, x, y, z);
+    const o = objAt(state, x, y, z);
+    if (o && H3.Objects.get(o.type).obstacle) return Infinity;
+    const water = m.terrain[i] === R.TERRAIN_INDEX.water;
+    // под парусом: море проходимо, суша — только чтобы сойти на берег
+    if (hero.boat) {
+      if (water) return R.SEA_COST;
+      if (m.block[i] && !o) return Infinity;
+      return R.LAND_COST;
     }
-    const t = state.map.terrain[i];
+    if (water) return o && o.type === 'boat' ? 100 : Infinity;   // в воду — только сесть в лодку
+    if (m.block[i] && !o) return Infinity;   // препятствие; объекты проходимы как цель
+    const t = m.terrain[i];
     let c = R.TERRAIN_COST[t];
     if (!(c < Infinity)) return Infinity;
-    if (state.map.road[i]) return R.ROAD_COST;
+    if (m.road[i]) return R.ROAD_COST;
     const fx = R.artifactFx(hero);
     if (fx.fly) return 100;
     if (c > 100) { const pf = R.skillVal(hero, 'pathfinding'); c = Math.max(100, c - pf); }
@@ -124,24 +134,28 @@
   }
   /** Терминальная клетка: объект с взаимодействием, чужой герой, город, зона контроля стража. */
   function isTerminal(state, hero, x, y) {
-    const o = objAt(state, x, y);
+    const z = hero.z || 0;
+    // высадка на берег заканчивает движение, посадка в лодку — тоже (это объект)
+    if (hero.boat && lvl(state, z).terrain[idx(state, x, y, z)] !== R.TERRAIN_INDEX.water) return true;
+    const o = objAt(state, x, y, z);
     if (o && !H3.Objects.get(o.type).obstacle) return true;
-    const h = heroAt(state, x, y);
+    const h = heroAt(state, x, y, z);
     if (h && h.id !== hero.id) return true;
-    for (const m of monstersNear(state, x, y)) if (m) return true;
+    for (const m of monstersNear(state, x, y, z)) if (m) return true;
     return false;
   }
   function pathfield(state, hero) {
+    const m = lvl(state, hero.z || 0);
     return H3.Pathfind.dijkstra({
-      w: state.map.w, h: state.map.h, start: [hero.x, hero.y],
+      w: m.w, h: m.h, start: [hero.x, hero.y],
       cost: (x, y) => moveCost(state, hero, x, y),
       terminal: (x, y) => isTerminal(state, hero, x, y),
     });
   }
 
   /* ---------- Видимость ---------- */
-  function reveal(state, pid, cx, cy, radius, level) {
-    const vis = state.players[pid].vis, w = state.map.w, h = state.map.h;
+  function reveal(state, pid, cx, cy, radius, level, z) {
+    const m = lvl(state, z), vis = state.players[pid].vis[z || 0], w = m.w, h = m.h;
     const r2 = (radius + 0.5) * (radius + 0.5);
     for (let y = Math.max(0, cy - radius); y <= Math.min(h - 1, cy + radius); y++)
       for (let x = Math.max(0, cx - radius); x <= Math.min(w - 1, cx + radius); x++) {
@@ -151,13 +165,12 @@
   }
   function heroSight(hero) { return 5 + R.skillVal(hero, 'scouting'); }
   function computeVisibility(state, pid) {
-    const vis = state.players[pid].vis;
-    for (let i = 0; i < vis.length; i++) if (vis[i] === 2) vis[i] = 1;
-    for (const h of heroesOf(state, pid)) reveal(state, pid, h.x, h.y, heroSight(h));
-    for (const t of townsOf(state, pid)) reveal(state, pid, t.x, t.y, 7);
-    for (const id in state.objects) { const o = state.objects[id]; if ((o.type === 'mine' || o.type === 'dwelling') && o.owner === pid) reveal(state, pid, o.x, o.y, 3); }
+    for (const vis of state.players[pid].vis) for (let i = 0; i < vis.length; i++) if (vis[i] === 2) vis[i] = 1;
+    for (const h of heroesOf(state, pid)) reveal(state, pid, h.x, h.y, heroSight(h), 2, h.z || 0);
+    for (const t of townsOf(state, pid)) reveal(state, pid, t.x, t.y, 7, 2, t.z || 0);
+    for (const id in state.objects) { const o = state.objects[id]; if ((o.type === 'mine' || o.type === 'dwelling') && o.owner === pid) reveal(state, pid, o.x, o.y, 3, 2, o.z || 0); }
   }
-  function visible(state, pid, x, y) { return inMap(state, x, y) ? state.players[pid].vis[idx(state, x, y)] : 0; }
+  function visible(state, pid, x, y, z) { return inMap(state, x, y, z) ? state.players[pid].vis[z || 0][idx(state, x, y, z)] : 0; }
 
   /* ---------- Доход ---------- */
   function playerIncome(state, pid) {
@@ -207,15 +220,21 @@
     const data = JSON.parse(str, rev);
     if (!data || data.version !== VERSION) throw new Error('Неизвестная версия сохранения: ' + (data && data.version));
     const state = data.state;
-    // карта обязана восстановиться типизированными массивами, иначе сейв битый
-    const m = state.map;
-    if (!m || !(m.terrain instanceof Uint8Array) || !(m.block instanceof Uint8Array) || !(m.objAt instanceof Int32Array) || m.terrain.length !== m.w * m.h) throw new Error('Сохранение повреждено');
-    for (const p of state.players) if (!(p.vis instanceof Uint8Array) || p.vis.length !== m.w * m.h) throw new Error('Сохранение повреждено');
+    // оба слоя обязаны восстановиться типизированными массивами, иначе сейв битый
+    if (!Array.isArray(state.levels) || state.levels.length !== 2) throw new Error('Сохранение повреждено');
+    for (const m of state.levels) {
+      if (!m || !(m.terrain instanceof Uint8Array) || !(m.block instanceof Uint8Array) || !(m.objAt instanceof Int32Array) || m.terrain.length !== m.w * m.h) throw new Error('Сохранение повреждено');
+    }
+    for (const p of state.players) {
+      if (!Array.isArray(p.vis) || p.vis.length !== 2) throw new Error('Сохранение повреждено');
+      for (let z = 0; z < 2; z++) if (!(p.vis[z] instanceof Uint8Array) || p.vis[z].length !== state.levels[z].w * state.levels[z].h) throw new Error('Сохранение повреждено');
+    }
     attachRng(state);
     return state;
   }
 
   H3.State = {
+    lvl,
     VERSION, DIFFICULTY, SIZES, newGame, attachRng, syncRng, learnTownSpells,
     idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,
