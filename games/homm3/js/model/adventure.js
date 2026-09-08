@@ -335,7 +335,13 @@
     const defHero = ctx.defHeroId ? state.heroes[ctx.defHeroId] : null;
     const attWon = res.winner === 0;
     // армии
-    const apply = (hero, sideRes) => { if (hero) { for (let i = 0; i < 7; i++) hero.army[i] = sideRes.army[i]; R.cleanArmy(hero.army); hero.bonuses = {}; } };
+    const apply = (hero, sideRes) => {
+      if (!hero) return;
+      for (let i = 0; i < 7; i++) hero.army[i] = sideRes.army[i];
+      R.cleanArmy(hero.army); hero.bonuses = {};
+      // уничтоженные боевые машины потеряны — покупать заново
+      if (hero.machines) for (const mid of sideRes.machinesLost || []) delete hero.machines[mid];
+    };
     apply(attHero, res.sides[0]); apply(defHero, res.sides[1]);
     if (attHero) attHero.mana = b.sides[0].mana; if (defHero) defHero.mana = b.sides[1].mana;
     const summary = { attWon, winner: attWon ? attHero : defHero, loser: attWon ? defHero : attHero, xp: 0, levelUps: 0, raised: 0, loot: [], res, ctx, text: [] };

@@ -26,7 +26,7 @@
     const b = {
       round: 0, terrain: opts.terrain || 'grass', units: [], obstacles: [], queue: [], waitQueue: [], pos: 0, cur: null,
       sides: [mkSide(att, 0, opts), mkSide(def, 1, opts)], casted: [false, false], over: false, winner: null, result: null,
-      events: [], log: [], siege: null, _rng: rng, turnsTotal: 0,
+      events: [], log: [], siege: null, _rng: rng, turnsTotal: 0, phase: 'battle', tactics: null,
     };
     if (opts.siege) {
       const town = opts.siege;
@@ -40,10 +40,27 @@
       const rows = ROWS_BY_COUNT[Math.min(7, stacks.length)] || [5];
       stacks.forEach((x, k) => {
         const c = C.get(x.st.cid);
-        const col = s === 0 ? 0 : (b.siege ? 13 : 14);
+        let col = s === 0 ? 0 : (b.siege ? 13 : 14);
+        // крупный занимает два гекса: голова сдвигается внутрь поля, хвост встаёт на край
+        if (C.hasAb(c, 'large')) col += s === 0 ? 1 : -1;
         const u = mkUnit(b, s, x.i, c, x.st.n, col, rows[k]);
         b.units.push(u);
       });
+    }
+    // боевые машины героя — отдельными стеками у своего края
+    for (let s = 0; s < 2; s++) {
+      const hero = b.sides[s].hero; if (!hero || !hero.machines) continue;
+      const col = s === 0 ? 0 : W - 1;
+      for (const key of ['ballista', 'first_aid_tent', 'ammo_cart']) {
+        if (!hero.machines[key]) continue;
+        const c = C.get(key);
+        let spot = null;
+        for (const y of [0, H - 1, 1, H - 2, 2, H - 3, 3, H - 4, 4, H - 5, 5]) {
+          if (!unitAt(b, col, y) && !wallState(b, col, y)) { spot = y; break; }
+        }
+        if (spot === null) continue;
+        b.units.push(mkUnit(b, s, 7 + b.units.length, c, 1, col, spot));
+      }
     }
     // препятствия
     const nObs = rng.int(3, 7);
@@ -56,8 +73,23 @@
         b.obstacles.push({ x, y, kind: rng.pick(ks) }); break;
       }
     }
-    newRound(b);
+    // фаза тактики: полосу получает та сторона, у которой навык выше (разница)
+    const td = tacticsOf(b, 0) - tacticsOf(b, 1);
+    if (td !== 0) { b.tactics = { side: td > 0 ? 0 : 1, dist: Math.abs(td) }; b.phase = 'tactics'; }
+    else newRound(b);
     return b;
+  }
+  function tacticsOf(b, side) { const h = b.sides[side].hero; return h ? R.skillVal(h, 'tactics') : 0; }
+  /** Может ли стек side встать головой в (x, y) в фазе тактики. */
+  function inTacticsBand(b, u, x, y) {
+    if (!b.tactics || b.tactics.side !== u.side) return false;
+    return hexesOf(u, x, y).every(h => (u.side === 0 ? h[0] < b.tactics.dist : h[0] >= W - b.tactics.dist));
+  }
+  /** Все клетки, куда стек может встать в фазе тактики. */
+  function tacticsHexes(b, u) {
+    const out = [];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (inTacticsBand(b, u, x, y) && canStand(b, u, x, y)) out.push([x, y]);
+    return out;
   }
   function mkSide(src, idx, opts) {
     const hero = src.hero || null;
@@ -74,13 +106,33 @@
     const s = b.sides[side];
     const fx = s.hero ? R.artifactFx(s.hero) : {};
     const maxHp = c.hp + (fx.hp || 0);
-    return { id: b.units.length, side, slot, cid: c.id, count: n, initial: n, hp: maxHp, maxHp, x, y, alive: true,
+    return { id: b.units.length, side, slot, cid: c.id, count: n, initial: n, hp: maxHp, maxHp, x, y, startX: x, startY: y, alive: true,
       shots: C.shots(c), retal: 0, waited: false, defended: false, effects: {}, tempRaised: 0, moved: 0, acted: false, blockedRet: 0, killed: 0 };
   }
 
   /* ---------- вспомогательные ---------- */
   const cre = u => C.get(u.cid);
-  function unitAt(b, x, y) { return b.units.find(u => u.alive && u.x === x && u.y === y) || null; }
+
+  /* Крупные (двухгексовые) существа. (u.x, u.y) — «голова», передний гекс по
+     направлению взгляда: атакующий смотрит вправо, защитник влево. Хвост —
+     позади головы в том же ряду. Разворота нет: сторона задаёт направление на
+     весь бой (осознанное упрощение, см. ТЗ §2). */
+  function dirOf(u) { return u.side === 0 ? 1 : -1; }
+  function isBig(u) { return C.hasAb(cre(u), 'large'); }
+  /** Гексы, занятые стеком, головой вперёд. */
+  function hexesOf(u, x, y) {
+    x = x === undefined ? u.x : x; y = y === undefined ? u.y : y;
+    return isBig(u) ? [[x, y], [x - dirOf(u), y]] : [[x, y]];
+  }
+  function occupies(u, x, y) { return (u.x === x && u.y === y) || (isBig(u) && u.y === y && u.x - dirOf(u) === x); }
+  /** Соседние гексы всего стека (без своих). */
+  function around(u, x, y) {
+    const own = hexesOf(u, x, y), seen = new Set(), out = [];
+    for (const [hx, hy] of own) seen.add(hx + ',' + hy);
+    for (const [hx, hy] of own) for (const n of Hex.neighbors(hx, hy)) { const k = n[0] + ',' + n[1]; if (!seen.has(k)) { seen.add(k); out.push(n); } }
+    return out;
+  }
+  function unitAt(b, x, y) { return b.units.find(u => u.alive && occupies(u, x, y)) || null; }
   function inField(x, y) { return x >= 0 && y >= 0 && x < W && y < H; }
   function isObstacle(b, x, y) { return b.obstacles.some(o => o.x === x && o.y === y); }
   function wallState(b, x, y) { // 0 нет стены, 1 разрушена/проход, 2 стена цела/повреждена (непроходимо), 3 башня
@@ -103,7 +155,13 @@
     }
     return true;
   }
+  /** Может ли стек встать головой в (x, y): свободны все его гексы. */
+  function canStand(b, u, x, y) {
+    if (!passable(b, u, x, y)) return false;
+    return !isBig(u) || passable(b, u, x - dirOf(u), y);
+  }
   function isMoat(b, x, y) { return !!(b.siege && b.siege.moat && x === MOAT_COL); }
+  function inMoat(b, u, x, y) { return hexesOf(u, x, y).some(h => isMoat(b, h[0], h[1])); }
   function effVal(u, name) { const e = u.effects[name]; return e ? e.v : 0; }
   function hasEff(u, name) { return !!u.effects[name]; }
   function effSpeed(b, u) {
@@ -157,10 +215,35 @@
   function isShooterNow(b, u) {
     const c = cre(u);
     if (!C.isShooter(c) || u.shots <= 0) return false;
+    if (C.hasAb(c, 'machine')) return true;   // баллисту соседний враг не смущает
     return !adjacentEnemy(b, u);
   }
+  function isMachine(u) { return C.hasAb(cre(u), 'machine'); }
+  /** Стек под «Берсерком» игроку не подчиняется — за него ходит ИИ. */
+  function berserk(u) { return hasEff(u, 'berserk'); }
+  /** Машиной управляет игрок только с профильным навыком, иначе она сама. */
+  function autoMachine(b, u) {
+    if (berserk(u)) return true;
+    if (!isMachine(u)) return false;
+    const h = b.sides[u.side].hero; if (!h) return true;
+    if (u.cid === 'ballista') return !R.skillLvl(h, 'artillery');
+    if (u.cid === 'first_aid_tent') return !R.skillLvl(h, 'first_aid');
+    return true;
+  }
   function adjacentEnemy(b, u) {
-    for (const [nx, ny] of Hex.neighbors(u.x, u.y)) { const o = unitAt(b, nx, ny); if (o && o.side !== u.side) return o; }
+    for (const [nx, ny] of around(u)) { const o = unitAt(b, nx, ny); if (o && o.side !== u.side) return o; }
+    return null;
+  }
+  /** Дистанция между стеками — минимум по занятым гексам (для стрельбы). */
+  function unitDist(a, t) {
+    let d = Infinity;
+    for (const [ax, ay] of hexesOf(a)) for (const [tx, ty] of hexesOf(t)) d = Math.min(d, Hex.dist(ax, ay, tx, ty));
+    return d;
+  }
+  /** Пара соприкасающихся гексов (гекс атакующего, гекс цели) или null. */
+  function contactPair(b, a, t, from) {
+    const ah = hexesOf(a, from ? from[0] : undefined, from ? from[1] : undefined);
+    for (const [ax, ay] of ah) for (const n of Hex.neighbors(ax, ay)) if (occupies(t, n[0], n[1])) return [[ax, ay], n];
     return null;
   }
   function enemies(b, side) { return b.units.filter(u => u.alive && u.side !== side); }
@@ -172,11 +255,12 @@
     const c = cre(u), speed = effSpeed(b, u), fly = C.isFlyer(c);
     const res = new Map();
     const key = (x, y) => x + ',' + y;
-    if (hasEff(u, 'bound')) { res.set(key(u.x, u.y), { x: u.x, y: u.y, cost: 0, prev: null }); return finish(); }
+    if (hasEff(u, 'bound') || C.hasAb(c, 'immobile')) { res.set(key(u.x, u.y), { x: u.x, y: u.y, cost: 0, prev: null }); return finish(); }
+    // клетки в res — это положения ГОЛОВЫ стека; у крупного проверяются оба гекса
     if (fly) {
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const d = Hex.dist(u.x, u.y, x, y);
-        if (d <= speed && passable(b, u, x, y)) res.set(key(x, y), { x, y, cost: d, prev: null });
+        if (d <= speed && canStand(b, u, x, y)) res.set(key(x, y), { x, y, cost: d, prev: null });
       }
       res.set(key(u.x, u.y), { x: u.x, y: u.y, cost: 0, prev: null });
     } else {
@@ -184,9 +268,9 @@
       while (q.length) {
         const [x, y] = q.shift(); const cur = res.get(key(x, y));
         if (cur.cost >= speed) continue;
-        if (isMoat(b, x, y) && !(x === u.x && y === u.y)) continue; // ров останавливает
+        if (inMoat(b, u, x, y) && !(x === u.x && y === u.y)) continue; // ров останавливает
         for (const [nx, ny] of Hex.neighbors(x, y)) {
-          if (!passable(b, u, nx, ny) || res.has(key(nx, ny))) continue;
+          if (!canStand(b, u, nx, ny) || res.has(key(nx, ny))) continue;
           res.set(key(nx, ny), { x: nx, y: ny, cost: cur.cost + 1, prev: [x, y] });
           q.push([nx, ny]);
         }
@@ -194,11 +278,21 @@
     }
     return finish();
     function finish() {
-      const attacks = [];
-      for (const e of enemies(b, u.side)) {
-        for (const [nx, ny] of Hex.neighbors(e.x, e.y)) {
-          const r = res.get(key(nx, ny));
-          if (r) attacks.push({ target: e.id, from: [nx, ny], cost: r.cost });
+      const attacks = [], seen = new Set();
+      const dir = dirOf(u), big = isBig(u);
+      // под «Берсерком» целью может быть кто угодно, кроме себя
+      const targets = berserk(u) ? b.units.filter(x => x.alive && x.id !== u.id) : enemies(b, u.side);
+      for (const e of targets) {
+        for (const [ex, ey] of hexesOf(e)) for (const [nx, ny] of Hex.neighbors(ex, ey)) {
+          if (occupies(e, nx, ny)) continue;
+          // встать так, чтобы (nx, ny) заняла голова или (у крупного) хвост
+          const heads = big ? [[nx, ny], [nx + dir, ny]] : [[nx, ny]];
+          for (const [hx, hy] of heads) {
+            const r = res.get(key(hx, hy)); if (!r) continue;
+            const k = e.id + '|' + hx + ',' + hy; if (seen.has(k)) continue;
+            seen.add(k);
+            attacks.push({ target: e.id, from: [hx, hy], cost: r.cost });
+          }
         }
       }
       return { hexes: res, attacks, speed, fly };
@@ -297,6 +391,12 @@
     opts = opts || {};
     const ca = cre(a), ct = cre(t);
     let luck = false, deathBlow = false;
+    // «Артиллерия»: шанс двойного урона баллисты (50/75/100 %)
+    if (a.cid === 'ballista') {
+      const h = b.sides[a.side].hero;
+      const ch = h ? R.skillVal(h, 'artillery') : 0;
+      if (ch && b._rng.chance(Math.min(1, ch / 100))) deathBlow = true;
+    }
     if (!opts.noLuck) { const l = unitLuck(b, a); if (l > 0 && b._rng.chance(R.LUCK_CHANCE[l])) luck = true; }
     if (C.hasAb(ca, 'deathBlow') && b._rng.chance(C.abNum(ca, 'deathBlow') / 100)) deathBlow = true;
     const dmg = rollDamage(b, a, t, Object.assign({}, opts, { luck, deathBlow }));
@@ -335,24 +435,83 @@
     u.effects[name] = { v, turns: turns || 3 };
     b.events.push({ t: 'effect', unit: u.id, effect: name, v });
   }
+  /* ---------- способности второго эшелона ----------
+     Архангел воскрешает, Владыка бездны поднимает демонов из павших,
+     Мастер-джинн и Огр-маг колдуют на своих. Каждая — раз за бой. */
+  const GENIE_BUFFS = [['haste', 3], ['bless', 0], ['shield', 15], ['stone_skin', 3], ['bloodlust', 3], ['precision', 3], ['fortune', 1], ['air_shield', 25]];
+  function abilityOf(u) {
+    if (!u.alive || u.usedAbility) return null;
+    const c = cre(u);
+    if (C.hasAb(c, 'resurrectOnce')) return 'resurrect';
+    if (C.hasAb(c, 'raiseDemons')) return 'raise';
+    if (C.hasAb(c, 'castRandomBuff')) return 'buff';
+    if (C.hasAb(c, 'castBloodlust')) return 'bloodlust';
+    return null;
+  }
+  /** Возможные цели способности — свои стеки (для «поднятия» — павшие). */
+  function abilityTargets(b, u) {
+    const kind = abilityOf(u); if (!kind) return [];
+    const out = [];
+    for (const a of b.units) {
+      if (a.side !== u.side || a.id === u.id) continue;
+      const ca = cre(a);
+      if (C.hasAb(ca, 'machine')) continue;
+      if (kind === 'resurrect') { if (a.alive && a.count < a.initial && !C.isUndead(ca) && !C.hasAb(ca, 'nonliving')) out.push(a); }
+      else if (kind === 'raise') { if (!a.alive && !C.isUndead(ca) && !C.hasAb(ca, 'nonliving') && a.cid !== 'demon') out.push(a); }
+      else if (a.alive) out.push(a);
+    }
+    return out;
+  }
+  function useAbility(b, u, target) {
+    const kind = abilityOf(u);
+    if (!kind) return 'Нет способности';
+    const t = b.units[target];
+    if (!t || !abilityTargets(b, u).some(x => x.id === t.id)) return 'Неверная цель';
+    if (kind === 'resurrect') {
+      const amount = 100 * u.count;
+      b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'resurrect', amount });
+      heal(b, t, amount, true, true);
+    } else if (kind === 'raise') {
+      // корпус павшего стека превращается в демонов; после боя они не остаются
+      const demon = C.get('demon');
+      const corpseHp = t.initial * t.maxHp;
+      const n = Math.max(1, Math.min(u.count, Math.floor(corpseHp / demon.hp)));
+      t.cid = 'demon'; t.maxHp = demon.hp; t.hp = demon.hp; t.count = n; t.initial = Math.max(t.initial, n);
+      t.alive = true; t.effects = {}; t.shots = 0; t.tempRaised = n; t.retal = 1;
+      b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'raiseDemons', n });
+    } else {
+      const pick = kind === 'bloodlust' ? ['bloodlust', 6] : b._rng.pick(GENIE_BUFFS);
+      addEffect(b, t, pick[0], pick[1], 3);
+      b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'cast', spell: pick[0] });
+    }
+    u.usedAbility = true;
+    return true;
+  }
+
   /** Полная атака (с ответом, двойным ударом, спецспособностями). */
   function performAttack(b, a, t, opts) {
     const ca = cre(a);
     const ranged = !!opts.ranged;
     const canRetal = !ranged && !C.hasAb(ca, 'noRetaliation');
     const extraTargets = [];
-    if (!ranged && C.hasAb(ca, 'breath')) { const [bx, by] = Hex.beyond(a.x, a.y, t.x, t.y); const o = unitAt(b, bx, by); if (o && o.id !== a.id) extraTargets.push(o); }
-    if (!ranged && C.hasAb(ca, 'attackAll')) for (const [nx, ny] of Hex.neighbors(a.x, a.y)) { const o = unitAt(b, nx, ny); if (o && o.side !== a.side && o.id !== t.id) extraTargets.push(o); }
-    if (!ranged && C.hasAb(ca, 'threeHeaded')) { let k = 0; for (const [nx, ny] of Hex.neighbors(a.x, a.y)) { const o = unitAt(b, nx, ny); if (o && o.side !== a.side && o.id !== t.id && k < 2) { extraTargets.push(o); k++; } } }
-    if (ranged && (C.hasAb(ca, 'deathCloud') || C.hasAb(ca, 'fireballShot'))) for (const [nx, ny] of Hex.neighbors(t.x, t.y)) { const o = unitAt(b, nx, ny); if (o && o.id !== a.id && !(C.hasAb(ca, 'deathCloud') && C.isUndead(cre(o)))) extraTargets.push(o); }
-    const hits = C.hasAb(ca, 'doubleAttack') ? 2 : 1;
+    const add = o => { if (o && o.id !== a.id && o.id !== t.id && !extraTargets.some(x => x.id === o.id)) extraTargets.push(o); };
+    if (!ranged && C.hasAb(ca, 'breath')) {
+      // дыхание бьёт гекс за целью по линии «касающийся гекс атакующего → гекс цели»
+      const pair = contactPair(b, a, t);
+      if (pair) { const [bx, by] = Hex.beyond(pair[0][0], pair[0][1], pair[1][0], pair[1][1]); const o = unitAt(b, bx, by); if (o && o.id !== a.id) extraTargets.push(o); }
+    }
+    if (!ranged && C.hasAb(ca, 'attackAll')) for (const [nx, ny] of around(a)) { const o = unitAt(b, nx, ny); if (o && o.side !== a.side) add(o); }
+    if (!ranged && C.hasAb(ca, 'threeHeaded')) { let k = 0; for (const [nx, ny] of around(a)) { const o = unitAt(b, nx, ny); if (o && o.side !== a.side && k < 2 && !extraTargets.some(x => x.id === o.id) && o.id !== t.id) { extraTargets.push(o); k++; } } }
+    if (ranged && (C.hasAb(ca, 'deathCloud') || C.hasAb(ca, 'fireballShot'))) for (const [nx, ny] of around(t)) { const o = unitAt(b, nx, ny); if (o && !(C.hasAb(ca, 'deathCloud') && C.isUndead(cre(o)))) add(o); }
+    let hits = C.hasAb(ca, 'doubleAttack') ? 2 : 1;
+    if (a.cid === 'ballista') { const h = b.sides[a.side].hero; if (h && R.skillLvl(h, 'artillery') >= 2) hits = 2; }
     for (let h = 0; h < hits; h++) {
       if (!a.alive || !t.alive) break;
       strike(b, a, t, { ranged, dist: opts.dist, jousted: opts.jousted, wall: opts.wall });
       for (const et of extraTargets) if (et.alive && a.alive) strike(b, a, et, { ranged, dist: opts.dist, noLuck: true });
       if (h === 0 && canRetal && t.alive && a.alive) retaliate(b, t, a);
     }
-    if (ranged) a.shots--;
+    if (ranged && !allies(b, a.side).some(x => x.cid === 'ammo_cart' && x.alive)) a.shots--;
   }
   function retaliate(b, t, a) {
     if (t.retal <= 0 || !t.alive || !a.alive) return;
@@ -380,19 +539,27 @@
           for (const dmg of shots) { const alive = targets.filter(u => u.alive); if (!alive.length) break; const t = b._rng.pick(alive); b.events.push({ t: 'tower', target: t.id, dmg }); applyDamage(b, t, dmg, 'tower'); }
         }
       }
-      const intact = []; for (let i = 0; i < 4; i++) if (b.siege.walls[i] > 0) intact.push(i); if (b.siege.gate > 0) intact.push('gate');
-      if (intact.length && b.sides[0].hero) {
-        const pick = b._rng.pick(intact), r = b._rng.next();
-        let res = 'miss';
-        if (r < 0.25) { res = 'destroy'; if (pick === 'gate') b.siege.gate = 0; else b.siege.walls[pick] = 0; }
-        else if (r < 0.75) { res = 'hit'; if (pick === 'gate') b.siege.gate--; else b.siege.walls[pick]--; }
-        b.events.push({ t: 'catapult', wall: pick, result: res });
+      // катапульта нападающего; «Баллистика» даёт точность и второй выстрел
+      const hero0 = b.sides[0].hero;
+      if (hero0) {
+        const bl = R.skillLvl(hero0, 'ballistics');
+        const shots = bl >= 2 ? 2 : 1;
+        for (let k = 0; k < shots; k++) {
+          const intact = []; for (let i = 0; i < 4; i++) if (b.siege.walls[i] > 0) intact.push(i);
+          if (b.siege.gate > 0) intact.push('gate');
+          if (!intact.length) break;
+          const pick = b._rng.pick(intact), r = b._rng.next();
+          let res = 'miss';
+          if (bl >= 3 || r < 0.25 + bl * 0.12) { res = 'destroy'; if (pick === 'gate') b.siege.gate = 0; else b.siege.walls[pick] = 0; }
+          else if (r < 0.75 + bl * 0.1) { res = 'hit'; if (pick === 'gate') b.siege.gate--; else b.siege.walls[pick]--; }
+          b.events.push({ t: 'catapult', wall: pick, result: res });
+        }
       }
     }
     // призрак: вытягивает ману
     for (const u of b.units) if (u.alive && C.hasAb(cre(u), 'manaDrain')) { const es = b.sides[1 - u.side]; if (es.mana > 0) { es.mana = Math.max(0, es.mana - 2); b.events.push({ t: 'manaDrain', unit: u.id }); } }
     // порядок хода
-    const order = b.units.filter(u => u.alive).sort((p, q) => {
+    const order = b.units.filter(u => u.alive && !C.hasAb(cre(u), 'passive')).sort((p, q) => {
       const ds = effSpeed(b, q) - effSpeed(b, p); if (ds) return ds;
       const first = (b.round % 2 === 1) ? 0 : 1;
       if (p.side !== q.side) return p.side === first ? -1 : 1;
@@ -465,17 +632,18 @@
     const sides = b.sides.map((s, i) => {
       const units = b.units.filter(u => u.side === i);
       const army = s.army.map(() => null);
-      let lostValue = 0; const losses = [];
+      let lostValue = 0; const losses = [], machinesLost = [];
       for (const u of units) {
         const c = cre(u);
+        if (C.hasAb(c, 'machine')) { if (!u.alive) machinesLost.push(u.cid); continue; }
         if (u.alive && u.count > 0) army[u.slot] = { cid: u.cid, n: u.count };
         const lost = u.initial - (u.alive ? u.count : 0);
         if (lost > 0) { losses.push({ cid: u.cid, n: lost }); lostValue += lost * C.aiValue(c); }
       }
-      return { army, losses, lostValue, hero: s.hero, player: s.player, name: s.name, mana: s.mana };
+      return { army, losses, lostValue, machinesLost, hero: s.hero, player: s.player, name: s.name, mana: s.mana };
     });
     let xp = 0; const killedLiving = [];
-    for (const u of b.units) if (u.side !== b.winner) { const lost = u.initial - (u.alive ? u.count : 0); xp += lost * cre(u).hp; if (lost > 0 && !C.isUndead(cre(u)) && !C.hasAb(cre(u), 'nonliving')) killedLiving.push({ cid: u.cid, n: lost, hp: cre(u).hp }); }
+    for (const u of b.units) if (u.side !== b.winner && !C.hasAb(cre(u), 'machine')) { const lost = u.initial - (u.alive ? u.count : 0); xp += lost * cre(u).hp; if (lost > 0 && !C.isUndead(cre(u)) && !C.hasAb(cre(u), 'nonliving')) killedLiving.push({ cid: u.cid, n: lost, hp: cre(u).hp }); }
     if (b.sides[1 - b.winner].hero) xp += 500;
     return { winner: b.winner, reason: b.reason, sides, xp, killedLiving, rounds: b.round };
   }
@@ -484,9 +652,22 @@
   function act(b, action) {
     b.events = [];
     if (b.over) return b.events;
+    const type = action.type;
+    if (b.phase === 'tactics') {
+      if (type === 'tacticsMove') {
+        const t = b.units[action.unit];
+        if (!t || !t.alive || t.side !== b.tactics.side) return err('Не ваш отряд');
+        if (!inTacticsBand(b, t, action.x, action.y)) return err('Вне полосы тактики');
+        if (!canStand(b, t, action.x, action.y)) return err('Занято');
+        t.x = action.x; t.y = action.y;
+        b.events.push({ t: 'tacticsMove', unit: t.id, x: t.x, y: t.y });
+        return b.events;
+      }
+      if (type === 'tacticsDone') { b.phase = 'battle'; b.events.push({ t: 'tacticsDone' }); newRound(b); return b.events; }
+      return err('Идёт расстановка');
+    }
     const u = current(b);
     if (!u) return b.events;
-    const type = action.type;
     if (type === 'wait') {
       if (u.waited) return err('Уже ждёт');
       u.waited = true; b.events.push({ t: 'wait', unit: u.id });
@@ -503,7 +684,7 @@
     }
     if (type === 'attack') {
       const t = b.units[action.target];
-      if (!t || !t.alive || t.side === u.side) return err('Нет цели');
+      if (!t || !t.alive || (t.side === u.side && !berserk(u)) || t.id === u.id) return err('Нет цели');
       const reach = reachable(b, u);
       let from = action.from;
       const options = reach.attacks.filter(a => a.target === t.id);
@@ -513,17 +694,33 @@
       const moved = moveUnit(b, u, reach, from[0], from[1]);
       if (!u.alive) { afterAction(b, u, false); return b.events; }
       performAttack(b, u, t, { ranged: false, jousted: moved });
-      if (C.hasAb(cre(u), 'strikeAndReturn') && u.alive && !unitAt(b, origin[0], origin[1])) { u.x = origin[0]; u.y = origin[1]; b.events.push({ t: 'move', unit: u.id, path: [origin], back: true }); }
+      if (C.hasAb(cre(u), 'strikeAndReturn') && u.alive && canStand(b, u, origin[0], origin[1])) { u.x = origin[0]; u.y = origin[1]; b.events.push({ t: 'move', unit: u.id, path: [origin], back: true }); }
       afterAction(b, u, true); return b.events;
     }
     if (type === 'shoot') {
       const t = b.units[action.target];
       if (!t || !t.alive || t.side === u.side) return err('Нет цели');
       if (!isShooterNow(b, u)) return err('Нельзя стрелять');
-      const dist = Hex.dist(u.x, u.y, t.x, t.y);
+      const dist = unitDist(u, t);
       const wall = !!(b.siege && u.side === 0 && t.x >= WALL_COL && b.siege.walls.some(w => w > 0));
       performAttack(b, u, t, { ranged: true, dist, wall });
       afterAction(b, u, true); return b.events;
+    }
+    if (type === 'heal') {
+      if (!C.hasAb(cre(u), 'healer')) return err('Не умеет лечить');
+      const t = b.units[action.target];
+      if (!t || !t.alive || t.side !== u.side || t.id === u.id) return err('Нет цели');
+      if (C.hasAb(cre(t), 'machine')) return err('Машину не вылечить');
+      const h = b.sides[u.side].hero;
+      const amount = h && R.skillVal(h, 'first_aid') ? R.skillVal(h, 'first_aid') : 25;
+      b.events.push({ t: 'tent', unit: u.id, target: t.id, amount });
+      heal(b, t, amount, false, false);
+      afterAction(b, u, false); return b.events;
+    }
+    if (type === 'ability') {
+      const r = useAbility(b, u, action.target);
+      if (r !== true) return err(r);
+      afterAction(b, u, false); return b.events;
     }
     if (type === 'cast') { const r = castSpell(b, u.side, action.spell, action.target, action.hex); if (r !== true) return err(r); return b.events; }
     if (type === 'retreat' || type === 'surrender') {
@@ -540,9 +737,9 @@
     const path = fly ? [[x, y]] : pathFrom(reach, x, y);
     u.x = x; u.y = y;
     b.events.push({ t: 'move', unit: u.id, path, fly });
-    if (isMoat(b, x, y) && !fly) { const d = b.siege.moatDmg; b.events.push({ t: 'moat', unit: u.id, dmg: d }); applyDamage(b, u, d, 'moat'); }
+    if (inMoat(b, u, x, y) && !fly) { const d = b.siege.moatDmg; b.events.push({ t: 'moat', unit: u.id, dmg: d }); applyDamage(b, u, d, 'moat'); }
     // дендроид связывает соседей
-    if (C.hasAb(cre(u), 'bind')) for (const [nx, ny] of Hex.neighbors(x, y)) { const o = unitAt(b, nx, ny); if (o && o.side !== u.side) addEffect(b, o, 'bound', 1, 99); }
+    if (C.hasAb(cre(u), 'bind')) for (const [nx, ny] of around(u)) { const o = unitAt(b, nx, ny); if (o && o.side !== u.side) addEffect(b, o, 'bound', 1, 99); }
     return fly ? Hex.dist(x, y, x, y) : path.length;
   }
 
@@ -574,7 +771,7 @@
     if (spell.kind === 'heal' && C.isUndead(c)) return 'immune';
     if (u.side === side) return null;
     let res = C.abNum(c, 'magicResist', 0);
-    for (const [nx, ny] of Hex.neighbors(u.x, u.y)) { const o = unitAt(b, nx, ny); if (o && o.side === u.side && C.hasAb(cre(o), 'resistAura')) { res += 20; break; } }
+    for (const [nx, ny] of around(u)) { const o = unitAt(b, nx, ny); if (o && o.side === u.side && C.hasAb(cre(o), 'resistAura')) { res += 20; break; } }
     const es = b.sides[u.side];
     if (es.hero) { res += R.skillVal(es.hero, 'resistance'); const fx = R.artifactFx(es.hero); res += fx.resist || 0; }
     if (res > 0 && b._rng.chance(Math.min(0.9, res / 100))) return 'resisted';
@@ -598,6 +795,12 @@
       if ((spell.kind === 'damage' || spell.kind === 'debuff') && spell.target === 'enemy' && u.side === side) return 'Только на врагов';
     }
     s.mana -= cost; b.casted[side] = true; s.spellsCast++;
+    // фамильяры врага перехватывают часть потраченной маны
+    const foeSide = b.sides[1 - side];
+    if (foeSide.hero && allies(b, 1 - side).some(x => C.hasAb(cre(x), 'manaChannel'))) {
+      const got = Math.floor(cost * 0.2);
+      if (got > 0) { foeSide.mana += got; b.events.push({ t: 'manaChannel', side: 1 - side, mana: got }); }
+    }
     if (s.hero) s.hero.mana = s.mana;
     const P = s.pow;
     const dur = Math.max(1, P + (R.artifactFx(s.hero).spellDur || 0));
@@ -660,7 +863,7 @@
 
   /* ---------- превью для UI ---------- */
   function preview(b, a, t, ranged) {
-    const dist = Hex.dist(a.x, a.y, t.x, t.y);
+    const dist = unitDist(a, t);
     const wall = !!(b.siege && a.side === 0 && ranged && t.x >= WALL_COL && b.siege.walls.some(w => w > 0));
     const d = calcDamage(b, a, t, { ranged, dist, wall });
     const total = totalHp(t);
@@ -674,7 +877,7 @@
     return out;
   }
 
-  H3.Battle = { W, H, WALL_COL, MOAT_COL, GATE_ROW, TOWER_ROWS, WALL_SEGMENTS, create, act, current, reachable, pathFrom, preview, calcDamage, availableSpells, spellTargets,
-    unitAt, isObstacle, wallState, isMoat, effSpeed, effAtt, effDef, unitMorale, unitLuck, totalHp, canAct, isShooterNow, adjacentEnemy, enemies, allies, cre, hasEff, effVal, passable, finish };
+  H3.Battle = { tacticsHexes, inTacticsBand, isMachine, autoMachine, berserk, abilityOf, abilityTargets, W, H, WALL_COL, MOAT_COL, GATE_ROW, TOWER_ROWS, WALL_SEGMENTS, create, act, current, reachable, pathFrom, preview, calcDamage, availableSpells, spellTargets,
+    unitAt, occupies, hexesOf, around, isBig, dirOf, canStand, unitDist, contactPair, isObstacle, wallState, isMoat, effSpeed, effAtt, effDef, unitMorale, unitLuck, totalHp, canAct, isShooterNow, adjacentEnemy, enemies, allies, cre, hasEff, effVal, passable, finish };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Battle;
 })(typeof window !== 'undefined' ? window : globalThis);

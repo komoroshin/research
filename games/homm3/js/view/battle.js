@@ -8,7 +8,7 @@
   const U = H3.U, Hex = U.Hex, C = H3.Creatures, Bt = H3.Battle, AI = H3.BattleAI, Sp = H3.Sprites, An = H3.Anim, UI = H3.UI, SP = H3.Spells, R = H3.Rules, T = H3.Terrain;
   const W = Bt.W, H = Bt.H;
 
-  const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null };
+  const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null, tactics: null };
 
   function init() {
     V.canvas = UI.$('#battleCanvas'); V.ctx = V.canvas.getContext('2d');
@@ -21,14 +21,16 @@
   function layout() {
     const box = UI.$('#battleMain'); V.dpr = window.devicePixelRatio || 1;
     const bw = box.clientWidth, bh = box.clientHeight;
-    const size = Math.floor(Math.min((bw - 20) / (Math.sqrt(3) * (W + 0.5)), (bh - 40) / (1.5 * H + 0.5)));
+    // поля по краям шире одного гекса: крупные существа на крайних колоннах
+    // выступают за свои гексы и иначе обрезались бы краем канвы
+    const size = Math.floor(Math.min((bw - 48) / (Math.sqrt(3) * (W + 0.5)), (bh - 80) / (1.5 * H + 0.5)));
     V.size = Math.max(14, size);
     const fw = Math.sqrt(3) * V.size * (W + 0.5), fh = V.size * (1.5 * H + 0.5);
-    V.cw = Math.min(bw, Math.round(fw + 20)); V.ch = Math.min(bh, Math.round(fh + 40));
-    V.ox = Math.round((V.cw - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 6;
+    V.cw = Math.min(bw, Math.round(fw + 48)); V.ch = Math.min(bh, Math.round(fh + 80));
+    V.ox = Math.round((V.cw - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 14;   // запас сверху: высокие спрайты верхнего ряда
     V.canvas.width = V.cw * V.dpr; V.canvas.height = V.ch * V.dpr; V.canvas.style.width = V.cw + 'px'; V.canvas.style.height = V.ch + 'px';
     V.bg = makeBg(V.b.terrain, V.cw, V.ch, H3.Game && H3.Game.state ? H3.Game.state.day : 4);
-    for (const u of V.b.units) { const [x, y] = Hex.center(u.x, u.y, V.size, V.ox, V.oy); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
+    for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
   }
   function makeBg(terrain, w, h, day) {
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
@@ -56,17 +58,40 @@
       H3.Audio.play(b.siege ? 'siege' : 'turn');
       // начальные события (башни, катапульта первого раунда)
       const ev = b.events.slice(); b.events = [];
-      playEvents(ev).then(() => step());
+      playEvents(ev).then(() => tacticsPhase()).then(() => step());
     });
   }
   function isHuman(side) { return V.human.includes(side) && !V.auto; }
+
+  /* ---------- фаза тактики (навык «Тактика») ---------- */
+  function tacticsPhase() {
+    const b = V.b;
+    if (!b || b.phase !== 'tactics') return Promise.resolve();
+    const side = b.tactics.side;
+    if (!isHuman(side)) {   // расставляет ИИ — молча, до конца фазы
+      let guard = 0;
+      while (b.phase === 'tactics' && guard++ < 80) { Bt.act(b, AI.chooseTactics(b)); syncPositions(); }
+      return Promise.resolve();
+    }
+    V.tactics = { sel: null };
+    UI.toast('Тактика: переставь отряды в подсвеченной полосе, затем «Готово»', '', 'ic_speed');
+    renderBar();
+    return new Promise(r => { V.tacticsResolve = r; });
+  }
+  function endTactics() {
+    Bt.act(V.b, { type: 'tacticsDone' });
+    V.tactics = null; const r = V.tacticsResolve; V.tacticsResolve = null;
+    renderBar(); if (r) r();
+  }
+  function syncPositions() { for (const u of V.b.units) { const p = V.pos[u.id]; if (!p) continue; const [x, y] = centerOf(u); p.x = x; p.y = y; } }
   async function step() {
     const b = V.b;
     if (b.over) { await finishUp(); return; }
     const u = Bt.current(b);
     if (!u) { await finishUp(); return; }
     renderBar();
-    if (isHuman(u.side)) { V.reach = Bt.reachable(b, u); focusUnit(u); return; } // ждём ввода
+    // машиной без профильного навыка («Артиллерия» / «Первая помощь») игрок не управляет
+    if (isHuman(u.side) && !Bt.autoMachine(b, u)) { V.reach = Bt.reachable(b, u); focusUnit(u); return; } // ждём ввода
     V.reach = null;
     await wait(V.speed === 0 ? 0 : 120);
     const smart = H3.Game.settings().aiSmart !== false;
@@ -120,6 +145,8 @@
           else log(unitName(t) + ': −' + e.dmg + (e.killed ? ', погибло ' + e.killed : ''));
           shake(t); await wait(spd(180)); break;
         }
+        case 'manaChannel': { log('Фамильяры перехватили ' + e.mana + ' маны'); break; }
+        case 'tent': { const t = b.units[e.target]; if (t) { float(t, '+' + e.amount, '#7fe08a'); flashUnit(t, '#7fe08a'); log('Палатка лечит ' + unitName(t) + ': +' + e.amount + ' HP'); } await wait(spd(220)); break; }
         case 'death': { const u = b.units[e.unit]; H3.Audio.play('death'); log(unitName(u) + ' уничтожены'); await fade(u, spd(300)); break; }
         case 'luck': { const u = b.units[e.unit]; float(u, 'Удача! ×2', '#9be07f'); H3.Audio.play('luck'); log(unitName(u) + ': удача — двойной урон'); await wait(spd(250)); break; }
         case 'morale': { const u = b.units[e.unit]; float(u, e.good ? 'Мораль: доп. ход' : 'Мораль: замешательство', e.good ? '#9be07f' : '#ff8a6a'); H3.Audio.play('morale'); log(unitName(u) + (e.good ? ' воодушевлены — ещё один ход' : ' растеряны и пропускают ход')); await wait(spd(400)); break; }
@@ -138,7 +165,15 @@
         case 'effect': { const u = b.units[e.unit]; const nm = EFFECT_NAMES[e.effect] || e.effect; if (u) float(u, nm, '#c9a9ff'); await wait(spd(150)); break; }
         case 'effectEnd': break;
         case 'heal': { const u = b.units[e.unit]; if (u && (e.raised || e.hp)) { float(u, e.raised ? '+' + e.raised : '+' + e.hp + ' HP', '#9be07f'); await wait(spd(200)); } break; }
-        case 'ability': { const u = b.units[e.unit]; const nm = { deathStare: 'Взгляд смерти', fireShield: 'Огненный щит', lightning: 'Молния' }[e.ab] || e.ab; if (b.units[e.target]) float(b.units[e.target], nm + (e.dmg ? ' −' + e.dmg : e.killed ? ' ' + e.killed : ''), '#ffd070'); await wait(spd(200)); break; }
+        case 'ability': {
+          const a = b.units[e.unit], t = e.target !== undefined ? b.units[e.target] : null;
+          if (e.ab === 'resurrect' && t) { flashUnit(t, '#ffe9a0'); float(t, 'воскрешение', '#ffe9a0'); log(unitName(a) + ' воскрешает ' + unitName(t)); await wait(spd(320)); break; }
+          if (e.ab === 'raiseDemons' && t) { flashUnit(t, '#e06a3a'); float(t, '+' + e.n + ' демонов', '#ffb060'); log(unitName(a) + ' поднимает демонов: ' + e.n); await wait(spd(320)); break; }
+          if (e.ab === 'cast' && t) { flashUnit(t, '#9ad0ff'); log(unitName(a) + ' колдует на ' + unitName(t)); await wait(spd(260)); break; }
+          const nm = { deathStare: 'Взгляд смерти', fireShield: 'Огненный щит', lightning: 'Молния' }[e.ab] || e.ab;
+          if (t) float(t, nm + (e.dmg ? ' −' + e.dmg : e.killed ? ' ' + e.killed : ''), '#ffd070');
+          await wait(spd(200)); break;
+        }
         case 'tower': { const t = b.units[e.target]; if (t) flashUnit(t, '#ffb03a'); H3.Audio.play('shoot'); break; }
         case 'catapult': { log('Катапульта: ' + (e.result === 'destroy' ? 'участок стены разрушен!' : e.result === 'hit' ? 'стена повреждена' : 'промах')); if (e.result !== 'miss') H3.Audio.play('siege'); await wait(spd(250)); break; }
         case 'moat': break;
@@ -149,12 +184,21 @@
       renderBar();
     }
   }
+  const ABILITY_LABEL = { resurrect: 'Воскресить', raise: 'Поднять демонов', buff: 'Чары', bloodlust: 'Жажда крови' };
   const EFFECT_NAMES = { haste: 'Ускорение', slow: 'Замедление', bless: 'Благословение', curse: 'Проклятие', shield: 'Щит', stone_skin: 'Каменная кожа', bloodlust: 'Жажда крови', precision: 'Точность', weakness: 'Слабость', disrupting_ray: 'Разруш. луч', fortune: 'Фортуна', air_shield: 'Возд. щит', prayer: 'Молитва', blind: 'Ослепление', petrify: 'Окаменение', paralyze: 'Паралич', disease: 'Болезнь', poison: 'Яд', aging: 'Старение', bound: 'Связан' };
   function unitName(u) { return C.get(u.cid).name + (u.side === 0 ? '' : '') + ' (' + (u.side === 0 ? 'атака' : 'защита') + ')'; }
   function log(s) { V.logLines.push(s); if (V.logLines.length > 60) V.logLines.shift(); }
+  /** Экранный центр стека: у крупного — середина между головой и хвостом. */
+  function centerOf(u, cx, cy) {
+    cx = cx === undefined ? u.x : cx; cy = cy === undefined ? u.y : cy;
+    const [x, y] = Hex.center(cx, cy, V.size, V.ox, V.oy);
+    if (!Bt.isBig(u)) return [x, y];
+    const [tx2, ty2] = Hex.center(cx - Bt.dirOf(u), cy, V.size, V.ox, V.oy);
+    return [(x + tx2) / 2, (y + ty2) / 2];
+  }
   function tween(u, to, ms) {
     return new Promise(r => {
-      const [tx, ty] = Hex.center(to[0], to[1], V.size, V.ox, V.oy); const p = V.pos[u.id];
+      const [tx, ty] = centerOf(u, to[0], to[1]); const p = V.pos[u.id];
       if (!ms) { p.x = tx; p.y = ty; r(); return; }
       p.moving = true;
       V.anims.push({ p, fx: p.x, fy: p.y, tx, ty, t: 0, ms, done: () => { p.moving = false; r(); } });
@@ -204,15 +248,30 @@
       const pts = Hex.polygon(x, y, size - 0.5);
       ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
       let fill = null;
-      if (V.reach && V.reach.hexes.has(c + ',' + r) && !(cur && cur.x === c && cur.y === r)) fill = 'rgba(120,220,120,0.16)';
+      if (V.reach && V.reach.hexes.has(c + ',' + r) && !(cur && Bt.occupies(cur, c, r))) fill = 'rgba(120,220,120,0.16)';
+      if (V.tactics) { const side = b.tactics.side; if (side === 0 ? c < b.tactics.dist : c >= W - b.tactics.dist) fill = 'rgba(241,207,116,0.22)'; }
       if (Bt.isMoat(b, c, r)) fill = 'rgba(40,90,180,0.45)';
       if (V.spellMode && V.spellMode.area && V.hover && Hex.dist(c, r, V.hover[0], V.hover[1]) <= (V.spellMode.area === 'ring' ? 1 : V.spellMode.area) && !(V.spellMode.area === 'ring' && Hex.dist(c, r, V.hover[0], V.hover[1]) === 0)) fill = 'rgba(200,80,255,0.25)';
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
       ctx.strokeStyle = 'rgba(0,0,0,0.13)'; ctx.lineWidth = 1; ctx.stroke();
     }
-    if (V.hover) { const [x, y] = Hex.center(V.hover[0], V.hover[1], size, V.ox, V.oy); const pts = Hex.polygon(x, y, size - 1); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2; ctx.stroke(); }
+    // наведение: у крупного стека показываем оба гекса, куда он встанет
+    if (V.hover) {
+      const hexes = [V.hover];
+      if (cur && Bt.isBig(cur) && isHuman(cur.side) && V.reach && V.reach.hexes.has(V.hover[0] + ',' + V.hover[1])) hexes.push([V.hover[0] - Bt.dirOf(cur), V.hover[1]]);
+      for (const [hx, hy] of hexes) {
+        const [x, y] = Hex.center(hx, hy, size, V.ox, V.oy); const pts = Hex.polygon(x, y, size - 1);
+        ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2; ctx.stroke();
+      }
+    }
+    if (V.tactics && V.tactics.sel !== null) {
+      const p = V.pos[V.tactics.sel]; const su = b.units[V.tactics.sel];
+      ctx.strokeStyle = 'rgba(241,207,116,0.95)'; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.ellipse(p.x, p.y + size * 0.55, size * (Bt.isBig(su) ? 1.5 : 0.75), size * 0.32, 0, 0, Math.PI * 2); ctx.stroke();
+    }
     // текущий юнит
-    if (cur) { const p = V.pos[cur.id]; ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 180)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x, p.y + size * 0.55, size * 0.75, size * 0.32, 0, 0, Math.PI * 2); ctx.stroke(); }
+    if (cur) { const p = V.pos[cur.id]; const wide = Bt.isBig(cur) ? 1.5 : 0.75; ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 180)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x, p.y + size * 0.55, size * wide, size * 0.32, 0, 0, Math.PI * 2); ctx.stroke(); }
     // препятствия, стены, юниты — по рядам
     const sc = size / 14; // масштаб спрайтов
     const items = [];
@@ -256,20 +315,24 @@
       dead: !u.alive && p.fade !== undefined ? p.fade : undefined,
     });
     const lift = Math.max(0, -st.dy);
+    const big = Bt.isBig(u);
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath();
-    ctx.ellipse(p.x, y - 1, V.size * 0.6 * (1 - Math.min(0.3, lift / 30)), V.size * 0.22 * (1 - Math.min(0.35, lift / 26)), 0, 0, Math.PI * 2); ctx.fill();
-    const scale = Math.max(1, Math.round(sc * 1.4 * 2) / 2);
+    ctx.ellipse(p.x, y - 1, V.size * (big ? 1.25 : 0.6) * (1 - Math.min(0.3, lift / 30)), V.size * 0.22 * (1 - Math.min(0.35, lift / 26)), 0, 0, Math.PI * 2); ctx.fill();
+    // крупное существо заметно больше обычного, но не вдвое: спрайты рисовались
+    // под один гекс, и двойной масштаб залезал бы на соседние ряды
+    const scale = Math.max(1, Math.round(sc * (big ? 1.65 : 1.4) * 2) / 2);
     An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, { st });
     if (p.flash > 0) { ctx.globalAlpha = Math.min(0.7, p.flash / 350); ctx.fillStyle = p.flashColor; ctx.beginPath(); ctx.arc(p.x, p.y, V.size * 0.9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     if (u.alive) {
       // счётчик
       const txt = String(u.count); ctx.font = 'bold 11px sans-serif'; const tw = ctx.measureText(txt).width + 6;
-      const bx = p.x + (u.side === 0 ? V.size * 0.25 : -V.size * 0.25 - tw), by = y - 2;
+      const off = Bt.isBig(u) ? V.size * 0.9 : V.size * 0.25;
+      const bx = p.x + (u.side === 0 ? off : -off - tw), by = y - 2;
       ctx.fillStyle = u.side === 0 ? '#2f63d8' : '#a03a2c'; ctx.fillRect(bx, by - 11, tw, 12); ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.strokeRect(bx + 0.5, by - 10.5, tw - 1, 11);
       ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText(txt, bx + 3, by - 2);
       // эффекты
-      let k = 0; for (const e in u.effects) { const bad = ['slow', 'curse', 'weakness', 'disrupting_ray', 'blind', 'petrify', 'paralyze', 'disease', 'poison', 'aging', 'bound'].includes(e); ctx.fillStyle = bad ? '#ff6a6a' : '#7fd9ea'; ctx.fillRect(p.x - V.size * 0.6 + k * 5, p.y - V.size * 1.1, 4, 4); k++; }
-      if (u.defended) { ctx.fillStyle = '#c9c9cc'; ctx.fillRect(p.x - V.size * 0.6, p.y - V.size * 1.2 - 6, 4, 4); }
+      let k = 0; for (const e in u.effects) { const bad = ['slow', 'curse', 'weakness', 'disrupting_ray', 'blind', 'petrify', 'paralyze', 'disease', 'poison', 'aging', 'bound'].includes(e); ctx.fillStyle = bad ? '#ff6a6a' : '#7fd9ea'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6) + k * 5, p.y - V.size * 1.1, 4, 4); k++; }
+      if (u.defended) { ctx.fillStyle = '#c9c9cc'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6), p.y - V.size * 1.2 - 6, 4, 4); }
     }
     ctx.globalAlpha = 1;
   }
@@ -304,6 +367,9 @@
       if (can) { const pv = Bt.preview(V.b, cur, u, ranged); let s = '<b>' + UI.esc(C.get(u.cid).name) + ' ×' + u.count + '</b><br>' + (ranged ? 'Выстрел' : 'Удар') + ': ' + pv.min + '–' + pv.max + ' урона, погибнет ' + pv.killMin + '–' + pv.killMax; if (pv.retMin !== undefined) s += '<br>Ответ: ' + pv.retMin + '–' + pv.retMax + ' урона, потеряем ' + pv.retKillMin + '–' + pv.retKillMax; UI.tip(e.clientX, e.clientY, s); return; }
       UI.tip(e.clientX, e.clientY, '<b>' + UI.esc(C.get(u.cid).name) + ' ×' + u.count + '</b><br>Недостижимо'); return;
     }
+    if (u && cur && isHuman(cur.side) && u.side === cur.side && u.id !== cur.id && C.hasAb(C.get(cur.cid), 'healer') && !V.spellMode) {
+      UI.tip(e.clientX, e.clientY, '<b>' + UI.esc(C.get(u.cid).name) + ' ×' + u.count + '</b><br>Подлечить: ' + (u.maxHp - u.hp > 0 ? 'ранен на ' + (u.maxHp - u.hp) + ' HP' : 'верхний цел')); return;
+    }
     if (u) { UI.tip(e.clientX, e.clientY, '<b>' + UI.esc(C.get(u.cid).name) + ' ×' + u.count + '</b> ' + (u.side === 0 ? '(атакующие)' : '(защитники)') + '<br>HP ' + u.hp + '/' + u.maxHp + ', скорость ' + Bt.effSpeed(V.b, u) + (Object.keys(u.effects).length ? '<br>' + Object.keys(u.effects).map(k => EFFECT_NAMES[k] || k).join(', ') : '') + '<br><span class="muted">ПКМ — подробности</span>'); return; }
     UI.hideTip();
   }
@@ -313,6 +379,7 @@
     const h = hexAt(e.offsetX, e.offsetY); if (!h) return;
     V.hoverPx = [e.offsetX, e.offsetY]; V.hover = h;
     const b = V.b, cur = Bt.current(b);
+    if (V.tactics) { tacticsClick(h); return; }
     if (!cur || !isHuman(cur.side)) { V.skip = true; setTimeout(() => { V.skip = false; }, 50); return; }
     const u = Bt.unitAt(b, h[0], h[1]);
     if (V.spellMode) { castAt(h, u); return; }
@@ -326,8 +393,22 @@
       const a = attackFrom(cur, u); if (a) { doAction({ type: 'attack', target: u.id, from: a.from }); return; }
       UI.toast('Цель недостижима', 'warn'); return;
     }
+    if (u && u.side === cur.side && u.id !== cur.id && C.hasAb(C.get(cur.cid), 'healer')) { doAction({ type: 'heal', target: u.id }); return; }
+    if (u && u.side === cur.side && Bt.abilityOf(cur) && Bt.abilityTargets(b, cur).some(t => t.id === u.id)) { doAction({ type: 'ability', target: u.id }); return; }
     if (u && u.id === cur.id) { doAction({ type: 'defend' }); return; }
     if (!u && V.reach && V.reach.hexes.has(h[0] + ',' + h[1])) { doAction({ type: 'move', x: h[0], y: h[1] }); return; }
+  }
+  /** Клик в фазе тактики: свой отряд — выбрать, клетка в полосе — переставить. */
+  function tacticsClick(h) {
+    const b = V.b, side = b.tactics.side;
+    const u = Bt.unitAt(b, h[0], h[1]);
+    if (u && u.side === side) { V.tactics.sel = V.tactics.sel === u.id ? null : u.id; return; }
+    if (V.tactics.sel === null) { UI.toast('Сначала выбери отряд', 'warn'); return; }
+    const sel = b.units[V.tactics.sel];
+    if (!Bt.inTacticsBand(b, sel, h[0], h[1])) { UI.toast('Только в подсвеченной полосе', 'warn'); return; }
+    const ev = Bt.act(b, { type: 'tacticsMove', unit: sel.id, x: h[0], y: h[1] });
+    if (ev.length && ev[0].t === 'error') { UI.toast(ev[0].msg, 'warn'); return; }
+    syncPositions(); H3.Audio.play('step');
   }
   function castAt(h, u) {
     const sp = V.spellMode.spell; const side = Bt.current(V.b).side;
@@ -362,6 +443,19 @@
     const lg = UI.el('div', ''); lg.id = 'battleLog'; lg.innerHTML = V.logLines.slice(-2).map(s => '<div>' + UI.esc(s) + '</div>').join(''); bar.appendChild(lg);
     const btns = UI.el('div', 'row wrap');
     const mk = (label, fn, dis, title) => { const bt = UI.el('button', 'sm', label); bt.disabled = !!dis; bt.title = title || ''; bt.onclick = () => { H3.Audio.play('click'); fn(); }; btns.appendChild(bt); };
+    if (V.tactics) {
+      mk('Готово', () => endTactics(), false, 'Начать бой');
+      mk('Сбросить', () => { for (const u of Bt.allies(b, b.tactics.side)) { u.x = u.startX; u.y = u.startY; } syncPositions(); }, false, 'Вернуть отряды на исходные места');
+      bar.appendChild(btns);
+      const hint = UI.el('div', 'small muted', 'Тактика: выбери отряд и укажи клетку в жёлтой полосе');
+      bar.appendChild(hint);
+      return;
+    }
+    const abil = cur && Bt.abilityOf(cur), abilT = abil ? Bt.abilityTargets(b, cur) : [];
+    if (abil) mk(UI.icon('ic_spellbook') + ' ' + ABILITY_LABEL[abil], () => {
+      const best = AI.chooseAbility(b, cur);
+      if (best) doAction(best.action); else UI.toast('Некого выбрать', 'warn');
+    }, !human || !abilT.length, 'Раз за бой; можно и кликнуть по своему отряду');
     mk(UI.icon('ic_wait') + ' Ждать', () => doAction({ type: 'wait' }), !human || (cur && cur.waited), 'Отложить ход до конца раунда');
     mk(UI.icon('ic_defend') + ' Защита', () => doAction({ type: 'defend' }), !human, 'Защита +20 % до следующего хода');
     mk(UI.icon('ic_spellbook') + ' Магия', () => openSpellbook(), !human || !b.sides[cur.side].hero || !b.sides[cur.side].hero.hasBook, 'Книга заклинаний');

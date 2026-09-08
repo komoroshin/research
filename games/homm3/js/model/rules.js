@@ -160,7 +160,7 @@
     if (town.buildings.castle) mult = 2; else if (town.buildings.citadel) mult = 1.5;
     return Math.max(1, Math.floor(base.growth * mult));
   }
-  function guildLevel(town) { for (let i = 4; i >= 1; i--) if (town.buildings['guild_' + i]) return i; return 0; }
+  function guildLevel(town) { for (let i = 5; i >= 1; i--) if (town.buildings['guild_' + i]) return i; return 0; }
   function fortLevel(town) { return town.buildings.castle ? 3 : town.buildings.citadel ? 2 : town.buildings.fort ? 1 : 0; }
   function canBuild(state, town, bid) {
     const b = B.get(town.faction, bid);
@@ -199,7 +199,7 @@
     while (chosen.length < n && rest.length) chosen.push(rest.pop());
     town.guild[level] = chosen;
   }
-  function townSpells(town) { const out = []; for (let l = 1; l <= 4; l++) if (town.guild[l]) out.push(...town.guild[l]); return out; }
+  function townSpells(town) { const out = []; for (let l = 1; l <= 5; l++) if (town.guild[l]) out.push(...town.guild[l]); return out; }
   function canLearn(hero, spell) {
     if (spell.level <= 2) return true;
     return skillVal(hero, 'wisdom') >= spell.level;
@@ -259,7 +259,7 @@
       id: state.nextId++, tid, name: t.name, cls: t.cls, faction: cl.faction, owner, x, y, level: 1, xp: 0,
       pri: Object.assign({}, cl.start), skills: {}, spells: [], mana: 0, move: 0,
       army: startingArmy(cl.faction, rng, strong), arts: {}, backpack: [], visited: {}, bonuses: {}, spec: t.spec, portrait: 'portrait_' + t.cls + '_' + t.portrait,
-      sleeping: false, hasBook: cl.type === 'magic', dead: false,
+      sleeping: false, hasBook: cl.type === 'magic', dead: false, machines: {},
     };
     for (const s of t.skills) hero.skills[s.id] = s.lvl;
     if (t.spell) { hero.spells.push(t.spell); hero.hasBook = true; }

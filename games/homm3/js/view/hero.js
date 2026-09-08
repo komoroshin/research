@@ -35,6 +35,7 @@
       + '<div class="skills">' + Object.keys(h.skills).map(id => UI.skillHtml(id, h.skills[id])).join('') + (Object.keys(h.skills).length ? '' : '<span class="muted small">нет вторичных навыков</span>') + '</div>'
       + '<div class="small muted">Армия (клик — выбрать, второй клик — переместить/объединить; Shift+клик — разделить)</div>' + UI.armyHtml(h.army, cur.sel && cur.sel.army === h.army ? cur.sel.i : -1)
       + '<div class="small muted">Артефакты (клик — снять/надеть)</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
+      + machinesHtml(h)
       + '<div class="small muted">Рюкзак</div><div class="artslots" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '" title="' + UI.esc(AR.get(id).name + ': ' + AR.get(id).desc) + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>';
     col.querySelectorAll('.army7 .slot').forEach((s, i) => { s.onclick = e => onSlot(h.army, i, e.shiftKey); });
     col.querySelectorAll('.artslot[data-slot]').forEach(s => { s.onclick = () => onArtSlot(h, s.dataset.slot); });
@@ -44,6 +45,13 @@
     if (!cur.other) { const b2 = UI.el('button', 'sm danger', 'Распустить героя'); b2.onclick = async () => { if (await UI.confirm('Распустить', 'Распустить героя ' + UI.esc(h.name) + '? Армия и артефакты будут потеряны.')) { A.dismissHero(H3.Game.state, h); UI.closeTop(); H3.Game.selectHero(null); H3.Game.refresh(true); } }; btns.appendChild(b2); }
     col.appendChild(btns);
     return col;
+  }
+  /** Боевые машины героя (покупаются в кузнице). */
+  function machinesHtml(h) {
+    const ids = ['ballista', 'first_aid_tent', 'ammo_cart'].filter(id => h.machines && h.machines[id]);
+    if (!ids.length) return '';
+    return '<div class="small muted">Боевые машины</div><div class="artslots">'
+      + ids.map(id => '<div class="artslot" title="' + UI.esc(C.get(id).name + ': ' + C.get(id).desc) + '">' + UI.icon(id, 2) + '</div>').join('') + '</div>';
   }
   function artSlotHtml(h, slot) {
     const id = h.arts[slot];

@@ -68,8 +68,8 @@
       ['master_genie', 'Мастер-джинн', 5, 12, 12, 13, 16, 40, 11, 3, 600, [FLY, 'hate:efreet,efreet_sultan', 'castRandomBuff']],
       ['naga', 'Нага', 6, 16, 13, 20, 20, 110, 5, 2, 1100, ['noRetaliation', 'large']],
       ['naga_queen', 'Королева наг', 6, 16, 13, 30, 30, 110, 7, 2, 1600, ['noRetaliation', 'large']],
-      ['giant', 'Гигант', 7, 19, 16, 40, 60, 150, 7, 1, 2000, ['mindImmune', 'large'], { gems: 1 }],
-      ['titan', 'Титан', 7, 20, 16, 50, 100, 200, 9, 1, 5000, ['shooter:24', 'noRangePenalty', 'mindImmune', 'hate:black_dragon', 'large'], { gems: 3 }],
+      ['giant', 'Гигант', 7, 19, 16, 40, 60, 150, 7, 1, 2000, ['mindImmune'], { gems: 1 }],
+      ['titan', 'Титан', 7, 20, 16, 50, 100, 200, 9, 1, 5000, ['shooter:24', 'noRangePenalty', 'mindImmune', 'hate:black_dragon'], { gems: 3 }],
     ]),
     mk('inferno', [
       ['imp', 'Бес', 1, 2, 3, 1, 2, 4, 5, 15, 50, []],
@@ -84,8 +84,8 @@
       ['pit_lord', 'Владыка бездны', 5, 13, 13, 13, 17, 45, 7, 3, 700, ['raiseDemons']],
       ['efreet', 'Ифрит', 6, 16, 12, 16, 24, 90, 9, 2, 900, [FLY, 'fireImmune', 'hate:genie,master_genie']],
       ['efreet_sultan', 'Султан ифритов', 6, 16, 14, 16, 24, 90, 13, 2, 1100, [FLY, 'fireImmune', 'hate:genie,master_genie', 'fireShield:20']],
-      ['devil', 'Дьявол', 7, 19, 21, 30, 40, 160, 11, 1, 2700, [FLY, 'noRetaliation', 'enemyLuck', 'hate:angel,archangel', 'large'], { mercury: 1 }],
-      ['arch_devil', 'Архидьявол', 7, 26, 28, 30, 40, 200, 17, 1, 4500, [FLY, 'noRetaliation', 'enemyLuck', 'hate:angel,archangel', 'large'], { mercury: 2 }],
+      ['devil', 'Дьявол', 7, 19, 21, 30, 40, 160, 11, 1, 2700, [FLY, 'noRetaliation', 'enemyLuck', 'hate:angel,archangel'], { mercury: 1 }],
+      ['arch_devil', 'Архидьявол', 7, 26, 28, 30, 40, 200, 17, 1, 4500, [FLY, 'noRetaliation', 'enemyLuck', 'hate:angel,archangel'], { mercury: 2 }],
     ]),
     mk('necropolis', [
       ['skeleton', 'Скелет', 1, 5, 4, 1, 3, 6, 4, 12, 60, [UND]],
@@ -153,8 +153,28 @@
     ])
   );
 
+  /* ---------- боевые машины ----------
+     Не существа: в LIST их нет (не появляются в жилищах, стражах и наймах),
+     но в BY_ID есть — чтобы движок боя работал с ними как с обычным стеком.
+     Атака у машин нулевая: в формуле урона за них считает атака героя. */
+  const MACHINES = [
+    { id: 'ballista', name: 'Баллиста', faction: 'machine', tier: 0, machine: true, att: 0, def: 10, dmg: [10, 20], hp: 250, speed: 9, growth: 0,
+      cost: { gold: 2500 }, ab: ['machine', 'nonliving', 'immobile', 'shooter:99', 'noRetaliation', 'noMeleePenalty'],
+      desc: 'Стреляет каждый ход. С навыком «Артиллерия» ею управляет герой и она бьёт вдвое сильнее.' },
+    { id: 'first_aid_tent', name: 'Палатка первой помощи', faction: 'machine', tier: 0, machine: true, att: 0, def: 10, dmg: [0, 0], hp: 75, speed: 10, growth: 0,
+      cost: { gold: 750 }, ab: ['machine', 'nonliving', 'immobile', 'healer', 'noRetaliation'],
+      desc: 'Лечит раненый отряд каждый ход. С навыком «Первая помощь» лечит больше и цель выбирает герой.' },
+    { id: 'ammo_cart', name: 'Повозка с боеприпасами', faction: 'machine', tier: 0, machine: true, att: 0, def: 10, dmg: [0, 0], hp: 100, speed: 0, growth: 0,
+      cost: { gold: 1000 }, ab: ['machine', 'nonliving', 'immobile', 'passive', 'ammo', 'noRetaliation'],
+      desc: 'Пока цела, стрелки армии не тратят боезапас.' },
+  ];
+  /** Какая машина продаётся в кузнице города (🧠 по памяти оригинала). */
+  const SMITHY = { castle: 'ballista', rampart: 'first_aid_tent', tower: 'ammo_cart', inferno: 'ammo_cart',
+    necropolis: 'first_aid_tent', dungeon: 'first_aid_tent', stronghold: 'ammo_cart', fortress: 'first_aid_tent' };
+
   const BY_ID = Object.create(null);
   LIST.forEach(c => { BY_ID[c.id] = c; });
+  MACHINES.forEach(c => { BY_ID[c.id] = c; });
 
   /** Способность есть? */
   function hasAb(c, code) { return c.ab.some(a => a === code || a.startsWith(code + ':')); }
@@ -164,6 +184,7 @@
   function isShooter(c) { return hasAb(c, 'shooter'); }
   function shots(c) { return abNum(c, 'shooter', 0); }
   function isFlyer(c) { return hasAb(c, 'flyer'); }
+  function isMachine(c) { return !!c.machine; }
   function isUndead(c) { return hasAb(c, 'undead'); }
   function noMorale(c) { return hasAb(c, 'undead') || hasAb(c, 'nonliving'); }
   /** onHit-эффекты: [{effect, chance}] */
@@ -202,10 +223,11 @@
     moraleBonus: '+1 мораль армии', enemyMorale: '−1 мораль врагу', enemyLuck: '−1 удача врагу', minMorale: 'Мораль не ниже +1', regenerate: 'Регенерация',
     fireShield: 'Огненный щит', fireImmune: 'Иммунитет к огню', manaDrain: 'Вытягивает ману', bind: 'Связывает', resistAura: 'Аура сопротивления',
     wallShooter: 'Стреляет по стенам', resurrectOnce: 'Воскрешение (раз за бой)', raiseDemons: 'Поднимает демонов', castRandomBuff: 'Благословляет союзников',
-    castBloodlust: 'Жажда крови союзнику', manaChannel: 'Перехват маны', immuneJoust: 'Иммунитет к разгону', blindImmune: 'Иммунитет к ослеплению', large: 'Крупное существо',
+    castBloodlust: 'Жажда крови союзнику', manaChannel: 'Перехват маны', immuneJoust: 'Иммунитет к разгону', blindImmune: 'Иммунитет к ослеплению', large: 'Крупное (занимает 2 гекса)',
+    machine: 'Боевая машина', immobile: 'Не двигается', healer: 'Лечит союзников', ammo: 'Боезапас союзников не кончается', passive: 'Не действует',
   };
   function abilityText(c) {
-    return c.ab.filter(a => a !== 'large').map(a => {
+    return c.ab.map(a => {
       const [code, p] = a.split(':');
       let s = ABILITY_NAMES[code] || code;
       if (code === 'shooter') s += ' (' + p + ' выстр.)';
@@ -219,6 +241,6 @@
     });
   }
 
-  H3.Creatures = { LIST, BY_ID, get: id => BY_ID[id], hasAb, abParam, abNum, isShooter, shots, isFlyer, isUndead, noMorale, onHits, aiValue, abilityText, ABILITY_NAMES };
+  H3.Creatures = { LIST, MACHINES, SMITHY, BY_ID, get: id => BY_ID[id], hasAb, isMachine, abParam, abNum, isShooter, shots, isFlyer, isUndead, noMorale, onHits, aiValue, abilityText, ABILITY_NAMES };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Creatures;
 })(typeof window !== 'undefined' ? window : globalThis);
