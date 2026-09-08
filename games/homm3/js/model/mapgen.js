@@ -20,6 +20,13 @@
     fortress: ['Таталия', 'Топь', 'Змеиное Болото', 'Тростник', 'Гнилой Пруд', 'Мшистый Брод'],
   };
   const MID_TERRAINS = ['grass', 'dirt', 'sand', 'snow', 'swamp', 'rough', 'lava', 'subter'];
+  /** Вторичная местность зоны: пятна внутри, чтобы зона не была одноцветной. */
+  const SECONDARY = {
+    grass: ['dirt', 'rough', 'sand', 'swamp'], dirt: ['grass', 'rough', 'sand'],
+    sand: ['dirt', 'rough'], snow: ['rough', 'dirt'], swamp: ['grass', 'dirt'],
+    rough: ['dirt', 'grass', 'snow'], lava: ['dirt', 'rough', 'subter'],
+    subter: ['rough', 'dirt', 'lava'],
+  };
 
   /* ---------- шум ---------- */
   function makeNoise(rng, size) {
@@ -84,6 +91,7 @@
       z.cx = Math.round(z.nx * (w - 1) + rng.int(-2, 2)); z.cy = Math.round(z.ny * (h - 1) + rng.int(-2, 2));
       z.cx = U.clamp(z.cx, 4, w - 5); z.cy = U.clamp(z.cy, 4, h - 5);
       z.terrain = z.kind === 'start' ? F.get(state.players[z.player].faction).terrain : rng.pick(MID_TERRAINS);
+      z.terrain2 = rng.pick(SECONDARY[z.terrain] || SECONDARY.grass);
     }
     // 1. принадлежность тайлов зонам
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -94,6 +102,12 @@
       }
       map.zone[y * w + x] = best;
       map.terrain[y * w + x] = R.TERRAIN_INDEX[zones[best].terrain];
+    }
+    // 1б. пятна вторичной местности — иначе зона выглядит одним ковром
+    const patch = makeNoise(rng, 64);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const z = zones[map.zone[y * w + x]];
+      if (patch(x / 4.5, y / 4.5) > 0.68) map.terrain[y * w + x] = R.TERRAIN_INDEX[z.terrain2];
     }
     // 2. границы зон → горы/лес; проходы
     const border = new Uint8Array(w * h);

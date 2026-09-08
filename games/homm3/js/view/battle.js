@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
-  const U = H3.U, Hex = U.Hex, C = H3.Creatures, Bt = H3.Battle, AI = H3.BattleAI, Sp = H3.Sprites, UI = H3.UI, SP = H3.Spells, R = H3.Rules, T = H3.Terrain;
+  const U = H3.U, Hex = U.Hex, C = H3.Creatures, Bt = H3.Battle, AI = H3.BattleAI, Sp = H3.Sprites, An = H3.Anim, UI = H3.UI, SP = H3.Spells, R = H3.Rules, T = H3.Terrain;
   const W = Bt.W, H = Bt.H;
 
   const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null };
@@ -27,10 +27,10 @@
     V.cw = Math.min(bw, Math.round(fw + 20)); V.ch = Math.min(bh, Math.round(fh + 40));
     V.ox = Math.round((V.cw - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 6;
     V.canvas.width = V.cw * V.dpr; V.canvas.height = V.ch * V.dpr; V.canvas.style.width = V.cw + 'px'; V.canvas.style.height = V.ch + 'px';
-    V.bg = makeBg(V.b.terrain, V.cw, V.ch);
-    for (const u of V.b.units) { const [x, y] = Hex.center(u.x, u.y, V.size, V.ox, V.oy); V.pos[u.id] = { x, y }; }
+    V.bg = makeBg(V.b.terrain, V.cw, V.ch, H3.Game && H3.Game.state ? H3.Game.state.day : 4);
+    for (const u of V.b.units) { const [x, y] = Hex.center(u.x, u.y, V.size, V.ox, V.oy); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
   }
-  function makeBg(terrain, w, h) {
+  function makeBg(terrain, w, h, day) {
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
     const sky = { grass: ['#5f9be8', '#b9d8f5'], dirt: ['#6a7a9a', '#c9c2b0'], sand: ['#7fb6e8', '#f2e4c0'], snow: ['#8aa8c8', '#e8f0f8'], swamp: ['#5a7a6a', '#a8b898'], rough: ['#7a90b0', '#d0c8b0'], lava: ['#3a1a1a', '#8a3a20'], subter: ['#2a2230', '#5a4a60'] }[terrain] || ['#5f9be8', '#b9d8f5'];
     const g = ctx.createLinearGradient(0, 0, 0, h * 0.55); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
@@ -41,6 +41,7 @@
     ctx.fillStyle = st.base[1]; ctx.beginPath(); ctx.moveTo(0, h * 0.42); for (let x = 0; x <= w; x += 25) ctx.lineTo(x, h * 0.42 + Math.cos(x / 90) * 14); ctx.lineTo(w, h * 0.5); ctx.lineTo(0, h * 0.5); ctx.fill();
     ctx.fillStyle = st.base[0]; ctx.fillRect(0, h * 0.5, w, h * 0.5);
     for (let i = 0; i < 400; i++) { ctx.fillStyle = rng.pick(st.spec); ctx.fillRect(rng.int(0, w), rng.int(h * 0.48, h), rng.int(1, 3), 1); }
+    T.applyDaylight(ctx, day || 4, 0, 0, w, h);   // бой идёт при свете того же дня, что и карта
     return cv;
   }
   function hexAt(px, py) { const [c, r] = Hex.fromPixel(px, py, V.size, V.ox, V.oy); return (c >= 0 && r >= 0 && c < W && r < H) ? [c, r] : null; }
@@ -155,14 +156,16 @@
     return new Promise(r => {
       const [tx, ty] = Hex.center(to[0], to[1], V.size, V.ox, V.oy); const p = V.pos[u.id];
       if (!ms) { p.x = tx; p.y = ty; r(); return; }
-      V.anims.push({ p, fx: p.x, fy: p.y, tx, ty, t: 0, ms, done: r });
+      p.moving = true;
+      V.anims.push({ p, fx: p.x, fy: p.y, tx, ty, t: 0, ms, done: () => { p.moving = false; r(); } });
     });
   }
   function lunge(a, t, ms) {
     return new Promise(r => {
       const p = V.pos[a.id], q = V.pos[t.id]; const dx = (q.x - p.x) * 0.35, dy = (q.y - p.y) * 0.35;
       if (!ms) { r(); return; }
-      V.anims.push({ p, fx: p.x, fy: p.y, tx: p.x + dx, ty: p.y + dy, t: 0, ms: ms / 2, done: () => { V.anims.push({ p, fx: p.x, fy: p.y, tx: p.x - dx, ty: p.y - dy, t: 0, ms: ms / 2, done: r }); } });
+      // замах (0 → −1), затем удар с возвратом (+1 → 0) — см. Anim.state
+      V.anims.push({ p, lunge: [0, -1], fx: p.x, fy: p.y, tx: p.x + dx, ty: p.y + dy, t: 0, ms: ms / 2, done: () => { V.anims.push({ p, lunge: [1, 0], fx: p.x, fy: p.y, tx: p.x - dx, ty: p.y - dy, t: 0, ms: ms / 2, done: () => { p.lunge = 0; r(); } }); } });
     });
   }
   function projectile(a, t, ms) {
@@ -183,6 +186,7 @@
     for (const a of V.anims.slice()) {
       a.t += dt; const f = Math.min(1, a.t / a.ms);
       if (a.fade) a.p.fade = 1 - f; else { a.p.x = U.lerp(a.fx, a.tx, f); a.p.y = U.lerp(a.fy, a.ty, f); }
+      if (a.lunge) a.p.lunge = U.lerp(a.lunge[0], a.lunge[1], f);
       if (f >= 1) { V.anims.splice(V.anims.indexOf(a), 1); if (a.fade) a.p.fade = 0; a.done(); }
     }
     for (const f of V.floats.slice()) { f.t += dt; if (f.t >= f.ms) { V.floats.splice(V.floats.indexOf(f), 1); if (f.done) f.done(); } }
@@ -242,12 +246,20 @@
   }
   function drawUnit(ctx, u, p, sc, ts) {
     const c = C.get(u.cid);
-    let x = p.x, y = p.y + V.size * 0.55;
-    if (p.shake > 0) x += Math.sin(ts / 12) * 3;
+    const x = p.x, y = p.y + V.size * 0.55;
     ctx.globalAlpha = p.fade !== undefined && !u.alive ? p.fade : 1;
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(p.x, y - 1, V.size * 0.6, V.size * 0.22, 0, 0, Math.PI * 2); ctx.fill();
+    // процедурная анимация: дыхание, шаг, замах, отдача, оседание
+    const st = An.state({
+      t: ts, phase: p.phase, dir: u.side === 0 ? 1 : -1, flying: C.isFlyer(c),
+      moving: !!p.moving, lunge: p.lunge, cast: p.cast,
+      hurt: p.shake > 0 ? Math.min(1, p.shake / 180) : 0,
+      dead: !u.alive && p.fade !== undefined ? p.fade : undefined,
+    });
+    const lift = Math.max(0, -st.dy);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath();
+    ctx.ellipse(p.x, y - 1, V.size * 0.6 * (1 - Math.min(0.3, lift / 30)), V.size * 0.22 * (1 - Math.min(0.35, lift / 26)), 0, 0, Math.PI * 2); ctx.fill();
     const scale = Math.max(1, Math.round(sc * 1.4 * 2) / 2);
-    Sp.draw(ctx, u.cid, x, y - 2, scale, u.side === 1);
+    An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, { st });
     if (p.flash > 0) { ctx.globalAlpha = Math.min(0.7, p.flash / 350); ctx.fillStyle = p.flashColor; ctx.beginPath(); ctx.arc(p.x, p.y, V.size * 0.9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     if (u.alive) {
       // счётчик

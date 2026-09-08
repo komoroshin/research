@@ -7,9 +7,10 @@ const path = require('path');
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   const errors = [];
   page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
-  page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|fonts/.test(m.text())) errors.push(m.text()); });
+  page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_FAILED|fonts/.test(m.text())) errors.push(m.text()); });
   const ev = (fn, ...a) => page.evaluate(fn, ...a);
   const url = 'file://' + path.resolve('index.html');
+  await page.route(/^https?:\/\//, r => r.abort());   // игра полностью локальна: внешние шрифты не ждём
   await page.goto(url + '?autostart=1&seed=5', { waitUntil: 'load' }); await page.waitForTimeout(900);
   // походить, закончить ход, чтобы состояние отличалось от стартового
   await ev(() => { const G=H3.Game,S=H3.State,st=G.state,h=G.selected(); const pf=S.pathfield(st,h);
@@ -32,13 +33,22 @@ const path = require('path');
   // герой действительно ходит после загрузки
   const moved = await ev(async () => { const G=H3.Game,S=H3.State,st=G.state,h=G.selected()||S.heroesOf(st,0)[0]; G.selectHero(h.id);
     const pf=S.pathfield(st,h); const reach=pf.dist.filter(d=>d<Infinity&&d>0).length;
-    let best=null,bd=0; for(let y=0;y<st.map.h;y++)for(let x=0;x<st.map.w;x++){const d=pf.dist[y*st.map.w+x]; if(d<Infinity&&d>bd&&d<h.move){bd=d;best=[x,y];}}
+    // цель — самая дальняя клетка, путь к которой не задевает ни одного объекта:
+    // иначе откроется диалог (бой, сундук) и прогон будет ждать игрока вечно
+    const cands=[]; for(let y=0;y<st.map.h;y++)for(let x=0;x<st.map.w;x++){const i=y*st.map.w+x,d=pf.dist[i]; if(d<Infinity&&d>0&&d<h.move&&st.map.objAt[i]<0) cands.push([d,x,y]);}
+    cands.sort((a,b)=>b[0]-a[0]);
+    let best=null,p=null;
+    for(const c of cands){ const path=H3.Pathfind.pathTo(pf,c[1],c[2]); if(path.every(([x,y])=>st.map.objAt[y*st.map.w+x]<0)){ best=[c[1],c[2]]; p=path; break; } }
     if(!best) return {reach, moved:0};
-    const p=H3.Pathfind.pathTo(pf,best[0],best[1]); const from=[h.x,h.y];
-    await G.moveAlong(h,H3.Pathfind.annotate(pf,p,h.move,H3.Rules.heroMaxMove(h)));
-    return { reach, moved: Math.abs(h.x-from[0])+Math.abs(h.y-from[1]), pos:[h.x,h.y] }; });
+    const from=[h.x,h.y];
+    // прогон не должен зависать, если движение вдруг упрётся в диалог
+    const outcome = await Promise.race([
+      G.moveAlong(h,H3.Pathfind.annotate(pf,p,h.move,H3.Rules.heroMaxMove(h))).then(()=> 'ok'),
+      new Promise(r=>setTimeout(()=>r('ЗАВИСЛО: '+((document.querySelector('.modal')||{}).textContent||'без диалога').slice(0,60)),8000)),
+    ]);
+    return { reach, outcome, moved: Math.abs(h.x-from[0])+Math.abs(h.y-from[1]), pos:[h.x,h.y] }; });
   await page.waitForTimeout(1500);
-  console.log('после загрузки: достижимо клеток', moved.reach, ', герой сместился на', moved.moved, 'клеток →', JSON.stringify(moved.pos));
+  console.log('после загрузки: достижимо клеток', moved.reach, ', герой сместился на', moved.moved, 'клеток →', JSON.stringify(moved.pos), moved.outcome === 'ok' ? '' : moved.outcome);
   await page.screenshot({ path: out + '/s_after_move.png' });
   // битое сохранение старого формата → понятное сообщение, а не пустое поле
   await ev(() => localStorage.setItem('homm3.save.auto', JSON.stringify({ version: 1, state: { day: 3 } })));

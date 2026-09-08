@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
-  const U = H3.U, R = H3.Rules, S = H3.State, C = H3.Creatures, O = H3.Objects, Sp = H3.Sprites, T = H3.Terrain, UI = H3.UI, PF = H3.Pathfind, F = H3.Factions, AR = H3.Artifacts;
+  const U = H3.U, R = H3.Rules, S = H3.State, C = H3.Creatures, O = H3.Objects, Sp = H3.Sprites, An = H3.Anim, T = H3.Terrain, UI = H3.UI, PF = H3.Pathfind, F = H3.Factions, AR = H3.Artifacts;
   const TILE = 32;
 
   const V = {
@@ -181,7 +181,9 @@
       if (a.i >= a.steps.length) { V.anim = null; a.resolve(); }
       V.dirty = true;
     }
-    if (V.dirty || V.anim) { draw(ts); V.dirty = false; }
+    // idle-анимация требует перерисовки и без событий; вне движения — 30 к/с
+    if (V.dirty || V.anim) { draw(ts); V.dirty = false; V.lastDraw = ts; }
+    else if (ts - (V.lastDraw || 0) >= 33) { draw(ts); V.lastDraw = ts; }
   }
   function heroDrawPos(h) {
     if (V.anim && V.anim.hero.id === h.id) {
@@ -212,23 +214,39 @@
     for (const id in st.heroes) { const h = st.heroes[id]; if (h.dead) continue; if (h.owner !== me && vis[h.y * m.w + h.x] !== 2) continue; if (h.inTown && h.owner !== me) continue; const [px, py] = heroDrawPos(h); if (px < x0 - 1 || px > x1 + 1 || py < y0 - 1 || py > y1 + 1) continue; items.push({ y: py + 0.01, x: px, h, px, py }); }
     items.sort((a, b) => a.y - b.y);
     for (const it of items) {
-      if (it.o) drawObject(ctx, st, it.o, vis);
-      else drawHero(ctx, st, it.h, it.px, it.py);
+      if (it.o) drawObject(ctx, st, it.o, vis, ts);
+      else drawHero(ctx, st, it.h, it.px, it.py, ts);
     }
-    // туман
-    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-      const v = vis[y * m.w + x];
-      if (v === 2) continue;
-      ctx.fillStyle = v === 0 ? '#000' : 'rgba(0,0,10,0.42)';
-      ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
-    }
+    // свет дня: неделя проживается от прохладного утра к закату
+    T.applyDaylight(ctx, st.day, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    // туман: маска в один пиксель на клетку, растянутая со сглаживанием —
+    // граница разведанного получается мягкой, а не лесенкой из квадратов
+    drawFog(ctx, st, vis, x0, y0, x1, y1);
     // путь
     if (V.path && sel && !V.anim) drawPath(ctx, sel);
     // наведение
     if (V.hover && !isTouch()) { ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1; ctx.strokeRect(V.hover[0] * TILE + 0.5, V.hover[1] * TILE + 0.5, TILE - 1, TILE - 1); }
     drawMini(st, me);
   }
-  function drawObject(ctx, st, o, vis) {
+  /** Туман войны мягкой маской (1 px на клетку → растяжение со сглаживанием). */
+  function drawFog(ctx, st, vis, x0, y0, x1, y1) {
+    const m = st.map, w = x1 - x0 + 3, h = y1 - y0 + 3;
+    let cv = V.fogCanvas;
+    if (!cv) { cv = V.fogCanvas = document.createElement('canvas'); }
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    const fc = cv.getContext('2d'), img = fc.createImageData(w, h), d = img.data;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const mx = x0 - 1 + x, my = y0 - 1 + y;
+      const v = (mx < 0 || my < 0 || mx >= m.w || my >= m.h) ? 0 : vis[my * m.w + mx];
+      d[(y * w + x) * 4 + 3] = v === 2 ? 0 : v === 1 ? 110 : 255;
+    }
+    fc.putImageData(img, 0, 0);
+    const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+    // центр каждого пикселя маски попадает в центр своей клетки
+    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, w * TILE, h * TILE);
+    ctx.imageSmoothingEnabled = prev;
+  }
+  function drawObject(ctx, st, o, vis, ts) {
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
     if (o.type === 'town') {
@@ -239,12 +257,16 @@
       return;
     }
     if (o.type === 'mine') { Sp.draw(ctx, 'mine_' + o.res, px, py, 1); drawFlag(ctx, px + 12, py - 26, o.owner >= 0 ? st.players[o.owner].color : '#999', true); return; }
-    if (o.type === 'dwelling') { Sp.draw(ctx, 'dwelling_' + Math.min(7, C.get(o.cid).tier), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); Sp.draw(ctx, o.cid, px - 10, py - 2, 0.5); return; }
-    if (o.type === 'monster') { Sp.draw(ctx, o.cid, px, py - 2, 1, false); return; }
+    if (o.type === 'dwelling') { Sp.draw(ctx, 'dwelling_' + Math.min(7, C.get(o.cid).tier), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
+    if (o.type === 'monster') { An.draw(ctx, o.cid, px, py - 2, 1, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
     if (o.type === 'artifact') { Sp.draw(ctx, 'artifact', px, py - 8, 1); return; }
     if (t.bank && o.empty) { ctx.globalAlpha = 0.55; Sp.draw(ctx, t.sprite, px, py, 1); ctx.globalAlpha = 1; return; }
     if (t.sprite) Sp.draw(ctx, t.sprite, px, py, 1);
+  }
+  /** Покой существа на карте: дыхание, у летающих — парение. */
+  function creatureIdle(cid, key, ts) {
+    return { t: ts, phase: An.phaseOf(key + ':' + cid), flying: C.isFlyer(C.get(cid)) };
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
@@ -252,11 +274,13 @@
     ctx.fillStyle = color; ctx.fillRect(Math.round(x) + 1, Math.round(y), w, h - 2);
     ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(Math.round(x) + 1, Math.round(y), w, 1);
   }
-  function drawHero(ctx, st, h, px, py) {
+  function drawHero(ctx, st, h, px, py, ts) {
     const color = st.players[h.owner].color;
     const x = px * TILE + 16, y = py * TILE + 30;
-    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(x, y, 11, 4, 0, 0, Math.PI * 2); ctx.fill();
-    Sp.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { b: color });
+    const walking = !!(V.anim && V.anim.hero.id === h.id);
+    const a = An.state({ t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking });
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(x, y, 11 - Math.max(0, -a.dy) * 0.25, 4, 0, 0, Math.PI * 2); ctx.fill();
+    An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { st: a }, { b: color });
     drawFlag(ctx, x + (h.facing === 'l' ? -13 : 8), y - 30, color, true);
     if (h.owner === st.turn && h.move <= 0 && !V.anim) { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(x - 8, y + 1, 16, 2); }
   }
@@ -294,7 +318,7 @@
     const p = st.players[st.turn];
     const inc = p.income || S.playerIncome(st, p.id);
     UI.$('#resbar').innerHTML = U.RES.map(r => '<span title="' + UI.esc(O.RES_NAMES[r]) + ': +' + (inc[r] || 0) + ' в день">' + UI.resIcon(r) + '<b>' + U.fmt(p.res[r]) + '</b></span>').join('') + '<span class="muted" title="Доход в день">' + UI.icon('ic_day') + '+' + U.fmt(inc.gold) + '</span>';
-    UI.$('#datebar').textContent = S.dateStr(st.day) + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
+    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
     const sel = G.selected();
     const hp = UI.$('#heroPanel');
     if (sel) {
