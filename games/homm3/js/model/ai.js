@@ -103,7 +103,7 @@
         if (!done) blacklist.add('m' + stop.obj.id);
         continue;
       }
-      if (stop.kind === 'town') { recruitInTown(state, state.towns[stop.town.id], think); buySpellbook(state, hero, stop.town); blacklist.add('t' + stop.town.id); continue; }
+      if (stop.kind === 'town') { recruitInTown(state, state.towns[stop.town.id], think); buySpellbook(state, hero, stop.town); buyMachine(state, hero, stop.town); blacklist.add('t' + stop.town.id); continue; }
       if (stop.kind === 'siege') {
         const ok = await attackTown(state, hero, stop.town, hooks, smart, think);
         if (!ok) blacklist.add('t' + stop.town.id);
@@ -298,6 +298,17 @@
     const p = state.players[hero.owner];
     if (!hero.hasBook && R.guildLevel(town) && p.res.gold >= 500 + RESERVE) { p.res.gold -= 500; hero.hasBook = true; S.learnTownSpells(state, hero, town); }
   }
+  /** Боевая машина главному герою — если кузница есть и золото лишнее. */
+  function buyMachine(state, hero, town) {
+    if (!town.buildings.blacksmith) return;
+    const p = state.players[hero.owner];
+    if (!hero.machines) hero.machines = {};
+    const mid = C.SMITHY[town.faction] || 'ballista';
+    if (hero.machines[mid]) return;
+    const cost = C.get(mid).cost;
+    if (p.res.gold < cost.gold + RESERVE * 2) return;
+    U.pay(p.res, cost); hero.machines[mid] = true;
+  }
   const PREF = { might: ['offense', 'armorer', 'logistics', 'archery', 'leadership', 'earth', 'air', 'wisdom', 'luck', 'pathfinding'], magic: ['wisdom', 'earth', 'air', 'sorcery', 'intelligence', 'logistics', 'armorer', 'offense', 'water', 'fire'] };
   function autoLevelUp(state, hero) {
     const opt = R.levelUpOptions(hero, state._rng.ai);
@@ -308,6 +319,6 @@
     R.applyLevelUp(hero, opt.pri, choice);
   }
 
-  H3.AI = { playTurn, buildInTown, recruitInTown, chooseTarget, autoLevelUp, buySpellbook, heroPower };
+  H3.AI = { playTurn, buildInTown, recruitInTown, chooseTarget, autoLevelUp, buySpellbook, buyMachine, heroPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.AI;
 })(typeof window !== 'undefined' ? window : globalThis);

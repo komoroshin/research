@@ -23,8 +23,9 @@
     { id: 'guild_2', name: 'Гильдия магов II', cost: Object.assign({ gold: 1000, wood: 5, ore: 5 }, rare4(4)), req: ['guild_1'], desc: '+4 заклинания 2 уровня.', kind: 'guild', level: 2 },
     { id: 'guild_3', name: 'Гильдия магов III', cost: Object.assign({ gold: 1000, wood: 5, ore: 5 }, rare4(6)), req: ['guild_2'], desc: '+3 заклинания 3 уровня.', kind: 'guild', level: 3 },
     { id: 'guild_4', name: 'Гильдия магов IV', cost: Object.assign({ gold: 1000, wood: 5, ore: 5 }, rare4(8)), req: ['guild_3'], desc: '+2 заклинания 4 уровня.', kind: 'guild', level: 4 },
+    { id: 'guild_5', name: 'Гильдия магов V', cost: Object.assign({ gold: 1000, wood: 5, ore: 5 }, rare4(10)), req: ['guild_4'], desc: '+1 заклинание 5 уровня. Есть не во всех городах.', kind: 'guild', level: 5 },
   ];
-  const GUILD_SPELLS = { 1: 5, 2: 4, 3: 3, 4: 2 };
+  const GUILD_SPELLS = { 1: 5, 2: 4, 3: 3, 4: 2, 5: 1 };
 
   /** Полный список построек фракции (общие + жилища + улучшения). */
   const cache = {};
@@ -55,7 +56,7 @@
 
   /** Порядок постройки для ИИ (ТЗ §8.1). */
   const AI_ORDER = ['tavern', 'hall_2', 'dwell_2', 'dwell_3', 'guild_1', 'market', 'blacksmith', 'hall_3', 'fort', 'citadel', 'dwell_4', 'dwell_5', 'castle', 'dwell_6', 'hall_4', 'dwell_7',
-    'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'silo'];
+    'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'guild_5', 'silo'];
 
   H3.Buildings = { COMMON, BY_ID, forFaction, get, GUILD_SPELLS, AI_ORDER };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Buildings;

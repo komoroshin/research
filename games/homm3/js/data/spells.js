@@ -45,6 +45,11 @@
     { id: 'resurrection', name: 'Воскрешение', school: 'earth', level: 4, mana: 20, kind: 'resurrect', target: 'ally', v: [40, 80, 160], perPower: 50, onlyLiving: true, desc: 'Воскрешает живых на {v} + 50×Сила HP (базовый уровень — до конца боя).' },
     { id: 'prayer', name: 'Молитва', school: 'water', level: 4, mana: 16, kind: 'buff', target: 'ally', v: [2, 4, 4], mass: true, effect: 'prayer', desc: 'Атака, защита и скорость +{v}. Эксперт: всем своим.' },
     { id: 'town_portal', name: 'Городской портал', school: 'earth', level: 4, mana: 16, kind: 'adventure', target: 'none', v: [0, 1, 1], desc: 'Переносит героя в ближайший свой город (продвинутый: в любой на выбор). Стоит 300 очков движения.' },
+    // ---- уровень 5
+    { id: 'armageddon', name: 'Армагеддон', school: 'fire', level: 5, mana: 30, kind: 'damage', target: 'none', v: [30, 60, 120], perPower: 50, all: true, desc: 'Урон {v} + 50×Сила ВСЕМ существам на поле, включая своих.' },
+    { id: 'implosion', name: 'Внедрение', school: 'earth', level: 5, mana: 30, kind: 'damage', target: 'enemy', v: [75, 100, 150], perPower: 75, desc: 'Урон {v} + 75×Сила одной цели — самое сильное одиночное заклинание.' },
+    { id: 'titans_bolt', name: 'Молния титанов', school: 'air', level: 5, mana: 30, kind: 'damage', target: 'enemy', v: [300, 450, 600], perPower: 0, desc: 'Ровно {v} урона одной цели, независимо от Силы.' },
+    { id: 'berserk', name: 'Берсерк', school: 'fire', level: 5, mana: 20, kind: 'debuff', target: 'enemy', v: [1, 1, 1], effect: 'berserk', desc: 'Цель на 3 хода бросается на ближайшего — своего или чужого.' },
   ];
   const BY_ID = Object.create(null);
   LIST.forEach(s => { BY_ID[s.id] = s; });

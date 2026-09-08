@@ -119,6 +119,191 @@ test('детерминированный автобой, конец, осада 
   assert.ok(sb.siege && sb.siege.walls.length === 4 && sb.siege.moat && sb.siege.towers === 3);
   const r = H3.BattleAI.auto(sb, true); assert.ok(r.winner === 0 || r.winner === 1); assert.ok(sb.siege.walls.some(w => w < 2) || sb.siege.gate < 2 || r.rounds <= 2);
 });
+test('крупные существа: два гекса, расстановка, атака, инварианты', () => {
+  const big = army([['cavalier', 8], ['archer', 20], ['green_dragon', 3], ['pikeman', 30], ['unicorn', 4]]);
+  const big2 = army([['hydra', 4], ['medusa', 10], ['wolf_rider', 20], ['behemoth', 3], ['black_knight', 5]]);
+  // расстановка: крупный стоит двумя гексами внутри поля и никого не задевает
+  const b0 = Bt.create({ army: big, player: 0 }, { army: big2, player: 1 }, { rng: new U.RNG(1), terrain: 'grass' });
+  for (const u of b0.units) {
+    const hx = Bt.hexesOf(u);
+    assert.equal(hx.length, C.hasAb(C.get(u.cid), 'large') ? 2 : 1, u.cid);
+    for (const [x, y] of hx) assert.ok(x >= 0 && x < Bt.W && y >= 0 && y < Bt.H, u.cid + ' вне поля: ' + x + ',' + y);
+  }
+  // крупный не встанет туда, где занят второй гекс
+  const drag = b0.units.find(u => u.cid === 'green_dragon');
+  const ally = b0.units.find(u => u.side === 0 && u.id !== drag.id);
+  assert.ok(!Bt.canStand(b0, drag, ally.x, ally.y), 'встал на союзника');
+  // позиции атаки учитывают оба гекса цели
+  const foe = b0.units.find(u => u.side === 1);
+  const reach = Bt.reachable(b0, drag);
+  for (const a of reach.attacks) {
+    const t = b0.units[a.target];
+    let touch = false;
+    for (const [ax, ay] of Bt.hexesOf(drag, a.from[0], a.from[1])) for (const n of U.Hex.neighbors(ax, ay)) if (Bt.occupies(t, n[0], n[1])) touch = true;
+    assert.ok(touch, 'позиция атаки не касается цели');
+  }
+  assert.ok(reach.attacks.length === 0 || foe, 'цели есть');
+  // 30 боёв на обычном поле и в осаде: никаких наложений и выходов за поле
+  const town = { faction: 'castle', buildings: { fort: true, citadel: true, castle: true } };
+  for (let i = 0; i < 30; i++) {
+    const b = Bt.create({ army: big, player: 0 }, { army: big2, player: 1 }, { rng: new U.RNG(i * 977 + 3), terrain: 'grass', siege: i % 2 ? town : null });
+    let guard = 0;
+    while (!b.over && guard++ < 400) {
+      Bt.act(b, H3.BattleAI.choose(b, true) || { type: 'defend' });
+      const occ = new Map();
+      for (const u of b.units) { if (!u.alive) continue;
+        for (const [x, y] of Bt.hexesOf(u)) {
+          assert.ok(x >= 0 && x < Bt.W && y >= 0 && y < Bt.H, 'вне поля: ' + u.cid);
+          assert.ok(!Bt.isObstacle(b, x, y), 'в препятствии: ' + u.cid);
+          const k = x + ',' + y;
+          assert.ok(!occ.has(k), 'наложение ' + u.cid + ' и ' + occ.get(k) + ' в ' + k);
+          occ.set(k, u.cid);
+        }
+      }
+    }
+    assert.ok(b.over, 'бой ' + i + ' не завершился');
+  }
+});
+test('фаза тактики: полоса по разнице навыка, расстановка, старт боя', () => {
+  const h1 = mkHero('orrin', 5); h1.skills = { tactics: 3 };   // экспертная — 7
+  const h2 = mkHero('crag_hack', 5); h2.skills = { tactics: 1 };  // базовая — 3
+  const b = Bt.create({ hero: h1, army: army([['pikeman', 20], ['archer', 10], ['cavalier', 5]]), player: 0 },
+                      { hero: h2, army: army([['goblin', 30], ['orc', 10]]), player: 1 }, { rng: new U.RNG(3), terrain: 'grass' });
+  assert.equal(b.phase, 'tactics');
+  assert.equal(b.tactics.side, 0);
+  assert.equal(b.tactics.dist, 4, 'полоса = разница навыков (7 − 3)');
+  // вне полосы переставить нельзя
+  const pike = b.units.find(u => u.cid === 'pikeman');
+  assert.equal(Bt.act(b, { type: 'tacticsMove', unit: pike.id, x: 9, y: 3 })[0].t, 'error');
+  // чужой отряд переставить нельзя
+  const foe = b.units.find(u => u.side === 1);
+  assert.equal(Bt.act(b, { type: 'tacticsMove', unit: foe.id, x: 1, y: 3 })[0].t, 'error');
+  // расстановка ИИ: все остаются в полосе, стрелки у своего края
+  let guard = 0;
+  while (b.phase === 'tactics' && guard++ < 50) Bt.act(b, H3.BattleAI.chooseTactics(b));
+  assert.equal(b.phase, 'battle');
+  assert.equal(b.round, 1);
+  for (const u of b.units) if (u.side === 0) for (const [x] of Bt.hexesOf(u)) assert.ok(x < 4, u.cid + ' вышел за полосу: ' + x);
+  assert.ok(b.units.find(u => u.cid === 'archer').x === 0, 'стрелок остался у своего края');
+  assert.ok(b.units.find(u => u.cid === 'cavalier').x === 3, 'ближний бой вышел вперёд');
+  // при равном навыке фазы нет
+  const h3 = mkHero('orrin', 5); h3.skills = { tactics: 2 };
+  const h4 = mkHero('crag_hack', 5); h4.skills = { tactics: 2 };
+  const b2 = Bt.create({ hero: h3, army: army([['pikeman', 5]]), player: 0 }, { hero: h4, army: army([['goblin', 5]]), player: 1 }, { rng: new U.RNG(4), terrain: 'grass' });
+  assert.equal(b2.phase, 'battle');
+});
+test('боевые машины: баллиста, палатка, повозка, катапульта', () => {
+  const h1 = mkHero('orrin', 8); h1.skills = { artillery: 2, first_aid: 3 };
+  h1.machines = { ballista: true, first_aid_tent: true, ammo_cart: true };
+  const h2 = mkHero('crag_hack', 8); h2.skills = {};
+  const b = Bt.create({ hero: h1, army: army([['pikeman', 20], ['archer', 10]]), player: 0 },
+                      { hero: h2, army: army([['goblin', 30], ['orc', 10]]), player: 1 }, { rng: new U.RNG(3), terrain: 'grass' });
+  const mach = b.units.filter(u => C.get(u.cid).machine);
+  assert.equal(mach.length, 3, 'три машины на поле');
+  for (const m of mach) assert.equal(m.x, 0, 'машины у своего края');
+  // машины не двигаются
+  const bal = b.units.find(u => u.cid === 'ballista');
+  assert.equal(Bt.reachable(b, bal).hexes.size, 1, 'баллиста никуда не идёт');
+  // баллиста стреляет и в упор
+  const foe = b.units.find(u => u.side === 1);
+  foe.x = 1; foe.y = bal.y;
+  assert.ok(Bt.isShooterNow(b, bal), 'баллиста стреляет при соседнем враге');
+  // повозка бережёт боезапас
+  const arch = b.units.find(u => u.cid === 'archer');
+  const shots0 = arch.shots;
+  b.cur = arch.id; Bt.act(b, { type: 'shoot', target: foe.id });
+  assert.equal(arch.shots, shots0, 'повозка: выстрелы не тратятся');
+  // палатка лечит
+  const pike = b.units.find(u => u.cid === 'pikeman');
+  pike.hp = 1;
+  const tent = b.units.find(u => u.cid === 'first_aid_tent');
+  b.cur = tent.id; Bt.act(b, { type: 'heal', target: pike.id });
+  assert.equal(pike.hp, pike.maxHp, 'экспертная первая помощь долечила верхнего');
+  // катапульта: экспертная «Баллистика» — два выстрела и гарантированное разрушение
+  const wallsDown = (ball, rounds) => {
+    const h = mkHero('crag_hack', 8); h.skills = ball ? { ballistics: ball } : {};
+    const town = { faction: 'castle', buildings: { fort: true, citadel: true, castle: true } };
+    // стек толстый нарочно: башни осады иначе выбьют нападающего раньше, чем упадут стены
+    const sb = Bt.create({ hero: h, army: army([['pikeman', 400]]), player: 0 },
+                         { hero: null, army: army([['skeleton', 400]]), player: 1, canRetreat: false }, { rng: new U.RNG(7), terrain: 'grass', siege: town });
+    while (sb.round <= rounds && !sb.over) Bt.act(sb, { type: 'defend' });
+    return sb.siege.walls.filter(w => w === 0).length + (sb.siege.gate === 0 ? 1 : 0);
+  };
+  assert.equal(wallsDown(3, 3), 5, 'экспертная «Баллистика»: за 3 раунда рушатся все 4 участка и ворота');
+  assert.ok(wallsDown(0, 3) < 5, 'без навыка за 3 раунда всё разрушить не выходит')
+});
+test('способности второго эшелона: воскрешение, демоны, чары, перехват маны', () => {
+  const h1 = mkHero('orrin', 10), h2 = mkHero('crag_hack', 10);
+  const b = Bt.create({ hero: h1, army: army([['archangel', 3], ['pikeman', 30], ['master_genie', 8]]), player: 0 },
+                      { hero: h2, army: army([['pit_lord', 10], ['ogre_mage', 10], ['orc', 30]]), player: 1 }, { rng: new U.RNG(9), terrain: 'grass' });
+  const ang = b.units.find(u => u.cid === 'archangel');
+  const pike = b.units.find(u => u.cid === 'pikeman');
+  // архангел воскрешает: 100 HP × число архангелов
+  pike.count = 20; pike.hp = pike.maxHp;
+  b.cur = ang.id;
+  assert.ok(Bt.abilityTargets(b, ang).some(t => t.id === pike.id), 'раненый стек — цель воскрешения');
+  Bt.act(b, { type: 'ability', target: pike.id });
+  assert.equal(pike.count, Math.min(pike.initial, 20 + Math.floor(300 / pike.maxHp)), 'воскрешено 300 HP, но не больше исходного числа');
+  assert.ok(ang.usedAbility && !Bt.abilityOf(ang), 'способность раз за бой');
+  // владыка бездны поднимает демонов из павшего стека
+  const pit = b.units.find(u => u.cid === 'pit_lord');
+  const orc = b.units.find(u => u.cid === 'orc');
+  orc.alive = false; orc.count = 0;
+  b.cur = pit.id;
+  Bt.act(b, { type: 'ability', target: orc.id });
+  assert.equal(orc.cid, 'demon', 'павший стек стал демонами');
+  assert.ok(orc.alive && orc.count > 0 && orc.count <= pit.count, 'демонов не больше, чем владык бездны');
+  assert.equal(orc.tempRaised, orc.count, 'после боя поднятые демоны не остаются');
+  // джинн накладывает чары на своего
+  const genie = b.units.find(u => u.cid === 'master_genie');
+  b.cur = genie.id;
+  const before = Object.keys(pike.effects).length;
+  Bt.act(b, { type: 'ability', target: pike.id });
+  assert.ok(Object.keys(pike.effects).length > before, 'джинн наложил чары');
+  // фамильяр перехватывает ману вражеского героя
+  const h3 = mkHero('orrin', 10); h3.spells = ['magic_arrow']; h3.hasBook = true;
+  const h4 = mkHero('crag_hack', 10);
+  const b2 = Bt.create({ hero: h3, army: army([['pikeman', 10]]), player: 0 },
+                       { hero: h4, army: army([['familiar', 20]]), player: 1 }, { rng: new U.RNG(2), terrain: 'grass' });
+  const mana0 = b2.sides[1].mana;
+  b2.cur = b2.units.find(u => u.side === 0).id;   // колдует герой той стороны, чей стек ходит
+  Bt.act(b2, { type: 'cast', spell: 'magic_arrow', target: b2.units.find(u => u.side === 1).id });
+  assert.ok(b2.sides[1].mana > mana0, 'фамильяры перехватили ману: было ' + mana0 + ', стало ' + b2.sides[1].mana);
+});
+test('магия 5 уровня: гильдия, мудрость, армагеддон, берсерк', () => {
+  const SP = H3.Spells;
+  assert.equal(SP.byLevel(5).length, 4, 'четыре заклинания 5 уровня');
+  // гильдия 5 есть не у всех фракций
+  const withGuild5 = H3.Factions.LIST.filter(f => f.guildMax >= 5).map(f => f.id);
+  assert.deepEqual(withGuild5, ['rampart', 'tower', 'necropolis', 'dungeon']);
+  assert.ok(H3.Buildings.forFaction('tower').some(b => b.id === 'guild_5'), 'у Башни есть Гильдия V');
+  assert.ok(!H3.Buildings.forFaction('castle').some(b => b.id === 'guild_5'), 'у Замка гильдии V нет');
+  // 5 уровень требует экспертной Мудрости
+  const h = mkHero('orrin', 20);
+  h.skills = { wisdom: 2 };
+  assert.ok(!R.canLearn(h, SP.get('armageddon')), 'продвинутой Мудрости мало');
+  h.skills = { wisdom: 3 };
+  assert.ok(R.canLearn(h, SP.get('armageddon')), 'экспертной Мудрости хватает');
+  // армагеддон бьёт всех, включая своих
+  h.pri.pow = 10; h.mana = 200; h.hasBook = true; h.spells = ['armageddon', 'berserk'];
+  // стеки большие: армагеддон при Силе 10 бьёт на 530 и иначе выкосил бы всё поле
+  const b = Bt.create({ hero: h, army: army([['pikeman', 300]]), player: 0 },
+                      { hero: mkHero('crag_hack', 20), army: army([['goblin', 400], ['orc', 200]]), player: 1 }, { rng: new U.RNG(4), terrain: 'grass' });
+  const mine = b.units.find(u => u.side === 0), hp0 = Bt.totalHp(mine);
+  b.cur = mine.id;
+  Bt.act(b, { type: 'cast', spell: 'armageddon' });
+  assert.ok(Bt.totalHp(mine) < hp0, 'армагеддон задел и своих');
+  // берсерк: цель кидается на своих
+  b.casted = [false, false];
+  const foe = b.units.find(u => u.side === 1 && u.alive);
+  b.cur = mine.id;
+  Bt.act(b, { type: 'cast', spell: 'berserk', target: foe.id });
+  assert.ok(Bt.berserk(foe), 'эффект наложен');
+  assert.ok(Bt.autoMachine(b, foe), 'под берсерком стек игроку не подчиняется');
+  b.cur = foe.id;
+  const act = H3.BattleAI.choose(b, true);
+  if (act.type === 'attack') assert.equal(b.units[act.target].side, 1, 'берсерк бьёт своего, если тот ближе');
+});
 test('отступление и лимит раундов', () => {
   const rng = new U.RNG(5); const h1 = mkHero('orrin');
   const b = Bt.create({ hero: h1, army: army([['pikeman', 5]]), player: 0 }, { hero: null, army: army([['skeleton', 5]]), player: 1, canRetreat: false }, { rng, terrain: 'dirt' });

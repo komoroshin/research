@@ -93,6 +93,13 @@
     for (let i = b.pos; i < b.queue.length; i++) if (b.queue[i] === e.id) return true;
     return b.waitQueue.includes(e.id);
   }
+  /** Разрыв между стеком e и стеком u, стоящим головой в (x, y): крупные
+      занимают два гекса, поэтому дистанция берётся по ближайшей паре. */
+  function gap(e, u, x, y) {
+    let d = Infinity;
+    for (const [ex, ey] of Bt.hexesOf(e)) for (const [ux, uy] of Bt.hexesOf(u, x, y)) d = Math.min(d, Hex.dist(ex, ey, ux, uy));
+    return d;
+  }
   /**
    * Сколько мы потеряем, стоя на (x, y) до своего следующего хода:
    * суммируем ожидаемый урон врагов, которые дотуда дотянутся.
@@ -103,7 +110,7 @@
     for (const e of Bt.enemies(b, u.side)) {
       if (e.id === skipId) continue;
       const c = Bt.cre(e);
-      let reaches = false, ranged = false, dist = Hex.dist(e.x, e.y, x, y);
+      let reaches = false, ranged = false, dist = gap(e, u, x, y);
       if (C.isShooter(c) && e.shots > 0 && !Bt.adjacentEnemy(b, e)) { reaches = true; ranged = true; }
       else if (dist <= Bt.effSpeed(b, e) + 1) reaches = true;
       if (!reaches) continue;
@@ -126,7 +133,7 @@
     let s = 0;
     for (const a of Bt.allies(b, u.side)) {
       if (a.id === u.id || !a.alive) continue;
-      const d = Hex.dist(a.x, a.y, x, y);
+      const d = gap(a, u, x, y);
       if (d <= 1) s += 1; else if (d <= 2) s += 0.5; else if (d <= 3) s += 0.2;
     }
     return s;
@@ -134,13 +141,100 @@
   /** Сколько врагов будет вокруг клетки — окружение опасно. */
   function surroundedAt(b, u, x, y) {
     let n = 0;
-    for (const [nx, ny] of Hex.neighbors(x, y)) { const o = Bt.unitAt(b, nx, ny); if (o && o.alive && o.side !== u.side) n++; }
+    for (const [nx, ny] of Bt.around(u, x, y)) { const o = Bt.unitAt(b, nx, ny); if (o && o.alive && o.side !== u.side) n++; }
     return n;
+  }
+
+  /* ---------- фаза тактики ---------- */
+  /** Расстановка перед боем: стрелков к своему краю, ближний бой — вперёд. */
+  function chooseTactics(b) {
+    const side = b.tactics.side, dist = b.tactics.dist;
+    for (const u of Bt.allies(b, side)) {
+      if (u.tacticed) continue;
+      u.tacticed = true;
+      const shooter = C.isShooter(Bt.cre(u)) && u.shots > 0;
+      const want = shooter ? (side === 0 ? 0 : Bt.W - 1) : (side === 0 ? dist - 1 : Bt.W - dist);
+      let best = null, bd = Infinity;
+      for (const [x, y] of Bt.tacticsHexes(b, u)) {
+        const d = Math.abs(x - want) * 2 + Math.abs(y - u.y);   // колонна важнее ряда
+        if (d < bd) { bd = d; best = [x, y]; }
+      }
+      if (best && !(best[0] === u.x && best[1] === u.y)) return { type: 'tacticsMove', unit: u.id, x: best[0], y: best[1] };
+    }
+    return { type: 'tacticsDone' };
+  }
+
+  /* ---------- боевые машины ---------- */
+  /** Баллиста бьёт по самой ценной достижимой цели, палатка лечит самого побитого. */
+  function chooseMachine(b, u, foes) {
+    if (u.cid === 'ballista') {
+      let best = null, bv = -Infinity;
+      for (const t of foes) { const v = damageWorth(b, u, t, true, Bt.unitDist(u, t)); if (v > bv) { bv = v; best = t; } }
+      return best ? { type: 'shoot', target: best.id } : { type: 'defend' };
+    }
+    if (u.cid === 'first_aid_tent') {
+      let best = null, bv = 0;
+      for (const a of Bt.allies(b, u.side)) {
+        if (a.id === u.id || !a.alive || C.hasAb(Bt.cre(a), 'machine')) continue;
+        const missing = a.maxHp - a.hp;                 // палатка лечит только верхнего
+        const v = missing * valuePerHp(a);
+        if (v > bv) { bv = v; best = a; }
+      }
+      return best ? { type: 'heal', target: best.id } : { type: 'defend' };
+    }
+    return { type: 'defend' };
+  }
+
+  /** Способность второго эшелона: воскресить, поднять демонов, наложить чары. */
+  function chooseAbility(b, u) {
+    const kind = Bt.abilityOf(u); if (!kind) return null;
+    const targets = Bt.abilityTargets(b, u); if (!targets.length) return null;
+    if (kind === 'resurrect') {
+      // воскрешаем там, где вернём больше всего ценности
+      let best = null, bv = 0;
+      for (const t of targets) {
+        const back = Math.min(100 * u.count, (t.initial - t.count) * t.maxHp);
+        const v = back * valuePerHp(t);
+        if (v > bv) { bv = v; best = t; }
+      }
+      return best && bv > 0 ? { action: { type: 'ability', target: best.id }, value: bv } : null;
+    }
+    if (kind === 'raise') {
+      const demon = C.get('demon');
+      let best = null, bv = 0;
+      for (const t of targets) {
+        const n = Math.max(1, Math.min(u.count, Math.floor(t.initial * t.maxHp / demon.hp)));
+        const v = n * C.aiValue(demon);
+        if (v > bv) { bv = v; best = t; }
+      }
+      return best ? { action: { type: 'ability', target: best.id }, value: bv } : null;
+    }
+    // чары: усиливаем самый ценный живой стек, но только пока бой не на исходе
+    let best = null, bv = 0;
+    for (const t of targets) { const v = stackValue(t) * 0.12; if (v > bv) { bv = v; best = t; } }
+    return best ? { action: { type: 'ability', target: best.id }, value: bv } : null;
   }
 
   /* ---------- выбор действия ---------- */
   function choose(b, smart) {
+    if (b.phase === 'tactics') return chooseTactics(b);
     const u = Bt.current(b); if (!u) return null;
+    if (Bt.isMachine(u)) return chooseMachine(b, u, Bt.enemies(b, u.side).filter(e => e.alive));
+    // «Берсерк»: стек кидается на ближайшего, не разбирая своих и чужих
+    if (Bt.berserk(u)) {
+      const all = b.units.filter(x => x.alive && x.id !== u.id && !C.hasAb(Bt.cre(x), 'machine'));
+      if (!all.length) return { type: 'defend' };
+      const reach = Bt.reachable(b, u);
+      let best = null, bd = Infinity;
+      for (const a of reach.attacks) { const d = Bt.unitDist(u, b.units[a.target]); if (d < bd) { bd = d; best = a; } }
+      if (best) return { type: 'attack', target: best.target, from: best.from };
+      let tgt = all[0], td = Infinity;
+      for (const a of all) { const d = Bt.unitDist(u, a); if (d < td) { td = d; tgt = a; } }
+      let hb = null, hd = Infinity;
+      for (const k of reach.hexes.values()) { const d = gap(tgt, u, k.x, k.y); if (d < hd) { hd = d; hb = k; } }
+      if (hb && !(hb.x === u.x && hb.y === u.y)) return { type: 'move', x: hb.x, y: hb.y };
+      return { type: 'defend' };
+    }
     smart = smart !== false;
     const foes = Bt.enemies(b, u.side);
     if (!foes.length) return { type: 'defend' };
@@ -153,7 +247,7 @@
   function chooseGreedy(b, u, foes) {
     if (Bt.isShooterNow(b, u)) {
       let best = null, bv = -Infinity;
-      for (const t of foes) { const v = damageWorth(b, u, t, true, Hex.dist(u.x, u.y, t.x, t.y)); if (v > bv) { bv = v; best = t; } }
+      for (const t of foes) { const v = damageWorth(b, u, t, true, Bt.unitDist(u, t)); if (v > bv) { bv = v; best = t; } }
       return { type: 'shoot', target: best.id };
     }
     const reach = Bt.reachable(b, u);
@@ -165,9 +259,9 @@
     }
     if (best) return { type: 'attack', target: best.target, from: best.from };
     let target = null, tv = -Infinity;
-    for (const f of foes) { const v = stackValue(f) / (1 + Hex.dist(u.x, u.y, f.x, f.y)); if (v > tv) { tv = v; target = f; } }
+    for (const f of foes) { const v = stackValue(f) / (1 + Bt.unitDist(u, f)); if (v > tv) { tv = v; target = f; } }
     let hb = null, hd = Infinity;
-    for (const k of reach.hexes.values()) { const d = Hex.dist(k.x, k.y, target.x, target.y); if (d < hd) { hd = d; hb = k; } }
+    for (const k of reach.hexes.values()) { const d = gap(target, u, k.x, k.y); if (d < hd) { hd = d; hb = k; } }
     if (hb && !(hb.x === u.x && hb.y === u.y)) return { type: 'move', x: hb.x, y: hb.y };
     return { type: 'defend' };
   }
@@ -182,10 +276,10 @@
     if (shooterNow) {
       let best = null, bv = -Infinity;
       for (const t of foes) {
-        const dist = Hex.dist(u.x, u.y, t.x, t.y);
+        const dist = Bt.unitDist(u, t);
         let v = damageWorth(b, u, t, true, dist);
         // добить того, кто вот-вот дойдёт до нас, ценнее
-        if (Hex.dist(t.x, t.y, u.x, u.y) <= Bt.effSpeed(b, t) + 1) v *= 1.15;
+        if (Bt.unitDist(t, u) <= Bt.effSpeed(b, t) + 1) v *= 1.15;
         if (v > bv) { bv = v; best = t; }
       }
       if (best) return { type: 'shoot', target: best.id };
@@ -193,6 +287,7 @@
 
     const reach = Bt.reachable(b, u);
     const stayCost = incomingCost(b, u, u.x, u.y, null, 0);
+    const abil = chooseAbility(b, u);
 
     // 2. лучшая атака с учётом размена
     let bestAtk = null, bestAtkVal = -Infinity;
@@ -218,9 +313,9 @@
       for (const k of reach.hexes.values()) {
         if (k.x === u.x && k.y === u.y) continue;
         let free = true, safe = true;
-        for (const [nx, ny] of Hex.neighbors(k.x, k.y)) { const o = Bt.unitAt(b, nx, ny); if (o && o.alive && o.side !== u.side) { free = false; break; } }
+        for (const [nx, ny] of Bt.around(u, k.x, k.y)) { const o = Bt.unitAt(b, nx, ny); if (o && o.alive && o.side !== u.side) { free = false; break; } }
         if (!free) continue;
-        for (const f of chasers) if (Hex.dist(f.x, f.y, k.x, k.y) <= Bt.effSpeed(b, f) + 1) { safe = false; break; }
+        for (const f of chasers) if (gap(f, u, k.x, k.y) <= Bt.effSpeed(b, f) + 1) { safe = false; break; }
         if (!safe) continue; // догонят — уходить бессмысленно
         const v = -incomingCost(b, u, k.x, k.y, null, 0) + supportAt(b, u, k.x, k.y) * myValue * 0.01;
         if (v > bestFreeVal) { bestFreeVal = v; bestFree = k; }
@@ -233,7 +328,7 @@
     // 4. подождать, если враг сам придёт: тогда бьём мы, а не нас
     if (T.wait && !u.waited && bestAtkVal <= myValue * 0.02) {
       const enemyShooters = foes.some(f => C.isShooter(Bt.cre(f)) && f.shots > 0);
-      const someoneComes = foes.some(f => !C.isShooter(Bt.cre(f)) && Hex.dist(f.x, f.y, u.x, u.y) <= Bt.effSpeed(b, f) + 1);
+      const someoneComes = foes.some(f => !C.isShooter(Bt.cre(f)) && Bt.unitDist(f, u) <= Bt.effSpeed(b, f) + 1);
       if (someoneComes && !enemyShooters) return { type: 'wait' };
     }
 
@@ -244,7 +339,7 @@
     const target = pickApproachTarget(b, u, foes);
     let bestMove = null, bestMoveVal = -Infinity;
     for (const k of reach.hexes.values()) {
-      const d = Hex.dist(k.x, k.y, target.x, target.y);
+      const d = gap(target, u, k.x, k.y);
       const danger = incomingCost(b, u, k.x, k.y, null, 0);
       const v = -d * myValue * 0.03
         - danger * T.moveDanger * patience(b)
@@ -252,9 +347,11 @@
       if (v > bestMoveVal) { bestMoveVal = v; bestMove = k; }
     }
     if (bestMove && !(bestMove.x === u.x && bestMove.y === u.y)) {
+      if (abil && abil.value > Math.max(bestAtkVal, bestMoveVal)) return abil.action;
       if (bestAtk && bestAtkVal > bestMoveVal) return { type: 'attack', target: bestAtk.target, from: bestAtk.from };
       return { type: 'move', x: bestMove.x, y: bestMove.y };
     }
+    if (abil && (!bestAtk || abil.value > bestAtkVal)) return abil.action;
     if (bestAtk) return { type: 'attack', target: bestAtk.target, from: bestAtk.from };
     return { type: 'defend' };
   }
@@ -263,7 +360,7 @@
   function pickApproachTarget(b, u, foes) {
     let best = foes[0], bv = -Infinity;
     for (const f of foes) {
-      const d = Hex.dist(u.x, u.y, f.x, f.y);
+      const d = Bt.unitDist(u, f);
       let v = stackValue(f) * threatWeight(f) / (1 + d * 0.6);
       if (C.isShooter(Bt.cre(f)) && f.shots > 0) v *= 1.6;
       if (v > bv) { bv = v; best = f; }
@@ -319,12 +416,16 @@
         } else if (spell.effect === 'blind') {
           const t = foes.filter(f => !Bt.hasEff(f, 'blind') && !C.hasAb(Bt.cre(f), 'mindImmune') && !C.isUndead(Bt.cre(f))).sort((p, q) => stackValue(q) * threatWeight(q) - stackValue(p) * threatWeight(p))[0];
           if (t) { val = stackValue(t) * 0.25; action = { type: 'cast', spell: spell.id, target: t.id }; }
+        } else if (spell.effect === 'berserk') {
+          // берсерк тем ценнее, чем сильнее цель: она ещё и бьёт своих
+          const t = foes.filter(f => !Bt.hasEff(f, 'berserk') && !C.hasAb(Bt.cre(f), 'mindImmune') && !C.isUndead(Bt.cre(f))).sort((p, q) => stackValue(q) - stackValue(p))[0];
+          if (t) { val = stackValue(t) * 0.3; action = { type: 'cast', spell: spell.id, target: t.id }; }
         } else if (['weakness', 'curse', 'disrupting_ray'].includes(spell.effect)) {
           const t = foes.filter(f => !Bt.hasEff(f, spell.effect)).sort((p, q) => stackValue(q) - stackValue(p))[0];
           if (t) { val = stackValue(t) * 0.06 * (m === 3 ? 2 : 1); action = { type: 'cast', spell: spell.id, target: t.id }; }
         }
       } else if (spell.kind === 'buff' && smart) {
-        const strong = own.filter(x => !Bt.hasEff(x, spell.effect)).sort((p, q) => stackValue(q) - stackValue(p))[0];
+        const strong = own.filter(x => !Bt.hasEff(x, spell.effect) && !C.hasAb(Bt.cre(x), 'machine')).sort((p, q) => stackValue(q) - stackValue(p))[0];
         if (strong) {
           const k = { haste: 0.1, bless: 0.12, shield: 0.08, stone_skin: 0.08, bloodlust: 0.08, precision: C.isShooter(Bt.cre(strong)) ? 0.12 : 0, air_shield: 0.05, prayer: 0.2, fortune: 0.04 }[spell.effect] || 0.03;
           val = stackValue(strong) * k * (m === 3 ? 2 : 1);
@@ -360,6 +461,6 @@
     return b.result;
   }
 
-  H3.BattleAI = { choose, chooseSpell, auto, damageWorth, incomingCost, retaliationCost, dmgValue: damageWorth, T };
+  H3.BattleAI = { choose, chooseTactics, chooseMachine, chooseAbility, chooseSpell, auto, damageWorth, incomingCost, retaliationCost, dmgValue: damageWorth, T };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.BattleAI;
 })(typeof window !== 'undefined' ? window : globalThis);

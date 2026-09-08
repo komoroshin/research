@@ -48,7 +48,7 @@
     const hall = R.townHallLevel(t); list.push({ key: 'hall', sprite: 'bld_hall_' + hall, pos: LAYOUT.hall, id: 'hall_' + (hall < 4 ? hall + 1 : 4), name: B.BY_ID['hall_' + hall].name });
     const fl = R.fortLevel(t); if (fl) list.push({ key: 'walls', sprite: ['', 'bld_fort', 'bld_citadel', 'bld_castle'][fl], pos: LAYOUT.walls, id: fl < 3 ? ['fort', 'citadel', 'castle'][fl] : 'castle', name: B.BY_ID[['fort', 'citadel', 'castle'][fl - 1]].name, wide: true });
     const gl = R.guildLevel(t); if (gl) list.push({ key: 'guild', sprite: 'bld_guild_' + gl, pos: LAYOUT.guild, id: 'guild', name: 'Гильдия магов ' + ['', 'I', 'II', 'III', 'IV'][gl], tab: 'guild' });
-    for (const id of ['tavern', 'market', 'blacksmith', 'silo']) if (has(id)) list.push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], id, name: B.BY_ID[id].name, tab: id === 'tavern' ? 'tavern' : id === 'market' ? 'market' : null });
+    for (const id of ['tavern', 'market', 'blacksmith', 'silo']) if (has(id)) list.push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], id, name: B.BY_ID[id].name, tab: id === 'tavern' ? 'tavern' : id === 'market' ? 'market' : id === 'blacksmith' ? 'smith' : null });
     for (let i = 1; i <= 7; i++) if (has('dwell_' + i)) { const b = B.get(t.faction, 'dwell_' + i); list.push({ key: 'dwell_' + i, sprite: 'bld_dwell_' + i, pos: LAYOUT['dwell_' + i], id: 'dwell_' + i, name: b.name + (has('dwell_up_' + i) ? ' (улучш.)' : ''), desc: C.get(has('dwell_up_' + i) ? F.creaturesOf(t.faction, i)[1].id : b.creature).name + ': доступно ' + t.avail[i - 1], tab: 'recruit', upg: has('dwell_up_' + i) }); }
     return list;
   }
@@ -106,12 +106,12 @@
     const t = cur.town, st = H3.Game.state, p = st.players[t.owner], box = cur.right;
     const inc = R.townIncome(t);
     let html = '<div class="row sp"><span>' + UI.icon('ic_day') + ' Доход: ' + UI.costHtml(inc) + '</span><span class="small muted">' + (t.builtToday ? 'сегодня уже строили' : 'можно строить') + '</span></div>';
-    html += '<div class="tabs">' + [['build', 'Стройка'], ['recruit', 'Найм'], ['guild', 'Гильдия'], ['tavern', 'Таверна'], ['market', 'Рынок']].map(([id, nm]) => '<button data-tab="' + id + '" class="' + (cur.tab === id ? 'on' : '') + '">' + nm + '</button>').join('') + '</div>';
+    html += '<div class="tabs">' + [['build', 'Стройка'], ['recruit', 'Найм'], ['guild', 'Гильдия'], ['tavern', 'Таверна'], ['market', 'Рынок'], ['smith', 'Кузница']].map(([id, nm]) => '<button data-tab="' + id + '" class="' + (cur.tab === id ? 'on' : '') + '">' + nm + '</button>').join('') + '</div>';
     html += '<div id="townTab"></div>';
     box.innerHTML = html;
     box.querySelectorAll('[data-tab]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); cur.tab = b.dataset.tab; renderRight(); }; });
     const tab = box.querySelector('#townTab');
-    ({ build: renderBuild, recruit: renderRecruit, guild: renderGuild, tavern: renderTavern, market: renderMarket })[cur.tab](tab, t, p, st);
+    ({ build: renderBuild, recruit: renderRecruit, guild: renderGuild, tavern: renderTavern, market: renderMarket, smith: renderSmith })[cur.tab](tab, t, p, st);
   }
   function renderBuild(tab, t, p, st) {
     const list = B.forFaction(t.faction).filter(b => b.id !== 'hall_1');
@@ -189,6 +189,21 @@
       btn.onclick = () => { const r = A.hireHero(st, t, tid); if (r.ok) { H3.Audio.play('coin'); UI.toast('Нанят герой ' + r.hero.name); cur.hero = r.hero; H3.Game.selectHero(r.hero.id); render(); H3.Game.refresh(false); } else UI.toast(r.reason, 'warn'); };
       d.appendChild(btn); tab.appendChild(d);
     }
+  }
+  /** Кузница: продаёт боевую машину своей фракции герою в городе. */
+  function renderSmith(tab, t, p, st) {
+    if (!t.buildings.blacksmith) { tab.innerHTML = '<div class="muted">Кузница не построена.</div>'; return; }
+    const mid = C.SMITHY[t.faction] || 'ballista';
+    const m = C.get(mid), h = cur.hero;
+    tab.innerHTML = '<div class="small muted">Кузница ' + UI.esc(F.get(t.faction).adj) + ' делает одну машину. Машина принадлежит герою и выходит с ним в бой.</div>';
+    const d = UI.el('div', 'row');
+    d.innerHTML = UI.icon(mid, 2, 'cr') + '<div class="grow"><b>' + UI.esc(m.name) + '</b><div class="small muted">' + UI.esc(m.desc) + '</div>' + UI.costHtml(m.cost, p.res) + '</div>';
+    const has = !!(h && h.machines && h.machines[mid]);
+    const btn = UI.el('button', 'primary', has ? 'Уже есть' : 'Купить');
+    btn.disabled = !h || has || !U.canAfford(p.res, m.cost);
+    if (!h) { const w = UI.el('div', 'small muted', 'Нужен герой в городе.'); tab.appendChild(d); tab.appendChild(w); return; }
+    btn.onclick = () => { U.pay(p.res, m.cost); if (!h.machines) h.machines = {}; h.machines[mid] = true; H3.Audio.play('coin'); UI.toast(m.name + ' куплена'); render(); H3.Game.refresh(false); };
+    d.appendChild(btn); tab.appendChild(d);
   }
   function renderMarket(tab, t, p, st) {
     if (!t.buildings.market) { tab.innerHTML = '<div class="muted">Рынок не построен.</div>'; return; }

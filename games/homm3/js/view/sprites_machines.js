@@ -1,0 +1,67 @@
+/* ============================================================================
+   view/sprites_machines.js — боевые машины: баллиста, палатка первой помощи,
+   повозка с боеприпасами. Смотрят вправо (сторона защитника рисуется зеркально).
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  const H3 = root.H3 || (root.H3 = {});
+  H3.Sprites.defineMany({
+    ballista: { rows: [
+      '..................',
+      '..............kk..',
+      '.............knn..',
+      '............knn...',
+      '...........knn....',
+      '..........knn.....',
+      '..kkeeeeeeeeykk...',
+      '..knnnnnnnnnnk....',
+      '...knTTTTTTnk.....',
+      '..........knn.....',
+      '...........knn....',
+      '............knn...',
+      '.............knn..',
+      '..............kk..',
+      '....knnnnnnnk.....',
+      '....knTTTTTnk.....',
+      '...kkkk...kkkk....',
+      '..kwEEwk.kwEEwk...',
+      '..kwEEwk.kwEEwk...',
+      '...kkkk...kkkk....',
+    ], anchor: [9, 20] },
+    first_aid_tent: { rows: [
+      '..................',
+      '........kk........',
+      '.......kiik.......',
+      '......kiiiik......',
+      '.....kiiiiiik.....',
+      '....kiiirriiik....',
+      '...kiiiirriiiik...',
+      '...kiirrrrrriik...',
+      '..kiiiirriiiiik...',
+      '..kiiiirriiiiik...',
+      '..kiiiiiiiiiiik...',
+      '..kiiiiiiiiiiik...',
+      '..kiiikNNNkiiik...',
+      '..kiiikNNNkiiik...',
+      '..kiiikNNNkiiik...',
+      '..kkkkkkkkkkkkk...',
+    ], anchor: [8, 16] },
+    ammo_cart: { rows: [
+      '..................',
+      '..................',
+      '.....y...y...y....',
+      '.....y...y...y....',
+      '....kykkykkyk.....',
+      '...knnnnnnnnnk....',
+      '...knTTTTTTTnk....',
+      '...knTnnnnnTnk....',
+      '...knTnNNNnTnk....',
+      '...knTnNNNnTnk....',
+      '...knnnnnnnnnk....',
+      '...kkkk...kkkk....',
+      '..kwEEwk.kwEEwk...',
+      '..kwEEwk.kwEEwk...',
+      '...kkkk...kkkk....',
+    ], anchor: [8, 15] },
+  });
+})(typeof window !== 'undefined' ? window : globalThis);
