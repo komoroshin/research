@@ -48,24 +48,12 @@
     zones.push({ id: zones.length, kind: 'treasure', nx: 0.5, ny: 0.5, tier: 3, weight: sizeKey === 'S' ? 0.8 : 0.95 });
     return zones;
   }
-  function buildLinks(zones, sizeKey) {
-    const center = zones[zones.length - 1];
-    const links = [];
-    const starts = zones.filter(z => z.kind === 'start'), mids = zones.filter(z => z.kind === 'mid');
-    const d = (a, b) => Math.hypot(a.nx - b.nx, a.ny - b.ny);
-    if (!mids.length) {
-      for (const s of starts) links.push({ a: s.id, b: center.id, guard: [8000, 14000] });
-      if (starts.length === 2) links.push({ a: starts[0].id, b: starts[1].id, guard: [10000, 16000] });
-    } else {
-      for (const m of mids) {
-        links.push({ a: m.id, b: center.id, guard: [12000, 25000] });
-        const near = starts.slice().sort((p, q) => d(p, m) - d(q, m)).slice(0, 2);
-        for (const s of near) links.push({ a: s.id, b: m.id, guard: [3000, 6000] });
-      }
-      // каждая стартовая должна иметь хотя бы одну связь
-      for (const s of starts) if (!links.some(l => l.a === s.id || l.b === s.id)) links.push({ a: s.id, b: center.id, guard: [8000, 14000] });
-    }
-    return links;
+  /** Сила стража на проходе между зонами — по их тирам (старт → mid → сокровищница). */
+  function guardValueFor(A, B, rng) {
+    const maxTier = Math.max(A.tier, B.tier);
+    if (maxTier >= 3) return rng.int(12000, 25000);          // вход в центральную зону
+    if (A.kind === 'start' && B.kind === 'start') return rng.int(8000, 16000);
+    return rng.int(3000, 6000);                               // старт ↔ промежуточная
   }
 
   /* ---------- главная функция ---------- */
@@ -90,8 +78,7 @@
   function tryGenerate(ctx, nPlayers) {
     const { state, map, rng, w, h, size } = ctx;
     const zones = template(state.settings.size in H3.State.SIZES ? state.settings.size : 'S', nPlayers);
-    const links = buildLinks(zones, state.settings.size);
-    ctx.zones = zones; ctx.links = links;
+    ctx.zones = zones;
     const noise = makeNoise(rng, 64);
     for (const z of zones) {
       z.cx = Math.round(z.nx * (w - 1) + rng.int(-2, 2)); z.cy = Math.round(z.ny * (h - 1) + rng.int(-2, 2));
@@ -118,22 +105,52 @@
         if (map.zone[ny * w + nx] !== z) { border[y * w + x] = 1; break; }
       }
     }
+    // фактическая смежность зон: какие пары реально соприкасаются и где
+    const pairs = new Map(); // 'a,b' → { a, b, cells: [[x,y]...] }
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      if (!border[y * w + x]) continue;
+      const za = map.zone[y * w + x];
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const zb = map.zone[(y + dy) * w + x + dx];
+        if (zb === za) continue;
+        const key = Math.min(za, zb) + ',' + Math.max(za, zb);
+        let pr = pairs.get(key);
+        if (!pr) { pr = { a: Math.min(za, zb), b: Math.max(za, zb), cells: [] }; pairs.set(key, pr); }
+        pr.cells.push([x, y]);
+      }
+    }
+    // остовное дерево по смежности: каждая зона обязана быть достижима
+    const zdist = (a, b) => Math.hypot(zones[a].cx - zones[b].cx, zones[a].cy - zones[b].cy);
+    const connected = new Set([0]);
+    const chosen = [];
+    while (connected.size < zones.length) {
+      let best = null, bd = Infinity;
+      for (const pr of pairs.values()) {
+        const inA = connected.has(pr.a), inB = connected.has(pr.b);
+        if (inA === inB) continue;
+        const d = zdist(pr.a, pr.b) - pr.cells.length * 0.1; // при прочих равных — широкая граница
+        if (d < bd) { bd = d; best = pr; }
+      }
+      if (!best) return false; // зона оторвана от остальных — перегенерируем карту
+      chosen.push(best); connected.add(best.a); connected.add(best.b);
+    }
+    // пара дополнительных проходов, чтобы карта не была цепочкой
+    const extras = [...pairs.values()].filter(pr => !chosen.includes(pr))
+      .sort((p, q) => q.cells.length - p.cells.length).slice(0, zones.length >= 6 ? 2 : 1);
+    chosen.push(...extras);
+
     const corridor = new Uint8Array(w * h);
     const passages = [];
-    for (const l of links) {
-      const A = zones[l.a], Bz = zones[l.b];
+    for (const pr of chosen) {
+      const A = zones[pr.a], Bz = zones[pr.b];
       const mx = (A.cx + Bz.cx) / 2, my = (A.cy + Bz.cy) / 2;
       let best = null, bd = Infinity;
-      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
-        if (map.zone[y * w + x] !== A.id || !border[y * w + x]) continue;
-        let touchesB = false;
-        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (map.zone[(y + dy) * w + x + dx] === Bz.id) touchesB = true;
-        if (!touchesB) continue;
+      for (const [x, y] of pr.cells) {
         const d = Math.hypot(x - mx, y - my) + rng.next() * 2;
         if (d < bd) { bd = d; best = [x, y]; }
       }
       if (!best) return false;
-      passages.push({ x: best[0], y: best[1], link: l });
+      passages.push({ x: best[0], y: best[1], link: { a: pr.a, b: pr.b, value: guardValueFor(A, Bz, rng) } });
       for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
         const x = best[0] + dx, y = best[1] + dy;
         if (x < 0 || y < 0 || x >= w || y >= h) continue;
@@ -180,10 +197,7 @@
     // 5. обязательные объекты и сокровища
     for (const z of zones) if (!populateZone(ctx, z)) return false;
     // 6. стражи проходов
-    for (const p of passages) {
-      const [lo, hi] = p.link.guard;
-      placeGuardAt(ctx, p.x, p.y, rng.int(lo, hi) * ctx.guardMul, 'aggressive');
-    }
+    for (const p of passages) placeGuardAt(ctx, p.x, p.y, p.link.value * ctx.guardMul, 'aggressive');
     // 7. дороги, проверка связности
     rebuildBlock(ctx);
     if (!ensureConnectivity(ctx, passages)) return false;
