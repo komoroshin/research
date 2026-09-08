@@ -8,7 +8,7 @@ const { chromium } = require('/opt/node22/lib/node_modules/playwright');
   page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.type() + ': ' + m.text()); });
   const url = target.startsWith('http') ? target : 'file://' + require('path').resolve(target);
-  await page.route(/^https?:\/\//, r => r.abort());   // игра полностью локальна: внешние шрифты не ждём
+  await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
   await page.goto(url, { waitUntil: 'load' });
   await page.waitForTimeout(600);
   if (evalJs) { try { const r = await page.evaluate(evalJs); if (r !== undefined) console.log('EVAL:', JSON.stringify(r).slice(0, 2000)); } catch (e) { errors.push('EVALERR: ' + e.message); } await page.waitForTimeout(400); }

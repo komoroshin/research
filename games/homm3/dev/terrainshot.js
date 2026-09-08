@@ -8,7 +8,7 @@ const path = require('path');
   const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
   const errors = [];
   page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
-  await page.route(/^https?:\/\//, r => r.abort());   // игра полностью локальна: внешние шрифты не ждём
+  await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
   await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed + '&size=' + size + '&opp=' + opp, { waitUntil: 'load' });
   await page.waitForTimeout(1200);
   const info = await page.evaluate(() => {

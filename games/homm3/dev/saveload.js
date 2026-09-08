@@ -10,7 +10,7 @@ const path = require('path');
   page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_FAILED|fonts/.test(m.text())) errors.push(m.text()); });
   const ev = (fn, ...a) => page.evaluate(fn, ...a);
   const url = 'file://' + path.resolve('index.html');
-  await page.route(/^https?:\/\//, r => r.abort());   // игра полностью локальна: внешние шрифты не ждём
+  await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
   await page.goto(url + '?autostart=1&seed=5', { waitUntil: 'load' }); await page.waitForTimeout(900);
   // походить, закончить ход, чтобы состояние отличалось от стартового
   await ev(() => { const G=H3.Game,S=H3.State,st=G.state,h=G.selected(); const pf=S.pathfield(st,h);
