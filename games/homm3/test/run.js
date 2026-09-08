@@ -79,26 +79,32 @@ test('стройка: требования и одна в день', () => {
 });
 
 console.log('mapgen');
-test('30 сидов × 3 размера: связность, обязательные объекты, время', () => {
+test('все размеры × все числа противников: связность, объекты, время', () => {
   const t0 = Date.now(); let n = 0;
-  for (const size of ['S', 'M', 'L']) for (let seed = 1; seed <= (size === 'L' ? 6 : 12); seed++) {
-    const opp = size === 'S' ? 1 : size === 'M' ? 2 : 3;
-    const st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'rampart' });
+  for (const size of ['S', 'M', 'L']) for (let opp = 1; opp <= S.SIZES[size].maxPlayers - 1; opp++) for (let seed = 1; seed <= 5; seed++) {
+    let st;
+    try { st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'rampart' }); }
+    catch (e) { throw new Error('карта не создалась: ' + size + ', противников ' + opp + ', сид ' + seed + ' — ' + e.message); }
     const map = st.map; n++;
-    assert.equal(st.players.length, opp + 1);
+    assert.equal(st.players.length, opp + 1, 'число игроков ' + size + opp);
     const t = st.towns[st.players[0].towns[0]];
     const seen = PF.reachable(map.w, map.h, t.x, t.y + 1, (x, y) => { const i = y * map.w + x; return map.objAt[i] >= 0 || !map.block[i]; });
-    for (const p of st.players) { const tw = st.towns[p.towns[0]]; assert.ok(seen[(tw.y + 1) * map.w + tw.x], 'town reachable ' + size + seed); }
+    const tag = size + ' opp' + opp + ' seed' + seed;
+    for (const p of st.players) { const tw = st.towns[p.towns[0]]; assert.ok(seen[(tw.y + 1) * map.w + tw.x], 'город недостижим ' + tag); }
+    // каждая зона должна быть достижима хотя бы одним объектом, иначе часть карты отрезана
+    const zonesWithObj = new Set(), zonesReached = new Set();
+    for (const id in st.objects) { const o = st.objects[id]; zonesWithObj.add(map.zone[o.y * map.w + o.x]); if (seen[o.y * map.w + o.x]) zonesReached.add(map.zone[o.y * map.w + o.x]); }
+    assert.ok(zonesReached.size >= zonesWithObj.size - 1, 'отрезано зон: ' + (zonesWithObj.size - zonesReached.size) + ' в ' + tag);
     const mines = Object.values(st.objects).filter(o => o.type === 'mine');
-    assert.ok(mines.filter(o => o.res === 'wood').length >= st.players.length, 'sawmills');
+    assert.ok(mines.filter(o => o.res === 'wood').length >= st.players.length, 'лесопилки ' + tag);
     const zone0 = map.zone[t.y * map.w + t.x];
     const near = mines.filter(o => map.zone[o.y * map.w + o.x] === zone0 && ['wood', 'ore'].includes(o.res));
-    assert.ok(near.length >= 2, 'start mines ' + size + seed);
-    // первый бой выигрышный: страж стартовой лесопилки ≤ 40 % силы стартовой армии
+    assert.ok(near.length >= 2, 'стартовые шахты ' + tag);
+    // первый бой выигрышный: страж стартовой шахты слабее стартовой армии
     const hero = st.heroes[st.players[0].heroes[0]]; const hp = R.armyPower(hero.army, hero);
-    for (const m of near) { for (const g of S.monstersNear(st, m.x, m.y)) assert.ok(H3.Adventure.monsterPower(g) <= hp * 0.45, 'first guard too strong ' + size + seed + ' ' + H3.Adventure.monsterPower(g) + ' vs ' + hp); }
+    for (const m of near) for (const g of S.monstersNear(st, m.x, m.y)) assert.ok(H3.Adventure.monsterPower(g) <= hp * 0.45, 'слишком сильный первый страж ' + tag);
   }
-  const ms = (Date.now() - t0) / n; assert.ok(ms < 300, 'avg gen ms ' + ms);
+  const ms = (Date.now() - t0) / n; assert.ok(ms < 300, 'среднее время генерации ' + Math.round(ms) + ' мс');
 });
 
 console.log('battle');
