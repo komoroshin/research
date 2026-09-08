@@ -134,6 +134,28 @@ test('заклинание: урон, мана, раз в раунд', () => {
   const ev2 = Bt.act(b, { type: 'cast', spell: 'lightning_bolt', target: t.id }); assert.ok(ev2.some(e => e.t === 'error'));
 });
 
+test('умный ИИ боя обыгрывает жадный', () => {
+  const F = H3.Factions, AI = H3.BattleAI;
+  const weekArmy = (fid, w) => { const a = [null, null, null, null, null, null, null]; const tiers = Math.min(7, 2 + w), bud = 4000 * w;
+    const cs = []; for (let t = 1; t <= tiers; t++) cs.push(F.creaturesOf(fid, t)[0]);
+    const tot = cs.reduce((x, c) => x + c.growth * c.cost.gold, 0);
+    cs.forEach((c, i) => { const sh = bud * (c.growth * c.cost.gold) / tot; a[i] = { cid: c.id, n: Math.max(1, Math.round(sh / c.cost.gold)) }; });
+    return a; };
+  const h = (fid, seed) => { const st = { nextId: 1, heroes: {}, _rng: { misc: new U.RNG(seed) } };
+    const x = R.makeHero(st, H3.Heroes.heroesOfFaction(fid)[0].id, 0, 0, 0, true); x.level = 5; x.pri = { att: 3, def: 3, pow: 3, kno: 3 }; x.hasBook = true; return x; };
+  const ids = F.LIST.map(f => f.id);
+  let win = 0, total = 0;
+  for (let i = 0; i < 40; i++) {
+    const fa = ids[i % ids.length], fb = ids[(i * 3 + 1) % ids.length], smart = i % 2;
+    const b = Bt.create({ hero: h(fa, i + 1), army: weekArmy(fa, 4), player: 0 }, { hero: h(fb, i + 2), army: weekArmy(fb, 4), player: 1 }, { rng: new U.RNG(i * 7919 + 5), terrain: 'grass' });
+    let g = 0;
+    while (!b.over && g++ < 4000) { const cur = Bt.current(b); if (!cur) break; Bt.act(b, AI.choose(b, cur.side === smart) || { type: 'defend' }); }
+    if (!b.over) Bt.finish(b, 0, 'timeout');
+    total++; if (b.result.winner === smart) win++;
+  }
+  assert.ok(win / total >= 0.65, 'умный ИИ выиграл лишь ' + win + ' из ' + total);
+});
+
 console.log('save');
 test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });

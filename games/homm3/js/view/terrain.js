@@ -49,6 +49,115 @@
     else if (kind === 'rock') for (let i = 0; i < 3 + n; i++) { const x = rng.int(0, 26), y = rng.int(0, 26); ctx.fillStyle = '#44444c'; ctx.fillRect(x, y, rng.int(3, 8), rng.int(2, 6)); ctx.fillStyle = '#18181c'; ctx.fillRect(x + 1, y + 2, rng.int(2, 6), 1); }
   }
 
+  /* ---------- автотайлинг переходов ----------
+     Каждый тип местности имеет приоритет. Более приоритетная местность
+     «наползает» на соседнюю: у тайла мы смотрим 8 соседей, собираем битовую
+     маску по каждому типу-«победителю» и рисуем его поверх через процедурную
+     маску. Вода в самом низу — поэтому берег всегда над водой, с пеной.
+     Маска строится по расстоянию до соседних клеток, искажённому шумом;
+     шум ТАЙЛЯЩИЙСЯ (период 32 px), иначе на стыках тайлов рвался бы контур. */
+  const PRIO = { water: 0, sand: 1, swamp: 2, dirt: 3, grass: 4, rough: 5, snow: 6, subter: 7, lava: 8, rock: 9 };
+  const DIRS = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]];
+  const DEPTH = 8;       // насколько глубоко сосед заходит в клетку, px
+                         // (глубже — и одиночный тайл-пятно съедается соседями целиком)
+  const FOAM = '#cfe6f5';
+
+  const smooth = t => t * t * (3 - 2 * t);
+  let NOISE = null, STIP = null;
+
+  /** Тайлящееся value-noise TILE×TILE (две октавы), значения ≈ −1..1. */
+  function noiseField() {
+    if (NOISE) return NOISE;
+    const f = new Float32Array(TILE * TILE);
+    const rng = new U.RNG(0x1f35d7);
+    for (const oct of [[4, 1], [8, 0.45]]) {
+      const cells = oct[0], amp = oct[1], step = TILE / cells;
+      const g = new Float32Array(cells * cells);
+      for (let i = 0; i < g.length; i++) g[i] = rng.next() * 2 - 1;
+      for (let y = 0; y < TILE; y++) for (let x = 0; x < TILE; x++) {
+        const fx = x / step, fy = y / step;
+        const ix = Math.floor(fx), iy = Math.floor(fy);
+        const x0 = ix % cells, y0 = iy % cells, x1 = (x0 + 1) % cells, y1 = (y0 + 1) % cells;
+        const tx = smooth(fx - ix), ty = smooth(fy - iy);
+        const a = g[y0 * cells + x0] * (1 - tx) + g[y0 * cells + x1] * tx;
+        const b = g[y1 * cells + x0] * (1 - tx) + g[y1 * cells + x1] * tx;
+        f[y * TILE + x] += (a * (1 - ty) + b * ty) * amp;
+      }
+    }
+    NOISE = f; return f;
+  }
+  /** Стипль-решётка для «рваного» края перехода (тоже тайлящаяся). */
+  function stipple() {
+    if (STIP) return STIP;
+    const s = new Uint8Array(TILE * TILE), rng = new U.RNG(0x7a19c3);
+    for (let i = 0; i < s.length; i++) s[i] = rng.chance(0.5) ? 1 : 0;
+    STIP = s; return s;
+  }
+
+  const maskCache = new Map();
+  /** Маска перехода по маске соседей: 0 — нет, 1 — сплошь, 2 — стипль, 3 — кайма. */
+  function maskFor(bits) {
+    let m = maskCache.get(bits); if (m) return m;
+    m = new Uint8Array(TILE * TILE);
+    const nf = noiseField();
+    for (let y = 0; y < TILE; y++) for (let x = 0; x < TILE; x++) {
+      const px = x + 0.5, py = y + 0.5;
+      let best = 1e9;
+      for (let d = 0; d < 8; d++) {
+        if (!(bits & (1 << d))) continue;
+        const rx = DIRS[d][0] * TILE, ry = DIRS[d][1] * TILE;
+        const ddx = Math.max(rx - px, px - (rx + TILE), 0);
+        const ddy = Math.max(ry - py, py - (ry + TILE), 0);
+        const dist = Math.sqrt(ddx * ddx + ddy * ddy);
+        if (dist < best) best = dist;
+      }
+      if (best > 1e8) continue;
+      const cov = DEPTH - (best + nf[y * TILE + x] * 4.5);
+      m[y * TILE + x] = cov > 2.5 ? 1 : cov > 0 ? 2 : cov > -2 ? 3 : 0;
+    }
+    maskCache.set(bits, m);
+    return m;
+  }
+
+  /** Тайл соседней местности, обрезанный маской перехода (+ пена над водой). */
+  function overlay(type, variant, bits, rim) {
+    const key = 'ov:' + type + ':' + variant + ':' + bits + ':' + (rim || '-');
+    let cv = cache.get(key); if (cv) return cv;
+    cv = document.createElement('canvas'); cv.width = TILE; cv.height = TILE;
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(tile(type, variant), 0, 0);
+    const img = ctx.getImageData(0, 0, TILE, TILE), d = img.data;
+    const m = maskFor(bits), st = stipple();
+    const rc = rim ? [parseInt(rim.slice(1, 3), 16), parseInt(rim.slice(3, 5), 16), parseInt(rim.slice(5, 7), 16)] : null;
+    for (let i = 0; i < TILE * TILE; i++) {
+      const c = m[i];
+      if (c === 1) continue;
+      if (c === 2 && st[i]) continue;
+      if (rc && (c === 3 || c === 2)) { d[i * 4] = rc[0]; d[i * 4 + 1] = rc[1]; d[i * 4 + 2] = rc[2]; d[i * 4 + 3] = 255; continue; }
+      d[i * 4 + 3] = 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    cache.set(key, cv);
+    return cv;
+  }
+
+  /** Все переходы для клетки: [{type, bits}] в порядке рисования. */
+  function transitions(map, T, x, y, own) {
+    const groups = [];
+    for (let d = 0; d < 8; d++) {
+      const nx = x + DIRS[d][0], ny = y + DIRS[d][1];
+      if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h) continue;
+      const nt = T[map.terrain[ny * map.w + nx]];
+      if ((PRIO[nt] || 0) <= own) continue;
+      let g = null;
+      for (const q of groups) if (q.type === nt) { g = q; break; }
+      if (!g) groups.push(g = { type: nt, bits: 0 });
+      g.bits |= 1 << d;
+    }
+    if (groups.length > 1) groups.sort((a, b) => PRIO[a.type] - PRIO[b.type]);
+    return groups;
+  }
+
   /** Спрайт препятствия для клетки. */
   function obstacleSprite(terrain, obs, x, y) {
     const h = (x * 31 + y * 17) % 7;
@@ -77,41 +186,45 @@
     const rng = new U.RNG(state.seed ^ 0xabcdef);
     const T = R.TERRAINS;
     for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
-      const t = T[map.terrain[y * map.w + x]];
-      ctx.drawImage(tile(t, (x * 7 + y * 13 + (state.seed & 255)) % 9), x * TILE, y * TILE);
+      const i = y * map.w + x, t = T[map.terrain[i]];
+      const variant = (x * 7 + y * 13 + (state.seed & 255)) % 9;
+      ctx.drawImage(tile(t, variant), x * TILE, y * TILE);
+      const tr = transitions(map, T, x, y, PRIO[t] || 0);
+      const rim = t === 'water' ? FOAM : null;
+      // вариант для перехода огрубляем: кэш переходов иначе разрастается втрое
+      for (const g of tr) ctx.drawImage(overlay(g.type, variant % 3, g.bits, rim), x * TILE, y * TILE);
     }
-    // дизеринг границ
-    for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
-      const t = T[map.terrain[y * map.w + x]];
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nx = x + dx, ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h) continue;
-        const nt = T[map.terrain[ny * map.w + nx]];
-        if (nt === t) continue;
-        ctx.fillStyle = (t === 'water' || nt === 'water') ? (t === 'water' ? '#8fc0e8' : '#e6d8a8') : (STYLE[nt] || STYLE.grass).base[0];
-        const px = x * TILE, py = y * TILE;
-        for (let i = 0; i < 14; i++) {
-          const along = rng.int(0, 31), depth = rng.int(0, 5);
-          let sx, sy;
-          if (dx === 1) { sx = px + 31 - depth; sy = py + along; } else if (dx === -1) { sx = px + depth; sy = py + along; }
-          else if (dy === 1) { sx = px + along; sy = py + 31 - depth; } else { sx = px + along; sy = py + depth; }
-          ctx.fillRect(sx, sy, 1 + (depth < 2 ? 1 : 0), 1);
+    // дороги: линии от центра к центрам соседей — диагонали идут ровно,
+    // без «лесенки» из квадратов
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const roadAt = (x, y) => x >= 0 && y >= 0 && x < map.w && y < map.h && map.road[y * map.w + x];
+    for (const layer of [{ c: '#7a6444', w: 13 }, { c: '#b39a70', w: 9 }]) {
+      ctx.strokeStyle = layer.c; ctx.lineWidth = layer.w;
+      ctx.beginPath();
+      for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
+        if (!map.road[y * map.w + x]) continue;
+        const cx = x * TILE + TILE / 2, cy = y * TILE + TILE / 2;
+        let links = 0;
+        for (const d of DIRS) {
+          if (!roadAt(x + d[0], y + d[1])) continue;
+          // диагональ не нужна, если тот же путь уже идёт по прямым: иначе треугольник
+          if (d[0] && d[1] && (roadAt(x + d[0], y) || roadAt(x, y + d[1]))) continue;
+          links++;
+          if (d[0] < 0 || (d[0] === 0 && d[1] < 0)) continue; // каждую связь рисуем один раз
+          ctx.moveTo(cx, cy); ctx.lineTo(cx + d[0] * TILE, cy + d[1] * TILE);
         }
+        if (!links) { ctx.moveTo(cx, cy); ctx.lineTo(cx + 0.1, cy); }
       }
+      ctx.stroke();
     }
-    // дороги
+    // камешки и колеи
     for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
       if (!map.road[y * map.w + x]) continue;
       const px = x * TILE, py = y * TILE;
-      const has = (dx, dy) => { const nx = x + dx, ny = y + dy; return nx >= 0 && ny >= 0 && nx < map.w && ny < map.h && map.road[ny * map.w + nx]; };
-      ctx.fillStyle = '#b39a70';
-      ctx.fillRect(px + 10, py + 10, 12, 12);
-      if (has(1, 0)) ctx.fillRect(px + 16, py + 10, 16, 12); if (has(-1, 0)) ctx.fillRect(px, py + 10, 16, 12);
-      if (has(0, 1)) ctx.fillRect(px + 10, py + 16, 12, 16); if (has(0, -1)) ctx.fillRect(px + 10, py, 12, 16);
-      if (has(1, 1)) ctx.fillRect(px + 18, py + 18, 14, 14); if (has(-1, -1)) ctx.fillRect(px, py, 14, 14);
-      if (has(1, -1)) ctx.fillRect(px + 18, py, 14, 14); if (has(-1, 1)) ctx.fillRect(px, py + 18, 14, 14);
-      ctx.fillStyle = '#8f7a56';
-      for (let i = 0; i < 8; i++) ctx.fillRect(px + rng.int(8, 22), py + rng.int(8, 22), 2, 1);
+      ctx.fillStyle = '#95805c';
+      for (let i = 0; i < 5; i++) ctx.fillRect(px + rng.int(10, 20), py + rng.int(10, 20), 2, 1);
+      ctx.fillStyle = '#c9b287';
+      for (let i = 0; i < 3; i++) ctx.fillRect(px + rng.int(10, 20), py + rng.int(10, 20), 1, 1);
     }
     // препятствия (снизу вверх по рядам, чтобы перекрытия были верными)
     for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
@@ -119,7 +232,79 @@
       const sp = obstacleSprite(T[map.terrain[y * map.w + x]], obs, x, y);
       if (sp) Sp.draw(ctx, sp, x * TILE + 16 + ((x * 3 + y) % 3) - 1, y * TILE + 31, 1, (x + y) % 2 === 0);
     }
+    bakeLight(ctx, map, state.seed);
     return cv;
+  }
+
+  /* ---------- свет ----------
+     Запечённый свет карты: крупные пятна света и тени (иначе большие
+     однородные зоны выглядят ковром), затенение под скалами и препятствиями
+     и тёплое свечение лавы. Всё рисуется поверх готового полотна градиентами —
+     попиксельный проход по карте 72×72 стоил бы куда дороже. */
+  function bakeLight(ctx, map, seed) {
+    const rng = new U.RNG(seed ^ 0x5eed11);
+    ctx.save();
+    // 1. крупные пятна света и тени
+    const step = 6 * TILE;
+    for (let y = -step / 2; y < map.h * TILE + step; y += step) {
+      for (let x = -step / 2; x < map.w * TILE + step; x += step) {
+        const cx = x + rng.int(-40, 40), cy = y + rng.int(-40, 40), r = rng.int(step * 0.7, step * 1.3);
+        const up = rng.chance(0.5), a = rng.next() * 0.1 + 0.03;
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g.addColorStop(0, (up ? 'rgba(255,244,214,' : 'rgba(20,26,40,') + a.toFixed(3) + ')');
+        g.addColorStop(1, (up ? 'rgba(255,244,214,0)' : 'rgba(20,26,40,0)'));
+        ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+      }
+    }
+    // 2. мягкая тень под скалами и горами — «объём» рельефа
+    const T = R.TERRAINS;
+    const sh = document.createElement('canvas'); sh.width = 1; sh.height = 10;
+    const sg = sh.getContext('2d').createLinearGradient(0, 0, 0, 10);
+    sg.addColorStop(0, 'rgba(10,14,24,0.22)'); sg.addColorStop(1, 'rgba(10,14,24,0)');
+    sh.getContext('2d').fillStyle = sg; sh.getContext('2d').fillRect(0, 0, 1, 10);
+    const smooth0 = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+    for (let y = 1; y < map.h; y++) for (let x = 0; x < map.w; x++) {
+      const above = (y - 1) * map.w + x;
+      const tall = map.obs[above] === 2 || T[map.terrain[above]] === 'rock';
+      if (!tall) continue;
+      if (map.obs[y * map.w + x] === 2 || T[map.terrain[y * map.w + x]] === 'rock') continue;
+      ctx.drawImage(sh, x * TILE, y * TILE, TILE, 10);
+    }
+    ctx.imageSmoothingEnabled = smooth0;
+    // 3. свечение лавы
+    ctx.globalCompositeOperation = 'lighter';
+    for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
+      const i = y * map.w + x;
+      if (T[map.terrain[i]] !== 'lava' || ((x * 31 + y * 17) % 9)) continue;
+      const cx = x * TILE + 16, cy = y * TILE + 16, r = 34;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, 'rgba(255,120,30,0.22)'); g.addColorStop(1, 'rgba(255,120,30,0)');
+      ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    }
+    ctx.restore();
+  }
+
+  /* Освещение недели: партия проживает неделю от прохладного утра к золотому
+     вечеру. Сдвиг слабый (до ~7 %), чтобы не мешать читаемости карты. */
+  const DAYLIGHT = [
+    { name: 'Раннее утро', col: '#8fb0e0', a: 0.10, warm: 0 },
+    { name: 'Утро', col: '#bcd2f0', a: 0.06, warm: 0 },
+    { name: 'Полдень', col: '#fff6dc', a: 0.05, warm: 0.04 },
+    { name: 'День', col: '#ffffff', a: 0.00, warm: 0 },
+    { name: 'После полудня', col: '#ffe9b0', a: 0.05, warm: 0.05 },
+    { name: 'Вечер', col: '#ffc98a', a: 0.09, warm: 0.07 },
+    { name: 'Закат', col: '#f0a878', a: 0.12, warm: 0.08 },
+  ];
+  function daylight(day) { return DAYLIGHT[((day - 1) % 7 + 7) % 7]; }
+  /** Наложить свет дня на уже отрисованный кадр карты (в координатах карты). */
+  function applyDaylight(ctx, day, x, y, w, h) {
+    const d = daylight(day);
+    if (!d.a) return;
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = d.a;
+    ctx.fillStyle = d.col; ctx.fillRect(x, y, w, h);
+    if (d.warm) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = d.warm; ctx.fillStyle = d.col; ctx.fillRect(x, y, w, h); }
+    ctx.restore();
   }
 
   /** Миникарта: 1 пиксель на тайл (с туманом). */
@@ -151,5 +336,5 @@
     for (const id in state.heroes) { const h = state.heroes[id]; if (h.dead || !vis[h.y * map.w + h.x]) continue; ctx.fillStyle = state.players[h.owner].color; ctx.fillRect(h.x - 1, h.y - 1, 3, 3); ctx.fillStyle = '#fff'; ctx.fillRect(h.x, h.y, 1, 1); }
   }
 
-  H3.Terrain = { TILE, STYLE, tile, renderMap, renderMini, obstacleSprite };
+  H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, applyDaylight };
 })(typeof window !== 'undefined' ? window : globalThis);
