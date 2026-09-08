@@ -85,7 +85,7 @@ test('все размеры × все числа противников: свя�
     let st;
     try { st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'rampart' }); }
     catch (e) { throw new Error('карта не создалась: ' + size + ', противников ' + opp + ', сид ' + seed + ' — ' + e.message); }
-    const map = st.map; n++;
+    const map = st.levels[0]; n++;
     assert.equal(st.players.length, opp + 1, 'число игроков ' + size + opp);
     const t = st.towns[st.players[0].towns[0]];
     const seen = PF.reachable(map.w, map.h, t.x, t.y + 1, (x, y) => { const i = y * map.w + x; return map.objAt[i] >= 0 || !map.block[i]; });
@@ -93,9 +93,9 @@ test('все размеры × все числа противников: свя�
     for (const p of st.players) { const tw = st.towns[p.towns[0]]; assert.ok(seen[(tw.y + 1) * map.w + tw.x], 'город недостижим ' + tag); }
     // каждая зона должна быть достижима хотя бы одним объектом, иначе часть карты отрезана
     const zonesWithObj = new Set(), zonesReached = new Set();
-    for (const id in st.objects) { const o = st.objects[id]; zonesWithObj.add(map.zone[o.y * map.w + o.x]); if (seen[o.y * map.w + o.x]) zonesReached.add(map.zone[o.y * map.w + o.x]); }
+    for (const id in st.objects) { const o = st.objects[id]; if (o.z) continue; zonesWithObj.add(map.zone[o.y * map.w + o.x]); if (seen[o.y * map.w + o.x]) zonesReached.add(map.zone[o.y * map.w + o.x]); }
     assert.ok(zonesReached.size >= zonesWithObj.size - 1, 'отрезано зон: ' + (zonesWithObj.size - zonesReached.size) + ' в ' + tag);
-    const mines = Object.values(st.objects).filter(o => o.type === 'mine');
+    const mines = Object.values(st.objects).filter(o => o.type === 'mine' && !o.z);
     assert.ok(mines.filter(o => o.res === 'wood').length >= st.players.length, 'лесопилки ' + tag);
     const zone0 = map.zone[t.y * map.w + t.x];
     const near = mines.filter(o => map.zone[o.y * map.w + o.x] === zone0 && ['wood', 'ore'].includes(o.res));
@@ -105,6 +105,96 @@ test('все размеры × все числа противников: свя�
     for (const m of near) for (const g of S.monstersNear(st, m.x, m.y)) assert.ok(H3.Adventure.monsterPower(g) <= hp * 0.45, 'слишком сильный первый страж ' + tag);
   }
   const ms = (Date.now() - t0) / n; assert.ok(ms < 300, 'среднее время генерации ' + Math.round(ms) + ' мс');
+});
+
+test('подземелье: два слоя, врата, связность пещер', () => {
+  const st = S.newGame({ size: 'M', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  assert.equal(st.levels.length, 2);
+  const T = R.TERRAINS, under = st.levels[1];
+  let rock = 0, open = 0;
+  for (let i = 0; i < under.terrain.length; i++) { if (T[under.terrain[i]] === 'rock') rock++; if (!under.block[i]) open++; }
+  assert.ok(rock > under.terrain.length * 0.3, 'подземелье должно быть в основном скалой, а не полем');
+  assert.ok(open > under.terrain.length * 0.2, 'но пещеры должны быть просторными: открыто ' + open);
+  assert.ok(!Object.values(st.towns).some(t => t.z === 1), 'городов под землёй нет');
+  // врата парные и стоят на обоих слоях
+  const gates = Object.values(st.objects).filter(o => o.type === 'subter_gate');
+  assert.ok(gates.length >= 4 && gates.length % 2 === 0, 'врат должно быть чётное число: ' + gates.length);
+  for (const g of gates) {
+    const other = H3.Adventure.gatePartner(st, g);
+    assert.ok(other, 'у врат нет пары');
+    assert.notEqual(other.z, g.z, 'пара должна быть на другом слое');
+    assert.equal(other.x + ',' + other.y, g.x + ',' + g.y, 'пара стоит на той же координате');
+  }
+  // спуск и подъём
+  const hero = st.heroes[st.players[0].heroes[0]];
+  const gate = gates.find(g => !g.z);
+  hero.x = gate.x; hero.y = gate.y; hero.move = 3000;
+  H3.Adventure.visit(st, hero, gate);
+  assert.equal(hero.z, 1, 'герой спустился');
+  assert.equal(hero.x + ',' + hero.y, gate.x + ',' + gate.y, 'вышел на парных вратах');
+  assert.ok(Array.from(st.players[0].vis[1]).some(v => v > 0), 'подземелье начало открываться');
+  // из точки выхода достижима бо́льшая часть пещер
+  const pf = S.pathfield(st, hero);
+  const reach = pf.dist.filter(d => d < Infinity && d > 0).length;
+  assert.ok(reach > open * 0.5, 'из врат достижимо лишь ' + reach + ' из ' + open + ' открытых клеток');
+  // объекты подземелья есть и не путаются со слоем 0
+  const underObjs = Object.values(st.objects).filter(o => o.z === 1 && o.type !== 'subter_gate');
+  assert.ok(underObjs.length >= 20, 'в подземелье должно быть чем поживиться: ' + underObjs.length);
+  for (const o of underObjs) assert.equal(st.levels[1].objAt[o.y * under.w + o.x], o.id, 'объект не на своём слое');
+  // подъём обратно
+  const back = H3.Adventure.gatePartner(st, gate);
+  H3.Adventure.visit(st, hero, back);
+  assert.equal(hero.z, 0, 'герой вернулся на поверхность');
+});
+
+test('море: связный водоём, лодка, плавание и высадка', () => {
+  let st = null;
+  for (let seed = 1; seed <= 8 && !st; seed++) {
+    const g = S.newGame({ size: 'M', seed, opponents: 1, difficulty: 'normal', faction: 'castle' });
+    if (Object.values(g.objects).some(o => o.type === 'boat')) st = g;
+  }
+  assert.ok(st, 'хотя бы на одной карте из восьми должно быть море с лодкой');
+  const m = st.levels[0], W = m.w, T = R.TERRAINS;
+  const boat = Object.values(st.objects).find(o => o.type === 'boat');
+  // лодка стоит в большом водоёме, а не в луже, и вся морская добыча из неё достижима
+  const sea = PF.reachable(m.w, m.h, boat.x, boat.y, (x, y) => T[m.terrain[y * W + x]] === 'water');
+  const seaSize = Array.from(sea).filter(v => v).length;
+  assert.ok(seaSize >= 60, 'море должно быть просторным, а не лужей: ' + seaSize);
+  const loot = Object.values(st.objects).filter(o => ['flotsam', 'sea_chest'].includes(o.type));
+  assert.ok(loot.length >= 3, 'в море должна быть добыча');
+  for (const o of loot) assert.ok(sea[o.y * W + o.x], 'добыча вне доступного моря');
+  assert.ok(Object.values(st.objects).some(o => o.type === 'shipyard'), 'на берегу должна быть верфь');
+  // без лодки в воду не войти
+  const hero = st.heroes[st.players[0].heroes[0]];
+  let shore = null;
+  for (let dy = -1; dy <= 1 && !shore; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const x = boat.x + dx, y = boat.y + dy;
+    if ((dx || dy) && S.terrainAt(st, x, y, 0) !== 'water' && !S.isBlocked(st, x, y, 0)) { shore = [x, y]; break; }
+  }
+  assert.ok(shore, 'у лодки должен быть берег');
+  hero.x = shore[0]; hero.y = shore[1]; hero.move = 5000;
+  const deep = Object.values(st.objects).find(o => o.type === 'flotsam' || o.type === 'sea_chest');
+  assert.equal(S.moveCost(st, hero, deep.x, deep.y), Infinity, 'пешком в море не войти');
+  // садимся в лодку
+  H3.Adventure.visit(st, hero, boat);
+  assert.ok(hero.boat, 'герой в лодке');
+  assert.equal(hero.x + ',' + hero.y, boat.x + ',' + boat.y, 'герой встал на место лодки');
+  assert.ok(!st.objects[boat.id], 'лодка больше не отдельный объект');
+  assert.ok(S.moveCost(st, hero, deep.x, deep.y) < Infinity, 'под парусом море проходимо');
+  // плывём и высаживаемся
+  const pf = S.pathfield(st, hero);
+  let land = null, ld = Infinity;
+  for (let i = 0; i < pf.dist.length; i++) {
+    const d = pf.dist[i], x = i % W, y = (i / W) | 0;
+    if (d < Infinity && d > 0 && d < ld && T[m.terrain[i]] !== 'water' && !m.block[i]) { ld = d; land = [x, y]; }
+  }
+  assert.ok(land, 'с моря должен быть виден берег');
+  const r = H3.Adventure.moveHero(st, hero, PF.pathTo(pf, land[0], land[1]));
+  assert.equal(r.stop && r.stop.kind, 'landed', 'ход должен закончиться высадкой');
+  assert.ok(!hero.boat, 'герой сошёл с лодки');
+  assert.notEqual(S.terrainAt(st, hero.x, hero.y, 0), 'water', 'герой на суше');
+  const left = Object.values(st.objects).find(o => o.type === 'boat' && Math.abs(o.x - hero.x) <= 1 && Math.abs(o.y - hero.y) <= 1);
+  assert.ok(left, 'лодка осталась у берега');
 });
 
 console.log('battle');
@@ -346,11 +436,15 @@ test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });
   const s1 = S.serialize(st); const st2 = S.deserialize(s1); assert.equal(S.serialize(st2), s1);
   // содержимое карты и видимости должно пережить сохранение (типизированные массивы)
-  assert.ok(st2.map.terrain instanceof Uint8Array && st2.map.objAt instanceof Int32Array && st2.players[0].vis instanceof Uint8Array);
-  for (const k of ['terrain', 'block', 'road', 'obs']) { assert.equal(st2.map[k].length, st.map[k].length, k);
-    for (let i = 0; i < st.map[k].length; i++) if (st2.map[k][i] !== st.map[k][i]) throw new Error('несовпадение ' + k + ' в ' + i); }
-  for (let i = 0; i < st.map.objAt.length; i++) assert.equal(st2.map.objAt[i], st.map.objAt[i]);
-  assert.ok(st.map.terrain.some((v, i) => v !== st.map.terrain[0]) , 'карта не должна быть однородной');
+  // оба слоя должны вернуться типизированными и совпасть побайтно
+  for (let z = 0; z < 2; z++) {
+    assert.ok(st2.levels[z].terrain instanceof Uint8Array && st2.levels[z].objAt instanceof Int32Array, 'слой ' + z + ': типизированные массивы');
+    assert.ok(st2.players[0].vis[z] instanceof Uint8Array, 'слой ' + z + ': туман');
+    for (const k of ['terrain', 'block', 'road', 'obs']) { assert.equal(st2.levels[z][k].length, st.levels[z][k].length, k);
+      for (let i = 0; i < st.levels[z][k].length; i++) if (st2.levels[z][k][i] !== st.levels[z][k][i]) throw new Error('несовпадение ' + k + ' на слое ' + z + ' в ' + i); }
+    for (let i = 0; i < st.levels[z].objAt.length; i++) assert.equal(st2.levels[z].objAt[i], st.levels[z].objAt[i]);
+    assert.ok(st.levels[z].terrain.some(v => v !== st.levels[z].terrain[0]), 'слой ' + z + ' не должен быть однородным');
+  }
   // после загрузки герой может ходить
   const h2 = st2.heroes[st2.players[0].heroes[0]];
   let ok = false; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (dx || dy) { if (S.moveCost(st2, h2, h2.x + dx, h2.y + dy) < Infinity) ok = true; }
@@ -364,7 +458,7 @@ test('движение, подбор, дипломатия, конец хода'
   const st = S.newGame({ size: 'S', seed: 3, opponents: 1, difficulty: 'normal', faction: 'castle' });
   const h = st.heroes[st.players[0].heroes[0]]; const p = st.players[0];
   const pf = S.pathfield(st, h);
-  const res = Object.values(st.objects).filter(o => o.type === 'resource' && pf.dist[o.y * st.map.w + o.x] < Infinity).sort((a, b) => pf.dist[a.y * st.map.w + a.x] - pf.dist[b.y * st.map.w + b.x])[0];
+  const res = Object.values(st.objects).filter(o => o.type === 'resource' && !o.z && pf.dist[o.y * st.levels[0].w + o.x] < Infinity).sort((a, b) => pf.dist[a.y * st.levels[0].w + a.x] - pf.dist[b.y * st.levels[0].w + b.x])[0];
   const path = PF.pathTo(pf, res.x, res.y); const before = p.res[res.res];
   const r = H3.Adventure.moveHero(st, h, path); assert.equal(r.stop.kind, 'object');
   H3.Adventure.visit(st, h, res.obj || r.stop.obj); assert.ok(p.res[r.stop.obj.res] > before);

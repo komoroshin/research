@@ -4,7 +4,7 @@ const size = process.argv[2] || 'S', seed = +(process.argv[3] || 1), opp = +(pro
 const t0 = Date.now();
 const st = H3.State.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'castle' });
 const dt = Date.now() - t0;
-const m = st.map; const ch = { grass: '.', dirt: ',', sand: ':', snow: '*', swamp: '~', rough: '^', lava: '#', subter: '_', water: 'w', rock: 'X' };
+const m = st.levels[+(process.argv[5] || 0)]; const ch = { grass: '.', dirt: ',', sand: ':', snow: '*', swamp: '~', rough: '^', lava: '#', subter: '_', water: 'w', rock: 'X' };
 const lines = [];
 for (let y = 0; y < m.h; y++) { let s = ''; for (let x = 0; x < m.w; x++) { const i = y * m.w + x; const o = m.objAt[i] >= 0 ? st.objects[m.objAt[i]] : null;
   if (o) s += ({ town: 'T', mine: 'M', monster: 'G', resource: 'r', chest: 'c', artifact: 'a', dwelling: 'd' })[o.type] || 'o';

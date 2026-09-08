@@ -20,7 +20,13 @@
   /* ---------- экраны ---------- */
   function showScreen(name) { for (const id of ['menu', 'adv', 'battle']) UI.$('#' + id).classList.toggle('hidden', id !== name); G.screen = name; if (name === 'adv') AV.resize(); }
   function selected() { return G.state && G.selHero !== null ? G.state.heroes[G.selHero] : null; }
-  function selectHero(id) { G.selHero = id; AV.V.pending = null; AV.V.path = null; refresh(false); }
+  function selectHero(id) {
+    G.selHero = id;
+    // вид всегда на слое выбранного героя — иначе он «пропадает» под землёй
+    const h = id !== null && G.state ? G.state.heroes[id] : null;
+    if (h) AV.setLayer(h.z || 0);
+    AV.V.pending = null; AV.V.path = null; refresh(false);
+  }
   function nextHero() {
     const st = G.state; const hs = S.heroesOf(st, st.turn).filter(h => h.move >= 100);
     if (!hs.length) { UI.toast('Все герои сходили'); return; }
@@ -179,6 +185,7 @@
     const v = A.visit(st, hero, obj);
     if (!v) return;
     AV.invalidate();
+    if (v.moved) { syncLayer(); H3.Audio.play('step'); }   // врата: герой ушёл на другой слой
     if (v.levelUps) H3.Audio.play('levelup');
     if (v.kind === 'dwelling') {
       const c = C.get(obj.cid);
@@ -225,7 +232,7 @@
       const b = UI.el('button', 'sm', 'Нанять'); b.disabled = p.res.gold < R.HERO_COST || p.heroes.length >= 8;
       b.onclick = () => {
         // ищем свободную клетку рядом
-        let pos = null; for (let dy = -1; dy <= 1 && !pos; dy++) for (let dx = -1; dx <= 1; dx++) { const x = obj.x + dx, y = obj.y + dy; if ((dx || dy) && S.inMap(st, x, y) && !S.isBlocked(st, x, y) && !S.heroAt(st, x, y) && !S.monstersNear(st, x, y).length) { pos = [x, y]; break; } }
+        let pos = null; for (let dy = -1; dy <= 1 && !pos; dy++) for (let dx = -1; dx <= 1; dx++) { const x = obj.x + dx, y = obj.y + dy; if ((dx || dy) && S.inMap(st, x, y, obj.z) && !S.isBlocked(st, x, y, obj.z) && !S.heroAt(st, x, y, obj.z) && !S.monstersNear(st, x, y, obj.z).length) { pos = [x, y]; break; } }
         if (!pos) { UI.toast('Нет места рядом с таверной', 'warn'); return; }
         p.res.gold -= R.HERO_COST; const h = R.makeHero(st, tid, p.id, pos[0], pos[1], false); p.heroes.push(h.id); obj.tavern = obj.tavern.filter(x => x !== tid);
         S.computeVisibility(st, p.id); H3.Audio.play('coin'); UI.toast('Нанят герой ' + h.name); UI.closeTop(); selectHero(h.id); refresh(true);
@@ -425,7 +432,7 @@
     else if (k === '-') { AV.V.cam.z = Math.max(1, AV.V.cam.z - 0.5); AV.resize(); }
     else return;
     if (k.startsWith('arrow')) e.preventDefault();
-    const m = G.state.map; cam.x = U.clamp(cam.x, 0, Math.max(0, m.w * 32 - AV.V.w / cam.z)); cam.y = U.clamp(cam.y, 0, Math.max(0, m.h * 32 - AV.V.h / cam.z));
+    const m = S.lvl(G.state, AV.V.layer); cam.x = U.clamp(cam.x, 0, Math.max(0, m.w * 32 - AV.V.w / cam.z)); cam.y = U.clamp(cam.y, 0, Math.max(0, m.h * 32 - AV.V.h / cam.z));
   }
 
   /* ---------- запуск ---------- */
@@ -440,6 +447,9 @@
     if (q.get('autostart')) newGame({ size: q.get('size') || 'S', opponents: +(q.get('opp') || 1), difficulty: q.get('diff') || 'normal', faction: q.get('faction') || 'castle', hero: null, seed: +(q.get('seed') || 1), name: 'Игрок' });
   }
 
-  H3.Game = { boot, settings, saveSettings, showScreen, selected, selectHero, nextHero, refresh, newGame, start, moveAlong, handleStop, fight, levelUps, openTown, openHero, openSpellbook, endTurn, openMenu, save, load, menu, help, get state() { return G.state; }, G };
+  /** Герой мог сменить слой (врата) — подстроить вид. */
+  function syncLayer() { const h = selected(); if (h) { AV.setLayer(h.z || 0); AV.centerOn(h.x, h.y); } }
+
+  H3.Game = { syncLayer, boot, settings, saveSettings, showScreen, selected, selectHero, nextHero, refresh, newGame, start, moveAlong, handleStop, fight, levelUps, openTown, openHero, openSpellbook, endTurn, openMenu, save, load, menu, help, get state() { return G.state; }, G };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })(typeof window !== 'undefined' ? window : globalThis);

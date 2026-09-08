@@ -72,14 +72,24 @@
     const guardMul = diff.guards;
 
     for (let attempt = 0; attempt < 25; attempt++) {
-      const map = { w, h, terrain: new Uint8Array(N), road: new Uint8Array(N), obs: new Uint8Array(N), block: new Uint8Array(N), objAt: new Int32Array(N).fill(-1), zone: new Uint8Array(N) };
-      state.map = map; state.objects = {}; state.towns = {}; state.nextId = 1;
+      const map = newLevel(w, h);
+      state.levels = [map, null]; state.objects = {}; state.towns = {}; state.nextId = 1;
       for (const p of state.players) p.towns = [];
-      const ctx = { state, map, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
-      const ok = tryGenerate(ctx, nPlayers);
-      if (ok) return state;
+      const ctx = { state, map, z: 0, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
+      if (!tryGenerate(ctx, nPlayers)) continue;
+      // подземелье вторым слоем + врата между слоями
+      const under = newLevel(w, h);
+      state.levels[1] = under;
+      const uctx = { state, map: under, z: 1, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
+      if (!generateUnder(uctx)) continue;
+      if (!placeGates(ctx, uctx)) continue;
+      return state;
     }
     throw new Error('Не удалось сгенерировать карту');
+  }
+  function newLevel(w, h) {
+    const N = w * h;
+    return { w, h, terrain: new Uint8Array(N), road: new Uint8Array(N), obs: new Uint8Array(N), block: new Uint8Array(N), objAt: new Int32Array(N).fill(-1), zone: new Uint8Array(N) };
   }
 
   function tryGenerate(ctx, nPlayers) {
@@ -109,6 +119,9 @@
       const z = zones[map.zone[y * w + x]];
       if (patch(x / 4.5, y / 4.5) > 0.68) map.terrain[y * w + x] = R.TERRAIN_INDEX[z.terrain2];
     }
+    // 1в. море вдоль одного края — до расстановки всего остального,
+    // чтобы объекты и проходы сами обходили воду
+    carveSea(ctx, zones);
     // 2. границы зон → горы/лес; проходы
     const border = new Uint8Array(w * h);
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -217,6 +230,8 @@
     if (!ensureConnectivity(ctx, passages)) return false;
     buildRoads(ctx, passages);
     rebuildBlock(ctx);
+    populateSea(ctx);
+    rebuildBlock(ctx);
     return true;
   }
 
@@ -230,6 +245,7 @@
   function addObject(ctx, obj) {
     const { state, map, w } = ctx;
     obj.id = state.nextId++;
+    obj.z = ctx.z || 0;
     state.objects[obj.id] = obj;
     map.objAt[obj.y * w + obj.x] = obj.id;
     ctx.occupied[obj.y * w + obj.x] = 1;
@@ -243,7 +259,7 @@
     let x = z.cx, y = z.cy;
     for (let dy = -2; dy <= 2; dy++) for (let dx = -3; dx <= 3; dx++) { const i = (y + dy) * w + x + dx; map.obs[i] = 0; map.terrain[i] = R.TERRAIN_INDEX[z.terrain]; }
     const town = {
-      id: state.nextId++, name: rng.pick(TOWN_NAMES[faction]), faction, owner, x, y, buildings: { hall_1: true }, builtToday: false,
+      id: state.nextId++, name: rng.pick(TOWN_NAMES[faction]), faction, owner, x, y, z: ctx.z || 0, buildings: { hall_1: true }, builtToday: false,
       garrison: [null, null, null, null, null, null, null], visiting: null, avail: [0, 0, 0, 0, 0, 0, 0], guild: {}, tavern: [], capturedDay: 0,
     };
     if (owner >= 0) {
@@ -438,6 +454,7 @@
     }
     for (const id in state.objects) {
       const o = state.objects[id];
+      if ((o.z || 0) !== (ctx.z || 0)) continue;   // объекты другого слоя этот не блокируют
       map.block[o.y * w + o.x] = 1;
       const fp = O.get(o.type).footprint;
       if (fp) for (const [dx, dy] of fp) map.block[(o.y + dy) * w + o.x + dx] = 1;
@@ -453,7 +470,7 @@
   function ensureConnectivity(ctx, passages) {
     const { state, map, w, h } = ctx;
     const starts = state.players.map(p => state.towns[p.towns[0]]);
-    const targets = Object.values(state.objects).map(o => [o.x, o.y]).concat(passages.map(p => [p.x, p.y]));
+    const targets = Object.values(state.objects).filter(o => (o.z || 0) === (ctx.z || 0)).map(o => [o.x, o.y]).concat(passages.map(p => [p.x, p.y]));
     for (let round = 0; round < 3; round++) {
       const seen = H3.Pathfind.reachable(w, h, starts[0].x, starts[0].y + 1, (x, y) => passableForConn(ctx, x, y));
       let fixed = 0;
@@ -494,7 +511,7 @@
     for (const p of state.players) {
       const town = state.towns[p.towns[0]];
       const zid = map.zone[town.y * w + town.x];
-      const targets = Object.values(state.objects).filter(o => o.type === 'mine' && map.zone[o.y * w + o.x] === zid).map(o => [o.x, o.y])
+      const targets = Object.values(state.objects).filter(o => o.type === 'mine' && (o.z || 0) === (ctx.z || 0) && map.zone[o.y * w + o.x] === zid).map(o => [o.x, o.y])
         .concat(passages.filter(ps => map.zone[ps.y * w + ps.x] === zid || ctx.zones[ps.link.b].player === p.id || ctx.zones[ps.link.a].player === p.id).map(ps => [ps.x, ps.y]));
       const res = H3.Pathfind.dijkstra({ w, h, start: [town.x, town.y + 1], cost: (x, y) => { const i = y * w + x; if (map.block[i] && map.objAt[i] < 0) return Infinity; return map.road[i] ? 50 : R.TERRAIN_COST[map.terrain[i]] || 100; } });
       for (const [tx, ty] of targets) {
@@ -503,6 +520,210 @@
         map.road[(town.y + 1) * w + town.x] = 1;
       }
     }
+  }
+
+  /* ---------- море ----------
+     Море нарезается полосой вдоль одного края ещё до расстановки объектов:
+     дальше генератор сам обходит воду (free() её исключает), а связность
+     проверяется общим механизмом. Вокруг центров стартовых зон — сухой круг,
+     чтобы город не оказался на дне. */
+  function carveSea(ctx, zones) {
+    const { map, rng, w, h } = ctx;
+    if (rng.chance(0.25)) return;              // четверть карт — без моря
+    const side = rng.int(0, 3);                // 0 север, 1 восток, 2 юг, 3 запад
+    const noise = makeNoise(rng, 64);
+    const WATER = R.TERRAIN_INDEX.water;
+    let cells = 0;
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const d = side === 0 ? y : side === 1 ? w - 1 - x : side === 2 ? h - 1 - y : x;
+      const band = 2.5 + noise(x / 7, y / 7) * 9;
+      if (d > band) continue;
+      let dry = false;
+      for (const z of zones) { const r = z.kind === 'start' ? 9 : 5; if (Math.hypot(x - z.cx, y - z.cy) < r) { dry = true; break; } }
+      if (dry) continue;
+      map.terrain[y * w + x] = WATER; cells++;
+    }
+    if (cells >= 40) ctx.sea = { side, cells };
+  }
+  /** Что стоит в море и на его берегу: лодки, верфи и морская добыча.
+      Всё сажаем только в САМЫЙ БОЛЬШОЙ водоём — иначе лодка окажется
+      в трёхклеточной луже, из которой некуда плыть. */
+  function populateSea(ctx) {
+    const { map, rng, w, h } = ctx;
+    if (!ctx.sea) return;
+    const WATER = R.TERRAIN_INDEX.water;
+    const isWater = (x, y) => x >= 0 && y >= 0 && x < w && y < h && map.terrain[y * w + x] === WATER;
+    // компоненты связности воды
+    const comp = new Int32Array(w * h).fill(-1);
+    let best = -1, bestSize = 0, nComp = 0;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (!isWater(x, y) || comp[y * w + x] >= 0) continue;
+      const id = nComp++; const q = [[x, y]]; comp[y * w + x] = id; let size = 0;
+      while (q.length) {
+        const [cx, cy] = q.pop(); size++;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const nx = cx + dx, ny = cy + dy;
+          if (!isWater(nx, ny) || comp[ny * w + nx] >= 0) continue;
+          comp[ny * w + nx] = id; q.push([nx, ny]);
+        }
+      }
+      if (size > bestSize) { bestSize = size; best = id; }
+    }
+    if (bestSize < 30) return;                       // не море, а лужи
+    ctx.sea.main = best; ctx.sea.size = bestSize;
+    const inSea = (x, y) => isWater(x, y) && comp[y * w + x] === best;
+    const shoreWater = [], deepWater = [], shoreLand = [];
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x;
+      if (map.objAt[i] >= 0 || ctx.occupied[i]) continue;
+      let near = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && inSea(x + dx, y + dy)) near++;
+      if (inSea(x, y)) { if (near >= 7) deepWater.push([x, y]); else if (near >= 3) shoreWater.push([x, y]); }
+      else if (near >= 2 && !map.block[i] && !map.road[i]) shoreLand.push([x, y]);
+    }
+    if (shoreWater.length < 4 || shoreLand.length < 2) return;
+    rng.shuffle(shoreWater); rng.shuffle(deepWater); rng.shuffle(shoreLand);
+    // верфь на берегу + лодка рядом с ней
+    const yard = shoreLand.pop();
+    if (yard) {
+      addObject(ctx, { type: 'shipyard', x: yard[0], y: yard[1], owner: -1 });
+      const spot = shoreWater.find(([x, y]) => Math.abs(x - yard[0]) <= 2 && Math.abs(y - yard[1]) <= 2);
+      if (spot) { addObject(ctx, { type: 'boat', x: spot[0], y: spot[1], owner: -1 }); shoreWater.splice(shoreWater.indexOf(spot), 1); }
+    }
+    if (shoreWater.length) { const b = shoreWater.pop(); addObject(ctx, { type: 'boat', x: b[0], y: b[1], owner: -1 }); }
+    // морская добыча в глубине
+    const loot = Math.min(deepWater.length, 3 + Math.round(bestSize / 120));
+    for (let i = 0; i < loot; i++) {
+      const spot = deepWater.pop(); if (!spot) break;
+      addObject(ctx, { type: rng.chance(0.55) ? 'flotsam' : 'sea_chest', x: spot[0], y: spot[1] });
+    }
+  }
+
+  /* ---------- подземелье ----------
+     Слой 1 — пещеры: всё скала, в ней выгрызены каверны вокруг центров зон и
+     соединяющие их коридоры. Городов нет, зато сокровищ и стражей больше:
+     подземелье — риск за награду. */
+  const UNDER_TERRAINS = ['subter', 'subter', 'rough', 'lava'];
+  function generateUnder(ctx) {
+    const { map, rng, w, h, size } = ctx;
+    const N = w * h, ROCK = R.TERRAIN_INDEX.rock;
+    ctx.corridor = new Uint8Array(N);
+    const nz = w >= 70 ? 5 : w >= 50 ? 4 : 3;
+    const zones = [];
+    for (let i = 0; i < nz; i++) {
+      const a = Math.PI * 2 * i / nz + rng.next() * 0.6;
+      const rad = Math.min(w, h) * 0.3;
+      zones.push({
+        id: i, kind: i === 0 ? 'treasure' : 'mid', tier: i === 0 ? 3 : 2,
+        cx: U.clamp(Math.round(w / 2 + Math.cos(a) * rad), 7, w - 8),
+        cy: U.clamp(Math.round(h / 2 + Math.sin(a) * rad), 7, h - 8),
+        terrain: rng.pick(UNDER_TERRAINS), weight: 1,
+      });
+    }
+    ctx.zones = zones;
+    // принадлежность клеток кавернам + сплошная скала
+    const noise = makeNoise(rng, 64);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let best = 0, bd = Infinity;
+      for (const z of zones) { const d = Math.hypot(x - z.cx, y - z.cy) + (noise(x / 6, y / 6) - 0.5) * 8; if (d < bd) { bd = d; best = z.id; } }
+      const i = y * w + x;
+      map.zone[i] = best;
+      map.terrain[i] = ROCK;
+    }
+    // выгрызаем каверны: шум + расстояние до центра зоны
+    const cave = makeNoise(rng, 64);
+    for (const z of zones) {
+      const rad = Math.round(Math.min(w, h) * 0.26);
+      for (let dy = -rad; dy <= rad; dy++) for (let dx = -rad; dx <= rad; dx++) {
+        const x = z.cx + dx, y = z.cy + dy;
+        if (x < 2 || y < 2 || x >= w - 2 || y >= h - 2) continue;
+        const d = Math.hypot(dx, dy) / rad;
+        if (d > 1) continue;
+        if (d > 0.3 && cave(x / 5, y / 5) < 0.12 + d * 0.5) continue;   // рваный край каверны
+        map.terrain[y * w + x] = R.TERRAIN_INDEX[zones[map.zone[y * w + x]].terrain];
+      }
+    }
+    // коридоры между каверными: цепочка + одна перемычка
+    const links = [];
+    for (let i = 1; i < zones.length; i++) links.push([i - 1, i]);
+    if (zones.length > 2) links.push([zones.length - 1, 0]);
+    for (const [a, b] of links) tunnel(ctx, zones[a], zones[b]);
+    // редкие препятствия внутри каверн
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x;
+      if (map.terrain[i] === ROCK || ctx.corridor[i]) continue;
+      if (cave(x / 3.5, y / 3.5) > 0.86) map.obs[i] = rng.chance(0.5) ? 3 : 2;
+    }
+    rebuildBlock(ctx);
+    // наполнение каверн — реже, чем наверху: пещеры теснее, а стражи перекрывают проходы
+    for (const z of zones) populateCave(ctx, z);
+    rebuildBlock(ctx);
+    // связность подземелья: от центра первой каверны видно все объекты
+    const seen = H3.Pathfind.reachable(w, h, zones[0].cx, zones[0].cy, (x, y) => passableForConn(ctx, x, y));
+    let bad = 0;
+    for (const id in ctx.state.objects) {
+      const o = ctx.state.objects[id];
+      if ((o.z || 0) !== 1) continue;
+      if (!seen[o.y * w + o.x]) bad++;
+    }
+    ctx.underSeen = seen;
+    void size;
+    return bad <= 2;
+  }
+  /** Наполнение каверны: дорого, но редко — иначе стражи запирают узкие проходы. */
+  function populateCave(ctx, z) {
+    const { rng } = ctx;
+    const rich = z.kind === 'treasure';
+    placeMine(ctx, z, rng.pick(U.RARE), rng.int(2500, 5000));
+    if (rich) placeMine(ctx, z, 'gold', rng.int(6000, 10000));
+    placeDwelling(ctx, z, rng.int(rich ? 5 : 3, rich ? 6 : 4), rich ? 9000 : 4000);
+    placeArtifact(ctx, z, rich ? 'relic' : 'major');
+    placeResources(ctx, z, rng.int(2, 3), rich ? 3 : 2);
+    if (rich) placeSimple(ctx, z, 'bank_utopia', 1, 0);
+    placeTreasure(ctx, z, rich ? 3 : 2, rich ? 9000 : 5000);
+  }
+  /** Извилистый тоннель между двумя кавернами (шириной 1–2 клетки). */
+  function tunnel(ctx, a, b) {
+    const { map, rng, w, h } = ctx;
+    let x = a.cx, y = a.cy, guard = 0;
+    while ((x !== b.cx || y !== b.cy) && guard++ < w * h) {
+      const dx = Math.sign(b.cx - x), dy = Math.sign(b.cy - y);
+      if (dx && (!dy || rng.chance(0.5))) x += dx; else if (dy) y += dy;
+      for (let oy = 0; oy <= 1; oy++) for (let ox = 0; ox <= 1; ox++) {
+        const nx = x + ox, ny = y + oy;
+        if (nx < 1 || ny < 1 || nx >= w - 1 || ny >= h - 1) continue;
+        const i = ny * w + nx;
+        if (map.terrain[i] === R.TERRAIN_INDEX.rock) map.terrain[i] = R.TERRAIN_INDEX[ctx.zones[map.zone[i]].terrain];
+        map.obs[i] = 0; ctx.corridor[i] = 1;
+      }
+    }
+  }
+  function openNeighbours(ctx, x, y) {
+    let n = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && free(ctx, x + dx, y + dy)) n++;
+    return n;
+  }
+  /** Врата между слоями: пара объектов на одной координате, связанных pairId. */
+  function placeGates(ctx, uctx) {
+    const { rng, w, h } = ctx;
+    const nGates = w >= 70 ? 4 : w >= 50 ? 3 : 2;
+    let made = 0;
+    for (let attempt = 0; attempt < 400 && made < nGates; attempt++) {
+      const x = rng.int(3, w - 4), y = rng.int(3, h - 4);
+      if (!free(ctx, x, y) || !free(uctx, x, y)) continue;
+      if (!uctx.underSeen[y * w + x]) continue;             // врата должны вести в связную часть пещер
+      if (openNeighbours(ctx, x, y) < 3 || openNeighbours(uctx, x, y) < 3) continue;  // не замуровать выход
+      let near = false;
+      for (const id in ctx.state.objects) { const o = ctx.state.objects[id]; if (o.type === 'subter_gate' && Math.hypot(o.x - x, o.y - y) < 12) { near = true; break; } }
+      if (near) continue;
+      const pair = made + 1;
+      addObject(ctx, { type: 'subter_gate', x, y, pair });
+      addObject(uctx, { type: 'subter_gate', x, y, pair });
+      made++;
+    }
+    if (!made) return false;
+    rebuildBlock(ctx); rebuildBlock(uctx);
+    return true;
   }
 
   H3.Mapgen = { generate, TOWN_NAMES, guardCreature };

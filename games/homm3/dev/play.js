@@ -15,7 +15,7 @@ const path = require('path');
   await page.waitForTimeout(800);
   // 1. движение к ближайшему ресурсу
   const r1 = await ev(() => { const G = H3.Game, S = H3.State, st = G.state; const h = G.selected(); const pf = S.pathfield(st, h);
-    const objs = Object.values(st.objects).filter(o => ['resource', 'chest'].includes(o.type) && pf.dist[o.y * st.map.w + o.x] < Infinity).sort((a, b) => pf.dist[a.y * st.map.w + a.x] - pf.dist[b.y * st.map.w + b.x]);
+    const objs = Object.values(st.objects).filter(o => !o.z && ['resource', 'chest'].includes(o.type) && pf.dist[o.y * st.levels[0].w + o.x] < Infinity).sort((a, b) => pf.dist[a.y * st.levels[0].w + a.x] - pf.dist[b.y * st.levels[0].w + b.x]);
     const o = objs[0]; const p = H3.Pathfind.pathTo(pf, o.x, o.y); G.moveAlong(h, H3.Pathfind.annotate(pf, p, h.move, H3.Rules.heroMaxMove(h))); return o.type + '@' + o.x + ',' + o.y; });
   console.log('moving to', r1); await page.waitForTimeout(2500); await shot('move');
   // закрыть возможный диалог (сундук)
@@ -28,7 +28,7 @@ const path = require('path');
   await ev(() => { H3.Game.openHero(H3.Game.selected()); }); await page.waitForTimeout(600); await shot('hero');
   await ev(() => H3.UI.closeTop()); await page.waitForTimeout(300);
   // 4. бой с ближайшим стражем (ручной экран), потом авто
-  const r4 = await ev(() => { const G = H3.Game, st = G.state; const h = G.selected(); const ms = Object.values(st.objects).filter(o => o.type === 'monster').sort((a, b) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y)); const m = ms[0]; G.fight(h, { monster: m }); return m.cid + 'x' + m.n; });
+  const r4 = await ev(() => { const G = H3.Game, st = G.state; const h = G.selected(); const ms = Object.values(st.objects).filter(o => !o.z && o.type === 'monster').sort((a, b) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y)); const m = ms[0]; G.fight(h, { monster: m }); return m.cid + 'x' + m.n; });
   console.log('fight', r4); await page.waitForTimeout(1500); await shot('battle');
   // навести на врага для подсказки
   const hint = await ev(() => { const V = H3.BattleView.V, b = V.b; if (!b) return 'no battle'; const cur = H3.Battle.current(b); const foe = b.units.find(u => u.alive && u.side !== cur.side); const [x, y] = H3.U.Hex.center(foe.x, foe.y, V.size, V.ox, V.oy); const r = V.canvas.getBoundingClientRect(); return [r.left + x, r.top + y]; });

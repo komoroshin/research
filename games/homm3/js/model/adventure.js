@@ -26,10 +26,17 @@
       if (hero.move <= 0) { stop = { kind: 'nomove' }; break; }
       const dx = Math.abs(x - hero.x), dy = Math.abs(y - hero.y);
       const stepCost = (dx && dy) ? cost * 1.41 : cost;
+      // под парусом шаг на сушу — высадка: лодка остаётся у берега, ход заканчивается
+      if (hero.boat && S.terrainAt(state, x, y, hero.z) !== 'water') {
+        const from = [hero.x, hero.y];
+        hero.move = Math.max(0, hero.move - stepCost); hero.x = x; hero.y = y; steps.push([x, y]);
+        disembark(state, hero, from);
+        stop = { kind: 'landed' }; break;
+      }
       // страж на пути: подход к его зоне контроля — бой до входа
-      const guards = S.monstersNear(state, x, y);
-      const obj = S.objAt(state, x, y);
-      const other = S.heroAt(state, x, y);
+      const guards = S.monstersNear(state, x, y, hero.z);
+      const obj = S.objAt(state, x, y, hero.z);
+      const other = S.heroAt(state, x, y, hero.z);
       if (obj && !O.get(obj.type).obstacle) {
         // объект: не входим, взаимодействуем «с порога» (кроме города и своих объектов-проходимых)
         if (obj.type === 'monster') { stop = { kind: 'monster', obj }; break; }
@@ -41,7 +48,7 @@
         }
         // одноклеточный объект: становимся на него? Нет — остаёмся рядом, кроме подбираемых
         const t = O.get(obj.type);
-        if (t.once === 'remove' && !t.bank) { hero.move = Math.max(0, hero.move - stepCost); hero.x = x; hero.y = y; steps.push([x, y]); stop = { kind: 'object', obj }; break; }
+        if ((t.once === 'remove' && !t.bank) || t.enter) { hero.move = Math.max(0, hero.move - stepCost); hero.x = x; hero.y = y; steps.push([x, y]); stop = { kind: 'object', obj }; break; }
         stop = { kind: 'object', obj }; hero.move = Math.max(0, hero.move - Math.min(stepCost, hero.move)); break;
       }
       if (other) {
@@ -108,10 +115,48 @@
     removeObject(state, obj);
     S.addLog(state, C.get(obj.cid).name + ' ×' + obj.n + ' присоединились к ' + hero.name + '.', 'good', hero.owner);
   }
+  /* ---------- море ---------- */
+  /** Герой садится в лодку: лодка исчезает с карты и становится его судном. */
+  function board(state, hero, boat) {
+    hero.boat = 1;
+    hero.x = boat.x; hero.y = boat.y;
+    removeObject(state, boat);
+  }
+  /** Высадка: лодка остаётся на клетке, с которой сошли. */
+  function disembark(state, hero, from) {
+    hero.boat = 0;
+    const m = S.lvl(state, hero.z), i = from[1] * m.w + from[0];
+    if (m.objAt[i] < 0) {
+      const boat = { id: state.nextId++, type: 'boat', x: from[0], y: from[1], z: hero.z || 0, owner: hero.owner };
+      state.objects[boat.id] = boat;
+      m.objAt[i] = boat.id; m.block[i] = 1;
+    }
+    S.addLog(state, hero.name + ' сходит на берег.', '', hero.owner);
+  }
+  /** Свободная клетка моря рядом — куда спустить новую лодку. */
+  function waterSpotNear(state, x, y, z) {
+    for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (!S.inMap(state, nx, ny, z) || S.terrainAt(state, nx, ny, z) !== 'water') continue;
+      const m = S.lvl(state, z);
+      if (m.objAt[ny * m.w + nx] >= 0) continue;
+      if (S.heroAt(state, nx, ny, z)) continue;
+      return [nx, ny];
+    }
+    return null;
+  }
+  /** Парные врата на другом слое. */
+  function gatePartner(state, gate) {
+    for (const id in state.objects) {
+      const o = state.objects[id];
+      if (o.type === 'subter_gate' && o.pair === gate.pair && o.id !== gate.id) return o;
+    }
+    return null;
+  }
   function removeObject(state, obj) {
     delete state.objects[obj.id];
-    const i = S.idx(state, obj.x, obj.y);
-    state.map.objAt[i] = -1; state.map.block[i] = 0;
+    const m = S.lvl(state, obj.z), i = S.idx(state, obj.x, obj.y, obj.z);
+    m.objAt[i] = -1; m.block[i] = 0;
   }
 
   /* ---------- посещение объектов ---------- */
@@ -135,8 +180,51 @@
     switch (obj.type) {
       case 'resource': {
         p.res[obj.res] += obj.amount; removeObject(state, obj);
-        S.addLog(state, hero.name + ' подобрал ' + obj.amount + ' ' + RESN[obj.res] + '.', '', hero.owner);
+        S.addLog(state, hero.name + ' подбирает ' + obj.amount + ' ' + RESN[obj.res] + '.', '', hero.owner);
         return Object.assign(base, { text: 'Вы нашли ' + obj.amount + ' ' + RESN[obj.res] + '.', icon: 'res_' + obj.res, toast: true });
+      }
+      case 'subter_gate': {
+        const other = gatePartner(state, obj);
+        if (!other) return Object.assign(base, { text: 'Врата завалены.', toast: true });
+        // герой появляется прямо на парных вратах (клетка объекта проходима как цель)
+        const busy = S.heroAt(state, other.x, other.y, other.z);
+        if (busy) return Object.assign(base, { text: 'На той стороне у врат уже кто-то стоит.', toast: true });
+        hero.z = other.z; hero.x = other.x; hero.y = other.y;
+        hero.move = Math.max(0, hero.move - 200);
+        S.computeVisibility(state, hero.owner);
+        S.addLog(state, hero.name + (other.z ? ' уходит в подземелье.' : ' выходит на поверхность.'), '', hero.owner);
+        return Object.assign(base, { text: other.z ? 'Герой спускается в подземелье.' : 'Герой выходит на поверхность.', toast: true, moved: true });
+      }
+      case 'boat': {
+        board(state, hero, obj);
+        S.addLog(state, hero.name + ' поднимает парус.', '', hero.owner);
+        return Object.assign(base, { text: 'Герой садится в лодку.', toast: true, moved: true });
+      }
+      case 'shipyard': {
+        const spot = waterSpotNear(state, obj.x, obj.y, obj.z);
+        if (!spot) return Object.assign(base, { text: 'Спустить лодку негде — у причала тесно.', toast: true });
+        if (p.res.gold < 1000) return Object.assign(base, { text: 'Постройка лодки стоит 1000 золота — не хватает.', toast: true });
+        p.res.gold -= 1000;
+        const m = S.lvl(state, obj.z);
+        const boat = { id: state.nextId++, type: 'boat', x: spot[0], y: spot[1], z: obj.z || 0, owner: hero.owner };
+        state.objects[boat.id] = boat; m.objAt[spot[1] * m.w + spot[0]] = boat.id; m.block[spot[1] * m.w + spot[0]] = 1;
+        obj.owner = hero.owner;
+        return Object.assign(base, { text: 'Верфь спустила лодку на воду за 1000 золота.', toast: true });
+      }
+      case 'flotsam': {
+        const rng = state._rng.misc; const wood = rng.int(3, 6), gold = rng.int(2, 5) * 100;
+        p.res.wood += wood; p.res.gold += gold; removeObject(state, obj);
+        return Object.assign(base, { text: 'Среди обломков: ' + wood + ' дерева и ' + gold + ' золота.', toast: true });
+      }
+      case 'sea_chest': {
+        const rng = state._rng.misc;
+        if (rng.chance(0.3)) {
+          const art = rng.pick(AR.byClass('minor'));
+          giveArtifact(hero, art.id); removeObject(state, obj);
+          return Object.assign(base, { text: 'В сундуке нашёлся артефакт: ' + art.name + '.', toast: true, icon: 'art_' + art.id });
+        }
+        const gold = rng.int(10, 15) * 100; p.res.gold += gold; removeObject(state, obj);
+        return Object.assign(base, { text: 'В сундуке ' + gold + ' золота.', toast: true });
       }
       case 'campfire': {
         const rng = state._rng.misc; const gold = rng.int(4, 6) * 100, res = rng.pick(U.RES.filter(r => r !== 'gold')), n = rng.int(4, 6);
@@ -226,7 +314,7 @@
       }
       case 'observatory': {
         if (playerVisited(obj, hero.owner)) return Object.assign(base, { text: 'Отсюда вы уже осматривали окрестности.', toast: true });
-        markPlayer(obj, hero.owner); S.reveal(state, hero.owner, obj.x, obj.y, 15, 1); S.computeVisibility(state, hero.owner);
+        markPlayer(obj, hero.owner); S.reveal(state, hero.owner, obj.x, obj.y, 15, 1, hero.z); S.computeVisibility(state, hero.owner);
         return Object.assign(base, { text: 'С обсерватории видно всё вокруг в радиусе 15.', toast: true });
       }
       case 'trading_post': return Object.assign(base, { text: 'Торговый пост: обмен ресурсов.', kind: 'market' });
@@ -290,20 +378,20 @@
    */
   function startBattle(state, hero, target) {
     const rng = state._rng.battle;
-    const terrain = S.terrainAt(state, hero.x, hero.y);
+    const terrain = S.terrainAt(state, hero.x, hero.y, hero.z);
     const att = { hero, army: hero.army, player: hero.owner, name: hero.name, isAI: state.players[hero.owner].isAI };
     let def, ctx, siege = null, defTerrain = terrain;
     if (target.monster) {
-      const m = target.monster; defTerrain = S.terrainAt(state, m.x, m.y);
+      const m = target.monster; defTerrain = S.terrainAt(state, m.x, m.y, m.z);
       def = { hero: null, army: splitNeutral(m.cid, m.n), player: -1, name: C.get(m.cid).name + ' ×' + m.n, isAI: true, canRetreat: false };
       ctx = { type: 'monster', objId: m.id, heroId: hero.id, pending: target.pending || null };
     } else if (target.hero) {
-      const e = target.hero; defTerrain = S.terrainAt(state, e.x, e.y);
+      const e = target.hero; defTerrain = S.terrainAt(state, e.x, e.y, e.z);
       def = { hero: e, army: e.army, player: e.owner, name: e.name, isAI: state.players[e.owner].isAI };
       ctx = { type: 'hero', heroId: hero.id, defHeroId: e.id };
       const tw = townOfHero(state, e); if (tw) { siege = tw; mergeGarrison(tw, e); }
     } else if (target.town) {
-      const tw = target.town; siege = tw; defTerrain = S.terrainAt(state, tw.x, tw.y + 1);
+      const tw = target.town; siege = tw; defTerrain = S.terrainAt(state, tw.x, tw.y + 1, tw.z);
       const dh = tw.visiting ? state.heroes[tw.visiting] : null;
       if (dh) { mergeGarrison(tw, dh); def = { hero: dh, army: dh.army, player: dh.owner, name: dh.name, isAI: true, canRetreat: false, morale: tw.buildings.tavern ? 1 : 0 }; }
       else def = { hero: null, army: tw.garrison, player: tw.owner, name: 'Гарнизон ' + tw.name, isAI: true, canRetreat: false, morale: tw.buildings.tavern ? 1 : 0 };
@@ -371,7 +459,7 @@
     // контекст
     if (ctx.type === 'monster') {
       const m = state.objects[ctx.objId];
-      if (attWon && m) { removeObject(state, m); if (ctx.pending && attHero && !S.heroAt(state, ctx.pending[0], ctx.pending[1])) { /* герой остаётся на месте; путь продолжит игрок */ } }
+      if (attWon && m) { removeObject(state, m); if (ctx.pending && attHero && !S.heroAt(state, ctx.pending[0], ctx.pending[1], attHero.z)) { /* герой остаётся на месте; путь продолжит игрок */ } }
       else if (m && !attWon) { // страж поредел
         const left = res.sides[1].army.filter(Boolean).reduce((a, s) => a + s.n, 0); if (left > 0) m.n = left; else removeObject(state, m);
       }
@@ -569,7 +657,7 @@
     }
   }
 
-  H3.Adventure = { week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);

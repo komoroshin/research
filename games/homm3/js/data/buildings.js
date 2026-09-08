@@ -18,6 +18,7 @@
     { id: 'tavern', name: 'Таверна', cost: { gold: 500, wood: 5 }, req: [], desc: 'Найм героев. +1 мораль защитникам при осаде.', kind: 'misc' },
     { id: 'market', name: 'Рынок', cost: { gold: 500, wood: 5 }, req: [], desc: 'Обмен ресурсов. Чем больше рынков, тем лучше курс.', kind: 'misc' },
     { id: 'silo', name: 'Хранилище ресурсов', cost: { gold: 5000, ore: 5 }, req: ['market'], desc: 'Дополнительный ресурс каждый день.', kind: 'misc' },
+    { id: 'shipyard', name: 'Верфь', cost: { gold: 2000, wood: 20 }, req: [], desc: 'Спускает лодки на воду. Строится только в приморском городе.', kind: 'misc' },
     { id: 'blacksmith', name: 'Кузница', cost: { gold: 1000, wood: 5 }, req: [], desc: 'Нужна для Городской ратуши.', kind: 'misc' },
     { id: 'guild_1', name: 'Гильдия магов I', cost: { gold: 2000, wood: 5, ore: 5 }, req: [], desc: '5 заклинаний 1 уровня. Герои в городе полностью восстанавливают ману.', kind: 'guild', level: 1 },
     { id: 'guild_2', name: 'Гильдия магов II', cost: Object.assign({ gold: 1000, wood: 5, ore: 5 }, rare4(4)), req: ['guild_1'], desc: '+4 заклинания 2 уровня.', kind: 'guild', level: 2 },
@@ -56,7 +57,7 @@
 
   /** Порядок постройки для ИИ (ТЗ §8.1). */
   const AI_ORDER = ['tavern', 'hall_2', 'dwell_2', 'dwell_3', 'guild_1', 'market', 'blacksmith', 'hall_3', 'fort', 'citadel', 'dwell_4', 'dwell_5', 'castle', 'dwell_6', 'hall_4', 'dwell_7',
-    'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'guild_5', 'silo'];
+    'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'guild_5', 'shipyard', 'silo'];
 
   H3.Buildings = { COMMON, BY_ID, forFaction, get, GUILD_SPELLS, AI_ORDER };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Buildings;

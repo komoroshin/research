@@ -97,7 +97,13 @@
       const stop = r.stop;
       if (!stop) { if (hero.move === before && !r.steps.length) blacklist.add(target.key); continue; }
       if (stop.kind === 'nomove') break;
-      if (stop.kind === 'object') { await handleObject(state, hero, stop.obj, hooks, smart, think); if (!stop.obj || !state.objects[stop.obj.id] || (stop.obj.type === 'mine' && stop.obj.owner === hero.owner)) continue; blacklist.add('o' + stop.obj.id); continue; }
+      if (stop.kind === 'object') {
+        const gate = stop.obj.type === 'subter_gate' ? A.gatePartner(state, stop.obj) : null;
+        await handleObject(state, hero, stop.obj, hooks, smart, think);
+        if (gate) blacklist.add('o' + gate.id);   // иначе герой скачет через врата туда-сюда
+        if (!stop.obj || !state.objects[stop.obj.id] || (stop.obj.type === 'mine' && stop.obj.owner === hero.owner)) continue;
+        blacklist.add('o' + stop.obj.id); continue;
+      }
       if (stop.kind === 'monster') {
         const done = await handleMonster(state, hero, stop.obj, hooks, smart, think);
         if (!done) blacklist.add('m' + stop.obj.id);
@@ -124,7 +130,7 @@
   function heroPower(hero) { return R.armyPower(hero.army, hero); }
   function guardOf(state, obj) {
     let best = null;
-    for (const m of S.monstersNear(state, obj.x, obj.y)) { const v = A.monsterPower(m); if (!best || v > best.v) best = { m, v }; }
+    for (const m of S.monstersNear(state, obj.x, obj.y, obj.z)) { const v = A.monsterPower(m); if (!best || v > best.v) best = { m, v }; }
     return best;
   }
   function winChance(ratio, role, smart) {
@@ -143,7 +149,7 @@
     return d;
   }
   function chooseTarget(state, hero, pf, blacklist, smart) {
-    const p = state.players[hero.owner], w = state.map.w;
+    const p = state.players[hero.owner], w = S.lvl(state, hero.z).w;
     const my = heroPower(hero), role = hero._role || 'scout', maxMove = R.heroMaxMove(hero);
     const cands = [];
     const consider = (x, y, key, value, label, guardV, extra) => {
@@ -160,7 +166,8 @@
     };
     for (const id in state.objects) {
       const o = state.objects[id];
-      const vis = p.vis[o.y * w + o.x]; if (!vis) continue;
+      if ((o.z || 0) !== (hero.z || 0)) continue;          // цели ищем на своём слое
+      const vis = p.vis[hero.z || 0][o.y * w + o.x]; if (!vis) continue;
       const t = O.get(o.type); if (t.obstacle) continue;
       const g = guardOf(state, o); const gv = g && g.m !== o ? g.v : 0;
       const key = 'o' + o.id;
@@ -171,6 +178,30 @@
         case 'artifact': consider(o.x, o.y, key, AR.CLASS_VALUE[AR.get(o.art).cls], 'артефакт', gv); break;
         case 'mine': if (o.owner !== hero.owner) consider(o.x, o.y, key, MINE_VALUE[o.res] * (o.owner >= 0 ? 1.3 : 1), O.MINE_NAMES[o.res], gv); break;
         case 'dwelling': if (o.owner !== hero.owner || o.avail >= 3) consider(o.x, o.y, key, 1500 + (o.avail ? Math.min(3000, o.avail * C.aiValue(C.get(o.cid)) * 0.5) : 0), 'жилище', gv); break;
+        case 'boat': {
+          // лодка нужна, только если своя суша уже обобрана: доплыть — целое приключение
+          if (hero.boat) break;
+          const dry = cands.filter(c => c.util > 800).length;
+          if (!dry) consider(o.x, o.y, key, 900, 'лодка', gv);
+          break;
+        }
+        case 'shipyard': {
+          if (hero.boat || o.owner === hero.owner || p.res.gold < 2500) break;
+          const dry2 = cands.filter(c => c.util > 800).length;
+          if (!dry2) consider(o.x, o.y, key, 800, 'верфь', gv);
+          break;
+        }
+        case 'flotsam': consider(o.x, o.y, key, 800, 'обломки', gv); break;
+        case 'sea_chest': consider(o.x, o.y, key, 1500, 'сундук в воде', gv); break;
+        case 'subter_gate': {
+          // ценность врат — по доле неразведанного на том слое: чем больше
+          // неизвестного, тем интереснее спуститься. Разведали — врата остывают.
+          const ov = p.vis[1 - (hero.z || 0)];
+          let unknown = 0;
+          for (let i = 0; i < ov.length; i++) if (!ov[i]) unknown++;
+          consider(o.x, o.y, key, 300 + Math.round(2200 * unknown / ov.length), 'врата в подземелье', gv);
+          break;
+        }
         case 'monster': {
           const mv = A.monsterPower(o); const ratio = my / Math.max(1, mv);
           if (ratio >= (role === 'main' ? 1.5 : 2.5)) consider(o.x, o.y, 'm' + o.id, mv * 0.35 + 1500, 'стражи ' + C.get(o.cid).name, 0);
@@ -208,7 +239,8 @@
     }
     // вражеские герои
     for (const e of enemyHeroesOf(state, hero.owner)) {
-      if (!p.vis[e.y * w + e.x]) continue;
+      if ((e.z || 0) !== (hero.z || 0)) continue;
+      if (!p.vis[hero.z || 0][e.y * w + e.x]) continue;
       const ep = heroPower(e);
       consider(e.x, e.y, 'h' + e.id, ep * 1.2 + 3000, 'герой ' + e.name, ep + 200);
     }
@@ -216,11 +248,12 @@
     if (role !== 'main') { const main = S.heroesOf(state, hero.owner).find(h => h._role === 'main'); if (main && main.id !== hero.id && R.armyPower(hero.army, null) > 800 && !hero._fresh) consider(main.x, main.y, 'h' + main.id, 2500, 'к ' + main.name, 0); }
     // разведка: ближайшая достижимая клетка на границе неизведанного
     if (!cands.some(c => c.util > 400)) {
-      const h = state.map.h; let best = null, bd = Infinity;
+      const m = S.lvl(state, hero.z), h = m.h; let best = null, bd = Infinity;
       for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
         const i = y * w + x; const d = pf.dist[i]; if (!(d < Infinity) || d < 100) continue;
-        if (state.map.block[i]) continue;
-        const frontier = p.vis[i - 1] === 0 || p.vis[i + 1] === 0 || p.vis[i - w] === 0 || p.vis[i + w] === 0;
+        if (m.block[i]) continue;
+        const vis = p.vis[hero.z || 0];
+        const frontier = vis[i - 1] === 0 || vis[i + 1] === 0 || vis[i - w] === 0 || vis[i + w] === 0;
         if (!frontier) continue;
         if (smart && dangerAt(state, hero, x, y, my)) continue;
         if (d < bd) { bd = d; best = [x, y]; }
