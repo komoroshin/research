@@ -265,7 +265,6 @@
       const tw = st.towns[o.townId];
       Sp.draw(ctx, 'town_' + tw.faction, px, py - 2, 1);
       drawFlag(ctx, px, py - 48, tw.owner >= 0 ? st.players[tw.owner].color : '#999');
-      if (tw.owner === st.turn) { const inc = R.townIncome(tw); void inc; }
       return;
     }
     if (o.type === 'mine') { Sp.draw(ctx, 'mine_' + o.res, px, py, 1); drawFlag(ctx, px + 12, py - 26, o.owner >= 0 ? st.players[o.owner].color : '#999', true); return; }
@@ -377,5 +376,5 @@
     V.dirty = true;
   }
 
-  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag };
+  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject };
 })(typeof window !== 'undefined' ? window : globalThis);

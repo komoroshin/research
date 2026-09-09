@@ -645,19 +645,87 @@
       }
     }
   }
+  /* ---------- цели сценария ----------
+     Кроме «убить всех» карта может ставить свои условия: взять конкретный
+     город, добыть артефакт, накопить ресурс, продержаться N дней. Победа —
+     если выполнено ЛЮБОЕ из win-условий, поражение — если сработало любое
+     из lose. Цели проверяются за игрока-человека (0); ИИ играет на истребление. */
+  const GOAL_TEXT = {
+    kill_all: () => 'Победить всех противников',
+    capture_town: (state, g) => 'Захватить город ' + ((state.towns[g.townId] || {}).name || '?'),
+    capture_all_towns: () => 'Захватить все города на карте',
+    defeat_hero: (state, g) => 'Победить героя ' + ((state.heroes[g.heroId] || {}).name || '?'),
+    gather: (state, g) => 'Накопить ' + U.fmt(g.amount) + ' ' + (O.RES_NAMES_GEN[g.res] || g.res),
+    find_artifact: (state, g) => 'Найти артефакт «' + ((AR.get(g.art) || {}).name || '?') + '»',
+    survive: (state, g) => 'Продержаться ' + g.days + ' ' + U.plural(g.days, 'день', 'дня', 'дней'),
+    build: (state, g) => 'Построить ' + ((H3.Buildings.BY_ID[g.building] || {}).name || g.building),
+    lose_all: () => 'Потерять все города и героев',
+    lose_town: (state, g) => 'Потерять город ' + ((state.towns[g.townId] || {}).name || '?'),
+    lose_hero: (state, g) => 'Потерять героя ' + ((state.heroes[g.heroId] || {}).name || '?'),
+    timeout: (state, g) => 'Не уложиться в ' + g.days + ' ' + U.plural(g.days, 'день', 'дня', 'дней'),
+  };
+  function goalText(state, g) { const f = GOAL_TEXT[g.type]; return f ? f(state, g) : g.type; }
+  function goalMet(state, g, pid) {
+    const p = state.players[pid];
+    switch (g.type) {
+      case 'kill_all': return state.players.every(q => q.id === pid || !q.alive);
+      case 'capture_town': { const t = state.towns[g.townId]; return !!t && t.owner === pid; }
+      case 'capture_all_towns': return Object.values(state.towns).every(t => t.owner === pid);
+      case 'defeat_hero': { const h = state.heroes[g.heroId]; return !h || h.dead; }
+      case 'gather': return (p.res[g.res] || 0) >= g.amount;
+      case 'find_artifact': return S.heroesOf(state, pid).some(h => Object.keys(h.arts).some(k => h.arts[k] === g.art) || h.backpack.includes(g.art));
+      case 'survive': return state.day > g.days;
+      case 'build': return S.townsOf(state, pid).some(t => !!t.buildings[g.building]);
+      default: return false;
+    }
+  }
+  function goalFailed(state, g, pid) {
+    switch (g.type) {
+      case 'lose_all': return !state.players[pid].alive;
+      case 'lose_town': { const t = state.towns[g.townId]; return !!t && t.owner !== pid; }
+      case 'lose_hero': { const h = state.heroes[g.heroId]; return !h || h.dead; }
+      case 'timeout': return state.day > g.days;
+      default: return false;
+    }
+  }
+  /** Сводка целей для интерфейса: [{text, done, lose}]. */
+  function goalList(state, pid) {
+    const g = state.goals || DEFAULT_GOALS;
+    return g.win.map(x => ({ text: goalText(state, x), done: goalMet(state, x, pid || 0), lose: false }))
+      .concat(g.lose.map(x => ({ text: goalText(state, x), done: goalFailed(state, x, pid || 0), lose: true })));
+  }
+  const DEFAULT_GOALS = { win: [{ type: 'kill_all' }], lose: [{ type: 'lose_all' }] };
+  /** Проверка целей игрока-человека; ставит state.winner и state.endReason. */
+  function checkGoals(state) {
+    if (state.winner !== null) return;
+    const goals = state.goals || DEFAULT_GOALS;
+    for (const g of goals.lose) {
+      if (goalFailed(state, g, 0)) {
+        const alive = state.players.filter(p => p.alive && p.id !== 0);
+        state.winner = alive.length ? alive[0].id : -1;
+        state.endReason = goalText(state, g);
+        return;
+      }
+    }
+    for (const g of goals.win) {
+      if (goalMet(state, g, 0)) { state.winner = 0; state.endReason = goalText(state, g); return; }
+    }
+  }
   function checkPlayersAlive(state) {
     for (const p of state.players) {
       if (!p.alive) continue;
       if (!p.heroes.length && !p.towns.length) eliminate(state, p, 'нет героев и городов');
     }
+    checkGoals(state);
     const alive = state.players.filter(p => p.alive);
     if (state.winner === null) {
+      // страховка на случай, если целей нет: обычная победа «остался один»
       if (!state.players[0].alive) state.winner = alive.length ? alive[0].id : -1;
       else if (alive.length === 1) state.winner = 0;
     }
   }
 
-  H3.Adventure = { board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);
