@@ -58,16 +58,50 @@ input[type=range] { width: 100%; }
 .screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
 
 /* меню */
-#menu { align-items: center; justify-content: center; overflow: auto; background: radial-gradient(ellipse at 50% 20%, #4a3216 0%, transparent 60%), repeating-linear-gradient(90deg, #00000014 0 2px, transparent 2px 7px), linear-gradient(#1a120a, #0e0906); }
-#menu .card { width: min(640px, 96vw); padding: 18px 22px 22px; margin: 10px auto; }
-#menu .title { text-align: center; margin-bottom: 10px; }
-#menu .title h1 { font-size: 34px; letter-spacing: .04em; }
-#menu .title .sub { color: var(--text2); font-style: italic; }
+/* меню: экраны-оболочки (шапка · прокручиваемое тело · липкий низ); на телефоне — во весь экран, на широком — карточка */
+#menu { align-items: center; justify-content: center; overflow: hidden; background: radial-gradient(ellipse at 50% 20%, #4a3216 0%, transparent 60%), repeating-linear-gradient(90deg, #00000014 0 2px, transparent 2px 7px), linear-gradient(#1a120a, #0e0906); }
+.mscreen { display: flex; flex-direction: column; width: min(640px, 96vw); max-height: 96vh; }
+.mhead { display: flex; align-items: center; gap: 8px; padding: 8px 10px; flex: none; border-bottom: 1px solid #1a1007; box-shadow: 0 2px 6px #0006; }
+.mhead h2 { flex: 1; text-align: center; font-size: 20px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mhead .back { min-width: 44px; min-height: 40px; font-size: 26px; line-height: 1; padding: 0 12px 3px; }
+.mhead .spacer { width: 44px; flex: none; }
+.mbody { flex: 1; min-height: 0; overflow: auto; padding: 10px 14px 14px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.mfoot { flex: none; display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 12px; border-top: 1px solid #1a1007; background: linear-gradient(#3b2915, #221507); box-shadow: 0 -2px 6px #0006; }
+.mfoot button { flex: 1; min-height: 48px; font-size: 17px; white-space: normal; }
+.mfoot .msum { width: 100%; text-align: center; }
+.note { margin: 2px 0 4px; }
+/* главное меню: сцена города сверху, заголовок поверх её края, стек крупных кнопок */
+#menuArt { display: block; width: 100%; height: 34vh; max-height: 300px; object-fit: cover; object-position: 50% 100%; flex: none; -webkit-mask-image: linear-gradient(#000 65%, transparent); mask-image: linear-gradient(#000 65%, transparent); }
+.mtitle { text-align: center; margin: -48px 12px 6px; position: relative; flex: none; }
+.mtitle h1 { font-size: 34px; letter-spacing: .04em; text-shadow: 0 2px 0 #000, 0 0 18px #000, 0 0 30px #000; }
+.mtitle .sub { color: var(--text2); font-style: italic; text-shadow: 0 1px 2px #000, 0 0 8px #000; }
+.mmenu { display: flex; flex-direction: column; gap: 8px; }
+.mbtn { display: flex; align-items: center; gap: 12px; min-height: 54px; text-align: left; padding: 6px 14px; font-size: 18px; white-space: normal; }
+.mbtn img { width: 28px; height: 28px; flex: none; }
+.mbtn span { min-width: 0; }
+.mbtn small { display: block; font-size: 12px; color: var(--text2); font-family: var(--font-b); line-height: 1.2; }
+.mbtn.primary small { color: #5a4310; }
+.mver { text-align: center; margin-top: 8px; }
 .opt { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; align-items: center; margin: 6px 0; }
 .opt label { color: var(--text2); text-align: right; }
+.opt .note { grid-column: 2; }
 .seg { display: flex; gap: 4px; flex-wrap: wrap; }
 .seg button { padding: 4px 10px; font-size: 13px; }
 .seg button.on { background: linear-gradient(#f3d68a, #c99a35); color: var(--ink); text-shadow: none; }
+.seg button small { display: block; font-size: 11px; color: var(--text2); font-family: var(--font-b); line-height: 1.2; }
+.seg button.on small { color: #5a4310; }
+.seg.full button { flex: 1; min-height: 44px; }
+.more summary { cursor: pointer; color: var(--gold2); font-family: var(--font-d); min-height: 44px; display: flex; align-items: center; list-style: none; }
+.more summary::before { content: '▸'; margin-right: 6px; transition: transform .15s; } .more[open] summary::before { transform: rotate(90deg); }
+.setrows label { display: flex; align-items: center; gap: 12px; min-height: 44px; border-bottom: 1px dashed #ffffff14; cursor: pointer; }
+.setrows input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--gold); flex: none; margin: 0; }
+.mprog { display: flex; align-items: center; gap: 10px; margin: 6px 0 10px; }
+.mprog .dots { display: flex; gap: 5px; }
+.mprog .dots i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--gold3); background: #0006; }
+.mprog .dots i.done { background: var(--green); border-color: #3a7a2a; }
+.mrow { display: flex; gap: 6px; margin-top: 8px; }
+.mrow button { flex: 1; min-height: 44px; font-size: 14px; }
+.campsc > button { margin-top: 8px; width: 100%; min-height: 44px; font-size: 15px; }
 .factions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
 .factions button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 4px; font-size: 12px; white-space: normal; }
 .factions button img { width: 48px; height: 42px; object-fit: contain; }
@@ -75,7 +109,7 @@ input[type=range] { width: 100%; }
 .heroes4 button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 4px; font-size: 12px; white-space: normal; }
 .heroes4 button img { width: 48px; height: 48px; }
 .heroes4 small, .factions small { color: var(--text2); font-size: 10px; line-height: 1.1; }
-.menu-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.menu-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; } /* устарело: осталось для диалогов */
 
 /* карта */
 #adv { flex-direction: row; }
@@ -229,11 +263,18 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
   #advButtons button .lbl { display: none; }
   #datebar { font-size: 11px; }
   .modal { padding: 10px; }
-  .opt { grid-template-columns: 1fr; gap: 2px; } .opt label { text-align: left; font-size: 13px; }
+  .opt { grid-template-columns: 1fr; gap: 4px; } .opt label { text-align: left; font-size: 13px; } .opt .note { grid-column: 1; }
+  .seg.full { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; } .seg.full button { padding: 6px 3px; white-space: normal; font-size: 13px; }
+  /* экраны меню во весь экран, шапка и низ учитывают вырез и полосу жестов */
+  .mscreen { width: 100%; height: 100%; max-height: none; border: 0; border-radius: 0; box-shadow: none; }
+  .mhead { padding-top: calc(8px + env(safe-area-inset-top)); }
+  .mfoot { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+  .mscreen.main .mbody { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+  #menuArt { height: 32vh; max-height: none; }
+  .mmenu { gap: 6px; } .mbtn { min-height: 50px; font-size: 17px; }
   .factions, .heroes4 { grid-template-columns: repeat(4, 1fr); gap: 3px; }
   .factions button img { width: 36px; height: 32px; } .heroes4 button img { width: 36px; height: 36px; }
   .factions button, .heroes4 button { font-size: 11px; padding: 3px 2px; }
-  .card .small[style] { margin-left: 0 !important; }
   button.big { font-size: 16px; padding: 8px 14px; }
   /* сцена шире экрана: листается пальцем (pan-x отдаём браузеру, тап остаётся нашим), края затемнены как подсказка */
   #townPicWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; mask-image: linear-gradient(90deg, rgba(0,0,0,.25), #000 8%, #000 92%, rgba(0,0,0,.25)); -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.25), #000 8%, #000 92%, rgba(0,0,0,.25)); }

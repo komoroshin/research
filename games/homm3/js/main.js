@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.8';
+  const VERSION = '2.9';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -37,22 +37,96 @@
 
   /* ---------- главное меню ---------- */
   const NEW = { size: 'S', opponents: 1, difficulty: 'normal', faction: 'castle', hero: null, seed: '' , name: 'Игрок' };
+
+  /**
+   * Оболочка экрана меню: шапка с «Назад», прокручиваемое тело, липкий низ с главными кнопками.
+   * На телефоне занимает весь экран, на широком — карточка по центру. Обрезаться не может: тело само прокручивается.
+   */
+  function shell(title, opts) {
+    opts = opts || {};
+    const m = UI.$('#menu'); m.innerHTML = ''; stopMenuArt();
+    const scr = UI.el('div', 'wood mscreen' + (opts.cls ? ' ' + opts.cls : ''));
+    if (title !== undefined) {
+      const head = UI.el('div', 'mhead', (opts.back ? '<button class="back" id="' + (opts.backId || 'mBack') + '" aria-label="Назад">‹</button>' : '<span class="spacer"></span>') + '<h2>' + UI.esc(title) + '</h2><span class="spacer"></span>');
+      if (opts.back) head.querySelector('.back').onclick = () => { H3.Audio.play('click'); opts.back(); };
+      scr.appendChild(head);
+    }
+    const body = UI.el('div', 'mbody'); scr.appendChild(body);
+    const foot = UI.el('div', 'mfoot hidden'); scr.appendChild(foot);
+    m.appendChild(scr);
+    return { scr, body, foot, setFoot(html) { foot.innerHTML = html || ''; foot.classList.toggle('hidden', !html); } };
+  }
+
+  /* сцена города фоном главного меню: полностью отстроенный город случайной фракции, освещение по времени суток */
+  let menuArt = null;
+  function stopMenuArt() { if (menuArt) { menuArt.stop = true; if (menuArt.scene) menuArt.scene.destroy(); menuArt = null; } }
+  function startMenuArt(canvas) {
+    if (!H3.TownScene) { canvas.remove(); return; }
+    if (!G.menuFaction) G.menuFaction = F.LIST[Math.floor(Math.random() * F.LIST.length)].id;
+    const fid = G.menuFaction, f = F.get(fid);
+    const buildings = {};
+    for (const id of ['hall_1', 'hall_2', 'hall_3', 'hall_4', 'fort', 'citadel', 'castle', 'tavern', 'market', 'blacksmith', 'silo']) buildings[id] = true;
+    for (let i = 1; i <= f.guildMax; i++) buildings['guild_' + i] = true;
+    for (let i = 1; i <= 7; i++) { buildings['dwell_' + i] = true; buildings['dwell_up_' + i] = true; }
+    const town = { id: 0, faction: fid, name: 'Столица', owner: 0, visiting: null, buildings, avail: [0, 0, 0, 0, 0, 0, 0], garrison: [] };
+    const h = new Date().getHours();
+    const day = h < 6 ? 7 : h < 9 ? 1 : h < 17 ? 3 : h < 20 ? 2 : h < 22 ? 6 : 7; // рассвет / день / вечер / ночь
+    const state = { day, heroes: {}, players: [{ id: 0, color: F.PLAYER_COLORS[0], towns: [0] }], towns: { 0: town } };
+    let scene;
+    try { scene = H3.TownScene.create(canvas, town, { state, static: true }); } catch (e) { console.error(e); canvas.remove(); return; }
+    const art = menuArt = { stop: false, scene };
+    const loop = ts => { if (art.stop || !canvas.isConnected) return; if (G.screen === 'menu' && document.visibilityState !== 'hidden') scene.draw(ts); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+  function campSub() {
+    const c = H3.Campaign.LIST[0]; if (!c) return '';
+    const st = campProgress()[c.id];
+    const d = st ? st.done.length : 0, n = c.scenarios.length;
+    return d >= n ? c.name + ' · пройдена' : d ? c.name + ' · пройдено ' + d + ' из ' + n : c.name + ' · ' + n + ' сценариев';
+  }
   function menu() {
     showScreen('menu');
-    const m = UI.$('#menu'); m.innerHTML = '';
-    const card = UI.el('div', 'wood card');
-    const hasAuto = !!load('auto', true);
-    card.innerHTML = '<div class="title"><h1>Герои Эрафии</h1><div class="sub">Браузерная стратегия в духе Heroes of Might and Magic III</div></div>'
-      + '<div class="menu-actions"><button class="big primary" id="btnNew">Новая игра</button><button class="big" id="btnCamp">Кампания</button><button class="big" id="btnMaps">Свои карты</button><button class="big" id="btnCont" ' + (hasAuto ? '' : 'disabled') + '>Продолжить</button><button class="big" id="btnLoad">Загрузить</button><button class="big" id="btnHelp">Как играть</button></div>'
-      + '<div class="center small muted" style="margin-top:12px">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · кампания · квесты · редактор карт · сохранения в браузере</div>';
-    m.appendChild(card);
-    card.querySelector('#btnNew').onclick = () => newGameForm();
-    card.querySelector('#btnCamp').onclick = () => campaignForm();
-    card.querySelector('#btnMaps').onclick = () => mapsForm();
-    card.querySelector('#btnCont').onclick = () => { const st = load('auto'); if (st) start(st); };
-    card.querySelector('#btnLoad').onclick = () => loadDialog();
-    card.querySelector('#btnHelp').onclick = () => help();
+    const sh = shell(undefined, { cls: 'main' });
+    const auto = slotInfo('auto');
+    const art = UI.el('canvas', 'px'); art.id = 'menuArt';
+    sh.scr.insertBefore(art, sh.body);
+    sh.scr.insertBefore(UI.el('div', 'mtitle', '<h1>Герои Эрафии</h1><div class="sub">Стратегия в духе Heroes of Might and Magic III</div>'), sh.body);
+    const btn = (id, icon, label, sub, cls) => '<button class="mbtn ' + (cls || '') + '" id="' + id + '">' + UI.icon(icon, 1) + '<span><b>' + label + '</b>' + (sub ? '<small>' + UI.esc(sub) + '</small>' : '') + '</span></button>';
+    sh.body.classList.add('mmenu');
+    sh.body.innerHTML = (auto ? btn('btnCont', 'ic_arrow_r', 'Продолжить', S.dateStr(auto.day) + (auto.faction ? ' · ' + F.get(auto.faction).name : ''), 'primary') : '')
+      + btn('btnNew', 'ic_flag', 'Новая игра', 'случайная карта, 8 фракций', auto ? '' : 'primary')
+      + btn('btnCamp', 'ic_hero', 'Кампания', campSub())
+      + btn('btnMaps', 'ic_town', 'Свои карты', 'редактор и импорт')
+      + btn('btnLoad', 'ic_save', 'Загрузить')
+      + btn('btnSet', 'ic_sound', 'Настройки')
+      + btn('btnHelp', 'ic_spellbook', 'Как играть')
+      + '<div class="mver small muted">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · кампания · квесты · редактор карт</div>';
+    const on = (id, fn) => { const b = sh.body.querySelector('#' + id); if (b) b.onclick = () => { H3.Audio.play('click'); fn(); }; };
+    on('btnCont', () => { const st = load('auto'); if (st) start(st); else { UI.toast('Автосохранение не прочиталось', 'warn'); menu(); } });
+    on('btnNew', newGameForm); on('btnCamp', campaignForm); on('btnMaps', mapsForm); on('btnLoad', loadDialog); on('btnSet', settingsDialog); on('btnHelp', help);
+    startMenuArt(art);
   }
+
+  /* ---------- настройки (из главного меню и из меню партии) ---------- */
+  function settingsHtml() {
+    const st = settings();
+    return '<div class="setrows">'
+      + '<label><input type="checkbox" id="oSound" ' + (H3.Audio.isEnabled() ? 'checked' : '') + '><span>Звук</span></label>'
+      + '<label><input type="checkbox" id="oConfirm" ' + (st.confirmEndTurn ? 'checked' : '') + '><span>Спрашивать при конце хода</span></label>'
+      + '<label><input type="checkbox" id="oQuick" ' + (st.quickBattle ? 'checked' : '') + '><span>Быстрый бой (ИИ за меня)</span></label></div>'
+      + '<div class="opt"><label>Скорость анимации</label><div class="seg full">' + ['мгновенно', 'обычно', 'быстро'].map((l, i) => '<button data-sp="' + i + '" class="' + (st.animSpeed === i ? 'on' : '') + '">' + l + '</button>').join('') + '</div></div>';
+  }
+  function bindSettings(box) {
+    const st = settings();
+    box.querySelector('#oSound').onchange = e => H3.Audio.setEnabled(e.target.checked);
+    box.querySelector('#oConfirm').onchange = e => { st.confirmEndTurn = e.target.checked; saveSettings(); };
+    box.querySelector('#oQuick').onchange = e => { st.quickBattle = e.target.checked; saveSettings(); };
+    box.querySelectorAll('[data-sp]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); st.animSpeed = +b.dataset.sp; saveSettings(); box.querySelectorAll('[data-sp]').forEach(x => x.classList.toggle('on', x === b)); }; });
+  }
+  function settingsDialog() {
+    return UI.modal({ title: 'Настройки', html: settingsHtml(), buttons: [{ label: 'Готово', cls: 'primary' }], onOpen: box => bindSettings(box) });
+  }
+
   /* ---------- кампания ---------- */
   const CAMP_KEY = 'homm3.campaign';
   function campProgress() {
@@ -61,34 +135,37 @@
   function saveCampProgress(pr) { try { localStorage.setItem(CAMP_KEY, JSON.stringify(pr)); } catch (e) { /* приватный режим */ } }
 
   function campaignForm() {
-    const m = UI.$('#menu'); m.innerHTML = '';
-    const card = UI.el('div', 'wood card');
-    const pr = campProgress();
+    const sh = shell('Кампания', { back: menu, backId: 'campBack' });
     const render = () => {
-      let html = '<div class="title"><h2>Кампания</h2></div>';
+      const pr = campProgress();
+      let html = '', foot = '';
       for (const c of H3.Campaign.LIST) {
         const st = pr[c.id] || { done: [], carry: null };
-        html += '<div class="opt col"><label>' + UI.esc(c.name) + '</label><div class="small muted">' + UI.esc(c.desc) + '</div></div><div class="camp">';
+        const n = c.scenarios.length, d = c.scenarios.filter(sc => st.done.includes(sc.id)).length;
+        html += '<h3>' + UI.esc(c.name) + '</h3><div class="small muted">' + UI.esc(c.desc) + '</div>'
+          + '<div class="mprog"><div class="dots">' + c.scenarios.map(sc => '<i class="' + (st.done.includes(sc.id) ? 'done' : '') + '"></i>').join('') + '</div><span class="small muted">' + (d >= n ? 'кампания пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев') + '</span></div>';
+        html += '<div class="camp">';
+        let next = null;
         c.scenarios.forEach((sc, i) => {
           const done = st.done.includes(sc.id);
           const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
+          if (open && !done && !next) next = { i, sc };
           html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
-            + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? 'пройден' : open ? '' : 'закрыт') + '</span></div>'
+            + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? '✔ пройден' : open ? '' : 'закрыт') + '</span></div>'
             + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
-            + (open ? '<button class="sm" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
+            + (open ? '<button class="' + (done ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
             + '</div>';
         });
         html += '</div>';
-        if (st.done.length) html += '<div class="row"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
+        if (st.done.length) html += '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
+        if (!foot) foot = next ? '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>'
+          : '<button class="big" data-sc="' + c.id + '|' + c.scenarios[0].id + '">Пройти заново с начала</button>';
       }
-      html += '<div class="menu-actions"><button class="big" id="campBack">Назад</button></div>';
-      card.innerHTML = html;
-      card.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { const [cid, sid] = b.dataset.sc.split('|'); startScenario(cid, sid); }; });
-      card.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { delete pr[b.dataset.reset]; saveCampProgress(pr); render(); } }; });
-      card.querySelector('#campBack').onclick = () => menu();
+      sh.body.innerHTML = html; sh.setFoot(foot);
+      sh.scr.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { H3.Audio.unlock(); const [cid, sid] = b.dataset.sc.split('|'); startScenario(cid, sid); }; });
+      sh.scr.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { delete pr[b.dataset.reset]; saveCampProgress(pr); render(); } }; });
     };
     render();
-    m.appendChild(card);
   }
   function startScenario(cid, sid) {
     const c = H3.Campaign.get(cid); if (!c) return;
@@ -119,27 +196,25 @@
 
   /* ---------- свои карты и редактор ---------- */
   function mapsForm() {
-    const m = UI.$('#menu'); m.innerHTML = '';
-    const card = UI.el('div', 'wood card');
+    const sh = shell('Свои карты', { back: menu, backId: 'mapBack' });
     const render = () => {
       const all = H3.Editor.list();
       const ids = Object.keys(all).sort((a, b) => all[b].updated - all[a].updated);
-      let html = '<div class="title"><h2>Свои карты</h2><div class="sub">Карты, нарисованные в редакторе. Хранятся в этом браузере.</div></div>';
+      let html = '<div class="small muted" style="margin-bottom:8px">Карты, нарисованные в редакторе. Хранятся в этом браузере.</div>';
       if (!ids.length) html += '<div class="parch small">Пока пусто. Создайте карту — или вставьте чужую через «Импорт».</div>';
       html += '<div class="camp">' + ids.map(id => '<div class="campsc open"><div class="row sp"><b>' + UI.esc(all[id].name) + '</b>'
         + '<span class="small muted">' + all[id].w + '×' + all[id].h + ' · игроков ' + all[id].players + '</span></div>'
-        + '<div class="row"><button class="sm primary" data-play="' + id + '">Играть</button><button class="sm" data-edit="' + id + '">Изменить</button>'
-        + '<button class="sm danger" data-del="' + id + '">Удалить</button></div></div>').join('') + '</div>';
-      html += '<div class="menu-actions"><button class="big primary" id="mapNew">Создать карту</button><button class="big" id="mapImp">Импорт</button><button class="big" id="mapBack">Назад</button></div>';
-      card.innerHTML = html;
-      card.querySelectorAll('[data-play]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.play); if (doc) playCustom(doc); }; });
-      card.querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.edit); if (doc) H3.Editor.open(doc, b.dataset.edit, mapsForm); }; });
-      card.querySelectorAll('[data-del]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Удалить', 'Удалить карту «' + UI.esc(all[b.dataset.del].name) + '»? Насовсем.')) { H3.Editor.removeMap(b.dataset.del); render(); } }; });
-      card.querySelector('#mapNew').onclick = () => newMapDialog();
-      card.querySelector('#mapImp').onclick = () => importDialog(render);
-      card.querySelector('#mapBack').onclick = () => menu();
+        + '<div class="mrow"><button class="primary" data-play="' + id + '">Играть</button><button data-edit="' + id + '">Изменить</button>'
+        + '<button class="danger" data-del="' + id + '">Удалить</button></div></div>').join('') + '</div>';
+      sh.body.innerHTML = html;
+      sh.setFoot('<button class="big primary" id="mapNew">Создать карту</button><button class="big" id="mapImp">Импорт</button>');
+      sh.body.querySelectorAll('[data-play]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.play); if (doc) playCustom(doc); }; });
+      sh.body.querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.edit); if (doc) H3.Editor.open(doc, b.dataset.edit, mapsForm); }; });
+      sh.body.querySelectorAll('[data-del]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Удалить', 'Удалить карту «' + UI.esc(all[b.dataset.del].name) + '»? Насовсем.')) { H3.Editor.removeMap(b.dataset.del); render(); } }; });
+      sh.foot.querySelector('#mapNew').onclick = () => newMapDialog();
+      sh.foot.querySelector('#mapImp').onclick = () => importDialog(render);
     };
-    render(); m.appendChild(card);
+    render();
   }
   async function newMapDialog() {
     const size = await UI.choose('Размер карты', 'Какого размера карту рисуем?', Object.keys(S.SIZES).map(k => ({ id: k, label: S.SIZES[k].name, desc: 'до ' + S.SIZES[k].maxPlayers + ' игроков' })));
@@ -170,30 +245,31 @@
   }
 
   function newGameForm() {
-    const m = UI.$('#menu'); m.innerHTML = '';
-    const card = UI.el('div', 'wood card');
-    const seg = (key, opts) => '<div class="seg">' + opts.map(([v, l, t]) => '<button data-k="' + key + '" data-v="' + v + '" class="' + (String(NEW[key]) === String(v) ? 'on' : '') + '" title="' + UI.esc(t || '') + '">' + l + '</button>').join('') + '</div>';
+    const sh = shell('Новая игра', { back: menu, backId: 'btnBack' });
+    const seg = (key, opts) => '<div class="seg full">' + opts.map(([v, l, t]) => '<button data-k="' + key + '" data-v="' + v + '" class="' + (String(NEW[key]) === String(v) ? 'on' : '') + '">' + l + (t ? '<small>' + UI.esc(t) + '</small>' : '') + '</button>').join('') + '</div>';
+    const SIZE_SUB = { S: '36×36 · 2 игрока', M: '54×54 · до 3', L: '72×72 · до 4' };
     const render = () => {
       const f = F.get(NEW.faction);
       const heroes = HE.heroesOfFaction(NEW.faction);
       if (!heroes.some(h => h.id === NEW.hero)) NEW.hero = heroes[0].id;
+      const hero = heroes.find(h => h.id === NEW.hero);
       const maxOpp = S.SIZES[NEW.size].maxPlayers - 1; if (NEW.opponents > maxOpp) NEW.opponents = maxOpp;
-      card.innerHTML = '<div class="title"><h2>Новая игра</h2></div>'
-        + '<div class="opt"><label>Карта</label>' + seg('size', [['S', 'Маленькая 36×36', '2 игрока, ~45 минут'], ['M', 'Средняя 54×54', 'до 3 игроков, ~90 минут'], ['L', 'Большая 72×72', 'до 4 игроков, 2+ часа']]) + '</div>'
-        + '<div class="opt"><label>Противники</label>' + seg('opponents', [1, 2, 3].filter(n => n <= maxOpp).map(n => [n, String(n)])) + '</div>'
-        + '<div class="opt"><label>Сложность</label>' + seg('difficulty', Object.keys(S.DIFFICULTY).map(k => [k, S.DIFFICULTY[k].name, S.DIFFICULTY[k].desc])) + '</div>'
-        + '<div class="small muted" style="margin:-2px 0 6px 122px">' + UI.esc(S.DIFFICULTY[NEW.difficulty].desc) + '</div>'
-        + '<div class="opt"><label>Фракция</label><div class="factions">' + F.LIST.map(x => '<button data-k="faction" data-v="' + x.id + '" class="' + (NEW.faction === x.id ? 'on' : '') + '" title="' + UI.esc(x.desc) + '">' + UI.icon('town_' + x.id, 1) + x.name + '</button>').join('') + '</div></div>'
-        + '<div class="small muted" style="margin:-2px 0 6px 122px">' + UI.esc(f.desc) + '</div>'
-        + '<div class="opt"><label>Герой</label><div class="heroes4">' + heroes.map(h => '<button data-k="hero" data-v="' + h.id + '" class="' + (NEW.hero === h.id ? 'on' : '') + '" title="' + UI.esc(HE.specText(h)) + '">' + UI.icon('portrait_' + h.cls + '_' + h.portrait, 2) + h.name + '<small>' + UI.esc(HE.getClass(h.cls).name) + '</small></button>').join('') + '</div></div>'
-        + '<div class="opt"><label>Сид карты</label><div class="row"><input type="text" id="seed" value="' + UI.esc(NEW.seed) + '" placeholder="случайный" style="width:140px"><button class="sm" id="rndSeed">Случайный</button><span class="small muted">одинаковый сид — одинаковая карта</span></div></div>'
-        + '<div class="menu-actions"><button class="big primary" id="btnStart">Начать игру</button><button class="big" id="btnBack">Назад</button></div>';
-      card.querySelectorAll('[data-k]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); const k = b.dataset.k; NEW[k] = k === 'opponents' ? +b.dataset.v : b.dataset.v; NEW.seed = card.querySelector('#seed').value; render(); }; });
-      card.querySelector('#rndSeed').onclick = () => { NEW.seed = String(Math.floor(Math.random() * 1e9)); render(); };
-      card.querySelector('#btnBack').onclick = () => menu();
-      card.querySelector('#btnStart').onclick = () => { H3.Audio.unlock(); NEW.seed = card.querySelector('#seed').value; const seed = NEW.seed ? (isNaN(+NEW.seed) ? U.hashStr(NEW.seed) : +NEW.seed) : Math.floor(Math.random() * 1e9); newGame({ size: NEW.size, opponents: NEW.opponents, difficulty: NEW.difficulty, faction: NEW.faction, hero: NEW.hero, seed, name: NEW.name }); };
+      const top = sh.body.scrollTop; // перерисовка не должна прыгать к началу
+      sh.body.innerHTML = '<div class="opt"><label>Карта</label>' + seg('size', ['S', 'M', 'L'].map(k => [k, S.SIZES[k].name.replace(/\s*\(.*\)/, ''), SIZE_SUB[k]])) + '</div>'
+        + '<div class="opt"><label>Противники</label>' + '<div class="seg full">' + [1, 2, 3].map(n => '<button data-k="opponents" data-v="' + n + '" class="' + (NEW.opponents === n ? 'on' : '') + '"' + (n > maxOpp ? ' disabled' : '') + '>' + n + (n > maxOpp ? '<small>' + (n === 2 ? 'средняя карта' : 'большая карта') + '</small>' : '') + '</button>').join('') + '</div></div>'
+        + '<div class="opt"><label>Сложность</label>' + seg('difficulty', Object.keys(S.DIFFICULTY).map(k => [k, S.DIFFICULTY[k].name])) + '<div class="small muted note">' + UI.esc(S.DIFFICULTY[NEW.difficulty].desc) + '</div></div>'
+        + '<div class="opt"><label>Фракция</label><div class="factions">' + F.LIST.map(x => '<button data-k="faction" data-v="' + x.id + '" class="' + (NEW.faction === x.id ? 'on' : '') + '">' + UI.icon('town_' + x.id, 1) + x.name + '</button>').join('') + '</div><div class="small muted note">' + UI.esc(f.desc) + '</div></div>'
+        + '<div class="opt"><label>Герой</label><div class="heroes4">' + heroes.map(h => '<button data-k="hero" data-v="' + h.id + '" class="' + (NEW.hero === h.id ? 'on' : '') + '">' + UI.icon('portrait_' + h.cls + '_' + h.portrait, 2) + h.name + '<small>' + UI.esc(HE.getClass(h.cls).name) + '</small></button>').join('') + '</div><div class="small muted note">' + UI.esc(HE.specText(hero)) + '</div></div>'
+        + '<details class="more"' + (NEW.seed || NEW.more ? ' open' : '') + '><summary>Дополнительно</summary><div class="opt"><label>Сид карты</label><div class="row"><input type="text" id="seed" value="' + UI.esc(NEW.seed) + '" placeholder="случайный" inputmode="numeric" style="flex:1;min-width:0"><button class="sm" id="rndSeed">Случайный</button></div><div class="small muted note">Одинаковый сид — одинаковая карта. Пусто — случайная.</div></div></details>';
+      sh.body.scrollTop = top;
+      const opp = NEW.opponents + ' ' + (NEW.opponents === 1 ? 'противник' : 'противника');
+      sh.setFoot('<div class="msum small muted">' + UI.esc(S.SIZES[NEW.size].name.replace(/\s*\(.*\)/, '') + ' · ' + opp + ' · ' + S.DIFFICULTY[NEW.difficulty].name + ' · ' + f.name + ' · ' + hero.name) + '</div><button class="big primary" id="btnStart">Начать игру</button>');
+      sh.body.querySelectorAll('[data-k]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); const k = b.dataset.k; NEW[k] = k === 'opponents' ? +b.dataset.v : b.dataset.v; NEW.seed = sh.body.querySelector('#seed').value; render(); }; });
+      sh.body.querySelector('.more').ontoggle = e => { NEW.more = e.target.open; }; // раскрытие переживает перерисовку
+      sh.body.querySelector('#rndSeed').onclick = () => { NEW.seed = String(Math.floor(Math.random() * 1e9)); render(); };
+      sh.foot.querySelector('#btnStart').onclick = () => { H3.Audio.unlock(); NEW.seed = sh.body.querySelector('#seed').value; const seed = NEW.seed ? (isNaN(+NEW.seed) ? U.hashStr(NEW.seed) : +NEW.seed) : Math.floor(Math.random() * 1e9); newGame({ size: NEW.size, opponents: NEW.opponents, difficulty: NEW.difficulty, faction: NEW.faction, hero: NEW.hero, seed, name: NEW.name }); };
     };
-    render(); m.appendChild(card);
+    render();
   }
   function help() {
     UI.modal({ title: 'Как играть', wide: true, html: '<div class="parch"><p><b>Цель:</b> захватить все города противников и уничтожить их героев. Потеря всех городов на 7 дней — поражение.</p>'
@@ -513,6 +589,7 @@
   }
   function loadDialog() {
     const rows = ['auto', 1, 2, 3].map(i => { const inf = slotInfo(i); return { id: String(i), label: i === 'auto' ? 'Автосохранение' : 'Слот ' + i, desc: inf ? S.dateStr(inf.day) + (inf.faction ? ', ' + F.get(inf.faction).name : '') : 'пусто', disabled: !inf }; });
+    if (rows.every(r => r.disabled)) { UI.alert('Загрузить', 'Сохранений пока нет. Партия сохраняется сама при выходе в меню и при сворачивании игры; вручную — через меню в партии.'); return; }
     UI.choose('Загрузить', 'Выберите сохранение:', rows).then(id => { if (!id) return; const st = load(id); if (st) start(st); });
   }
   function exportDialog() {
@@ -537,8 +614,7 @@
     const st = settings();
     const html = UI.el('div', 'col');
     html.innerHTML = '<div class="row wrap"><button id="mSave">Сохранить</button><button id="mLoad">Загрузить</button><button id="mExp">Экспорт</button><button id="mImp">Импорт</button></div>'
-      + '<h4>Настройки</h4><div class="row wrap"><label><input type="checkbox" id="oSound" ' + (H3.Audio.isEnabled() ? 'checked' : '') + '> Звук</label><label><input type="checkbox" id="oConfirm" ' + (st.confirmEndTurn ? 'checked' : '') + '> Спрашивать при конце хода</label><label><input type="checkbox" id="oQuick" ' + (st.quickBattle ? 'checked' : '') + '> Быстрый бой (ИИ за меня)</label></div>'
-      + '<div class="row">Скорость анимации: <div class="seg">' + ['мгновенно', 'обычно', 'быстро'].map((l, i) => '<button data-sp="' + i + '" class="' + (st.animSpeed === i ? 'on' : '') + '">' + l + '</button>').join('') + '</div></div>'
+      + '<h4>Настройки</h4>' + settingsHtml()
       + '<div class="row wrap" style="margin-top:8px"><button id="mHelp">Как играть</button><button id="mQuit" class="danger">Выйти в меню</button></div>'
       + goalsHtml()
       + '<div class="small muted">Сид карты: ' + (G.state ? G.state.seed : '') + '</div>';
@@ -549,10 +625,7 @@
       box.querySelector('#mImp').onclick = () => { close(); importDialog(); };
       box.querySelector('#mHelp').onclick = () => { close(); help(); };
       box.querySelector('#mQuit').onclick = async () => { close(); if (await UI.confirm('Выход', 'Выйти в главное меню? Партия автосохранена.')) { save('auto'); G.state = null; menu(); } };
-      box.querySelector('#oSound').onchange = e => H3.Audio.setEnabled(e.target.checked);
-      box.querySelector('#oConfirm').onchange = e => { st.confirmEndTurn = e.target.checked; saveSettings(); };
-      box.querySelector('#oQuick').onchange = e => { st.quickBattle = e.target.checked; saveSettings(); };
-      box.querySelectorAll('[data-sp]').forEach(b => { b.onclick = () => { st.animSpeed = +b.dataset.sp; saveSettings(); box.querySelectorAll('[data-sp]').forEach(x => x.classList.toggle('on', x === b)); }; });
+      bindSettings(box);
     } });
   }
 
