@@ -7,7 +7,7 @@
 (function (root) {
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
-  const U = H3.U, R = H3.Rules, S = H3.State, C = H3.Creatures, F = H3.Factions, O = H3.Objects, AR = H3.Artifacts, SP = H3.Spells, HE = H3.Heroes, SK = H3.Skills, Bt = H3.Battle;
+  const U = H3.U, R = H3.Rules, S = H3.State, C = H3.Creatures, F = H3.Factions, O = H3.Objects, AR = H3.Artifacts, SP = H3.Spells, HE = H3.Heroes, SK = H3.Skills, Bt = H3.Battle, Q = H3.Quest;
 
   const week = state => Math.floor((state.day - 1) / 7);
 
@@ -37,6 +37,9 @@
       const guards = S.monstersNear(state, x, y, hero.z);
       const obj = S.objAt(state, x, y, hero.z);
       const other = S.heroAt(state, x, y, hero.z);
+      // застава / страж-квестор: у них зона контроля, как у стражей — подходим, но не входим
+      const gates = S.gatesNear(state, x, y, hero.z);
+      if (gates.length && obj !== gates[0] && !(obj && O.get(obj.type).gate)) { stop = { kind: 'object', obj: gates[0], pending: [x, y] }; break; }
       if (obj && !O.get(obj.type).obstacle) {
         // объект: не входим, взаимодействуем «с порога» (кроме города и своих объектов-проходимых)
         if (obj.type === 'monster') { stop = { kind: 'monster', obj }; break; }
@@ -320,10 +323,39 @@
       case 'trading_post': return Object.assign(base, { text: 'Торговый пост: обмен ресурсов.', kind: 'market' });
       case 'hill_fort': return Object.assign(base, { text: 'Холмфорт: улучшение существ 1–4 уровня. Существа 1 уровня улучшаются бесплатно.', kind: 'hillfort' });
       case 'tavern': return Object.assign(base, { text: 'Таверна: здесь можно нанять героя.', kind: 'tavern' });
-      case 'bank_crypt': case 'bank_dwarven': case 'bank_griffin': case 'bank_utopia': {
+      case 'bank_crypt': case 'bank_dwarven': case 'bank_griffin': case 'bank_utopia': case 'pandora_box': {
         if (!obj.guards || !obj.guards.length) return Object.assign(base, { text: 'Здесь уже пусто.', toast: true });
         const g = obj.guards.map(x => C.get(x.cid).name + ' ×' + x.n).join(', ');
+        if (obj.type === 'pandora_box') return Object.assign(base, { text: 'Ящик заперт, и его берегут: ' + g + '. Внутри — ' + (obj.rewards || []).map(Q.rewardText).join(' и ') + '. Открыть?', choices: [{ id: 'fight', label: 'Открыть' }, { id: 'no', label: 'Уйти' }] });
         return Object.assign(base, { text: t.desc + ' Внутри: ' + g + '. Напасть?', choices: [{ id: 'fight', label: 'В бой' }, { id: 'no', label: 'Уйти' }] });
+      }
+      case 'keymaster': {
+        const keys = Q.keysOf(p), col = Q.KEY_COLORS[obj.color];
+        if (keys[obj.color]) return Object.assign(base, { text: col.name + ' ключ у вас уже есть.', toast: true });
+        keys[obj.color] = true; markPlayer(obj, hero.owner);
+        S.addLog(state, hero.name + ' получает ' + col.gen.replace(/ого$/, 'ый') + ' ключ.', 'good', hero.owner);
+        return Object.assign(base, { text: 'Ключник вручает вам ' + col.name.toLowerCase() + ' ключ. Теперь застава ' + col.gen + ' цвета вас пропустит.', toast: true });
+      }
+      case 'border_guard': {
+        const col = Q.KEY_COLORS[obj.color];
+        if (!Q.keysOf(p)[obj.color]) return Object.assign(base, { text: 'Застава требует ' + col.name.toLowerCase() + ' ключ. Его выдаёт шатёр ключника того же цвета.' });
+        removeObject(state, obj);
+        S.addLog(state, hero.name + ' открывает заставу ' + col.gen + ' цвета.', 'good', hero.owner);
+        return Object.assign(base, { text: 'Стража видит ' + col.name.toLowerCase() + ' ключ и открывает проход.', toast: true });
+      }
+      case 'quest_guard': {
+        const done = Q.met(state, hero, obj.quest);
+        if (!done) return Object.assign(base, { text: 'Страж пропустит, если ' + Q.text(obj.quest) + '.' });
+        const cost = Q.costText(obj.quest);
+        return Object.assign(base, { text: 'Условие выполнено: ' + Q.text(obj.quest) + '.' + (cost ? ' (' + cost + '.)' : '') + ' Пройти?', choices: [{ id: 'give', label: 'Пройти' }, { id: 'no', label: 'Позже' }] });
+      }
+      case 'seer_hut': {
+        if (playerVisited(obj, hero.owner)) return Object.assign(base, { text: 'Провидец уже отблагодарил вас.', toast: true });
+        const done = Q.met(state, hero, obj.quest);
+        const rw = Q.rewardText(obj.reward);
+        if (!done) return Object.assign(base, { text: 'Провидец просит ' + Q.text(obj.quest) + '. Награда: ' + rw + '.' });
+        const cost = Q.costText(obj.quest);
+        return Object.assign(base, { text: 'Задание выполнено: ' + Q.text(obj.quest) + '.' + (cost ? ' (' + cost + '.)' : '') + ' Награда: ' + rw + '. Получить?', choices: [{ id: 'give', label: 'Получить награду' }, { id: 'no', label: 'Позже' }] });
       }
       default: return Object.assign(base, { text: t.desc || 'Здесь ничего нет.', toast: true });
     }
@@ -344,6 +376,19 @@
       const lv = R.gainXp(hero, HE.xpForLevel(hero.level + 1) - hero.xp); return { text: 'Новый уровень!', levelUps: lv };
     }
     if (obj.type === 'arena') { markHero(obj, hero); hero.pri[choice] += 2; return { text: '+2 к ' + (choice === 'att' ? 'атаке' : 'защите') }; }
+    if (obj.type === 'quest_guard' && choice === 'give') {
+      if (!Q.met(state, hero, obj.quest)) return { text: 'Условие не выполнено' };
+      Q.take(state, hero, obj.quest); removeObject(state, obj);
+      S.addLog(state, hero.name + ' проходит стража-квестора.', 'good', hero.owner);
+      return { text: 'Страж отступает: проход открыт' };
+    }
+    if (obj.type === 'seer_hut' && choice === 'give') {
+      if (!Q.met(state, hero, obj.quest) || playerVisited(obj, hero.owner)) return { text: 'Задание не выполнено' };
+      Q.take(state, hero, obj.quest); markPlayer(obj, hero.owner);
+      const g = Q.give(state, hero, obj.reward);
+      S.addLog(state, hero.name + ' выполняет задание провидца: ' + g.text + '.', 'good', hero.owner);
+      return { text: 'Награда: ' + g.text, levelUps: g.levelUps };
+    }
     if (obj.type === 'dwelling' && choice === 'recruit') return { kind: 'recruitDwelling', obj };
     return null;
   }
@@ -471,7 +516,11 @@
       }
     } else if (ctx.type === 'bank') {
       const bk = state.objects[ctx.objId];
-      if (attWon && bk) {
+      if (attWon && bk && bk.type === 'pandora_box') {
+        // ящик открыт: награды — в формате квестов, сам ящик исчезает
+        for (const r of (bk.rewards || [])) { const g = Q.give(state, attHero, r); summary.text.push('+' + g.text); if (r.kind === 'artifact') summary.loot.push(r.art); if (g.levelUps) summary.levelUps = (summary.levelUps || 0) + g.levelUps; }
+        removeObject(state, bk);
+      } else if (attWon && bk) {
         const rw = O.BANKS[bk.type].reward, p = state.players[attHero.owner];
         if (rw.gold) { p.res.gold += rw.gold; summary.text.push('+' + rw.gold + ' золота'); }
         if (rw.crystal) { p.res.crystal += rw.crystal; summary.text.push('+' + rw.crystal + ' кристаллов'); }

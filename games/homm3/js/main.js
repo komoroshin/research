@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.0';
+  const VERSION = '2.5';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -44,7 +44,7 @@
     const hasAuto = !!load('auto', true);
     card.innerHTML = '<div class="title"><h1>Герои Эрафии</h1><div class="sub">Браузерная стратегия в духе Heroes of Might and Magic III</div></div>'
       + '<div class="menu-actions"><button class="big primary" id="btnNew">Новая игра</button><button class="big" id="btnCamp">Кампания</button><button class="big" id="btnMaps">Свои карты</button><button class="big" id="btnCont" ' + (hasAuto ? '' : 'disabled') + '>Продолжить</button><button class="big" id="btnLoad">Загрузить</button><button class="big" id="btnHelp">Как играть</button></div>'
-      + '<div class="center small muted" style="margin-top:12px">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · кампания · редактор карт · сохранения в браузере</div>';
+      + '<div class="center small muted" style="margin-top:12px">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · кампания · квесты · редактор карт · сохранения в браузере</div>';
     m.appendChild(card);
     card.querySelector('#btnNew').onclick = () => newGameForm();
     card.querySelector('#btnCamp').onclick = () => campaignForm();

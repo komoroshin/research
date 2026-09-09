@@ -77,6 +77,9 @@
     if (type === 'monster') { o.cid = o.cid || 'pikeman'; o.n = o.n || 10; o.character = o.character || 'aggressive'; }
     if (type === 'dwelling') { o.cid = o.cid || 'pikeman'; }
     if (type === 'artifact') { o.art = o.art || 'random'; }
+    if (type === 'keymaster' || type === 'border_guard') o.color = o.color || 'red';
+    if (type === 'seer_hut' || type === 'quest_guard') { const rng = new U.RNG((Date.now() + x * 131 + y * 71) >>> 0); const tier = o.tier || 1; if (!o.quest) o.quest = H3.Quest.randomQuest(rng, tier, o.qctx || {}); if (type === 'seer_hut' && !o.reward) o.reward = H3.Quest.randomReward(rng, Math.min(3, tier + 1)); delete o.qctx; delete o.tier; }
+    if (type === 'pandora_box' && !o.guards) { const rng = new U.RNG((Date.now() + x * 17 + y * 97) >>> 0); Object.assign(o, H3.Quest.randomPandora(rng, o.tier || 2, 1)); delete o.tier; }
     return o;
   }
   /** Клетки, которые объект занимает целиком (для проверки наложений). */
@@ -118,6 +121,9 @@
         if (ey >= doc.h || lv.obs[i] || lv.terrain[i] === W || lv.terrain[i] === RK) err('У города (' + o.x + ',' + o.y + ') перекрыт вход снизу');
       }
     }
+    // заставы без ключника того же цвета не открыть никогда
+    for (const o of doc.objects) if (o.type === 'border_guard' && !doc.objects.some(k => k.type === 'keymaster' && k.color === o.color)) err('Застава ' + (H3.Quest.KEY_COLORS[o.color] || {}).gen + ' цвета есть, а ключника нет');
+    for (const o of doc.objects) if (o.type === 'seer_hut' && o.quest && o.quest.kind === 'artifact' && !doc.objects.some(a => a.type === 'artifact' && a.art === o.quest.art)) warn('Провидец просит артефакт, которого на карте нет');
     // врата: непарные никуда не ведут
     const pairs = {};
     for (const o of doc.objects) if (o.type === 'subter_gate') { pairs[o.pair] = (pairs[o.pair] || 0) + 1; }
@@ -185,6 +191,10 @@
     } else if (src.type === 'artifact') {
       obj.art = src.art && src.art !== 'random' ? src.art : rng.pick(AR.byClass(src.cls || 'minor')).id;
     } else if (src.type === 'subter_gate') { obj.pair = src.pair || 1; }
+    else if (src.type === 'keymaster' || src.type === 'border_guard') { obj.color = src.color || 'red'; }
+    else if (src.type === 'seer_hut') { obj.quest = U.clone(src.quest); obj.reward = U.clone(src.reward); }
+    else if (src.type === 'quest_guard') { obj.quest = U.clone(src.quest); }
+    else if (src.type === 'pandora_box') { const pb = src.guards ? { guards: U.clone(src.guards), rewards: U.clone(src.rewards || []) } : H3.Quest.randomPandora(rng, 2, guardMul); obj.guards = pb.guards; obj.rewards = pb.rewards; }
     else if (src.type === 'boat') { /* без полей */ }
     else {
       if (src.type === 'tree_knowledge') obj.price = src.price || rng.pick(['free', 'gold', 'gems']);

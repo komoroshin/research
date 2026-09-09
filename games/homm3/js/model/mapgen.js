@@ -215,7 +215,7 @@
       const x = p.x + dx, y = p.y + dy; if (x < 0 || y < 0 || x >= w || y >= h) continue;
       if (corridor[y * w + x]) { map.obs[y * w + x] = 0; if (map.terrain[y * w + x] === R.TERRAIN_INDEX.water) map.terrain[y * w + x] = R.TERRAIN_INDEX[zones[map.zone[y * w + x]].terrain]; }
     }
-    ctx.corridor = corridor;
+    ctx.corridor = corridor; ctx.border = border;
     // 4. города
     for (const z of zones) {
       if (z.kind === 'start') { if (!placeTown(ctx, z, state.players[z.player].faction, z.player)) return false; }
@@ -223,8 +223,13 @@
     }
     // 5. обязательные объекты и сокровища
     for (const z of zones) if (!populateZone(ctx, z)) return false;
-    // 6. стражи проходов
-    for (const p of passages) placeGuardAt(ctx, p.x, p.y, p.link.value * ctx.guardMul, 'aggressive');
+    // 5б. квесты и ключи: провидцы, ключники с заставами, страж-квестор
+    placeQuests(ctx, zones, passages);
+    // 6. стражи проходов (часть проходов закрыта заставой или квестом, а не стражем)
+    for (const p of passages) {
+      if (p.gate) { narrowPassage(ctx, p); addObject(ctx, Object.assign({ x: p.x, y: p.y, visited: {} }, p.gate)); }
+      else placeGuardAt(ctx, p.x, p.y, p.link.value * ctx.guardMul, 'aggressive');
+    }
     // 7. дороги, проверка связности
     rebuildBlock(ctx);
     if (!ensureConnectivity(ctx, passages)) return false;
@@ -335,6 +340,49 @@
     if (guardValue) guardObject(ctx, m, guardValue * ctx.guardMul, 'aggressive');
     return m;
   }
+  /** Хижины провидца, шатры ключника с заставами на входе в сокровищницу, страж-квестор. */
+  function placeQuests(ctx, zones, passages) {
+    const { rng, state } = ctx, Q = H3.Quest;
+    const arts = Object.values(state.objects).filter(o => o.type === 'artifact' && (o.z || 0) === (ctx.z || 0)).map(o => o.art);
+    const cids = Object.values(state.objects).filter(o => o.type === 'dwelling').map(o => o.cid)
+      .concat(Object.values(state.towns).map(t => F.creaturesOf(t.faction, 1)[0].id));
+    const qctx = { arts, cids };
+    // провидцы: по одному в промежуточных зонах, на маленькой карте — в стартовых
+    let hutZones = zones.filter(z => z.kind === 'mid'); if (!hutZones.length) hutZones = zones.filter(z => z.kind === 'start');
+    for (const z of hutZones) {
+      if (!rng.chance(0.8)) continue;
+      const pos = randomTile(ctx, z, 4, zoneRadius(ctx, z)); if (!pos) continue;
+      addObject(ctx, { type: 'seer_hut', x: pos[0], y: pos[1], quest: Q.randomQuest(rng, z.tier, qctx), reward: Q.randomReward(rng, Math.min(3, z.tier + 1)), visited: {} });
+    }
+    // заставы: вход в сокровищницу закрывается ключом; шатёр — в соседней зоне,
+    // до которой можно дойти, не проходя через сокровищницу
+    const colors = Q.COLOR_IDS.slice(); rng.shuffle(colors);
+    let used = 0;
+    const touchesTreasure = p => zones[p.link.a].kind === 'treasure' || zones[p.link.b].kind === 'treasure';
+    for (const p of passages) {
+      if (!touchesTreasure(p) || used >= colors.length || !rng.chance(0.45)) continue;
+      const near = zones[p.link.a].kind === 'treasure' ? zones[p.link.b] : zones[p.link.a];
+      const adj = passages.filter(q => q !== p && !touchesTreasure(q) && (q.link.a === near.id || q.link.b === near.id)).map(q => zones[q.link.a === near.id ? q.link.b : q.link.a]);
+      const tentZone = adj.length ? rng.pick(adj) : near;
+      const pos = randomTile(ctx, tentZone, 3, zoneRadius(ctx, tentZone)); if (!pos) continue;
+      const color = colors[used++];
+      addObject(ctx, { type: 'keymaster', x: pos[0], y: pos[1], color, visited: {} });
+      p.gate = { type: 'border_guard', color };
+    }
+    // страж-квестор на одном проходе между обычными зонами: условие всегда достижимо
+    const cand = passages.filter(p => !p.gate && !touchesTreasure(p));
+    if (cand.length && rng.chance(0.5)) { const p = rng.pick(cand); p.gate = { type: 'quest_guard', quest: Q.randomQuest(rng, 1, {}) }; }
+  }
+  /** Сузить проход до одной клетки: зона контроля заставы должна перекрывать его целиком. */
+  function narrowPassage(ctx, p) {
+    const { map, w, h } = ctx;
+    for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+      const x = p.x + dx, y = p.y + dy; if (x < 1 || y < 1 || x >= w - 1 || y >= h - 1) continue;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) <= 1) continue;
+      const i = y * w + x;
+      if (ctx.border[i] && ctx.corridor[i] && map.objAt[i] < 0 && !ctx.occupied[i]) map.obs[i] = 2;
+    }
+  }
   function zoneRadius(ctx, z) { return Math.max(8, Math.round(Math.min(ctx.w, ctx.h) * (z.kind === 'treasure' ? 0.22 : 0.2))); }
 
   function populateZone(ctx, z) {
@@ -420,7 +468,8 @@
     }
     if (obj.type === 'witch_hut') obj.skill = rng.pick(H3.Skills.LIST.filter(s => s.id !== 'necromancy')).id;
     if (obj.type === 'windmill') obj.res = rng.pick(U.RARE);
-    if (t.bank) { const bk = O.BANKS[obj.type]; obj.guards = bk.guards.map(([cid, n]) => ({ cid, n: Math.max(1, Math.round(n * ctx.guardMul)) })); }
+    if (obj.type === 'pandora_box') Object.assign(obj, H3.Quest.randomPandora(rng, z && z.tier ? z.tier : 2, ctx.guardMul));
+    else if (t.bank) { const bk = O.BANKS[obj.type]; obj.guards = bk.guards.map(([cid, n]) => ({ cid, n: Math.max(1, Math.round(n * ctx.guardMul)) })); }
     if (obj.type === 'chest') obj.roll = rng.next();
     obj.visited = {};
   }

@@ -508,6 +508,64 @@ test('цели сценария: захват города, накопление
   A.checkGoals(st); assert.equal(st.winner, null);
 });
 
+console.log('quests');
+test('квесты и ключи: ключник и застава, страж-квестор, провидец, Ящик Пандоры, зона контроля', () => {
+  const Q = H3.Quest, A = H3.Adventure, O = H3.Objects;
+  const st = S.newGame({ size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const h = S.heroesOf(st, 0)[0], p = st.players[0], m = st.levels[0];
+  const put = (type, x, y, extra) => {
+    // клетку и её окрестность расчищаем: объект должен быть достижим
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const i = (y + dy) * m.w + x + dx; const old = m.objAt[i] >= 0 ? st.objects[m.objAt[i]] : null; if (old && old.type !== 'town') A.removeObject(st, old); m.obs[i] = 0; m.terrain[i] = R.TERRAIN_INDEX.grass; m.block[i] = 0; }
+    const o = Object.assign({ id: st.nextId++, type, x, y, z: 0, visited: {} }, extra); st.objects[o.id] = o; m.objAt[y * m.w + x] = o.id; m.block[y * m.w + x] = 1; return o;
+  };
+  // застава без ключа не открывается, с ключом — исчезает
+  const bg = put('border_guard', h.x + 3, h.y, { color: 'blue' });
+  let v = A.visit(st, h, bg); assert.ok(st.objects[bg.id] && /синий ключ/.test(v.text));
+  const km = put('keymaster', h.x - 3, h.y, { color: 'blue' });
+  A.visit(st, h, km); assert.ok(p.keys.blue, 'ключ получен');
+  v = A.visit(st, h, bg); assert.ok(!st.objects[bg.id], 'застава открыта');
+  // зона контроля: клетки вокруг заставы терминальны, но к самой заставе путь есть
+  const bg2 = put('border_guard', h.x + 5, h.y - 4, { color: 'red' });
+  assert.ok(S.isTerminal(st, h, bg2.x - 1, bg2.y) && S.isTerminal(st, h, bg2.x, bg2.y + 1), 'зона контроля');
+  const pf = S.pathfield(st, h);
+  assert.ok(pf.dist[bg2.y * m.w + bg2.x] < Infinity, 'к заставе можно подойти');
+  const path = PF.pathTo(pf, bg2.x, bg2.y);
+  const r = A.moveHero(st, h, path);
+  assert.ok(r.stop && r.stop.kind === 'object' && r.stop.obj === bg2, 'герой останавливается у заставы: ' + JSON.stringify(r.stop && r.stop.kind));
+  assert.ok(Math.max(Math.abs(h.x - bg2.x), Math.abs(h.y - bg2.y)) >= 2, 'и не входит в её зону');
+  // страж-квестор по уровню: сначала не пускает, потом отступает
+  const qg = put('quest_guard', h.x - 4, h.y + 3, { quest: { kind: 'level', level: 3 } });
+  v = A.visit(st, h, qg); assert.ok(!v.choices, 'уровень 1 — не пускает');
+  h.level = 3; v = A.visit(st, h, qg); assert.ok(v.choices, 'уровень 3 — предлагает пройти');
+  A.resolve(st, h, qg, 'give'); assert.ok(!st.objects[qg.id], 'страж ушёл');
+  // провидец: забирает ресурсы, даёт награду, второй раз не платит
+  const sh = put('seer_hut', h.x + 2, h.y - 3, { quest: { kind: 'resources', res: 'wood', amount: 5 }, reward: { kind: 'gold', amount: 3000 } });
+  const g0 = p.res.gold, w0 = p.res.wood;
+  v = A.visit(st, h, sh); assert.ok(v.choices, 'условие выполнено');
+  A.resolve(st, h, sh, 'give');
+  assert.equal(p.res.gold - g0, 3000); assert.equal(w0 - p.res.wood, 5);
+  v = A.visit(st, h, sh); assert.ok(!v.choices && /уже/.test(v.text), 'награда один раз');
+  // квест-артефакт забирает артефакт; награда-существа встаёт в армию
+  const sh2 = put('seer_hut', h.x + 2, h.y + 4, { quest: { kind: 'artifact', art: 'centaur_axe' }, reward: { kind: 'creatures', cid: 'griffin', n: 4 } });
+  assert.ok(!Q.met(st, h, sh2.quest)); h.backpack.push('centaur_axe'); assert.ok(Q.met(st, h, sh2.quest));
+  A.visit(st, h, sh2); A.resolve(st, h, sh2, 'give');
+  assert.ok(!h.backpack.includes('centaur_axe') && h.army.some(s => s && s.cid === 'griffin' && s.n >= 4), 'обмен состоялся');
+  // Ящик Пандоры: бой со стражами, награда, ящик исчезает
+  const pb = put('pandora_box', h.x - 4, h.y - 3, Q.randomPandora(new U.RNG(3), 1, 1));
+  assert.ok(pb.guards.length && pb.rewards.length);
+  h.army[0] = { cid: 'archangel', n: 30 };
+  const b = A.startBattle(st, h, { bank: pb }); H3.BattleAI.auto(b, true); const sum = A.endBattle(st);
+  assert.ok(sum.attWon && sum.text.length && !st.objects[pb.id], 'ящик вскрыт: ' + sum.text.join(', '));
+  // генератор: у каждой заставы есть ключник своего цвета, объекты квестов есть
+  for (const seed of [1, 2, 3]) {
+    const g = S.newGame({ size: 'M', seed, opponents: 2, difficulty: 'normal', faction: 'castle' });
+    const objs = Object.values(g.objects);
+    for (const o of objs) if (o.type === 'border_guard') assert.ok(objs.some(k => k.type === 'keymaster' && k.color === o.color), 'ключник для заставы ' + o.color);
+    for (const o of objs) if (o.type === 'seer_hut') assert.ok(o.quest && o.reward && Q.text(o.quest) && Q.rewardText(o.reward));
+    assert.ok(objs.some(o => O.get(o.type).quest || o.type === 'pandora_box' || o.type === 'keymaster'), 'квестовые объекты на карте');
+  }
+});
+
 console.log('editor');
 test('редактор: документ карты, проверка, экспорт и партия по своей карте', () => {
   const ME = H3.MapEdit;

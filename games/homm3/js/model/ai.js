@@ -421,6 +421,10 @@
           consider(o.x, o.y, key, 300 + Math.round(2200 * unknown / ov.length), 'врата в подземелье', gv, undefined, garmy);
           break;
         }
+        case 'keymaster': if (!H3.Quest.keysOf(p)[o.color]) consider(o.x, o.y, key, 2500, 'ключ', gv, undefined, garmy); break;
+        case 'border_guard': if (H3.Quest.keysOf(p)[o.color]) consider(o.x, o.y, key, 3000, 'застава', 0); break;
+        case 'quest_guard': if (H3.Quest.met(state, hero, o.quest)) consider(o.x, o.y, key, 3000, 'страж-квестор', 0); break;
+        case 'seer_hut': if (H3.Quest.met(state, hero, o.quest) && !(o.visited && o.visited['p' + hero.owner])) consider(o.x, o.y, key, H3.Quest.rewardValue(o.reward), 'провидец', gv, undefined, garmy); break;
         case 'monster': {
           const mv = A.monsterPower(o); const ratio = my / Math.max(1, mv);
           const need = (role === 'main' ? 1.5 : 2.5) * (FLAGS.bold ? 0.8 : 1);
@@ -460,7 +464,7 @@
           break;
         }
         default:
-          if (t.bank) { if (o.guards && o.guards.length) { const bv = o.guards.reduce((a, g) => a + C.aiValue(C.get(g.cid)) * g.n, 0); consider(o.x, o.y, key, t.value, t.name, bv, undefined, armyOf(o.guards)); } break; }
+          if (t.bank) { if (o.guards && o.guards.length) { const bv = o.guards.reduce((a, g) => a + C.aiValue(C.get(g.cid)) * g.n, 0); const val = o.type === 'pandora_box' ? (o.rewards || []).reduce((a, r) => a + H3.Quest.rewardValue(r), 0) : t.value; consider(o.x, o.y, key, val, t.name, bv, undefined, armyOf(o.guards)); } break; }
           if (t.once === 'hero' && o.visited && o.visited['h' + hero.id]) break;
           if (t.once === 'player' && o.visited && o.visited['p' + hero.owner]) break;
           if (t.once === 'week' && ((o.weekTaken === A.week(state)) || (o.visited && o.visited['w' + hero.id] === A.week(state)))) break;
@@ -536,6 +540,7 @@
       else if (obj.type === 'tree_knowledge') choice = U.canAfford(p.res, v.cost || {}) ? 'pay' : 'no';
       else if (obj.type === 'arena') choice = hero.pri.att <= hero.pri.def ? 'att' : 'def';
       else if (obj.type === 'dwelling') choice = 'recruit';
+      else if (obj.type === 'quest_guard' || obj.type === 'seer_hut') choice = 'give';
       else if (O.get(obj.type).bank) choice = (heroPower(hero) / Math.max(1, obj.guards.reduce((a, g) => a + C.aiValue(C.get(g.cid)) * g.n, 0)) >= 1.5) ? 'fight' : 'no';
       if (choice === 'recruit') { const c = C.get(obj.cid); const n = Math.floor(Math.max(0, p.res.gold - RESERVE) / c.cost.gold); if (n > 0) A.recruitFromDwelling(state, hero, obj, n); }
       else if (choice === 'fight') { await runBattle(state, hero, { bank: obj }, hooks, smart, think); }
