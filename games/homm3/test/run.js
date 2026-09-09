@@ -712,6 +712,28 @@ test('кампания: перенос героя между сценариям�
   assert.ok(st4.goals.lose.some(g => g.type === 'lose_hero' && g.heroId != null), 'цель «не потерять героя» привязана к герою');
 });
 
+test('кампании: каждый сценарий генерируется, противники и цели — по сценарию', () => {
+  const CP = H3.Campaign, B = H3.Buildings, AR = H3.Artifacts;
+  assert.ok(CP.LIST.length >= 2, 'две кампании');
+  for (const c of CP.LIST) for (const sc of c.scenarios) {
+    const st = S.newGame({ size: sc.size, seed: sc.seed, opponents: sc.opponents, difficulty: sc.difficulty, faction: sc.faction, hero: sc.hero || null, foes: sc.foes || null, goals: U.clone(sc.goals) });
+    const tag = c.id + '/' + sc.id + ': ';
+    assert.equal(st.players.length, sc.opponents + 1, tag + 'число игроков');
+    assert.equal(st.players[0].faction, sc.faction, tag + 'фракция игрока');
+    if (sc.hero) assert.equal(S.heroesOf(st, 0)[0].tid, sc.hero, tag + 'стартовый герой');
+    if (sc.foes) sc.foes.forEach((f, i) => assert.equal(st.players[i + 1].faction, f, tag + 'фракция противника ' + (i + 1)));
+    const fs = st.players.map(p => p.faction); assert.equal(new Set(fs).size, fs.length, tag + 'фракции не повторяются');
+    for (const g of st.goals.win.concat(st.goals.lose)) {
+      if (g.type === 'capture_town' || g.type === 'lose_town') assert.ok(g.townId != null && st.towns[g.townId], tag + g.type + ' привязан к городу');
+      if (g.type === 'defeat_hero' || g.type === 'lose_hero') { assert.ok(g.heroId != null && st.heroes[g.heroId], tag + g.type + ' привязан к герою'); assert.equal(st.heroes[g.heroId].owner > 0, g.type === 'defeat_hero', tag + g.type + ' — герой нужной стороны'); }
+      if (g.type === 'find_artifact') assert.ok(Object.values(st.objects).some(o => o.type === 'artifact' && o.art === g.art) && AR.get(g.art), tag + 'артефакт на карте');
+      if (g.type === 'build') assert.ok(B.BY_ID[g.building], tag + 'постройка существует');
+    }
+    assert.equal(st.winner, null, tag + 'на старте победителя нет');
+    H3.Adventure.checkGoals(st); assert.equal(st.winner, null, tag + 'цели не выполнены на старте');
+  }
+});
+
 console.log('save');
 test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });
