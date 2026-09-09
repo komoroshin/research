@@ -15,7 +15,10 @@
       const hero = town.visiting ? st.heroes[town.visiting] : null;
       cur = { town, hero, tab: 'build', sel: null, resolve };
       const wrap = UI.el('div', ''); wrap.id = 'townView';
-      const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; wrap.appendChild(pic);
+      const picWrap = UI.el('div', ''); picWrap.id = 'townPicWrap';
+      const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; picWrap.appendChild(pic); wrap.appendChild(picWrap);
+      // на телефоне сцена шире экрана — показываем её середину
+      setTimeout(() => { if (picWrap.scrollWidth > picWrap.clientWidth) picWrap.scrollLeft = (picWrap.scrollWidth - picWrap.clientWidth) / 2; }, 0);
       const below = UI.el('div', ''); below.id = 'townBelow';
       const armies = UI.el('div', 'garr'); armies.id = 'townArmies'; below.appendChild(armies);
       const right = UI.el('div', ''); right.id = 'townRight'; below.appendChild(right);
@@ -24,8 +27,13 @@
       cur.scene = H3.TownScene.create(pic, town);
       const TS = H3.TownScene;
       const at = e => { const r = pic.getBoundingClientRect(); return [(e.clientX - r.left) * TS.W / r.width, (e.clientY - r.top) * TS.H / r.height]; };
-      pic.addEventListener('click', e => { const [x, y] = at(e); onPicClick(x, y, false); });
-      pic.addEventListener('contextmenu', e => { e.preventDefault(); const [x, y] = at(e); onPicClick(x, y, true); });
+      let lastTouch = false, pressTimer = null, pressed = null;
+      pic.addEventListener('pointerdown', e => { lastTouch = e.pointerType === 'touch'; pressed = [e.clientX, e.clientY]; if (lastTouch) { clearTimeout(pressTimer); pressTimer = setTimeout(() => { const [x, y] = at(e); const it = cur && cur.scene.hit(x, y); pressed = null; if (it) UI.alert(it.name, itemTip(it), it.sprite); }, 550); } });
+      pic.addEventListener('pointermove', e => { if (pressed && Math.hypot(e.clientX - pressed[0], e.clientY - pressed[1]) > 8) { clearTimeout(pressTimer); pressed = null; } });
+      pic.addEventListener('pointerup', () => { clearTimeout(pressTimer); });
+      pic.addEventListener('pointercancel', () => { clearTimeout(pressTimer); pressed = null; });
+      pic.addEventListener('click', e => { if (!pressed && lastTouch) return; pressed = null; const [x, y] = at(e); if (lastTouch) touchSheet(x, y); else onPicClick(x, y, false); });
+      pic.addEventListener('contextmenu', e => { e.preventDefault(); if (lastTouch) return; const [x, y] = at(e); onPicClick(x, y, true); });
       pic.addEventListener('mousemove', e => { const [x, y] = at(e); const hit = cur.scene.hit(x, y); cur.scene.hover = hit; if (hit) UI.tip(e.clientX, e.clientY, itemTip(hit)); else UI.hideTip(); });
       pic.addEventListener('mouseleave', () => { UI.hideTip(); if (cur) cur.scene.hover = null; });
       UI.modal({ title: town.name + ' — ' + F.get(town.faction).name, titleRight: '<span class="small muted">' + UI.esc(F.get(town.faction).desc) + '</span>', html: wrap, wide: true,
@@ -55,6 +63,25 @@
     const r = R.build(st, t, b.id);
     if (r.ok) { H3.Audio.play('build'); UI.toast('Построено: ' + b.name); if (cur.hero) S.learnTownSpells(st, cur.hero, t); render(); H3.Game.refresh(false); }
     else UI.toast(r.reason, 'warn');
+  }
+  /** Тач: у постройки нет наведения и правой кнопки — вместо них карточка с действиями. */
+  async function touchSheet(x, y) {
+    const it = cur.scene.hit(x, y); if (!it) return;
+    H3.Audio.play('click');
+    const res = H3.Game.state.players[cur.town.owner].res;
+    const choices = [];
+    if (it.ghost) choices.push({ id: 'build', label: 'Построить', desc: (it.ghost.ok ? '' : it.ghost.reason + ' · ') + U.RES.filter(r => it.ghost.cost[r]).map(r => it.ghost.cost[r] + ' ' + O.RES_NAMES_GEN[r]).join(', '), disabled: !it.ghost.ok });
+    else {
+      if (it.tab) choices.push({ id: 'open', label: ({ build: 'Стройка', recruit: 'Найм', guild: 'Гильдия магов', tavern: 'Таверна', market: 'Рынок', smith: 'Кузница' })[it.tab] });
+      if (it.upgrade) choices.push({ id: 'upgrade', label: 'Улучшить: ' + it.upgrade.name, desc: (it.upgrade.ok ? '' : it.upgrade.reason + ' · ') + U.RES.filter(r => it.upgrade.cost[r]).map(r => it.upgrade.cost[r] + ' ' + O.RES_NAMES_GEN[r]).join(', '), disabled: !it.upgrade.ok });
+    }
+    choices.push({ id: 'no', label: 'Закрыть' });
+    const ch = await UI.choose(it.name, (it.desc ? UI.esc(it.desc) : '') + (it.ghost && !it.ghost.ok ? '<br><span class="red">' + UI.esc(it.ghost.reason) + '</span>' : ''), choices, it.sprite);
+    if (!cur || !ch || ch === 'no') return;
+    if (ch === 'build') buildNow(it.ghost);
+    else if (ch === 'upgrade') buildNow(it.upgrade);
+    else if (ch === 'open') { cur.tab = it.tab; renderRight(); const r = cur.right; if (r && r.scrollIntoView) r.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    void res;
   }
   function onPicClick(x, y, alt) {
     const it = cur.scene.hit(x, y); if (!it) return;

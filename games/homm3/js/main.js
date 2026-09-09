@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.6.1';
+  const VERSION = '2.7';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -586,6 +586,10 @@
     window.addEventListener('error', e => { console.error(e.error || e.message); try { UI.toast('Ошибка: ' + (e.message || 'см. консоль'), 'warn'); } catch (x) { /* ignore */ } });
     window.addEventListener('unhandledrejection', e => { console.error(e.reason); try { UI.toast('Ошибка: ' + ((e.reason && e.reason.message) || e.reason), 'warn'); } catch (x) { /* ignore */ } G.busy = false; if (AV.V) AV.V.busy = false; });
     document.addEventListener('pointerdown', () => H3.Audio.unlock(), { once: true });
+    // телефон: вкладку свернули или закрыли — сохраняемся, пока партия не в бою
+    const onHide = () => { if (G.state && G.screen === 'adv' && !G.busy && G.state.winner === null) { try { save('auto'); } catch (e) { /* ignore */ } } };
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') onHide(); });
+    window.addEventListener('pagehide', onHide);
     menu();
     const q = new URLSearchParams(location.search);
     if (q.get('autostart')) newGame({ size: q.get('size') || 'S', opponents: +(q.get('opp') || 1), difficulty: q.get('diff') || 'normal', faction: q.get('faction') || 'castle', hero: null, seed: +(q.get('seed') || 1), name: 'Игрок' });
