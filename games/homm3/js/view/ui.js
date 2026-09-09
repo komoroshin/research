@@ -102,14 +102,43 @@
   function heroPortrait(hero, scale) { return icon(hero.portrait, scale || 2); }
   function skillHtml(id, lvl) { const s = H3.Skills.get(id); return '<span class="skill" title="' + esc(H3.Skills.describe(id, lvl)) + '">' + icon('sk_' + id) + '<b>' + esc(s.name) + '</b> ' + esc(H3.Skills.levelName(lvl)) + '</span>'; }
 
+  /**
+   * Тап и долгое нажатие на одном элементе (мышь и палец). long() вызывается через 500 мс удержания и
+   * гасит последующий tap; сдвиг пальца > 8 px отменяет и то и другое (это прокрутка).
+   */
+  function press(node, h) {
+    let timer = null, start = null, longed = false;
+    node.addEventListener('pointerdown', e => { if (e.button > 0) return; start = [e.clientX, e.clientY]; longed = false; clearTimeout(timer); if (h.long) timer = setTimeout(() => { longed = true; start = null; h.long(e); }, 500); });
+    node.addEventListener('pointermove', e => { if (start && Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 8) { clearTimeout(timer); start = null; } });
+    node.addEventListener('pointerup', e => { clearTimeout(timer); const ok = !!start; start = null; if (ok && !longed && h.tap) h.tap(e); });
+    node.addEventListener('pointercancel', () => { clearTimeout(timer); start = null; });
+    node.addEventListener('contextmenu', e => { if (h.long) { e.preventDefault(); if (!longed) h.long(e); longed = false; } });
+    node.addEventListener('click', e => { if (longed) { e.preventDefault(); e.stopPropagation(); longed = false; } });
+  }
+  /** Слоты армии: тап — onTap(i, e), долгое нажатие — карточка существа с числом. */
+  function bindArmy(root, army, onTap) {
+    root.querySelectorAll('.army7 .slot').forEach((slot, i) => press(slot, {
+      tap: e => onTap(i, e),
+      long: () => { const st = army[i]; if (!st || st.n <= 0) return; const c = C.get(st.cid); modal({ title: c.name + ' ×' + st.n, html: creatureCard(c) }); },
+    }));
+  }
+  /** Панель выбранного отряда: кому куда, «Разделить», «Отмена». */
+  function selBarHtml(st, split) {
+    const c = C.get(st.cid);
+    return '<div class="selbar row"><span class="grow small">' + (split ? 'Куда положить ' + esc(c.name) + ' ×' + split + '? Тапни по слоту.' : esc(c.name) + ' ×' + st.n + ' — тапни, куда переместить') + '</span>'
+      + (st.n > 1 && !split ? '<button class="sm" data-split>Разделить</button>' : '') + '<button class="sm" data-unsel>Отмена</button></div>';
+  }
+
   /** Ввод числа с ползунком: returns Promise<number|null> */
   function askNumber(title, html, max, def, unitCost, res) {
     const wrap = el('div', '', html + '<div class="row" style="margin-top:8px"><input type="range" min="1" max="' + max + '" value="' + (def || max) + '" class="grow"><input type="number" min="1" max="' + max + '" value="' + (def || max) + '" style="width:70px"></div><div class="small muted total"></div>');
     const range = wrap.querySelector('input[type=range]'), num = wrap.querySelector('input[type=number]'), total = wrap.querySelector('.total');
     const upd = v => { v = U.clamp(+v || 1, 1, max); range.value = v; num.value = v; if (unitCost) total.innerHTML = 'Итого: ' + costHtml(U.mulCost(unitCost, v), res); };
     range.oninput = () => upd(range.value); num.oninput = () => upd(num.value); upd(def || max);
+    // быстрые значения — на телефоне ползунком точное число ловить неудобно
+    if (max > 1) { const q = el('div', 'row quick'); q.innerHTML = '<button class="sm" data-q="1">1</button><button class="sm" data-q="' + Math.max(1, Math.floor(max / 2)) + '">Половина</button><button class="sm" data-q="' + max + '">Все (' + max + ')</button>'; q.querySelectorAll('[data-q]').forEach(b => { b.onclick = () => upd(b.dataset.q); }); wrap.appendChild(q); }
     return modal({ title, html: wrap, buttons: [{ label: 'OK', cls: 'primary', value: 'ok' }, { label: 'Отмена', value: null }] }).then(v => v === 'ok' ? +num.value : null);
   }
 
-  H3.UI = { $, el, esc, modal, closeTop, alert, confirm, choose, toast, tip, hideTip, icon, resIcon, costHtml, resLine, slotHtml, armyHtml, countWord, creatureCard, heroPortrait, skillHtml, askNumber, dlgHtml, stackDepth: () => stack.length };
+  H3.UI = { $, el, esc, modal, closeTop, alert, confirm, choose, toast, tip, hideTip, icon, resIcon, costHtml, resLine, slotHtml, armyHtml, countWord, creatureCard, heroPortrait, skillHtml, askNumber, dlgHtml, press, bindArmy, selBarHtml, stackDepth: () => stack.length };
 })(typeof window !== 'undefined' ? window : globalThis);

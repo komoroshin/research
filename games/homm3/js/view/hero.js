@@ -1,6 +1,7 @@
 /* ============================================================================
    view/hero.js — экран героя (и обмен между двумя героями): статы, навыки,
-   армия, артефакты, книга заклинаний, роспуск.
+   армия, артефакты, книга заклинаний, роспуск. Сделан под палец: тап — выбрать,
+   второй тап — переместить, «Разделить» кнопкой, долгое нажатие — сведения.
    ========================================================================== */
 (function (root) {
   'use strict';
@@ -10,39 +11,55 @@
   let cur = null;
   function open(hero, other) {
     return new Promise(resolve => {
-      cur = { hero, other, sel: null, artSel: null };
-      const wrap = UI.el('div', ''); wrap.id = 'heroView';
+      cur = { hero, other, sel: null, split: 0, artSel: null };
+      const wrap = UI.el('div', other ? 'exch' : ''); wrap.id = 'heroView';
       cur.wrap = wrap;
       const buttons = [{ label: 'Закрыть', cls: 'primary', value: true }];
-      UI.modal({ title: other ? 'Встреча героев' : hero.name, html: wrap, wide: true, buttons }).then(() => { cur = null; resolve(); });
+      UI.modal({ title: other ? 'Встреча героев' : 'Герой', html: wrap, wide: !!other, buttons }).then(() => { cur = null; resolve(); });
       render();
     });
   }
   function render() {
     const w = cur.wrap; w.innerHTML = '';
     w.appendChild(heroColumn(cur.hero, 0));
-    if (cur.other) w.appendChild(heroColumn(cur.other, 1)); else w.appendChild(detailsColumn(cur.hero));
+    if (cur.other) w.appendChild(heroColumn(cur.other, 1));
     H3.Game.refresh(false);
   }
+  const sign = v => (v > 0 ? '+' : '') + v;
+  const partsText = (parts, none) => parts.length ? parts.map(p => p[0] + ' ' + sign(p[1])).join('<br>') : none;
   function heroColumn(h, idx) {
-    const col = UI.el('div', 'col');
+    const col = UI.el('div', 'col hcol');
+    const exch = !!cur.other;
     const pr = R.heroPrimary(h), fx = R.artifactFx(h), mor = R.heroMorale(h), luck = R.heroLuck(h);
     const cls = HE.getClass(h.cls);
     const xpNext = HE.xpForLevel(h.level + 1);
-    col.innerHTML = '<div class="row top">' + UI.heroPortrait(h, 3) + '<div class="grow"><h3>' + UI.esc(h.name) + '</h3><div class="small">' + UI.esc(cls.name) + ', ' + h.level + ' ур. · опыт ' + U.fmt(h.xp) + ' / ' + U.fmt(xpNext) + '</div><div class="small muted">Специальность: ' + UI.esc(HE.specText(h)) + '</div></div></div>'
-      + '<div class="stats4"><div title="Атака (база ' + h.pri.att + (fx.att ? ', артефакты ' + (fx.att > 0 ? '+' : '') + fx.att : '') + ')">' + UI.icon('ic_att') + '<b>' + pr.att + '</b><small>атака</small></div><div title="Защита">' + UI.icon('ic_def') + '<b>' + pr.def + '</b><small>защита</small></div><div title="Сила магии">' + UI.icon('ic_pow') + '<b>' + pr.pow + '</b><small>сила</small></div><div title="Знание">' + UI.icon('ic_kno') + '<b>' + pr.kno + '</b><small>знание</small></div></div>'
-      + '<div class="row wrap small"><span title="' + UI.esc(mor.parts.map(p => p[0] + ' ' + (p[1] > 0 ? '+' : '') + p[1]).join(', ') || 'нет модификаторов') + '">' + UI.icon('ic_morale') + ' Мораль ' + (mor.value > 0 ? '+' : '') + mor.value + '</span><span title="' + UI.esc(luck.parts.map(p => p[0] + ' ' + (p[1] > 0 ? '+' : '') + p[1]).join(', ') || 'нет модификаторов') + '">' + UI.icon('ic_luck') + ' Удача ' + (luck.value > 0 ? '+' : '') + luck.value + '</span><span>' + UI.icon('ic_move') + ' ' + Math.round(h.move) + '/' + R.heroMaxMove(h) + '</span><span>' + UI.icon('ic_mana') + ' ' + h.mana + '/' + R.heroMaxMana(h) + '</span></div>'
-      + '<div class="skills">' + Object.keys(h.skills).map(id => UI.skillHtml(id, h.skills[id])).join('') + (Object.keys(h.skills).length ? '' : '<span class="muted small">нет вторичных навыков</span>') + '</div>'
-      + '<div class="small muted">Армия (клик — выбрать, второй клик — переместить/объединить; Shift+клик — разделить)</div>' + UI.armyHtml(h.army, cur.sel && cur.sel.army === h.army ? cur.sel.i : -1)
-      + '<div class="small muted">Артефакты (клик — снять/надеть)</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
+    const selHere = cur.sel && cur.sel.army === h.army;
+    col.innerHTML = '<div class="row top">' + UI.heroPortrait(h, 3) + '<div class="grow"><h3>' + UI.esc(h.name) + '</h3><div class="small">' + UI.esc(cls.name) + ', ' + h.level + ' ур. · опыт ' + U.fmt(h.xp) + ' / ' + U.fmt(xpNext) + '</div>'
+      + (exch ? '<div class="small muted">' + UI.icon('ic_att') + ' ' + pr.att + ' ' + UI.icon('ic_def') + ' ' + pr.def + ' ' + UI.icon('ic_pow') + ' ' + pr.pow + ' ' + UI.icon('ic_kno') + ' ' + pr.kno + ' · ' + UI.icon('ic_mana') + ' ' + h.mana + '/' + R.heroMaxMana(h) + '</div>' : '<div class="small muted">Специальность: ' + UI.esc(HE.specText(h)) + '</div>') + '</div></div>'
+      + (exch ? '' : '<div class="stats4"><div data-stat="att">' + UI.icon('ic_att') + '<b>' + pr.att + '</b><small>атака</small></div><div data-stat="def">' + UI.icon('ic_def') + '<b>' + pr.def + '</b><small>защита</small></div><div data-stat="pow">' + UI.icon('ic_pow') + '<b>' + pr.pow + '</b><small>сила</small></div><div data-stat="kno">' + UI.icon('ic_kno') + '<b>' + pr.kno + '</b><small>знание</small></div></div>'
+        + '<div class="hrow"><button class="chip" data-mor>' + UI.icon('ic_morale') + ' Мораль ' + sign(mor.value) + '</button><button class="chip" data-luck>' + UI.icon('ic_luck') + ' Удача ' + sign(luck.value) + '</button><span class="chip">' + UI.icon('ic_move') + ' ' + Math.round(h.move) + '/' + R.heroMaxMove(h) + '</span><span class="chip">' + UI.icon('ic_mana') + ' ' + h.mana + '/' + R.heroMaxMana(h) + '</span></div>'
+        + '<div class="skills">' + Object.keys(h.skills).map(id => '<button class="skill" data-skill="' + id + '">' + UI.icon('sk_' + id) + '<b>' + UI.esc(SK.get(id).name) + '</b> ' + UI.esc(SK.levelName(h.skills[id])) + '</button>').join('') + (Object.keys(h.skills).length ? '' : '<span class="muted small">нет вторичных навыков</span>') + '</div>')
+      + '<div class="small muted">Армия · ' + (exch ? 'тап — выбрать, второй тап — переместить к любому герою' : 'тап — выбрать, второй тап — переместить; долгое нажатие — сведения') + '</div>' + UI.armyHtml(h.army, selHere ? cur.sel.i : -1)
+      + (selHere ? UI.selBarHtml(h.army[cur.sel.i], cur.split) : '')
+      + '<div class="small muted">Артефакты · тап — снять, из рюкзака — надеть; долгое нажатие — описание</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
       + machinesHtml(h)
-      + '<div class="small muted">Рюкзак</div><div class="artslots" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '" title="' + UI.esc(AR.get(id).name + ': ' + AR.get(id).desc) + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>';
-    col.querySelectorAll('.army7 .slot').forEach((s, i) => { s.onclick = e => onSlot(h.army, i, e.shiftKey); });
-    col.querySelectorAll('.artslot[data-slot]').forEach(s => { s.onclick = () => onArtSlot(h, s.dataset.slot); });
-    col.querySelectorAll('.artslot[data-bp-i]').forEach(s => { s.onclick = () => onBackpack(h, +s.dataset.bpI); });
-    const btns = UI.el('div', 'row wrap');
+      + '<div class="small muted">Рюкзак</div><div class="artslots" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>'
+      + (exch || !h.spells.length ? '' : '<div class="small muted">Заклинания · тап — книга</div><div class="hrow" data-book>' + h.spells.map(id => '<span class="chip">' + UI.icon('sp_' + id, 1) + ' ' + UI.esc(SP.get(id).name) + '</span>').join('') + '</div>');
+    UI.bindArmy(col, h.army, (i, e) => onSlot(h.army, i, e.shiftKey));
+    const bar = col.querySelector('.selbar');
+    if (bar) {
+      const bs = bar.querySelector('[data-split]'); if (bs) bs.onclick = () => askSplit();
+      bar.querySelector('[data-unsel]').onclick = () => { cur.sel = null; cur.split = 0; render(); };
+    }
+    col.querySelectorAll('.artslot[data-slot]').forEach(s => UI.press(s, { tap: () => onArtSlot(h, s.dataset.slot), long: () => { const id = h.arts[s.dataset.slot]; UI.alert(id ? AR.get(id).name : AR.SLOT_NAMES[s.dataset.slot], id ? UI.esc(AR.get(id).desc) : 'Слот пуст. Артефакт из рюкзака надевается тапом по нему.', id ? 'art_' + id : null); } }));
+    col.querySelectorAll('.artslot[data-bp-i]').forEach(s => UI.press(s, { tap: () => onBackpack(h, +s.dataset.bpI), long: () => { const a = AR.get(h.backpack[+s.dataset.bpI]); UI.alert(a.name, UI.esc(a.desc), 'art_' + a.id); } }));
+    col.querySelectorAll('[data-skill]').forEach(b => { b.onclick = () => { const id = b.dataset.skill; UI.alert(SK.get(id).name + ' — ' + SK.levelName(h.skills[id]), UI.esc(SK.describe(id, h.skills[id])), 'sk_' + id); }; });
+    const bm = col.querySelector('[data-mor]'); if (bm) bm.onclick = () => UI.alert('Мораль ' + sign(mor.value), partsText(mor.parts, 'Нет модификаторов.'), 'ic_morale');
+    const bl = col.querySelector('[data-luck]'); if (bl) bl.onclick = () => UI.alert('Удача ' + sign(luck.value), partsText(luck.parts, 'Нет модификаторов.'), 'ic_luck');
+    const bk = col.querySelector('[data-book]'); if (bk) bk.onclick = () => spellbook(h);
+    const btns = UI.el('div', 'row wrap hbtns');
     const b1 = UI.el('button', 'sm', UI.icon('ic_spellbook') + ' Книга заклинаний'); b1.onclick = () => spellbook(h); btns.appendChild(b1);
-    if (!cur.other) { const b2 = UI.el('button', 'sm danger', 'Распустить героя'); b2.onclick = async () => { if (await UI.confirm('Распустить', 'Распустить героя ' + UI.esc(h.name) + '? Армия и артефакты будут потеряны.')) { A.dismissHero(H3.Game.state, h); UI.closeTop(); H3.Game.selectHero(null); H3.Game.refresh(true); } }; btns.appendChild(b2); }
+    if (!exch) { const b2 = UI.el('button', 'sm danger', 'Распустить героя'); b2.onclick = async () => { if (await UI.confirm('Распустить', 'Распустить героя ' + UI.esc(h.name) + '? Армия и артефакты будут потеряны.')) { A.dismissHero(H3.Game.state, h); UI.closeTop(); H3.Game.selectHero(null); H3.Game.refresh(true); } }; btns.appendChild(b2); }
     col.appendChild(btns);
     return col;
   }
@@ -55,52 +72,55 @@
   }
   function artSlotHtml(h, slot) {
     const id = h.arts[slot];
-    return '<div class="artslot' + (cur.artSel && cur.artSel.hero === h && cur.artSel.slot === slot ? ' sel' : '') + '" data-slot="' + slot + '" title="' + UI.esc(AR.SLOT_NAMES[slot] + (id ? ': ' + AR.get(id).name + ' — ' + AR.get(id).desc : '')) + '">' + (id ? UI.icon('art_' + id, 2) : '') + '<small>' + UI.esc(AR.SLOT_NAMES[slot].slice(0, 4)) + '</small></div>';
+    return '<div class="artslot' + (id ? ' full' : '') + '" data-slot="' + slot + '">' + (id ? UI.icon('art_' + id, 2) : '') + '<small>' + UI.esc(AR.SLOT_NAMES[slot]) + '</small></div>';
   }
-  function detailsColumn(h) {
-    const col = UI.el('div', 'col');
-    let html = '<h3>Навыки</h3><table class="t small">';
-    for (const id in h.skills) html += '<tr><td>' + UI.icon('sk_' + id) + ' ' + UI.esc(SK.get(id).name) + '</td><td>' + UI.esc(SK.levelName(h.skills[id])) + '</td><td class="muted">' + UI.esc(SK.describe(id, h.skills[id])) + '</td></tr>';
-    html += '</table>';
-    html += '<h3>Армия</h3><table class="t small"><tr><th></th><th>Существо</th><th class="num">Кол-во</th><th class="num">Ат/Зщ</th><th class="num">Урон</th><th class="num">HP</th><th class="num">Ск</th></tr>';
-    for (const s of h.army) if (s && s.n > 0) { const c = C.get(s.cid); html += '<tr><td>' + UI.icon(c.id, 1) + '</td><td>' + UI.esc(c.name) + '</td><td class="num">' + s.n + '</td><td class="num">' + c.att + '/' + c.def + '</td><td class="num">' + c.dmg[0] + '–' + c.dmg[1] + '</td><td class="num">' + c.hp + '</td><td class="num">' + c.speed + '</td></tr>'; }
-    html += '</table><div class="small muted">Сила армии: ' + U.fmt(R.armyPower(h.army, h)) + '</div>';
-    if (h.spells.length) html += '<h3>Заклинания</h3><div class="small">' + h.spells.map(id => UI.icon('sp_' + id, 1) + ' ' + UI.esc(SP.get(id).name)).join(', ') + '</div>';
-    col.innerHTML = html;
-    return col;
+  /** «Разделить»: спросить число, затем ждать тап по слоту-получателю. */
+  async function askSplit() {
+    const sel = cur.sel; if (!sel) return;
+    const src = sel.army[sel.i]; if (!src || src.n < 2) return;
+    const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько отделить?', src.n - 1, Math.floor(src.n / 2));
+    if (!cur) return;
+    cur.split = n || 0; render();
   }
-  async function onSlot(army, i, split) {
+  function onSlot(army, i, shift) {
     const sel = cur.sel;
-    if (!sel) { if (army[i] && army[i].n > 0) { cur.sel = { army, i }; render(); } return; }
-    if (sel.army === army && sel.i === i) { cur.sel = null; render(); return; }
+    if (!sel) { if (army[i] && army[i].n > 0) { cur.sel = { army, i }; cur.split = 0; render(); } return; }
+    if (sel.army === army && sel.i === i) { if (shift) { askSplit(); return; } cur.sel = null; cur.split = 0; render(); return; }
     const src = sel.army[sel.i];
-    if (split && src && src.n > 1 && (!army[i] || army[i].cid === src.cid)) {
-      const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько переместить?', src.n - 1, Math.floor(src.n / 2));
-      if (n) A.splitStack(sel.army, sel.i, army, i, n);
+    if (shift && !cur.split && src && src.n > 1) { askSplit(); return; }
+    if (cur.split) {
+      if (army[i] && army[i].cid !== src.cid) { UI.toast('Туда можно положить только ' + C.get(src.cid).name, 'warn'); return; }
+      A.splitStack(sel.army, sel.i, army, i, cur.split);
     } else {
       // герой не может отдать последнее существо
       const owner = sel.army === cur.hero.army ? cur.hero : cur.other;
-      if (owner && sel.army !== army && R.armySize(sel.army) === 1 && !(army[i] && army[i].cid === src.cid && false)) { UI.toast('Герой не может остаться без армии', 'warn'); cur.sel = null; render(); return; }
+      if (owner && sel.army !== army && R.armySize(sel.army) === 1) { UI.toast('Герой не может остаться без армии', 'warn'); cur.sel = null; render(); return; }
       A.moveStack(sel.army, sel.i, army, i);
     }
-    cur.sel = null; render();
+    H3.Audio.play('click');
+    cur.sel = null; cur.split = 0; render();
   }
   function onArtSlot(h, slot) {
     const id = h.arts[slot];
     if (id) { delete h.arts[slot]; h.backpack.push(id); H3.Audio.play('click'); render(); return; }
-    if (cur.artSel && cur.artSel.hero === h && cur.artSel.bp !== undefined) { const art = AR.get(h.backpack[cur.artSel.bp]); if (AR.slotsFor(art).includes(slot)) { h.arts[slot] = art.id; h.backpack.splice(cur.artSel.bp, 1); cur.artSel = null; H3.Audio.play('click'); render(); } else UI.toast('Не подходит к этому слоту', 'warn'); }
+    UI.toast('Слот пуст — тапни по артефакту в рюкзаке, чтобы надеть');
   }
-  function onBackpack(h, i) {
+  async function onBackpack(h, i) {
     const art = AR.get(h.backpack[i]);
-    // попробовать надеть в свободный подходящий слот; если оба героя — можно передать другому
-    for (const slot of AR.slotsFor(art)) if (!h.arts[slot]) { h.arts[slot] = art.id; h.backpack.splice(i, 1); H3.Audio.play('click'); render(); return; }
-    if (cur.other) { const to = h === cur.hero ? cur.other : cur.hero; to.backpack.push(art.id); h.backpack.splice(i, 1); UI.toast('Передано герою ' + to.name); render(); return; }
-    UI.toast('Слот занят — сначала снимите артефакт', 'warn');
+    const free = AR.slotsFor(art).find(slot => !h.arts[slot]);
+    const to = cur.other ? (h === cur.hero ? cur.other : cur.hero) : null;
+    let act = free ? 'wear' : null;
+    if (to) { // при встрече — выбор: надеть или передать
+      const opts = []; if (free) opts.push({ id: 'wear', label: 'Надеть', desc: AR.SLOT_NAMES[free] }); opts.push({ id: 'give', label: 'Передать', desc: to.name });
+      act = await UI.choose(art.name, UI.esc(art.desc), opts, 'art_' + art.id); if (!cur) return;
+    }
+    if (act === 'wear') { h.arts[free] = art.id; h.backpack.splice(i, 1); H3.Audio.play('click'); render(); }
+    else if (act === 'give') { to.backpack.push(art.id); h.backpack.splice(i, 1); UI.toast('Передано герою ' + to.name); render(); }
+    else if (!to) UI.toast('Слот занят — сначала снимите артефакт', 'warn');
   }
   function spellbook(h) {
     if (!h.hasBook) { UI.alert('Книга заклинаний', 'У героя нет книги заклинаний. Её можно купить в гильдии магов за 500 золота.'); return; }
     if (!h.spells.length) { UI.alert('Книга заклинаний', 'Книга пуста. Заклинания изучаются в гильдии магов и святилищах.'); return; }
-    const st = H3.Game.state;
     const wrap = UI.el('div', 'spells');
     let closeFn = null;
     for (const id of h.spells) {
@@ -110,7 +130,7 @@
       if (adv) d.onclick = async () => { if (closeFn) closeFn(); const r = await castTownPortal(h); void r; };
       wrap.appendChild(d);
     }
-    UI.modal({ title: 'Книга заклинаний — ' + h.name + ' (' + h.mana + '/' + R.heroMaxMana(h) + ' маны)', html: wrap, wide: true, buttons: [{ label: 'Закрыть', value: null }], onOpen: (box, close) => { closeFn = close; } });
+    UI.modal({ title: 'Книга заклинаний', titleRight: '<span class="small muted">' + UI.esc(h.name) + ' · ' + UI.icon('ic_mana', 1) + ' ' + h.mana + '/' + R.heroMaxMana(h) + '</span>', html: wrap, wide: true, buttons: [{ label: 'Закрыть', value: null }], onOpen: (box, close) => { closeFn = close; } });
   }
   async function castTownPortal(h) {
     const st = H3.Game.state;
