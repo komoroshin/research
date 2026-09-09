@@ -784,9 +784,19 @@
     mk(UI.icon('ic_spellbook') + ' Магия', () => openSpellbook(), !human || !b.sides[cur.side].hero || !b.sides[cur.side].hero.hasBook, 'Книга заклинаний');
     mk(UI.icon('ic_auto') + ' Авто', () => { V.auto = true; V.spellMode = null; step(); }, !human, 'Доверить бой ИИ');
     const canFlee = cur && b.sides[cur.side].hero && b.sides[cur.side].canRetreat;
-    mk(UI.icon('ic_flee') + ' Отступить', () => UI.confirm('Отступление', 'Герой сбежит в таверну, армия будет потеряна. Отступить?').then(v => { if (v) doAction({ type: 'retreat' }); }), !human || !canFlee, 'Сохранить героя, потерять армию');
-    mk(UI.icon('ic_surrender') + ' Сдаться', () => { const cost = Math.floor(R.armyCost(b.sides[cur.side].army).gold * 0.5 * (1 - 0.2 * R.skillLvl(b.sides[cur.side].hero, 'diplomacy'))); UI.confirm('Сдаться', 'Заплатить ' + U.fmt(cost) + ' золота и сохранить армию (герой уйдёт в таверну)?').then(v => { if (v) doAction({ type: 'surrender' }); }); }, !human || !canFlee, 'Заплатить выкуп и сохранить армию');
-    mk(UI.icon('ic_speed') + ' ' + ['мгновенно', 'обычно', 'быстро'][V.speed], () => { V.speed = (V.speed + 1) % 3; H3.Game.settings().animSpeed = V.speed; H3.Game.saveSettings(); renderBar(); }, false, 'Скорость анимации');
+    // редкие действия — в меню, чтобы главные кнопки были крупными и под пальцем
+    mk('…', () => {
+      const cost = canFlee ? Math.floor(R.armyCost(b.sides[cur.side].army).gold * 0.5 * (1 - 0.2 * R.skillLvl(b.sides[cur.side].hero, 'diplomacy'))) : 0;
+      UI.choose('Ещё', '', [
+        { id: 'retreat', label: 'Отступить', desc: 'Сохранить героя, потерять армию', disabled: !human || !canFlee },
+        { id: 'surrender', label: 'Сдаться за ' + U.fmt(cost) + ' золота', desc: 'Заплатить выкуп и сохранить армию', disabled: !human || !canFlee },
+        { id: 'speed', label: 'Скорость анимации: ' + ['мгновенно', 'обычно', 'быстро'][V.speed], desc: 'Переключить' },
+      ]).then(ch => {
+        if (ch === 'retreat') UI.confirm('Отступление', 'Герой сбежит в таверну, армия будет потеряна. Отступить?').then(v => { if (v) doAction({ type: 'retreat' }); });
+        else if (ch === 'surrender') UI.confirm('Сдаться', 'Заплатить ' + U.fmt(cost) + ' золота и сохранить армию (герой уйдёт в таверну)?').then(v => { if (v) doAction({ type: 'surrender' }); });
+        else if (ch === 'speed') { V.speed = (V.speed + 1) % 3; H3.Game.settings().animSpeed = V.speed; H3.Game.saveSettings(); renderBar(); }
+      });
+    }, false, 'Отступить, сдаться, скорость');
     bar.appendChild(btns);
   }
   function openSpellbook() {

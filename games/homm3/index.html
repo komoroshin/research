@@ -2,12 +2,20 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Герои Эрафии — браузерная пошаговая стратегия в духе Heroes of Might and Magic III: восемь фракций, гексовые бои, магия, осады, ИИ-противники.">
 <title>Герои Эрафии</title>
+<meta name="theme-color" content="#221507">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Герои">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&display=swap">
-<link rel="stylesheet" href="css/style.css?v=271">
+<link rel="stylesheet" href="css/style.css?v=28">
 </head>
 <body>
 <div id="app">
@@ -16,15 +24,15 @@
     <div id="menu" class="screen"></div>
     <!-- карта приключений -->
     <div id="adv" class="screen hidden">
-      <div id="advMain"><canvas id="mapCanvas"></canvas><div id="advOverlay" class="hidden"></div></div>
-      <div id="sidebar">
-        <div id="resbar"></div>
-        <div id="datebar"></div>
-        <canvas id="minimap" width="220" height="220"></canvas>
-        <div id="heroPanel" class="inset"></div>
-        <div id="objList"></div>
-        <div id="advButtons"></div>
-        <div id="log"></div>
+      <div id="advMain">
+        <canvas id="mapCanvas"></canvas>
+        <div id="advOverlay" class="hidden"></div>
+        <div id="hudTop"><div id="resbar"></div><div id="datebar"></div></div>
+        <div id="miniWrap" class="hidden"><canvas id="minimap" width="220" height="220"></canvas><div id="log"></div></div>
+        <div id="hudBottom">
+          <div id="heroStrip"><div id="objList"></div><div id="heroPanel"></div></div>
+          <div id="advButtons"></div>
+        </div>
       </div>
     </div>
     <!-- редактор карт -->
@@ -46,52 +54,56 @@
   <div id="tip" class="hidden"></div>
 </div>
 
-<script src="js/core/util.js?v=271"></script>
-<script src="js/data/creatures.js?v=271"></script>
-<script src="js/data/factions.js?v=271"></script>
-<script src="js/data/buildings.js?v=271"></script>
-<script src="js/data/skills.js?v=271"></script>
-<script src="js/data/spells.js?v=271"></script>
-<script src="js/data/artifacts.js?v=271"></script>
-<script src="js/data/heroes.js?v=271"></script>
-<script src="js/data/objects.js?v=271"></script>
-<script src="js/data/campaign.js?v=271"></script>
-<script src="js/model/rules.js?v=271"></script>
-<script src="js/model/pathfind.js?v=271"></script>
-<script src="js/model/quest.js?v=271"></script>
-<script src="js/model/state.js?v=271"></script>
-<script src="js/model/mapgen.js?v=271"></script>
-<script src="js/model/mapedit.js?v=271"></script>
-<script src="js/model/battle.js?v=271"></script>
-<script src="js/model/battleai.js?v=271"></script>
-<script src="js/model/adventure.js?v=271"></script>
-<script src="js/model/ai.js?v=271"></script>
-<script src="js/view/sprites.js?v=271"></script>
-<script src="js/view/anim.js?v=271"></script>
-<script src="js/view/fx.js?v=271"></script>
-<script src="js/view/sprites_castle.js?v=271"></script>
-<script src="js/view/sprites_rampart.js?v=271"></script>
-<script src="js/view/sprites_tower.js?v=271"></script>
-<script src="js/view/sprites_inferno.js?v=271"></script>
-<script src="js/view/sprites_necropolis.js?v=271"></script>
-<script src="js/view/sprites_dungeon.js?v=271"></script>
-<script src="js/view/sprites_stronghold.js?v=271"></script>
-<script src="js/view/sprites_fortress.js?v=271"></script>
-<script src="js/view/sprites_objects.js?v=271"></script>
-<script src="js/view/sprites_towns.js?v=271"></script>
-<script src="js/view/sprites_heroes.js?v=271"></script>
-<script src="js/view/sprites_icons.js?v=271"></script>
-<script src="js/view/sprites_machines.js?v=271"></script>
-<script src="js/view/sprites_quest.js?v=271"></script>
-<script src="js/view/terrain.js?v=271"></script>
-<script src="js/view/audio.js?v=271"></script>
-<script src="js/view/ui.js?v=271"></script>
-<script src="js/view/adventure.js?v=271"></script>
-<script src="js/view/battle.js?v=271"></script>
-<script src="js/view/townscene.js?v=271"></script>
-<script src="js/view/town.js?v=271"></script>
-<script src="js/view/hero.js?v=271"></script>
-<script src="js/view/editor.js?v=271"></script>
-<script src="js/main.js?v=271"></script>
+<script src="js/core/util.js?v=28"></script>
+<script src="js/data/creatures.js?v=28"></script>
+<script src="js/data/factions.js?v=28"></script>
+<script src="js/data/buildings.js?v=28"></script>
+<script src="js/data/skills.js?v=28"></script>
+<script src="js/data/spells.js?v=28"></script>
+<script src="js/data/artifacts.js?v=28"></script>
+<script src="js/data/heroes.js?v=28"></script>
+<script src="js/data/objects.js?v=28"></script>
+<script src="js/data/campaign.js?v=28"></script>
+<script src="js/model/rules.js?v=28"></script>
+<script src="js/model/pathfind.js?v=28"></script>
+<script src="js/model/quest.js?v=28"></script>
+<script src="js/model/state.js?v=28"></script>
+<script src="js/model/mapgen.js?v=28"></script>
+<script src="js/model/mapedit.js?v=28"></script>
+<script src="js/model/battle.js?v=28"></script>
+<script src="js/model/battleai.js?v=28"></script>
+<script src="js/model/adventure.js?v=28"></script>
+<script src="js/model/ai.js?v=28"></script>
+<script src="js/view/sprites.js?v=28"></script>
+<script src="js/view/anim.js?v=28"></script>
+<script src="js/view/fx.js?v=28"></script>
+<script src="js/view/sprites_castle.js?v=28"></script>
+<script src="js/view/sprites_rampart.js?v=28"></script>
+<script src="js/view/sprites_tower.js?v=28"></script>
+<script src="js/view/sprites_inferno.js?v=28"></script>
+<script src="js/view/sprites_necropolis.js?v=28"></script>
+<script src="js/view/sprites_dungeon.js?v=28"></script>
+<script src="js/view/sprites_stronghold.js?v=28"></script>
+<script src="js/view/sprites_fortress.js?v=28"></script>
+<script src="js/view/sprites_objects.js?v=28"></script>
+<script src="js/view/sprites_towns.js?v=28"></script>
+<script src="js/view/sprites_heroes.js?v=28"></script>
+<script src="js/view/sprites_icons.js?v=28"></script>
+<script src="js/view/sprites_machines.js?v=28"></script>
+<script src="js/view/sprites_quest.js?v=28"></script>
+<script src="js/view/terrain.js?v=28"></script>
+<script src="js/view/audio.js?v=28"></script>
+<script src="js/view/ui.js?v=28"></script>
+<script src="js/view/adventure.js?v=28"></script>
+<script src="js/view/battle.js?v=28"></script>
+<script src="js/view/townscene.js?v=28"></script>
+<script src="js/view/town.js?v=28"></script>
+<script src="js/view/hero.js?v=28"></script>
+<script src="js/view/editor.js?v=28"></script>
+<script src="js/main.js?v=28"></script>
+<script>
+// офлайн-кеш и «Добавить на экран Домой»: только по https (GitHub Pages), локальный file:// — без него
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
 </body>
 </html>

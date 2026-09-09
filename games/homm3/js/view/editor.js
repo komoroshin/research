@@ -76,6 +76,7 @@
     const doc = V.doc;
     UI.$('#edTop').innerHTML = '<b class="edname">' + UI.esc(doc.name) + '</b>'
       + '<span class="small muted">' + doc.w + '×' + doc.h + ' · игроков ' + doc.players.length + '</span>'
+      + '<button class="sm" id="edBrushes">Кисти</button>'
       + '<div class="seg"><button data-lay="0" class="' + (V.layer === 0 ? 'on' : '') + '">Поверхность</button><button data-lay="1" class="' + (V.layer === 1 ? 'on' : '') + '">Подземелье</button></div>'
       + '<div class="grow"></div>'
       + '<button class="sm" id="edZoomOut">−</button><button class="sm" id="edZoomIn">+</button>'
@@ -85,6 +86,7 @@
     const $ = s => UI.$(s, UI.$('#edTop'));
     UI.$('#edTop').querySelectorAll('[data-lay]').forEach(b => { b.onclick = () => { V.layer = +b.dataset.lay; V.dirty = true; renderChrome(); }; });
     $('#edZoomIn').onclick = () => zoom(1); $('#edZoomOut').onclick = () => zoom(-1);
+    $('#edBrushes').onclick = () => UI.$('#edPalette').classList.toggle('open');
     $('#edProps').onclick = () => propsDialog();
     $('#edGoals').onclick = () => goalsDialog();
     $('#edCheck').onclick = () => checkDialog();
@@ -159,6 +161,7 @@
       V.brush = { kind, value: kind === 'obs' || kind === 'road' ? +val : val };
     }
     renderChrome();
+    UI.$('#edPalette').classList.remove('open');
   }
   function pickCreature(title, text) {
     const byTier = {};

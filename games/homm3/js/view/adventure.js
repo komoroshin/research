@@ -41,6 +41,7 @@
   }
   function setState(state) {
     V.state = state; V.layer = 0; V.mapCanvas = [T.renderMap(state, 0), null]; V.miniCanvas = document.createElement('canvas');
+    if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
     resize(); V.dirty = true;
@@ -64,7 +65,9 @@
     const maxX = Math.max(0, m.w * TILE - V.w / z), maxY = Math.max(0, m.h * TILE - V.h / z);
     V.cam.x = U.clamp(V.cam.x, 0, maxX); V.cam.y = U.clamp(V.cam.y, 0, maxY);
   }
-  function centerOn(tx, ty) { V.cam.x = (tx + 0.5) * TILE - V.w / V.cam.z / 2; V.cam.y = (ty + 0.5) * TILE - V.h / V.cam.z / 2; clampCam(); V.dirty = true; }
+  /** Высота панелей HUD сверху и снизу: центрируем в видимой между ними части карты. */
+  function pads() { const t = UI.$('#hudTop'), b = UI.$('#hudBottom'); return { top: t ? t.offsetHeight : 0, bottom: b ? b.offsetHeight : 0 }; }
+  function centerOn(tx, ty) { const p = pads(); V.cam.x = (tx + 0.5) * TILE - V.w / V.cam.z / 2; V.cam.y = (ty + 0.5) * TILE - (V.h - p.top - p.bottom) / V.cam.z / 2 - p.top / V.cam.z; clampCam(); V.dirty = true; }
   function zoomAt(dir, px, py) {
     const levels = [1, 1.5, 2, 3]; let i = levels.indexOf(V.cam.z); if (i < 0) i = 1;
     i = U.clamp(i + dir, 0, levels.length - 1); const nz = levels[i]; if (nz === V.cam.z) return;
@@ -182,9 +185,9 @@
     });
   }
   function centerOnIfOut(tx, ty) {
-    const z = V.cam.z, px = (tx + 0.5) * TILE, py = (ty + 0.5) * TILE;
+    const z = V.cam.z, px = (tx + 0.5) * TILE, py = (ty + 0.5) * TILE, p = pads();
     const margin = 2 * TILE;
-    if (px < V.cam.x + margin || px > V.cam.x + V.w / z - margin || py < V.cam.y + margin || py > V.cam.y + V.h / z - margin) centerOn(tx, ty);
+    if (px < V.cam.x + margin || px > V.cam.x + V.w / z - margin || py < V.cam.y + p.top / z + margin || py > V.cam.y + (V.h - p.bottom) / z - margin) centerOn(tx, ty);
   }
 
   /* ---------- рендер ---------- */
@@ -421,6 +424,7 @@
     if (V.pending && isTouch()) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(V.pending[0] * TILE + 2, V.pending[1] * TILE + 2, TILE - 4, TILE - 4); }
   }
   function drawMini(st, me) {
+    if (!V.miniOpen) return;
     if (!V.miniDirty && V.miniFrame === st.day + ':' + Object.keys(st.objects).length + ':' + me) { /* перерисовываем кадр вьюпорта */ }
     T.renderMini(st, me, V.miniCanvas, V.layer);
     const mc = V.mini, mctx = mc.getContext('2d');
@@ -448,20 +452,18 @@
     const sel = G.selected();
     const hp = UI.$('#heroPanel');
     if (sel) {
-      const pr = R.heroPrimary(sel), mor = R.heroMorale(sel), luck = R.heroLuck(sel), mm = R.heroMaxMove(sel), mana = R.heroMaxMana(sel);
-      const xpNow = sel.xp - H3.Heroes.xpForLevel(sel.level), xpNeed = H3.Heroes.xpForLevel(sel.level + 1) - H3.Heroes.xpForLevel(sel.level);
-      hp.innerHTML = '<div class="hp-head">' + UI.heroPortrait(sel, 2) + '<div class="grow"><b class="w">' + UI.esc(sel.name) + '</b><br><span class="muted">' + UI.esc(H3.Heroes.getClass(sel.cls).name) + ', ' + sel.level + ' ур.</span>'
-        + '<div class="bar xp" title="Опыт ' + sel.xp + ' / ' + H3.Heroes.xpForLevel(sel.level + 1) + '"><div style="width:' + Math.round(100 * xpNow / xpNeed) + '%"></div></div></div></div>'
-        + '<div class="stats4"><div title="Атака">' + UI.icon('ic_att') + '<b>' + pr.att + '</b></div><div title="Защита">' + UI.icon('ic_def') + '<b>' + pr.def + '</b></div><div title="Сила магии">' + UI.icon('ic_pow') + '<b>' + pr.pow + '</b></div><div title="Знание">' + UI.icon('ic_kno') + '<b>' + pr.kno + '</b></div></div>'
-        + '<div class="row sp small" style="margin-top:3px"><span title="Мораль">' + UI.icon('ic_morale') + ' ' + (mor.value > 0 ? '+' : '') + mor.value + '</span><span title="Удача">' + UI.icon('ic_luck') + ' ' + (luck.value > 0 ? '+' : '') + luck.value + '</span><span title="Очки движения">' + UI.icon('ic_move') + ' ' + Math.round(sel.move) + '/' + mm + '</span><span title="Мана">' + UI.icon('ic_mana') + ' ' + sel.mana + '/' + mana + '</span></div>'
-        + '<div class="bar"><div style="width:' + Math.round(100 * sel.move / mm) + '%"></div></div>' + UI.armyHtml(sel.army);
+      const pr = R.heroPrimary(sel), mm = R.heroMaxMove(sel), mana = R.heroMaxMana(sel);
+      hp.innerHTML = '<div class="hp-head">' + UI.heroPortrait(sel, 2) + '<div class="grow"><b class="w">' + UI.esc(sel.name) + '</b> <span class="muted">' + sel.level + ' ур.</span>'
+        + '<div class="hp-stats"><span title="Атака">' + UI.icon('ic_att') + pr.att + '</span><span title="Защита">' + UI.icon('ic_def') + pr.def + '</span><span title="Сила магии">' + UI.icon('ic_pow') + pr.pow + '</span><span title="Знание">' + UI.icon('ic_kno') + pr.kno + '</span><span title="Мана">' + UI.icon('ic_mana') + sel.mana + '/' + mana + '</span><span title="Ход">' + UI.icon('ic_move') + Math.round(sel.move) + '</span></div>'
+        + '<div class="bar" title="Очки движения ' + Math.round(sel.move) + ' / ' + mm + '"><div style="width:' + Math.round(100 * sel.move / mm) + '%"></div></div></div></div>'
+        + UI.armyHtml(sel.army);
       hp.onclick = () => G.openHero(sel);
-    } else { hp.innerHTML = '<div class="muted center" style="padding:30px 0">Выберите героя или город</div>'; hp.onclick = null; }
-    // список героев и городов
+    } else { hp.innerHTML = '<div class="muted center small">Выбери героя или город</div>'; hp.onclick = null; }
+    // лента героев и городов: портрет + полоска хода
     const ol = UI.$('#objList'); ol.innerHTML = '';
     for (const h of S.heroesOf(st, p.id)) {
-      const d = UI.el('div', 'obj' + (sel && sel.id === h.id ? ' sel' : '') + (h.move < 100 ? ' done' : ''), UI.icon(h.portrait, 1)); d.title = h.name + ' (' + Math.round(h.move) + ' очков движения)';
-      d.onclick = () => { G.selectHero(h.id); centerOn(h.x, h.y); }; d.ondblclick = () => G.openHero(h); ol.appendChild(d);
+      const d = UI.el('div', 'obj' + (sel && sel.id === h.id ? ' sel' : '') + (h.move < 100 ? ' done' : ''), UI.icon(h.portrait, 1) + '<div class="bar"><div style="width:' + Math.round(100 * h.move / R.heroMaxMove(h)) + '%"></div></div>'); d.title = h.name + ' (' + Math.round(h.move) + ' очков движения)';
+      d.onclick = () => { if (sel && sel.id === h.id) { G.openHero(h); return; } G.selectHero(h.id); centerOn(h.x, h.y); }; ol.appendChild(d);
     }
     for (const t of S.townsOf(st, p.id)) {
       const d = UI.el('div', 'obj' + (t.builtToday ? ' done' : ''), UI.icon('town_' + t.faction, 1)); d.title = t.name + (t.builtToday ? ' (сегодня уже строили)' : '');
@@ -469,15 +471,23 @@
     }
     const ab = UI.$('#advButtons'); ab.innerHTML = '';
     const btn = (label, fn, cls, title) => { const b = UI.el('button', cls || '', label); b.onclick = () => { H3.Audio.play('click'); fn(); }; if (title) b.title = title; ab.appendChild(b); return b; };
-    btn(UI.icon('ic_end_turn') + '<span class="lbl"> Конец хода (E)</span>', () => G.endTurn(), 'primary wide', 'Конец хода');
-    btn(UI.icon('ic_hero') + '<span class="lbl"> Герой (H)</span>', () => G.nextHero(), '', 'Следующий герой');
+    btn(UI.icon('ic_end_turn') + '<span class="lbl"> Конец хода</span>', () => G.endTurn(), 'primary wide', 'Конец хода (E)');
+    btn(UI.icon('ic_hero'), () => G.nextHero(), '', 'Следующий герой (H)');
     const town = sel && H3.Adventure.townOfHero(st, sel);
-    btn(UI.icon('ic_town') + '<span class="lbl"> Город (T)</span>', () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Открыть город');
-    btn(UI.icon('ic_spellbook') + '<span class="lbl"> Магия (C)</span>', () => G.openSpellbook(), '', 'Книга заклинаний');
-    btn(UI.icon('ic_save') + '<span class="lbl"> Меню</span>', () => G.openMenu(), '', 'Сохранить, загрузить, настройки');
+    btn(UI.icon('ic_town'), () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Город (T)');
+    btn(UI.icon('ic_spellbook'), () => G.openSpellbook(), '', 'Книга заклинаний (C)');
+    btn(UI.icon('ic_flag'), () => toggleMini(), V.miniOpen ? 'on' : '', 'Карта и журнал (M)');
+    btn(UI.icon('ic_save'), () => G.openMenu(), '', 'Меню');
     const lg = UI.$('#log'); lg.innerHTML = st.log.filter(l => l.p === undefined || l.p === -1 || l.p === st.turn).slice(-40).map(l => '<div class="' + l.cls + '">' + UI.esc(l.text) + '</div>').join(''); lg.scrollTop = lg.scrollHeight;
     V.dirty = true;
   }
+  /** Миникарта с журналом — всплывающая панель; на широком экране открыта сразу. */
+  function toggleMini(force) {
+    V.miniOpen = force === undefined ? !V.miniOpen : !!force;
+    UI.$('#miniWrap').classList.toggle('hidden', !V.miniOpen);
+    const b = UI.$('#advButtons'); if (b) { const btns = b.querySelectorAll('button'); if (btns[4]) btns[4].classList.toggle('on', V.miniOpen); }
+    V.dirty = true;
+  }
 
-  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject };
+  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.7';
+  const VERSION = '2.8';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -572,6 +572,7 @@
     else if (k === 'h') nextHero();
     else if (k === 't') { const h = selected(); const t = (h && A.townOfHero(G.state, h)) || S.townsOf(G.state, G.state.turn)[0]; if (t) openTown(t); }
     else if (k === 'c') openSpellbook();
+    else if (k === 'm') AV.toggleMini();
     else if (k === '+' || k === '=') { const c = UI.$('#mapCanvas'); AV.V.cam.z = Math.min(3, AV.V.cam.z + 0.5); AV.resize(); }
     else if (k === '-') { AV.V.cam.z = Math.max(1, AV.V.cam.z - 0.5); AV.resize(); }
     else return;
