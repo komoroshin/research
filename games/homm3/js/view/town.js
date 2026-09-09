@@ -13,7 +13,7 @@
     return new Promise(resolve => {
       const st = H3.Game.state;
       const hero = town.visiting ? st.heroes[town.visiting] : null;
-      cur = { town, hero, tab: 'build', sel: null, resolve };
+      cur = { town, hero, tab: 'build', sel: null, split: 0, resolve };
       const wrap = UI.el('div', ''); wrap.id = 'townView';
       const picWrap = UI.el('div', ''); picWrap.id = 'townPicWrap';
       const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; picWrap.appendChild(pic); wrap.appendChild(picWrap);
@@ -47,7 +47,7 @@
       pic.addEventListener('contextmenu', e => { e.preventDefault(); if (lastTouch) return; const [x, y] = at(e); onPicClick(x, y, true); });
       pic.addEventListener('mousemove', e => { const [x, y] = at(e); const hit = cur.scene.hit(x, y); cur.scene.hover = hit; if (hit) UI.tip(e.clientX, e.clientY, itemTip(hit)); else UI.hideTip(); });
       pic.addEventListener('mouseleave', () => { UI.hideTip(); if (cur) cur.scene.hover = null; });
-      UI.modal({ title: town.name + ' — ' + F.get(town.faction).name, titleRight: '<span class="small muted">' + UI.esc(F.get(town.faction).desc) + '</span>', html: wrap, wide: true,
+      UI.modal({ title: town.name, titleRight: '<span class="small muted">' + UI.esc(F.get(town.faction).name) + '</span>', html: wrap, wide: true,
         buttons: [{ label: 'Закрыть', cls: 'primary', value: true }], closable: true }).then(() => { UI.hideTip(); if (cur && cur.scene) cur.scene.destroy(); cur = null; resolve(); });
       render();
       // на узком экране сцена шире окна — подсказываем один раз, что её можно двигать
@@ -107,23 +107,35 @@
   /* ---------- армии ---------- */
   function renderArmies() {
     const t = cur.town, h = cur.hero, box = cur.armies;
-    box.innerHTML = '<div class="small muted">Гарнизон' + (t.buildings.tavern ? ' (+1 мораль при обороне)' : '') + '</div>' + UI.armyHtml(t.garrison, cur.sel && cur.sel.army === t.garrison ? cur.sel.i : -1)
-      + (h ? '<div class="row sp small" style="margin-top:4px"><span>' + UI.heroPortrait(h, 1) + ' <b class="w">' + UI.esc(h.name) + '</b> (' + h.level + ' ур.)</span><span class="muted">клик по стеку — выбрать, второй клик — переместить; Shift — разделить</span></div>' + UI.armyHtml(h.army, cur.sel && cur.sel.army === h.army ? cur.sel.i : -1) : '<div class="small muted" style="margin-top:4px">В городе нет героя</div>');
+    const selOf = army => cur.sel && cur.sel.army === army ? cur.sel.i : -1;
+    const bar = army => cur.sel && cur.sel.army === army ? UI.selBarHtml(army[cur.sel.i], cur.split) : '';
+    box.innerHTML = '<div class="small muted">Гарнизон' + (t.buildings.tavern ? ' (+1 мораль при обороне)' : '') + ' · тап — выбрать, второй тап — переместить; долгое нажатие — сведения</div>' + UI.armyHtml(t.garrison, selOf(t.garrison)) + bar(t.garrison)
+      + (h ? '<div class="row small" style="margin-top:4px">' + UI.heroPortrait(h, 1) + ' <b class="w">' + UI.esc(h.name) + '</b> <span class="muted">(' + h.level + ' ур.)</span></div>' + UI.armyHtml(h.army, selOf(h.army)) + bar(h.army) : '<div class="small muted" style="margin-top:4px">В городе нет героя</div>');
     const arm = box.querySelectorAll('.army7');
-    const bind = (el, army) => el.querySelectorAll('.slot').forEach((s, i) => { s.onclick = e => onSlot(army, i, e.shiftKey); });
-    bind(arm[0], t.garrison); if (h && arm[1]) bind(arm[1], h.army);
+    UI.bindArmy(arm[0], t.garrison, (i, e) => onSlot(t.garrison, i, e.shiftKey)); if (h && arm[1]) UI.bindArmy(arm[1], h.army, (i, e) => onSlot(h.army, i, e.shiftKey));
+    box.querySelectorAll('[data-split]').forEach(b => { b.onclick = () => askSplit(); });
+    box.querySelectorAll('[data-unsel]').forEach(b => { b.onclick = () => { cur.sel = null; cur.split = 0; renderArmies(); }; });
   }
-  async function onSlot(army, i, split) {
+  async function askSplit() {
+    const sel = cur.sel; if (!sel) return;
+    const src = sel.army[sel.i]; if (!src || src.n < 2) return;
+    const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько отделить?', src.n - 1, Math.floor(src.n / 2));
+    if (!cur) return;
+    cur.split = n || 0; renderArmies();
+  }
+  function onSlot(army, i, shift) {
     const sel = cur.sel;
-    if (!sel) { if (army[i] && army[i].n > 0) { cur.sel = { army, i }; renderArmies(); } return; }
-    if (sel.army === army && sel.i === i) { cur.sel = null; renderArmies(); return; }
+    if (!sel) { if (army[i] && army[i].n > 0) { cur.sel = { army, i }; cur.split = 0; renderArmies(); } return; }
+    if (sel.army === army && sel.i === i) { if (shift) { askSplit(); return; } cur.sel = null; cur.split = 0; renderArmies(); return; }
     const src = sel.army[sel.i];
-    if (split && src && src.n > 1 && (!army[i] || army[i].cid === src.cid)) {
-      const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько переместить?', src.n - 1, Math.floor(src.n / 2));
-      if (n) A.splitStack(sel.army, sel.i, army, i, n);
+    if (shift && !cur.split && src && src.n > 1) { askSplit(); return; }
+    if (cur.split) {
+      if (army[i] && army[i].cid !== src.cid) { UI.toast('Туда можно положить только ' + C.get(src.cid).name, 'warn'); return; }
+      A.splitStack(sel.army, sel.i, army, i, cur.split);
     } else A.moveStack(sel.army, sel.i, army, i);
-    // герой не может остаться без армии, если он в городе? (можно — армия в гарнизоне)
-    cur.sel = null; renderArmies(); H3.Game.refresh(false);
+    // герой может остаться без армии — она в гарнизоне, это допустимо
+    H3.Audio.play('click');
+    cur.sel = null; cur.split = 0; renderArmies(); H3.Game.refresh(false);
   }
 
   /* ---------- правая панель ---------- */
@@ -262,8 +274,8 @@
       const maxN = Math.floor((p.res[stt.from] || 0) / rate.give);
       stt.n = U.clamp(stt.n, 1, Math.max(1, maxN));
       tab.innerHTML = '<div class="small muted">Рынков: ' + markets + '. Чем больше рынков, тем выгоднее курс.</div>'
-        + '<div class="row wrap" style="margin:6px 0"><span>Отдать:</span>' + U.RES.map(r => '<button class="sm ' + (stt.from === r ? 'primary' : '') + '" data-from="' + r + '">' + UI.resIcon(r) + '</button>').join('') + '</div>'
-        + '<div class="row wrap" style="margin:6px 0"><span>Получить:</span>' + U.RES.map(r => '<button class="sm ' + (stt.to === r ? 'primary' : '') + '" data-to="' + r + '">' + UI.resIcon(r) + '</button>').join('') + '</div>'
+        + '<div class="small muted" style="margin-top:6px">Отдать</div><div class="mkres">' + U.RES.map(r => '<button class="sm ' + (stt.from === r ? 'primary' : '') + '" data-from="' + r + '">' + UI.resIcon(r) + '<i>' + U.fmt(p.res[r] || 0) + '</i></button>').join('') + '</div>'
+        + '<div class="small muted" style="margin-top:6px">Получить</div><div class="mkres">' + U.RES.map(r => '<button class="sm ' + (stt.to === r ? 'primary' : '') + '" data-to="' + r + '">' + UI.resIcon(r) + '</button>').join('') + '</div>'
         + (stt.from === stt.to ? '<div class="muted">Выберите разные ресурсы.</div>' : '<div>Курс: <b>' + rate.give + '</b> ' + UI.resIcon(stt.from) + ' → <b>' + rate.get + '</b> ' + UI.resIcon(stt.to) + '</div><div class="row"><input type="range" min="1" max="' + Math.max(1, maxN) + '" value="' + stt.n + '" class="grow"><span id="mkSum"></span><button class="sm primary" id="mkDo" ' + (maxN < 1 ? 'disabled' : '') + '>Обменять</button></div>');
       tab.querySelectorAll('[data-from]').forEach(b => { b.onclick = () => { stt.from = b.dataset.from; draw(); }; });
       tab.querySelectorAll('[data-to]').forEach(b => { b.onclick = () => { stt.to = b.dataset.to; draw(); }; });
