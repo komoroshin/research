@@ -45,10 +45,12 @@
     const rng = state._rng.map;
     const nPlayers = doc ? doc.players.length : 1 + U.clamp(settings.opponents || 1, 1, size.maxPlayers - 1);
     const diff = DIFFICULTY[settings.difficulty] || DIFFICULTY.normal;
-    const factions = F.LIST.map(f => f.id).filter(f => f !== settings.faction);
+    // фракции противников: заданные сценарием (foes) — по порядку, остальные — случайные без повторов
+    const foes = (settings.foes || []).filter(f => F.get(f) && f !== settings.faction);
+    const factions = F.LIST.map(f => f.id).filter(f => f !== settings.faction && !foes.includes(f));
     rng.shuffle(factions);
     for (let i = 0; i < nPlayers; i++) {
-      const fid = doc ? doc.players[i].faction : (i === 0 ? settings.faction : factions.pop());
+      const fid = doc ? doc.players[i].faction : (i === 0 ? settings.faction : (foes[i - 1] || factions.pop()));
       state.players.push({
         id: i, name: i === 0 ? (settings.name || 'Игрок') : F.PLAYER_NAMES[i] + ' лорд', color: F.PLAYER_COLORS[i], faction: fid, isAI: i > 0,
         res: Object.assign({}, diff.res), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {}, keys: {},

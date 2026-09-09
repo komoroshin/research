@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.10.1';
+  const VERSION = '2.11';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -79,10 +79,12 @@
     requestAnimationFrame(loop);
   }
   function campSub() {
-    const c = H3.Campaign.LIST[0]; if (!c) return '';
-    const st = campProgress()[c.id];
-    const d = st ? st.done.length : 0, n = c.scenarios.length;
-    return d >= n ? c.name + ' · пройдена' : d ? c.name + ' · пройдено ' + d + ' из ' + n : c.name + ' · ' + n + ' сценариев';
+    const pr = campProgress(), list = H3.Campaign.LIST;
+    const cur = list.find(c => { const st = pr[c.id]; return !st || st.done.length < c.scenarios.length; }); // первая непройденная
+    const doneN = list.filter(c => pr[c.id] && pr[c.id].done.length >= c.scenarios.length).length;
+    if (!cur) return list.length + ' ' + U.plural(list.length, 'кампания', 'кампании', 'кампаний') + ' · все пройдены';
+    const st = pr[cur.id], d = st ? st.done.length : 0, n = cur.scenarios.length;
+    return cur.name + ' · ' + (d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев') + (doneN ? ' · пройдено кампаний: ' + doneN : '');
   }
   function menu() {
     showScreen('menu');
@@ -158,9 +160,9 @@
         });
         html += '</div>';
         if (st.done.length) html += '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
-        if (!foot) foot = next ? '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>'
-          : '<button class="big" data-sc="' + c.id + '|' + c.scenarios[0].id + '">Пройти заново с начала</button>';
+        if (next && !foot) foot = '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>';
       }
+      if (!foot) foot = '<button class="big" data-sc="' + H3.Campaign.LIST[0].id + '|' + H3.Campaign.LIST[0].scenarios[0].id + '">Все кампании пройдены — начать заново</button>';
       sh.body.innerHTML = html; sh.setFoot(foot);
       sh.scr.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { H3.Audio.unlock(); const [cid, sid] = b.dataset.sc.split('|'); startScenario(cid, sid); }; });
       sh.scr.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { delete pr[b.dataset.reset]; saveCampProgress(pr); render(); } }; });
@@ -173,7 +175,7 @@
     const pr = campProgress(), st = pr[cid] || { done: [], carry: null };
     const idx = c.scenarios.indexOf(sc);
     const opts = Object.assign({}, sc, {
-      name: 'Игрок', hero: null,
+      name: 'Игрок', hero: sc.hero || null,
       goals: JSON.parse(JSON.stringify(sc.goals)),
       carryHero: idx > 0 ? st.carry : null,
       campaign: { id: cid, scenario: sid },
