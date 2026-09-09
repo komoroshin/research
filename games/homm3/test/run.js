@@ -521,6 +521,12 @@ test('квесты и ключи: ключник и застава, страж-�
   // застава без ключа не открывается, с ключом — исчезает
   const bg = put('border_guard', h.x + 3, h.y, { color: 'blue' });
   let v = A.visit(st, h, bg); assert.ok(st.objects[bg.id] && /синий ключ/.test(v.text));
+  // без ключа стража подсказывает направление, а шатёр появляется на карте
+  const km0 = put('keymaster', h.x - 3, h.y, { color: 'blue' });
+  st.players[0].vis[0].fill(0);
+  v = A.visit(st, h, bg); assert.ok(/кивает на запад/.test(v.text), 'подсказка направления: ' + v.text);
+  assert.ok(st.players[0].vis[0][km0.y * m.w + km0.x] >= 1, 'шатёр открыт на карте');
+  A.removeObject(st, km0); S.computeVisibility(st, 0);
   const km = put('keymaster', h.x - 3, h.y, { color: 'blue' });
   A.visit(st, h, km); assert.ok(p.keys.blue, 'ключ получен');
   v = A.visit(st, h, bg); assert.ok(!st.objects[bg.id], 'застава открыта');

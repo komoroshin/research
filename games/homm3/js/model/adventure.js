@@ -338,7 +338,20 @@
       }
       case 'border_guard': {
         const col = Q.KEY_COLORS[obj.color];
-        if (!Q.keysOf(p)[obj.color]) return Object.assign(base, { text: 'Застава требует ' + col.name.toLowerCase() + ' ключ. Его выдаёт шатёр ключника того же цвета.' });
+        if (!Q.keysOf(p)[obj.color]) {
+          // стража подсказывает, где искать ключника, и он появляется на карте
+          const tents = Object.values(state.objects).filter(k => k.type === 'keymaster' && k.color === obj.color);
+          let hint = '';
+          for (const k of tents) { S.reveal(state, hero.owner, k.x, k.y, 2, 1, k.z || 0); }
+          if (tents.length) {
+            const k = tents.sort((a, b) => Math.hypot(a.x - obj.x, a.y - obj.y) - Math.hypot(b.x - obj.x, b.y - obj.y))[0];
+            const dx = k.x - obj.x, dy = k.y - obj.y;
+            const dir = (Math.abs(dy) > Math.abs(dx) * 0.4 ? (dy < 0 ? 'север' : 'юг') : '') + (Math.abs(dx) > Math.abs(dy) * 0.4 ? (Math.abs(dy) > Math.abs(dx) * 0.4 ? (dx < 0 ? 'о-запад' : 'о-восток') : (dx < 0 ? 'запад' : 'восток')) : '');
+            hint = ' Стража кивает на ' + dir + ((k.z || 0) !== (obj.z || 0) ? ' — шатёр на другом слое карты' : '') + ': шатёр отмечен на карте.';
+          }
+          S.computeVisibility(state, hero.owner);
+          return Object.assign(base, { text: 'Застава требует ' + col.name.toLowerCase() + ' ключ. Его выдаёт шатёр ключника того же цвета.' + hint });
+        }
         removeObject(state, obj);
         S.addLog(state, hero.name + ' открывает заставу ' + col.gen + ' цвета.', 'good', hero.owner);
         return Object.assign(base, { text: 'Стража видит ' + col.name.toLowerCase() + ' ключ и открывает проход.', toast: true });
