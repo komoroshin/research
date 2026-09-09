@@ -83,6 +83,9 @@
       const uctx = { state, map: under, z: 1, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
       if (!generateUnder(uctx)) continue;
       if (!placeGates(ctx, uctx)) continue;
+      // застава, до ключника которой человеку не дойти (проход в промежуточную зону
+      // лежит через сокровищницу), — тупик: такие сразу становятся стражами
+      if (H3.Adventure) H3.Adventure.sanitizeGates(state, true);
       return state;
     }
     throw new Error('Не удалось сгенерировать карту');
@@ -354,16 +357,16 @@
       const pos = randomTile(ctx, z, 4, zoneRadius(ctx, z)); if (!pos) continue;
       addObject(ctx, { type: 'seer_hut', x: pos[0], y: pos[1], quest: Q.randomQuest(rng, z.tier, qctx), reward: Q.randomReward(rng, Math.min(3, z.tier + 1)), visited: {} });
     }
-    // заставы: вход в сокровищницу закрывается ключом; шатёр — в соседней зоне,
-    // до которой можно дойти, не проходя через сокровищницу
+    // заставы: вход в сокровищницу закрывается ключом; шатёр — в той же зоне,
+    // из которой идёт проход. Ставить его «в соседнюю» нельзя: на маленькой
+    // карте соседняя зона — стартовая зона противника, и ключ за стражем
+    // 8–16 тысяч запирал игрока в собственном уделе (кампания, сценарий 1).
     const colors = Q.COLOR_IDS.slice(); rng.shuffle(colors);
     let used = 0;
     const touchesTreasure = p => zones[p.link.a].kind === 'treasure' || zones[p.link.b].kind === 'treasure';
     for (const p of passages) {
       if (!touchesTreasure(p) || used >= colors.length || !rng.chance(0.45)) continue;
-      const near = zones[p.link.a].kind === 'treasure' ? zones[p.link.b] : zones[p.link.a];
-      const adj = passages.filter(q => q !== p && !touchesTreasure(q) && (q.link.a === near.id || q.link.b === near.id)).map(q => zones[q.link.a === near.id ? q.link.b : q.link.a]);
-      const tentZone = adj.length ? rng.pick(adj) : near;
+      const tentZone = zones[p.link.a].kind === 'treasure' ? zones[p.link.b] : zones[p.link.a];
       const pos = randomTile(ctx, tentZone, 3, zoneRadius(ctx, tentZone)); if (!pos) continue;
       const color = colors[used++];
       addObject(ctx, { type: 'keymaster', x: pos[0], y: pos[1], color, visited: {} });

@@ -694,6 +694,65 @@
       }
     }
   }
+  /* ---------- предохранитель застав ----------
+     Клетки, куда игрок может дойти, если побеждать всех стражей, но не
+     открывать застав и стражей-квесторов. Врата в подземелье проходятся. */
+  function reachableCells(state, pid) {
+    const out = [new Uint8Array(state.levels[0].w * state.levels[0].h), new Uint8Array(state.levels[1].w * state.levels[1].h)];
+    const zone = out.map(a => new Uint8Array(a.length));
+    for (const id in state.objects) {
+      const o = state.objects[id]; if (!O.get(o.type).gate) continue;
+      const m = state.levels[o.z || 0];
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const x = o.x + dx, y = o.y + dy; if (x >= 0 && y >= 0 && x < m.w && y < m.h) zone[o.z || 0][y * m.w + x] = 1; }
+    }
+    const q = [];
+    const seed = (x, y, z) => { const m = state.levels[z]; if (x < 0 || y < 0 || x >= m.w || y >= m.h) return; const i = y * m.w + x; if (out[z][i] || zone[z][i]) return; out[z][i] = 1; q.push([x, y, z]); };
+    for (const t of S.townsOf(state, pid)) { seed(t.x, t.y + 1, t.z || 0); seed(t.x, t.y, t.z || 0); }
+    for (const h of S.heroesOf(state, pid)) seed(h.x, h.y, h.z || 0);
+    while (q.length) {
+      const [x, y, z] = q.pop(); const m = state.levels[z];
+      const o = S.objAt(state, x, y, z);
+      if (o && o.type !== 'town') {   // объект: в него входят, сквозь него не идут; врата ведут на другой слой
+        if (o.type === 'subter_gate') { const other = gatePartner(state, o); if (other) seed(other.x, other.y, other.z || 0); }
+        if (!(O.get(o.type).once === 'remove')) continue;
+      }
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= m.w || ny >= m.h) continue;
+        const i = ny * m.w + nx;
+        const no = m.objAt[i] >= 0 ? state.objects[m.objAt[i]] : null;
+        if (no && O.get(no.type).obstacle) continue;
+        if (!no && m.block[i]) continue;
+        if (m.terrain[i] === R.TERRAIN_INDEX.water && !no) continue;
+        seed(nx, ny, z);
+      }
+    }
+    return out;
+  }
+  /** Застава, к ключнику которой человек не может дойти, превращается в стражей. Возвращает число замен. */
+  function sanitizeGates(state, quiet) {
+    const pid = 0;
+    const p = state.players[pid]; if (!p) return 0;
+    const reach = reachableCells(state, pid);
+    let fixed = 0;
+    for (const id in state.objects) {
+      const o = state.objects[id];
+      if (o.type !== 'border_guard') continue;
+      if ((p.keys || {})[o.color]) continue;
+      const tents = Object.values(state.objects).filter(k => k.type === 'keymaster' && k.color === o.color);
+      const ok = tents.some(k => reach[k.z || 0][k.y * state.levels[k.z || 0].w + k.x]);
+      if (ok) continue;
+      // заменяем стражами по силе прохода в сокровищницу
+      const rng = state._rng.misc;
+      const g = H3.Mapgen.guardCreature({ rng }, 12000);
+      delete o.color;
+      Object.assign(o, { type: 'monster', cid: g.cid, n: g.n, mood: rng.int(1, 10), character: 'aggressive', value: Math.round(C.aiValue(C.get(g.cid)) * g.n) });
+      fixed++;
+    }
+    if (fixed && !quiet) S.addLog(state, 'Застава без ключа заменена стражами: ' + fixed + '.', 'warn');
+    return fixed;
+  }
+
   /* ---------- цели сценария ----------
      Кроме «убить всех» карта может ставить свои условия: взять конкретный
      город, добыть артефакт, накопить ресурс, продержаться N дней. Победа —
@@ -774,7 +833,7 @@
     }
   }
 
-  H3.Adventure = { checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);
