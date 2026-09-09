@@ -1,0 +1,17 @@
+{
+  "name": "Герои Эрафии",
+  "short_name": "Герои",
+  "description": "Пошаговая стратегия в духе Heroes of Might and Magic III — прямо в браузере.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#120c07",
+  "theme_color": "#221507",
+  "lang": "ru",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -82,15 +82,30 @@ input[type=range] { width: 100%; }
 #advMain { flex: 1; position: relative; overflow: hidden; background: #000; }
 #mapCanvas { position: absolute; left: 0; top: 0; cursor: default; touch-action: none; }
 #advOverlay { position: absolute; inset: 0; background: #000a; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-size: 22px; color: var(--gold2); z-index: 5; }
-#sidebar { width: 240px; display: flex; flex-direction: column; gap: 5px; padding: 6px; background: linear-gradient(#3b2915, #221507); border-left: 3px solid #1a1007; box-shadow: inset 2px 0 0 #7a5a34; overflow: hidden; }
-#minimap { width: 226px; height: 226px; image-rendering: pixelated; border: 2px solid #1a1007; box-shadow: inset 0 0 0 1px #7a5a34; background: #000; cursor: pointer; align-self: center; }
-#resbar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px 4px; padding: 4px 5px; background: #0007; border: 1px solid #000; border-radius: 3px; font-size: 12px; }
+/* HUD поверх карты: телефон — основной экран, поэтому карта во весь экран, панели полупрозрачные */
+#hudTop, #hudBottom { position: absolute; left: 0; right: 0; z-index: 4; background: linear-gradient(#3b2915f2, #221507f2); }
+#hudTop { top: 0; padding: calc(3px + env(safe-area-inset-top)) 6px 3px; border-bottom: 2px solid #1a1007; box-shadow: 0 2px 6px #0008; }
+#hudBottom { bottom: 0; padding: 4px 6px calc(5px + env(safe-area-inset-bottom)); border-top: 2px solid #1a1007; box-shadow: 0 -2px 6px #0008; display: flex; flex-direction: column; gap: 4px; }
+#resbar { display: flex; gap: 2px 8px; font-size: 12px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+#resbar::-webkit-scrollbar { display: none; }
 #resbar span { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
 #resbar img { width: 14px; height: 14px; }
-#datebar { font-family: var(--font-d); text-align: center; color: var(--gold2); font-size: 13px; }
-#heroPanel { padding: 5px 6px; font-size: 12px; min-height: 118px; cursor: pointer; }
-#heroPanel .hp-head { display: flex; gap: 6px; align-items: center; }
-#heroPanel .hp-head img { width: 44px; height: 44px; border: 1px solid #7a5a34; }
+#datebar { font-family: var(--font-d); color: var(--gold2); font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#heroStrip { display: flex; gap: 6px; align-items: stretch; min-height: 52px; }
+#objList { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: none; max-width: 45%; }
+#objList::-webkit-scrollbar { display: none; }
+#objList .obj { width: 44px; height: 52px; background: #0006; border: 1px solid #000; border-radius: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; flex: none; }
+#objList .obj.sel { outline: 2px solid var(--gold2); }
+#objList .obj img { width: 34px; height: 34px; object-fit: contain; }
+#objList .obj .bar { width: 36px; margin-top: 2px; height: 4px; }
+#objList .obj.done::after { content: ''; position: absolute; inset: 0; background: #0009; border-radius: 4px; }
+#heroPanel { flex: 1; min-width: 0; padding: 3px 6px; font-size: 12px; cursor: pointer; background: #0006; border: 1px solid #000; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; }
+#heroPanel .hp-head { display: flex; gap: 6px; align-items: center; min-width: 0; }
+#heroPanel .hp-head .grow { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#heroPanel .army7 { margin-top: 3px; }
+#heroPanel .army7 .slot { height: 28px; aspect-ratio: auto; }
+#heroPanel .hp-stats { display: flex; gap: 8px; font-size: 11px; color: var(--text2); }
+#heroPanel .hp-stats img { width: 12px; height: 12px; vertical-align: -2px; }
 .stats4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; text-align: center; margin-top: 3px; }
 .stats4 div { background: #0006; border-radius: 2px; padding: 1px 0; }
 .stats4 b { display: block; font-size: 14px; color: var(--gold2); }
@@ -100,19 +115,19 @@ input[type=range] { width: 100%; }
 .army7 .slot img { width: 100%; height: 100%; object-fit: contain; }
 .army7 .slot i { position: absolute; right: 1px; bottom: 0; font-style: normal; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000, 1px 1px 0 #000; }
 .army7 .slot.sel { outline: 2px solid var(--gold2); }
+#heroPanel .hp-head > img { width: 40px; height: 40px; border: 1px solid #7a5a34; flex: none; }
 .bar { height: 5px; background: #0008; border: 1px solid #000; border-radius: 3px; margin-top: 3px; overflow: hidden; }
 .bar div { height: 100%; background: linear-gradient(#9be07f, #4a9a2f); }
 .bar.mana div { background: linear-gradient(#8fb6ff, #3b5fd0); }
 .bar.xp div { background: linear-gradient(#f1cf74, #a67c1c); }
-#objList { display: flex; gap: 3px; flex-wrap: wrap; min-height: 34px; }
-#objList .obj { width: 34px; height: 34px; background: #0006; border: 1px solid #000; border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
-#objList .obj.sel { outline: 2px solid var(--gold2); }
-#objList .obj img { width: 30px; height: 30px; object-fit: contain; }
-#objList .obj.done::after { content: ''; position: absolute; inset: 0; background: #0009; border-radius: 3px; }
-#advButtons { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
-#advButtons button { padding: 5px 4px; font-size: 12px; }
-#advButtons button.wide { grid-column: span 2; }
-#log { flex: 1; overflow-y: auto; font-size: 11px; padding: 3px 6px; background: #0007; border: 1px solid #000; border-radius: 3px; min-height: 40px; }
+#advButtons { display: flex; gap: 4px; }
+#advButtons button { flex: 1; min-height: 44px; padding: 4px 2px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+#advButtons button.wide { flex: 2.2; font-size: 14px; }
+#advButtons button img { width: 22px; height: 22px; }
+#advButtons button.on { background: linear-gradient(#f3d68a, #c99a35); color: var(--ink); text-shadow: none; }
+#miniWrap { position: absolute; right: 6px; top: calc(56px + env(safe-area-inset-top)); z-index: 4; width: min(60vw, 230px); background: #221507f2; border: 2px solid #1a1007; box-shadow: inset 0 0 0 1px #7a5a34, 0 2px 8px #000c; border-radius: 4px; padding: 4px; }
+#minimap { width: 100%; aspect-ratio: 1; height: auto; image-rendering: pixelated; border: 1px solid #000; background: #000; cursor: pointer; display: block; }
+#log { max-height: 30vh; overflow-y: auto; font-size: 11px; padding: 3px 6px; margin-top: 4px; background: #0007; border: 1px solid #000; border-radius: 3px; }
 #log div { padding: 1px 0; border-bottom: 1px dashed #ffffff10; }
 #log .day { color: var(--gold2); font-family: var(--font-d); }
 #log .warn { color: #ff9a7a; } #log .good { color: #9be07f; }
@@ -199,7 +214,7 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
 /* подсказки, тосты */
 #tip { position: absolute; pointer-events: none; background: #1a1007ee; border: 1px solid var(--gold3); color: var(--text); padding: 5px 8px; font-size: 12px; border-radius: 3px; max-width: 280px; z-index: 20; box-shadow: 0 2px 8px #000; }
 #tip b { color: var(--gold2); }
-#toasts { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 4px; pointer-events: none; z-index: 30; align-items: center; }
+#toasts { position: absolute; top: calc(52px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 4px; pointer-events: none; z-index: 30; align-items: center; }
 .toast { background: #1a1007ee; border: 1px solid var(--gold3); color: var(--gold2); padding: 5px 12px; border-radius: 3px; font-family: var(--font-d); box-shadow: 0 2px 8px #000; animation: toastIn .2s ease-out; display: flex; gap: 6px; align-items: center; }
 .toast img { width: 18px; height: 18px; }
 .toast.warn { color: #ff9a7a; }
@@ -207,24 +222,12 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
 ::-webkit-scrollbar { width: 10px; height: 10px; } ::-webkit-scrollbar-track { background: #1a1007; } ::-webkit-scrollbar-thumb { background: #5a4026; border: 2px solid #1a1007; border-radius: 5px; }
 
 @media (max-width: 900px) {
-  #sidebar { width: 196px; } #minimap { width: 182px; height: 182px; }
   #townBelow, #heroView { grid-template-columns: 1fr; }
-  #resbar { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
   /* телефон: карта занимает две трети, панель — компактная лента снизу */
-  #adv { flex-direction: column; }
-  #sidebar { width: auto; flex-direction: row; flex-wrap: wrap; border-left: 0; border-top: 3px solid #1a1007; max-height: 36vh; overflow: auto; align-content: flex-start; gap: 4px; padding: 4px; }
-  #resbar { width: 100%; grid-template-columns: repeat(4, 1fr); font-size: 11px; padding: 2px 4px; order: 1; }
-  #datebar { width: 100%; font-size: 12px; order: 2; }
-  #advButtons { width: 100%; order: 3; grid-template-columns: repeat(5, 1fr); }
-  #advButtons button { padding: 6px 2px; font-size: 11px; } #advButtons button.wide { grid-column: auto; }
-  #advButtons button .lbl { display: none; } #advButtons button img { width: 20px; height: 20px; }
-  #minimap { width: 96px; height: 96px; order: 5; }
-  #heroPanel { flex: 1; min-width: 200px; order: 4; min-height: 0; font-size: 11px; }
-  #heroPanel .hp-head img { width: 36px; height: 36px; }
-  #objList { order: 6; flex-direction: column; }
-  #log { display: none; }
+  #advButtons button .lbl { display: none; }
+  #datebar { font-size: 11px; }
   .modal { padding: 10px; }
   .opt { grid-template-columns: 1fr; gap: 2px; } .opt label { text-align: left; font-size: 13px; }
   .factions, .heroes4 { grid-template-columns: repeat(4, 1fr); gap: 3px; }
@@ -235,7 +238,19 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
   /* сцена шире экрана: листается пальцем (pan-x отдаём браузеру, тап остаётся нашим), края затемнены как подсказка */
   #townPicWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; mask-image: linear-gradient(90deg, rgba(0,0,0,.25), #000 8%, #000 92%, rgba(0,0,0,.25)); -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.25), #000 8%, #000 92%, rgba(0,0,0,.25)); }
   #townPic { width: 720px; max-width: none; touch-action: pan-x pan-y; }
-  #battleBar { padding: 4px; gap: 4px; } #battleBar button.sm { padding: 6px 8px; font-size: 13px; }
+  #battleBar { padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); gap: 4px; } #battleBar button.sm { padding: 6px 8px; font-size: 13px; min-height: 44px; flex: 1; }
+  #battleBar .row.wrap { width: 100%; } #battleLog { width: 100%; order: -1; font-size: 11px; }
+  /* окна — нижние листы: прижаты к низу, кнопки всегда под пальцем */
+  .modal-bg { align-items: flex-end; }
+  .modal { width: 100vw; max-width: 100vw; max-height: 92vh; border-radius: 12px 12px 0 0; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; }
+  .modal .body { overflow: auto; flex: 1; min-height: 0; }
+  .modal .actions { position: sticky; bottom: 0; background: linear-gradient(transparent, #2a1a0c 30%); padding-top: 8px; margin-top: 4px; }
+  .modal .actions button { min-height: 44px; flex: 1; }
+  .choice button, .dwell button, .bcard, .tabs button, #townTab button { min-height: 44px; }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .bgrid { grid-template-columns: 1fr; max-height: none; }
+  .modal.wide { width: 100vw; }
+  button.big { min-height: 48px; }
   .bside { min-width: 0; font-size: 11px; }
 }
 
@@ -252,6 +267,7 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
 #edTop .edname { color: var(--gold2); font-family: var(--font-d); font-size: 17px; }
 #edTop .grow { flex: 1; }
 #edMain { flex: 1; display: flex; min-height: 0; }
+#edBrushes { display: none; }
 #edPalette { width: 190px; overflow: auto; padding: 6px; background: #1c1309; border-right: 3px solid #1a1007; }
 #edCanvasWrap { flex: 1; position: relative; overflow: hidden; background: #101014; }
 #edMini { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--wood3); background: #000; cursor: pointer; display: block; }
@@ -274,7 +290,11 @@ button.edb img { width: 20px; height: 20px; }
 .pcolor { width: 12px; height: 12px; border: 1px solid #000; display: inline-block; margin-right: 6px; }
 .red { color: #ff9a7a; }
 @media (max-width: 640px) {
-  #edPalette { width: 128px; }
+  /* палитра — выдвижной ящик поверх холста, открывается кнопкой «Кисти» */
+  #edPalette { position: absolute; left: 0; top: 0; bottom: 0; width: 200px; z-index: 6; transform: translateX(-100%); transition: transform .18s; box-shadow: 4px 0 12px #000a; }
+  #edPalette.open { transform: none; }
+  #edMain { position: relative; }
+  #edBrushes { display: inline-block; }
   #edTop { font-size: 12px; gap: 4px; padding: 4px; }
   #edTop .edname { font-size: 14px; }
 }
