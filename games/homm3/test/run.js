@@ -663,6 +663,25 @@ test('редактор: документ карты, проверка, эксп�
 });
 
 console.log('campaign');
+test('цели: выбывание всех противников не даёт победу, пока не взяты все города', () => {
+  const A = H3.Adventure;
+  const mk = goals => S.newGame({ size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle', goals });
+  const strip = st => { const foe = st.players[1]; for (const h of S.heroesOf(st, 1)) A.killHero(st, h); for (const tid of foe.towns.slice()) st.towns[tid].owner = -1; foe.towns = []; return foe; };
+  // сценарий «все города»: враг выбыл, его город стал нейтральным — игра продолжается
+  let st = mk({ win: [{ type: 'capture_all_towns' }], lose: [{ type: 'lose_all' }] });
+  strip(st); A.checkPlayersAlive(st);
+  assert.equal(st.players[1].alive, false, 'противник выбыл');
+  assert.equal(st.winner, null, 'победы нет: остался нейтральный город');
+  for (const t of Object.values(st.towns)) if (t.owner === -1) A.captureTown(st, t, 0, S.heroesOf(st, 0)[0]);
+  A.checkPlayersAlive(st); assert.equal(st.winner, 0, 'все города взяты — победа');
+  // обычная партия «победить всех»: выбывание — победа, как и раньше
+  st = mk({ win: [{ type: 'kill_all' }], lose: [{ type: 'lose_all' }] });
+  strip(st); A.checkPlayersAlive(st); assert.equal(st.winner, 0, 'убить всех — победа');
+  // без целей вообще — тоже победа
+  st = S.newGame({ size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  strip(st); A.checkPlayersAlive(st); assert.equal(st.winner, 0, 'по умолчанию — победа');
+});
+
 test('кампания: перенос героя между сценариями и шаблонные цели', () => {
   const CP = H3.Campaign, sc = CP.get('erathia').scenarios;
   const start = (s, carry) => S.newGame({ size: s.size, seed: s.seed, opponents: s.opponents, difficulty: s.difficulty, faction: s.faction, goals: U.clone(s.goals), carryHero: carry || null });

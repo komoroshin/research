@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.10';
+  const VERSION = '2.10.1';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -460,7 +460,9 @@
   async function battleResult(sum, myHero) {
     if (!sum) return;
     const st = G.state;
-    const me = st.players[st.turn];
+    // «я» — всегда человек, а не игрок текущего хода: когда ИИ нападает в свой ход, st.turn — это он,
+    // и без этого его победа показывалась как наша, а его герою предлагали выбрать навык
+    const me = st.players.find(p => !p.isAI) || st.players[st.turn];
     const iAmAtt = sum.ctx.heroId && st.heroes[sum.ctx.heroId] && st.heroes[sum.ctx.heroId].owner === me.id;
     const won = iAmAtt ? sum.attWon : !sum.attWon;
     H3.Audio.play(won ? 'win' : 'lose');
