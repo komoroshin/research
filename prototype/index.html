@@ -47,7 +47,7 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .screen.dark{background-color:var(--pine-screen)}
 .screen.paper{background:var(--paper);background-image:none}
 .modal{z-index:5}
-.screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}
+.screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}.feed>*,.screen>*:not(.feed){flex-shrink:0}.row>div:first-child:has(+.act){min-width:0;flex:1 1 auto}
 .eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-eyebrow)}
 .eyebrow.soft{color:var(--text-eyebrow)}
 .eyebrow.dark{color:var(--sage500)}
