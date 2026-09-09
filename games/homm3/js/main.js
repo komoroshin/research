@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '1.0';
+  const VERSION = '2.0';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -18,7 +18,7 @@
   function saveSettings() { try { localStorage.setItem(SET_KEY, JSON.stringify(settings())); } catch (e) { /* ignore */ } }
 
   /* ---------- экраны ---------- */
-  function showScreen(name) { for (const id of ['menu', 'adv', 'battle']) UI.$('#' + id).classList.toggle('hidden', id !== name); G.screen = name; if (name === 'adv') AV.resize(); }
+  function showScreen(name) { for (const id of ['menu', 'adv', 'battle', 'editor']) UI.$('#' + id).classList.toggle('hidden', id !== name); G.screen = name; if (name === 'adv') AV.resize(); if (name === 'editor') H3.Editor.resize(); }
   function selected() { return G.state && G.selHero !== null ? G.state.heroes[G.selHero] : null; }
   function selectHero(id) {
     G.selHero = id;
@@ -43,14 +43,132 @@
     const card = UI.el('div', 'wood card');
     const hasAuto = !!load('auto', true);
     card.innerHTML = '<div class="title"><h1>Герои Эрафии</h1><div class="sub">Браузерная стратегия в духе Heroes of Might and Magic III</div></div>'
-      + '<div class="menu-actions"><button class="big primary" id="btnNew">Новая игра</button><button class="big" id="btnCont" ' + (hasAuto ? '' : 'disabled') + '>Продолжить</button><button class="big" id="btnLoad">Загрузить</button><button class="big" id="btnHelp">Как играть</button></div>'
-      + '<div class="center small muted" style="margin-top:12px">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · ИИ-противники · сохранения в браузере</div>';
+      + '<div class="menu-actions"><button class="big primary" id="btnNew">Новая игра</button><button class="big" id="btnCamp">Кампания</button><button class="big" id="btnMaps">Свои карты</button><button class="big" id="btnCont" ' + (hasAuto ? '' : 'disabled') + '>Продолжить</button><button class="big" id="btnLoad">Загрузить</button><button class="big" id="btnHelp">Как играть</button></div>'
+      + '<div class="center small muted" style="margin-top:12px">Версия ' + VERSION + ' · 8 фракций · 112 существ · гексовые бои · кампания · редактор карт · сохранения в браузере</div>';
     m.appendChild(card);
     card.querySelector('#btnNew').onclick = () => newGameForm();
+    card.querySelector('#btnCamp').onclick = () => campaignForm();
+    card.querySelector('#btnMaps').onclick = () => mapsForm();
     card.querySelector('#btnCont').onclick = () => { const st = load('auto'); if (st) start(st); };
     card.querySelector('#btnLoad').onclick = () => loadDialog();
     card.querySelector('#btnHelp').onclick = () => help();
   }
+  /* ---------- кампания ---------- */
+  const CAMP_KEY = 'homm3.campaign';
+  function campProgress() {
+    try { return JSON.parse(localStorage.getItem(CAMP_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function saveCampProgress(pr) { try { localStorage.setItem(CAMP_KEY, JSON.stringify(pr)); } catch (e) { /* приватный режим */ } }
+
+  function campaignForm() {
+    const m = UI.$('#menu'); m.innerHTML = '';
+    const card = UI.el('div', 'wood card');
+    const pr = campProgress();
+    const render = () => {
+      let html = '<div class="title"><h2>Кампания</h2></div>';
+      for (const c of H3.Campaign.LIST) {
+        const st = pr[c.id] || { done: [], carry: null };
+        html += '<div class="opt col"><label>' + UI.esc(c.name) + '</label><div class="small muted">' + UI.esc(c.desc) + '</div></div><div class="camp">';
+        c.scenarios.forEach((sc, i) => {
+          const done = st.done.includes(sc.id);
+          const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
+          html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
+            + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? 'пройден' : open ? '' : 'закрыт') + '</span></div>'
+            + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
+            + (open ? '<button class="sm" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
+            + '</div>';
+        });
+        html += '</div>';
+        if (st.done.length) html += '<div class="row"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
+      }
+      html += '<div class="menu-actions"><button class="big" id="campBack">Назад</button></div>';
+      card.innerHTML = html;
+      card.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { const [cid, sid] = b.dataset.sc.split('|'); startScenario(cid, sid); }; });
+      card.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { delete pr[b.dataset.reset]; saveCampProgress(pr); render(); } }; });
+      card.querySelector('#campBack').onclick = () => menu();
+    };
+    render();
+    m.appendChild(card);
+  }
+  function startScenario(cid, sid) {
+    const c = H3.Campaign.get(cid); if (!c) return;
+    const sc = c.scenarios.find(x => x.id === sid); if (!sc) return;
+    const pr = campProgress(), st = pr[cid] || { done: [], carry: null };
+    const idx = c.scenarios.indexOf(sc);
+    const opts = Object.assign({}, sc, {
+      name: 'Игрок', hero: null,
+      goals: JSON.parse(JSON.stringify(sc.goals)),
+      carryHero: idx > 0 ? st.carry : null,
+      campaign: { id: cid, scenario: sid },
+    });
+    newGame(opts);
+  }
+  /** Победа в сценарии кампании: отметить пройденным и сохранить героя. */
+  function finishScenario(state) {
+    const camp = state.settings && state.settings.campaign; if (!camp) return null;
+    const c = H3.Campaign.get(camp.id); if (!c) return null;
+    const pr = campProgress();
+    const st = pr[camp.id] || { done: [], carry: null };
+    if (!st.done.includes(camp.scenario)) st.done.push(camp.scenario);
+    const heroes = S.heroesOf(state, 0).sort((a, b) => R.armyPower(b.army, b) - R.armyPower(a.army, a));
+    if (heroes[0]) st.carry = S.carryOf(heroes[0]);
+    pr[camp.id] = st; saveCampProgress(pr);
+    const idx = c.scenarios.findIndex(x => x.id === camp.scenario);
+    return { camp: c, next: c.scenarios[idx + 1] || null, hero: heroes[0] || null };
+  }
+
+  /* ---------- свои карты и редактор ---------- */
+  function mapsForm() {
+    const m = UI.$('#menu'); m.innerHTML = '';
+    const card = UI.el('div', 'wood card');
+    const render = () => {
+      const all = H3.Editor.list();
+      const ids = Object.keys(all).sort((a, b) => all[b].updated - all[a].updated);
+      let html = '<div class="title"><h2>Свои карты</h2><div class="sub">Карты, нарисованные в редакторе. Хранятся в этом браузере.</div></div>';
+      if (!ids.length) html += '<div class="parch small">Пока пусто. Создайте карту — или вставьте чужую через «Импорт».</div>';
+      html += '<div class="camp">' + ids.map(id => '<div class="campsc open"><div class="row sp"><b>' + UI.esc(all[id].name) + '</b>'
+        + '<span class="small muted">' + all[id].w + '×' + all[id].h + ' · игроков ' + all[id].players + '</span></div>'
+        + '<div class="row"><button class="sm primary" data-play="' + id + '">Играть</button><button class="sm" data-edit="' + id + '">Изменить</button>'
+        + '<button class="sm danger" data-del="' + id + '">Удалить</button></div></div>').join('') + '</div>';
+      html += '<div class="menu-actions"><button class="big primary" id="mapNew">Создать карту</button><button class="big" id="mapImp">Импорт</button><button class="big" id="mapBack">Назад</button></div>';
+      card.innerHTML = html;
+      card.querySelectorAll('[data-play]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.play); if (doc) playCustom(doc); }; });
+      card.querySelectorAll('[data-edit]').forEach(b => { b.onclick = () => { const doc = H3.Editor.loadMap(b.dataset.edit); if (doc) H3.Editor.open(doc, b.dataset.edit, mapsForm); }; });
+      card.querySelectorAll('[data-del]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Удалить', 'Удалить карту «' + UI.esc(all[b.dataset.del].name) + '»? Насовсем.')) { H3.Editor.removeMap(b.dataset.del); render(); } }; });
+      card.querySelector('#mapNew').onclick = () => newMapDialog();
+      card.querySelector('#mapImp').onclick = () => importDialog(render);
+      card.querySelector('#mapBack').onclick = () => menu();
+    };
+    render(); m.appendChild(card);
+  }
+  async function newMapDialog() {
+    const size = await UI.choose('Размер карты', 'Какого размера карту рисуем?', Object.keys(S.SIZES).map(k => ({ id: k, label: S.SIZES[k].name, desc: 'до ' + S.SIZES[k].maxPlayers + ' игроков' })));
+    if (!size) return;
+    const n = await UI.choose('Игроки', 'Сколько игроков на карте? Первый — вы.', [2, 3, 4].filter(x => x <= S.SIZES[size].maxPlayers).map(x => ({ id: String(x), label: x + ' игрока' })));
+    if (!n) return;
+    H3.Editor.open(H3.MapEdit.blank(size, +n), null, mapsForm);
+  }
+  function importDialog(after) {
+    UI.modal({ title: 'Импорт карты', wide: true, html: '<div class="small muted">Вставьте сюда текст карты (JSON из «Экспорта»).</div><textarea id="impJson" style="width:100%;height:200px"></textarea>',
+      buttons: [{ label: 'Загрузить', cls: 'primary', value: 'ok' }, { label: 'Отмена', value: null }] }).then(v => {
+      if (v !== 'ok') return;
+      const ta = UI.$('#impJson');
+      const text = ta ? ta.value : '';
+      try {
+        const doc = H3.MapEdit.fromJSON(text.trim());
+        H3.Editor.saveMap(doc, null);
+        UI.toast('Карта «' + doc.name + '» загружена');
+        if (after) after();
+      } catch (e) { UI.alert('Не вышло', 'Не удалось прочитать карту: ' + UI.esc(e.message)); }
+    });
+  }
+  function playCustom(doc) {
+    const problems = H3.MapEdit.validate(doc).filter(p => p.bad);
+    if (problems.length) { UI.alert('Карта не готова', '<div class="parch"><ul>' + problems.map(p => '<li class="red">' + UI.esc(p.text) + '</li>').join('') + '</ul></div>'); return; }
+    H3.Audio.unlock();
+    newGame({ mapData: doc, difficulty: doc.difficulty || 'normal', name: 'Игрок', brief: doc.desc });
+  }
+
   function newGameForm() {
     const m = UI.$('#menu'); m.innerHTML = '';
     const card = UI.el('div', 'wood card');
@@ -101,7 +219,11 @@
     if (h) { selectHero(h.id); AV.centerOn(h.x, h.y); } else refresh(false);
     if (st.winner !== null) { gameOver(); return; }
     save('auto');
-    if (st.day === 1) UI.toast('Партия началась. Удачи, ' + p.name + '!');
+    if (st.day === 1) {
+      const special = st.goals && (st.goals.win.length !== 1 || st.goals.win[0].type !== 'kill_all');
+      if (special) UI.alert('Задание', '<div class="parch">' + (st.settings.brief ? '<p>' + UI.esc(st.settings.brief) + '</p>' : '') + goalsHtml() + '</div>');
+      else UI.toast('Партия началась. Удачи, ' + p.name + '!');
+    }
   }
 
   /* ---------- движение и взаимодействие ---------- */
@@ -349,11 +471,22 @@
     const st = G.state; const won = st.winner === 0;
     H3.Audio.play(won ? 'win' : 'lose');
     const d = st.day - 1;
-    const html = '<div class="parch"><p>' + (won ? 'Все противники повержены. Эрафия ваша!' : 'Ваши города потеряны, а герои разбиты. Эрафия досталась ' + UI.esc((st.players[st.winner] || { name: 'врагу' }).name) + '.') + '</p>'
+    const reason = st.endReason ? '<p><b>' + UI.esc(st.endReason) + '</b></p>' : '';
+    const html = '<div class="parch">' + reason + '<p>' + (won ? 'Цель достигнута. Эрафия ваша!' : 'Сценарий проигран. Эрафия досталась ' + UI.esc((st.players[st.winner] || { name: 'врагу' }).name) + '.') + '</p>'
       + '<table class="t"><tr><td>Дней</td><td class="num">' + d + '</td></tr><tr><td>Боёв</td><td class="num">' + st.stats.battles + '</td></tr><tr><td>Побед</td><td class="num">' + st.stats.won + '</td></tr><tr><td>Убито врагов</td><td class="num">' + st.stats.killed + '</td></tr><tr><td>Потеряно существ</td><td class="num">' + st.stats.lost + '</td></tr><tr><td>Городов</td><td class="num">' + st.players[0].towns.length + '</td></tr></table></div>';
-    await UI.modal({ title: won ? 'Победа!' : 'Поражение', html, buttons: [{ label: 'В меню', cls: 'primary' }], closable: false });
+    const camp = won ? finishScenario(st) : null;
+    let extra = html;
+    if (camp) {
+      extra += '<div class="parch"><p><b>Сценарий пройден.</b>' + (camp.hero ? ' ' + UI.esc(camp.hero.name) + ' (' + camp.hero.level + ' ур.) переходит в следующий сценарий вместе с армией и артефактами.' : '') + '</p>'
+        + (camp.next ? '<p>Дальше: <b>' + UI.esc(camp.next.name) + '</b> — ' + UI.esc(camp.next.brief) + '</p>' : '<p>Кампания <b>«' + UI.esc(camp.camp.name) + '»</b> пройдена целиком. Поздравляем!</p>') + '</div>';
+    }
+    const buttons = camp && camp.next ? [{ value: 'next', label: 'Следующий сценарий', cls: 'primary' }, { value: 'menu', label: 'В меню' }]
+      : [{ value: 'menu', label: 'В меню', cls: 'primary' }];
+    const ch = await UI.modal({ title: won ? 'Победа!' : 'Поражение', html: extra, buttons, closable: false });
     try { localStorage.removeItem(SAVE_KEY + 'auto'); } catch (e) { /* ignore */ }
-    G.state = null; menu();
+    G.state = null;
+    if (ch === 'next' && camp && camp.next) { startScenario(camp.camp.id, camp.next.id); return; }
+    menu();
   }
 
   /* ---------- сохранения ---------- */
@@ -390,6 +523,14 @@
     const wrap = UI.el('div', '', '<p class="small muted">Вставьте текст сохранения:</p>'); wrap.appendChild(ta);
     UI.modal({ title: 'Импорт партии', html: wrap, buttons: [{ label: 'Загрузить', cls: 'primary', value: true }, { label: 'Отмена', value: false }] }).then(v => { if (!v) return; try { const st = S.deserialize(decodeURIComponent(escape(atob(ta.value.trim())))); start(st); } catch (e) { UI.toast('Не удалось прочитать сохранение', 'warn'); } });
   }
+  /** Условия победы и поражения текущего сценария. */
+  function goalsHtml() {
+    const st = G.state; if (!st) return '';
+    const list = A.goalList(st, 0);
+    if (!list.length) return '';
+    return '<h4>Цели</h4><div class="small">' + list.map(g =>
+      '<div>' + (g.lose ? '☠ ' : g.done ? '✔ ' : '□ ') + '<span class="' + (g.done ? (g.lose ? 'red' : 'green') : 'muted') + '">' + UI.esc(g.text) + '</span></div>').join('') + '</div>';
+  }
   function openMenu() {
     const st = settings();
     const html = UI.el('div', 'col');
@@ -397,6 +538,7 @@
       + '<h4>Настройки</h4><div class="row wrap"><label><input type="checkbox" id="oSound" ' + (H3.Audio.isEnabled() ? 'checked' : '') + '> Звук</label><label><input type="checkbox" id="oConfirm" ' + (st.confirmEndTurn ? 'checked' : '') + '> Спрашивать при конце хода</label><label><input type="checkbox" id="oQuick" ' + (st.quickBattle ? 'checked' : '') + '> Быстрый бой (ИИ за меня)</label></div>'
       + '<div class="row">Скорость анимации: <div class="seg">' + ['мгновенно', 'обычно', 'быстро'].map((l, i) => '<button data-sp="' + i + '" class="' + (st.animSpeed === i ? 'on' : '') + '">' + l + '</button>').join('') + '</div></div>'
       + '<div class="row wrap" style="margin-top:8px"><button id="mHelp">Как играть</button><button id="mQuit" class="danger">Выйти в меню</button></div>'
+      + goalsHtml()
       + '<div class="small muted">Сид карты: ' + (G.state ? G.state.seed : '') + '</div>';
     UI.modal({ title: 'Меню', html, buttons: [{ label: 'Закрыть', cls: 'primary' }], onOpen: (box, close) => {
       box.querySelector('#mSave').onclick = () => { close(); saveDialog(); };
@@ -450,6 +592,6 @@
   /** Герой мог сменить слой (врата) — подстроить вид. */
   function syncLayer() { const h = selected(); if (h) { AV.setLayer(h.z || 0); AV.centerOn(h.x, h.y); } }
 
-  H3.Game = { syncLayer, boot, settings, saveSettings, showScreen, selected, selectHero, nextHero, refresh, newGame, start, moveAlong, handleStop, fight, levelUps, openTown, openHero, openSpellbook, endTurn, openMenu, save, load, menu, help, get state() { return G.state; }, G };
+  H3.Game = { syncLayer, boot, playCustom, mapsForm, settings, saveSettings, showScreen, selected, selectHero, nextHero, refresh, newGame, start, moveAlong, handleStop, fight, levelUps, openTown, openHero, openSpellbook, endTurn, openMenu, save, load, menu, help, get state() { return G.state; }, G };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })(typeof window !== 'undefined' ? window : globalThis);

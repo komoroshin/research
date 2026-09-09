@@ -27,6 +27,14 @@
         <div id="log"></div>
       </div>
     </div>
+    <!-- редактор карт -->
+    <div id="editor" class="screen hidden">
+      <div id="edTop"></div>
+      <div id="edMain">
+        <div id="edPalette"></div>
+        <div id="edCanvasWrap"><canvas id="edCanvas"></canvas></div>
+      </div>
+    </div>
     <!-- бой -->
     <div id="battle" class="screen hidden">
       <div id="battleMain"><canvas id="battleCanvas"></canvas></div>
@@ -47,10 +55,12 @@
 <script src="js/data/artifacts.js"></script>
 <script src="js/data/heroes.js"></script>
 <script src="js/data/objects.js"></script>
+<script src="js/data/campaign.js"></script>
 <script src="js/model/rules.js"></script>
 <script src="js/model/pathfind.js"></script>
 <script src="js/model/state.js"></script>
 <script src="js/model/mapgen.js"></script>
+<script src="js/model/mapedit.js"></script>
 <script src="js/model/battle.js"></script>
 <script src="js/model/battleai.js"></script>
 <script src="js/model/adventure.js"></script>
@@ -77,6 +87,7 @@
 <script src="js/view/battle.js"></script>
 <script src="js/view/town.js"></script>
 <script src="js/view/hero.js"></script>
+<script src="js/view/editor.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

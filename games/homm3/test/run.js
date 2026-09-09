@@ -466,6 +466,137 @@ test('ИИ карты: прогон боя отсеивает безнадёжн
   assert.ok(easy.kept > 0.7, 'и почти без потерь, а осталось ' + Math.round(easy.kept * 100) + ' %');
 });
 
+test('цели сценария: захват города, накопление, срок, поражение', () => {
+  const mk = goals => S.newGame({ size: 'S', seed: 5, opponents: 1, difficulty: 'normal', faction: 'castle', goals });
+  const A = H3.Adventure;
+  // 1. захватить город противника
+  let st = mk({ win: [{ type: 'capture_town', townId: 0 }], lose: [{ type: 'lose_all' }] });
+  const foeTown = S.townsOf(st, 1)[0];
+  st.goals.win[0].townId = foeTown.id;
+  A.checkGoals(st); assert.equal(st.winner, null, 'пока город чужой — не победа');
+  A.captureTown(st, foeTown, 0, S.heroesOf(st, 0)[0]);
+  A.checkGoals(st); assert.equal(st.winner, 0, 'город взят — победа');
+  assert.ok(/Захватить город/.test(st.endReason), 'причина названа: ' + st.endReason);
+  // 2. накопить золото
+  st = mk({ win: [{ type: 'gather', res: 'gold', amount: 50000 }], lose: [{ type: 'lose_all' }] });
+  A.checkGoals(st); assert.equal(st.winner, null);
+  st.players[0].res.gold = 50000;
+  A.checkGoals(st); assert.equal(st.winner, 0, 'золото накоплено');
+  // 3. продержаться N дней
+  st = mk({ win: [{ type: 'survive', days: 10 }], lose: [{ type: 'timeout', days: 20 }] });
+  st.day = 10; A.checkGoals(st); assert.equal(st.winner, null, 'на десятый день ещё рано');
+  st.day = 11; A.checkGoals(st); assert.equal(st.winner, 0, 'продержались');
+  // 4. срок вышел — поражение, и оно важнее победы
+  st = mk({ win: [{ type: 'survive', days: 30 }], lose: [{ type: 'timeout', days: 20 }] });
+  st.day = 21; A.checkGoals(st);
+  assert.notEqual(st.winner, 0, 'просрочка — поражение');
+  assert.ok(/уложиться/.test(st.endReason), 'причина: ' + st.endReason);
+  // 5. потеря конкретного героя
+  st = mk({ win: [{ type: 'kill_all' }], lose: [{ type: 'lose_hero', heroId: 0 }] });
+  const hero = S.heroesOf(st, 0)[0];
+  st.goals.lose[0].heroId = hero.id;
+  A.checkGoals(st); assert.equal(st.winner, null);
+  A.killHero(st, hero);
+  A.checkGoals(st); assert.notEqual(st.winner, 0, 'герой погиб — сценарий проигран');
+  // 6. список целей для интерфейса
+  const list = A.goalList(st, 0);
+  assert.equal(list.length, 2);
+  assert.ok(list[1].lose && list[1].done, 'провалившееся условие помечено');
+  // 7. по умолчанию — старое поведение «убить всех»
+  st = S.newGame({ size: 'S', seed: 6, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  assert.equal(st.goals, null, 'без настроек целей нет');
+  A.checkGoals(st); assert.equal(st.winner, null);
+});
+
+console.log('editor');
+test('редактор: документ карты, проверка, экспорт и партия по своей карте', () => {
+  const ME = H3.MapEdit;
+  const doc = ME.blank('S', 2);
+  assert.equal(doc.w, 36); assert.equal(doc.levels.length, 2);
+  assert.equal(doc.levels[1].terrain[100], R.TERRAIN_INDEX.rock, 'подземелье начинается сплошной скалой');
+  // пустая карта играться не должна: игрокам негде начать
+  let bad = ME.validate(doc).filter(p => p.bad);
+  assert.equal(bad.length, 2, 'у обоих игроков нет города: ' + JSON.stringify(ME.validate(doc)));
+  doc.objects.push(ME.makeObj('town', 8, 8, 0, { faction: 'castle', owner: 0 }));
+  doc.objects.push(ME.makeObj('town', 26, 26, 0, { faction: 'necropolis', owner: 1 }));
+  assert.deepEqual(ME.validate(doc).filter(p => p.bad), [], 'два города — карта готова');
+  // объект на скале и город с закрытым входом ловятся
+  const spoiled = ME.clone(doc);
+  spoiled.objects.push(ME.makeObj('windmill', 5, 5, 1, {}));
+  assert.ok(ME.validate(spoiled).some(p => p.bad && /непроходим/.test(p.text)), 'объект на скале — ошибка');
+  const blocked = ME.clone(doc);
+  blocked.levels[0].obs[9 * blocked.w + 8] = 2;
+  assert.ok(ME.validate(blocked).some(p => p.bad && /вход/.test(p.text)), 'заваленный вход в город — ошибка');
+  // остальное содержимое
+  doc.objects.push(ME.makeObj('mine', 12, 12, 0, { res: 'ore' }));
+  doc.objects.push(ME.makeObj('monster', 14, 14, 0, { cid: 'griffin', n: 14 }));
+  doc.objects.push(ME.makeObj('resource', 11, 9, 0, { res: 'gold', amount: 1500 }));
+  doc.objects.push(ME.makeObj('artifact', 15, 17, 0, { art: 'random', cls: 'major' }));
+  doc.objects.push(ME.makeObj('witch_hut', 18, 11, 0, {}));
+  doc.objects.push(ME.makeObj('subter_gate', 20, 10, 0, { pair: 1 }));
+  doc.objects.push(ME.makeObj('subter_gate', 20, 10, 1, { pair: 1 }));
+  for (let y = 8; y < 14; y++) for (let x = 16; x < 26; x++) doc.levels[1].terrain[y * doc.w + x] = R.TERRAIN_INDEX.subter;
+  for (let x = 8; x < 20; x++) doc.levels[0].road[9 * doc.w + x] = 1;
+  // экспорт/импорт не теряет ни клетки
+  const back = ME.fromJSON(ME.toJSON(doc));
+  assert.deepEqual(Array.from(back.levels[0].road), Array.from(doc.levels[0].road));
+  assert.deepEqual(Array.from(back.levels[1].terrain), Array.from(doc.levels[1].terrain));
+  assert.equal(back.objects.length, doc.objects.length);
+  assert.throws(() => ME.fromJSON('{"fmt":99}'), /формат/);
+  // партия по документу: игроки, объекты, проходимость, ход ИИ
+  const st = S.newGame({ mapData: back, difficulty: 'normal', name: 'Игрок' });
+  assert.equal(st.players.length, 2);
+  assert.deepEqual(st.players.map(p => p.faction), ['castle', 'necropolis'], 'фракция игрока — от его города');
+  assert.equal(Object.keys(st.towns).length, 2);
+  assert.equal(Object.keys(st.objects).length, back.objects.length);
+  const witch = Object.values(st.objects).find(o => o.type === 'witch_hut');
+  assert.ok(witch.skill, 'хижине ведьмы досталcя навык');
+  const mon = Object.values(st.objects).find(o => o.type === 'monster');
+  assert.equal(mon.n, 14); assert.ok(mon.value > 0);
+  const hero = S.heroesOf(st, 0)[0];
+  assert.equal(hero.x, 8); assert.equal(hero.y, 8);
+  const pf = S.pathfield(st, hero);
+  assert.ok(pf.dist[12 * st.levels[0].w + 12] < Infinity, 'до шахты можно дойти');
+  assert.equal(S.moveCost(st, hero, 9, 9), R.ROAD_COST, 'дорога из документа работает');
+  H3.Adventure.endPlayerTurn(st); H3.Adventure.endPlayerTurn(st);
+  assert.equal(st.day, 2, 'ход противника-ИИ проходит на своей карте');
+  // цели из документа попадают в партию
+  doc.goals = { win: [{ type: 'capture_town', of: 'enemy' }], lose: [{ type: 'lose_all' }] };
+  const st2 = S.newGame({ mapData: ME.clone(doc), difficulty: 'normal', name: 'Игрок' });
+  assert.ok(st2.goals.win[0].townId != null && st2.towns[st2.goals.win[0].townId].owner === 1, 'шаблонная цель развернулась');
+});
+
+console.log('campaign');
+test('кампания: перенос героя между сценариями и шаблонные цели', () => {
+  const CP = H3.Campaign, sc = CP.get('erathia').scenarios;
+  const start = (s, carry) => S.newGame({ size: s.size, seed: s.seed, opponents: s.opponents, difficulty: s.difficulty, faction: s.faction, goals: U.clone(s.goals), carryHero: carry || null });
+  assert.ok(sc.length >= 5, 'в кампании пять сценариев');
+  // прошли первый сценарий «прокачанным» героем
+  const st1 = start(sc[0]);
+  const h1 = S.heroesOf(st1, 0)[0];
+  h1.level = 9; h1.xp = 12000; h1.skills = { wisdom: 3, offense: 2 }; h1.spells.push('fireball');
+  h1.arts.head = 'centaur_axe'; h1.backpack.push('ring_of_vitality'); h1.army[0] = { cid: 'archangel', n: 4 };
+  const carry = S.carryOf(h1);
+  // второй сценарий получает того же героя целиком
+  const st2 = start(sc[1], carry);
+  const h2 = S.heroesOf(st2, 0)[0];
+  assert.equal(h2.name, h1.name); assert.equal(h2.level, 9); assert.equal(h2.xp, 12000);
+  assert.deepEqual(h2.skills, { wisdom: 3, offense: 2 });
+  assert.ok(h2.spells.includes('fireball'), 'заклинания перенесены');
+  assert.equal(h2.arts.head, 'centaur_axe'); assert.ok(h2.backpack.includes('ring_of_vitality'));
+  assert.deepEqual(h2.army[0], { cid: 'archangel', n: 4 }, 'армия перенесена');
+  assert.equal(st2.carried, h2.id);
+  assert.equal(h2.move, R.heroMaxMove(h2), 'ход полный, а не остаток прошлой карты');
+  assert.notStrictEqual(h2.skills, carry.skills, 'перенос копией, а не ссылкой');
+  // шаблонная цель развернулась в конкретный вражеский город
+  const tid = st2.goals.win[0].townId;
+  assert.ok(tid != null && st2.towns[tid] && st2.towns[tid].owner > 0, 'цель — реально чужой город');
+  // цель-артефакт обязана лежать на карте
+  const st4 = start(sc[3]);
+  assert.ok(Object.values(st4.objects).some(o => o.type === 'artifact' && o.art === 'titan_gladius'), 'клинок предков на карте');
+  assert.ok(st4.goals.lose.some(g => g.type === 'lose_hero' && g.heroId != null), 'цель «не потерять героя» привязана к герою');
+});
+
 console.log('save');
 test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });

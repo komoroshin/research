@@ -219,3 +219,43 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
   #advButtons { min-width: 150px; }
   .modal { padding: 10px; }
 }
+
+/* ---------- кампания ---------- */
+.camp { display: grid; gap: 8px; margin: 6px 0 10px; }
+.campsc { border: 1px solid #5a4a32; border-radius: 6px; padding: 8px 10px; background: rgba(0,0,0,0.18); }
+.campsc.done { border-color: #4a7a3a; }
+.campsc.locked { opacity: 0.45; }
+.campsc button { margin-top: 6px; }
+
+/* ---------- редактор карт ---------- */
+#editor { flex-direction: column; }
+#edTop { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: linear-gradient(#3b2915, #221507); border-bottom: 3px solid #1a1007; flex-wrap: wrap; }
+#edTop .edname { color: var(--gold2); font-family: var(--font-d); font-size: 17px; }
+#edTop .grow { flex: 1; }
+#edMain { flex: 1; display: flex; min-height: 0; }
+#edPalette { width: 190px; overflow: auto; padding: 6px; background: #1c1309; border-right: 3px solid #1a1007; }
+#edCanvasWrap { flex: 1; position: relative; overflow: hidden; background: #101014; }
+#edMini { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid var(--wood3); background: #000; cursor: pointer; display: block; }
+#edCanvas { position: absolute; inset: 0; cursor: crosshair; touch-action: none; }
+.edsec { margin-bottom: 10px; }
+.edsec h4 { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.edgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.edgrid.one { grid-template-columns: 1fr; }
+button.edb span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+button.edb { display: flex; align-items: center; gap: 4px; width: 100%; padding: 3px 6px; font-size: 12px; text-align: left; margin: 0 0 3px; }
+.edgrid button.edb { margin: 0; }
+button.edb.on { background: linear-gradient(#6b5024, #3a2a12); border-color: var(--gold2); color: var(--gold2); }
+button.edb i { width: 12px; height: 12px; border: 1px solid #0007; display: inline-block; flex: none; }
+button.edb img { width: 20px; height: 20px; }
+.edcreatures { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin-bottom: 4px; }
+.edcreatures b { width: 74px; color: var(--text2); }
+.edcreatures button.edb { width: auto; padding: 2px; }
+.edrow { display: inline-flex; align-items: center; gap: 6px; min-width: 260px; }
+.ednum { width: 90px; }
+.pcolor { width: 12px; height: 12px; border: 1px solid #000; display: inline-block; margin-right: 6px; }
+.red { color: #ff9a7a; }
+@media (max-width: 640px) {
+  #edPalette { width: 128px; }
+  #edTop { font-size: 12px; gap: 4px; padding: 4px; }
+  #edTop .edname { font-size: 14px; }
+}

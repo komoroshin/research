@@ -30,29 +30,31 @@
 
   /* ---------- Создание партии ---------- */
   function newGame(settings) {
-    const size = SIZES[settings.size] || SIZES.S;
+    // своя карта из редактора: размеры, игроки и цели берём из документа
+    const doc = settings.mapData || null;
+    const size = doc ? { w: doc.w, h: doc.h, maxPlayers: doc.players.length, name: doc.name } : (SIZES[settings.size] || SIZES.S);
     const seed = (settings.seed >>> 0) || (Date.now() >>> 0);
     const state = {
       version: VERSION, seed, settings: Object.assign({}, settings, { seed }),
       day: 1, turn: 0, nextId: 1, players: [], map: null, objects: {}, heroes: {}, towns: {}, battle: null, log: [], events: [],
       stats: { battles: 0, won: 0, killed: 0, lost: 0 },
       rng: { map: seed, battle: (seed ^ 0x5bd1e995) >>> 0, ai: (seed ^ 0x27d4eb2f) >>> 0, misc: (seed ^ 0x165667b1) >>> 0 },
-      winner: null,
+      winner: null, endReason: null, goals: settings.goals || (doc && doc.goals ? U.clone(doc.goals) : null),
     };
     attachRng(state);
     const rng = state._rng.map;
-    const nPlayers = 1 + U.clamp(settings.opponents || 1, 1, size.maxPlayers - 1);
+    const nPlayers = doc ? doc.players.length : 1 + U.clamp(settings.opponents || 1, 1, size.maxPlayers - 1);
     const diff = DIFFICULTY[settings.difficulty] || DIFFICULTY.normal;
     const factions = F.LIST.map(f => f.id).filter(f => f !== settings.faction);
     rng.shuffle(factions);
     for (let i = 0; i < nPlayers; i++) {
-      const fid = i === 0 ? settings.faction : factions.pop();
+      const fid = doc ? doc.players[i].faction : (i === 0 ? settings.faction : factions.pop());
       state.players.push({
         id: i, name: i === 0 ? (settings.name || 'Игрок') : F.PLAYER_NAMES[i] + ' лорд', color: F.PLAYER_COLORS[i], faction: fid, isAI: i > 0,
         res: Object.assign({}, diff.res), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {},
       });
     }
-    H3.Mapgen.generate(state, size);
+    if (doc) H3.MapEdit.build(state, doc); else H3.Mapgen.generate(state, size);
     // стартовые герои
     for (const p of state.players) {
       const town = state.towns[p.towns[0]];
@@ -66,6 +68,11 @@
       town.tavern = R.tavernCandidates(state, town, 2);
       p.vis = [new Uint8Array(state.levels[0].w * state.levels[0].h), new Uint8Array(state.levels[1].w * state.levels[1].h)];
     }
+    // цели сценария заданы шаблоном («вражеский город»), а id известны только
+    // после генерации — разворачиваем их здесь
+    if (state.goals) resolveGoals(state);
+    // герой, перенесённый из прошлого сценария кампании
+    if (settings.carryHero) applyCarry(state, settings.carryHero);
     for (const p of state.players) computeVisibility(state, p.id);
     for (const p of state.players) p.income = playerIncome(state, p.id);
     addLog(state, 'Месяц 1, неделя 1, день 1. Партия началась.', 'day');
@@ -73,6 +80,55 @@
     return state;
   }
 
+  /** Развернуть шаблонные цели («of: enemy») в конкретные id. */
+  function resolveGoals(state) {
+    const pick = (g) => {
+      if (g.type === 'capture_town' && g.of) {
+        const t = Object.values(state.towns).find(x => g.of === 'enemy' ? x.owner > 0 : x.owner === 0);
+        if (t) g.townId = t.id;
+      }
+      if (g.type === 'lose_town' && g.of === 'mine') { const t = Object.values(state.towns).find(x => x.owner === 0); if (t) g.townId = t.id; }
+      if (g.type === 'find_artifact' && g.art) {
+        // цель-артефакт обязан лежать на карте: если генератор его не положил,
+        // подменяем им уже стоящий артефакт (предпочитая охраняемый в подземелье)
+        const arts = Object.values(state.objects).filter(o => o.type === 'artifact');
+        if (!arts.some(o => o.art === g.art)) {
+          const target = arts.find(o => o.z === 1) || arts[arts.length - 1];
+          if (target) target.art = g.art;
+        }
+      }
+      if ((g.type === 'defeat_hero' || g.type === 'lose_hero') && g.of) {
+        const list = Object.values(state.heroes).filter(h => g.of === 'enemy' ? h.owner > 0 : h.owner === 0);
+        if (list.length) g.heroId = list[0].id;
+      }
+    };
+    (state.goals.win || []).forEach(pick);
+    (state.goals.lose || []).forEach(pick);
+  }
+  /** Перенести героя из прошлого сценария кампании на место стартового. */
+  function applyCarry(state, carry) {
+    const hero = heroesOf(state, 0)[0];
+    if (!hero || !carry) return;
+    hero.level = carry.level; hero.xp = carry.xp; hero.pri = U.clone(carry.pri);
+    hero.skills = U.clone(carry.skills); hero.spells = carry.spells.slice(); hero.hasBook = carry.hasBook;
+    hero.arts = U.clone(carry.arts); hero.backpack = carry.backpack.slice();
+    hero.machines = U.clone(carry.machines || {});
+    if (carry.army && carry.army.some(Boolean)) {
+      for (let i = 0; i < 7; i++) hero.army[i] = carry.army[i] ? { cid: carry.army[i].cid, n: carry.army[i].n } : hero.army[i];
+    }
+    hero.name = carry.name; hero.tid = carry.tid; hero.cls = carry.cls; hero.portrait = carry.portrait; hero.spec = carry.spec;
+    hero.mana = R.heroMaxMana(hero); hero.move = R.heroMaxMove(hero);
+    state.carried = hero.id;
+  }
+  /** Снимок героя для переноса в следующий сценарий. */
+  function carryOf(hero) {
+    return {
+      tid: hero.tid, name: hero.name, cls: hero.cls, portrait: hero.portrait, spec: hero.spec,
+      level: hero.level, xp: hero.xp, pri: U.clone(hero.pri), skills: U.clone(hero.skills),
+      spells: hero.spells.slice(), hasBook: hero.hasBook, arts: U.clone(hero.arts), backpack: hero.backpack.slice(),
+      machines: U.clone(hero.machines || {}), army: hero.army.map(s => s ? { cid: s.cid, n: s.n } : null),
+    };
+  }
   function learnTownSpells(state, hero, town) {
     if (!hero.hasBook) return [];
     const learned = [];
@@ -234,7 +290,7 @@
   }
 
   H3.State = {
-    lvl,
+    lvl, resolveGoals, applyCarry, carryOf,
     VERSION, DIFFICULTY, SIZES, newGame, attachRng, syncRng, learnTownSpells,
     idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,
