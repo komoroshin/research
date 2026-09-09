@@ -469,12 +469,12 @@
     }
     const ab = UI.$('#advButtons'); ab.innerHTML = '';
     const btn = (label, fn, cls, title) => { const b = UI.el('button', cls || '', label); b.onclick = () => { H3.Audio.play('click'); fn(); }; if (title) b.title = title; ab.appendChild(b); return b; };
-    btn(UI.icon('ic_end_turn') + ' Конец хода (E)', () => G.endTurn(), 'primary wide');
-    btn(UI.icon('ic_hero') + ' Герой (H)', () => G.nextHero(), '', 'Следующий герой');
+    btn(UI.icon('ic_end_turn') + '<span class="lbl"> Конец хода (E)</span>', () => G.endTurn(), 'primary wide', 'Конец хода');
+    btn(UI.icon('ic_hero') + '<span class="lbl"> Герой (H)</span>', () => G.nextHero(), '', 'Следующий герой');
     const town = sel && H3.Adventure.townOfHero(st, sel);
-    btn(UI.icon('ic_town') + ' Город (T)', () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Открыть город');
-    btn(UI.icon('ic_spellbook') + ' Магия (C)', () => G.openSpellbook(), '', 'Книга заклинаний');
-    btn(UI.icon('ic_save') + ' Меню', () => G.openMenu(), '', 'Сохранить, загрузить, настройки');
+    btn(UI.icon('ic_town') + '<span class="lbl"> Город (T)</span>', () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Открыть город');
+    btn(UI.icon('ic_spellbook') + '<span class="lbl"> Магия (C)</span>', () => G.openSpellbook(), '', 'Книга заклинаний');
+    btn(UI.icon('ic_save') + '<span class="lbl"> Меню</span>', () => G.openMenu(), '', 'Сохранить, загрузить, настройки');
     const lg = UI.$('#log'); lg.innerHTML = st.log.filter(l => l.p === undefined || l.p === -1 || l.p === st.turn).slice(-40).map(l => '<div class="' + l.cls + '">' + UI.esc(l.text) + '</div>').join(''); lg.scrollTop = lg.scrollHeight;
     V.dirty = true;
   }

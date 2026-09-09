@@ -9,11 +9,48 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
   const W = Bt.W, H = Bt.H;
 
-  const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null, tactics: null, fx: null, heroCast: [0, 0], clouds: [], margin: 24, showHeroes: false };
+  const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null, tactics: null, fx: null, heroCast: [0, 0], clouds: [], margin: 24, showHeroes: false, cam: { x: 0, y: 0, z: 1 }, ptrs: new Map(), pinch: null, pan: null, pressTimer: null };
 
   function init() {
     V.canvas = UI.$('#battleCanvas'); V.ctx = V.canvas.getContext('2d');
-    V.canvas.addEventListener('pointermove', onMove); V.canvas.addEventListener('pointerdown', onDown);
+    // ввод идёт через камеру: на телефоне поле приближают щипком и двигают пальцем,
+    // тап срабатывает на отпускании, если палец не двигался; долгое нажатие — карточка отряда
+    const c = V.canvas;
+    c.addEventListener('pointerdown', e => {
+      if (!V.b) return;
+      V.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, ox: e.offsetX, oy: e.offsetY });
+      try { c.setPointerCapture(e.pointerId); } catch (err) { /* синтетическое событие */ }
+      if (V.ptrs.size === 2) { const [a, b2] = [...V.ptrs.values()]; V.pinch = { d: Math.hypot(a.x - b2.x, a.y - b2.y), z: V.cam.z, cx: (a.ox + b2.ox) / 2, cy: (a.oy + b2.oy) / 2, wx: 0, wy: 0 }; [V.pinch.wx, V.pinch.wy] = toWorld(V.pinch.cx, V.pinch.cy); clearTimeout(V.pressTimer); V.pan = null; return; }
+      if (e.pointerType !== 'touch') { onDown(e); return; }
+      V.pan = { x: e.clientX, y: e.clientY, cx: V.cam.x, cy: V.cam.y, moved: false, ox: e.offsetX, oy: e.offsetY };
+      clearTimeout(V.pressTimer);
+      V.pressTimer = setTimeout(() => { if (!V.pan || V.pan.moved) return; V.pan.long = true; const h = hexAt(V.pan.ox, V.pan.oy); const u = h && Bt.unitAt(V.b, h[0], h[1]); if (u) unitInfo(u); }, 500);
+    });
+    c.addEventListener('pointermove', e => {
+      if (!V.b) return;
+      const pt = V.ptrs.get(e.pointerId); if (pt) { pt.x = e.clientX; pt.y = e.clientY; pt.ox = e.offsetX; pt.oy = e.offsetY; }
+      if (V.pinch && V.ptrs.size === 2) {
+        const [a, b2] = [...V.ptrs.values()]; const d = Math.hypot(a.x - b2.x, a.y - b2.y);
+        setZoom(V.pinch.z * d / Math.max(1, V.pinch.d), V.pinch.cx, V.pinch.cy, V.pinch.wx, V.pinch.wy);
+        return;
+      }
+      if (V.pan) {
+        const dx = e.clientX - V.pan.x, dy = e.clientY - V.pan.y;
+        if (!V.pan.moved && Math.hypot(dx, dy) > 8) { V.pan.moved = true; clearTimeout(V.pressTimer); }
+        if (V.pan.moved) { V.cam.x = V.pan.cx - dx / V.cam.z; V.cam.y = V.pan.cy - dy / V.cam.z; clampCam(); }
+        return;
+      }
+      if (e.pointerType !== 'touch') onMove(e);
+    });
+    const up = e => {
+      V.ptrs.delete(e.pointerId);
+      if (V.pinch) { if (V.ptrs.size < 2) V.pinch = null; V.pan = null; return; }
+      clearTimeout(V.pressTimer);
+      const pan = V.pan; V.pan = null;
+      if (pan && !pan.moved && !pan.long) onDown(e);
+    };
+    c.addEventListener('pointerup', up); c.addEventListener('pointercancel', e => { V.ptrs.delete(e.pointerId); V.pinch = null; V.pan = null; clearTimeout(V.pressTimer); });
+    c.addEventListener('wheel', e => { e.preventDefault(); const [wx, wy] = toWorld(e.offsetX, e.offsetY); setZoom(V.cam.z * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.offsetX, e.offsetY, wx, wy); }, { passive: false });
     V.canvas.addEventListener('pointerleave', () => { V.hover = null; UI.hideTip(); });
     V.canvas.addEventListener('contextmenu', e => { e.preventDefault(); const h = hexAt(e.offsetX, e.offsetY); const u = h && Bt.unitAt(V.b, h[0], h[1]); if (u) unitInfo(u); });
     window.addEventListener('resize', () => { if (V.b) layout(); });
@@ -26,19 +63,24 @@
     // выступают за свои гексы и иначе обрезались бы краем канвы
     // на широком экране по краям поля стоят герои — им нужны поля пошире
     const M = bw >= 760 ? 76 : 24; V.margin = M; V.showHeroes = M >= 60;
-    const size = Math.floor(Math.min((bw - 2 * M) / (Math.sqrt(3) * (W + 0.5)), (bh - 80) / (1.5 * H + 0.5)));
+    const narrow = bw < 600;
+    // телефон в портрете: гексы считаем по высоте, поле шире экрана — его двигают пальцем
+    const size = narrow ? Math.min(26, Math.floor((bh - 60) / (1.5 * H + 0.5))) : Math.floor(Math.min((bw - 2 * M) / (Math.sqrt(3) * (W + 0.5)), (bh - 80) / (1.5 * H + 0.5)));
     V.size = Math.max(14, size);
     const fw = Math.sqrt(3) * V.size * (W + 0.5), fh = V.size * (1.5 * H + 0.5);
     V.fw = fw;
-    V.cw = Math.min(bw, Math.round(fw + 2 * M)); V.ch = Math.min(bh, Math.round(fh + 80));
-    V.ox = Math.round((V.cw - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 14;   // запас сверху: высокие спрайты верхнего ряда
+    V.cw = narrow ? bw : Math.min(bw, Math.round(fw + 2 * M)); V.ch = narrow ? bh : Math.min(bh, Math.round(fh + 80));
+    V.worldW = Math.max(V.cw, Math.round(fw + 2 * M));
+    V.ox = Math.round((V.worldW - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 14;   // запас сверху: высокие спрайты верхнего ряда
     V.canvas.width = V.cw * V.dpr; V.canvas.height = V.ch * V.dpr; V.canvas.style.width = V.cw + 'px'; V.canvas.style.height = V.ch + 'px';
-    V.bg = makeBg(V.b.terrain, V.cw, V.ch, H3.Game && H3.Game.state ? H3.Game.state.day : 4);
+    V.zFit = V.cw / V.worldW;
+    V.cam = { x: 0, y: 0, z: 1 }; clampCam();
+    V.bg = makeBg(V.b.terrain, V.worldW, V.ch, H3.Game && H3.Game.state ? H3.Game.state.day : 4);
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
-    if (V.fx) V.fx.S.bounds = { w: V.cw, h: V.ch };
+    if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
     // облака над полем (под землёй неба нет)
     V.clouds = [];
-    if (V.b.terrain !== 'subter') for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.cw), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
+    if (V.b.terrain !== 'subter') for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
   }
   function makeBg(terrain, w, h, day) {
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
@@ -81,7 +123,20 @@
     // кочки и камешки на переднем плане
     for (let i = 0; i < 24; i++) { ctx.fillStyle = rng.pick(st.spec); const x = rng.int(0, w), y = rng.int(h * 0.55, h); ctx.beginPath(); ctx.ellipse(x, y, rng.int(3, 9), rng.int(1, 3), 0, 0, Math.PI * 2); ctx.fill(); }
   }
-  function hexAt(px, py) { const [c, r] = Hex.fromPixel(px, py, V.size, V.ox, V.oy); return (c >= 0 && r >= 0 && c < W && r < H) ? [c, r] : null; }
+  /* ---------- камера ---------- */
+  function toWorld(px, py) { return [px / V.cam.z + V.cam.x, py / V.cam.z + V.cam.y]; }
+  function clampCam() { const z = V.cam.z; V.cam.x = U.clamp(V.cam.x, 0, Math.max(0, (V.worldW || V.cw) - V.cw / z)); V.cam.y = U.clamp(V.cam.y, 0, Math.max(0, V.ch - V.ch / z)); }
+  /** Масштаб так, чтобы точка мира (wx, wy) осталась под экранной точкой (px, py). Минимум — всё поле в кадре. */
+  function setZoom(z, px, py, wx, wy) { V.cam.z = U.clamp(z, Math.min(1, V.zFit || 1), 3); V.cam.x = wx - px / V.cam.z; V.cam.y = wy - py / V.cam.z; clampCam(); }
+  /** Поле шире экрана или приближено — камера следует за ходящим отрядом. */
+  function followUnit(u) {
+    if (V.cam.z <= 1.01 && (V.worldW || V.cw) <= V.cw) return;
+    const p = V.pos[u.id]; if (!p) return;
+    const vw = V.cw / V.cam.z, vh = V.ch / V.cam.z;
+    if (p.x > V.cam.x + vw * 0.15 && p.x < V.cam.x + vw * 0.85 && p.y > V.cam.y + vh * 0.15 && p.y < V.cam.y + vh * 0.85) return;
+    V.cam.x = p.x - vw / 2; V.cam.y = p.y - vh / 2; clampCam();
+  }
+  function hexAt(px, py) { const [wx, wy] = toWorld(px, py); const [c, r] = Hex.fromPixel(wx, wy, V.size, V.ox, V.oy); return (c >= 0 && r >= 0 && c < W && r < H) ? [c, r] : null; }
 
   /** Запуск боя. opts: { human: [сторона игрока...], quick } */
   function run(b, opts) {
@@ -128,6 +183,7 @@
     renderBar();
     // машиной без профильного навыка («Артиллерия» / «Первая помощь») игрок не управляет
     if (isHuman(u.side) && !Bt.autoMachine(b, u)) { V.reach = Bt.reachable(b, u); focusUnit(u); return; } // ждём ввода
+    followUnit(u);
     V.reach = null;
     await wait(V.speed === 0 ? 0 : 120);
     const smart = H3.Game.settings().aiSmart !== false;
@@ -149,7 +205,7 @@
     if (V.fx) V.fx.clear();
     r(res);
   }
-  function focusUnit(u) { /* подсветка текущего */ }
+  function focusUnit(u) { followUnit(u); }
   const wait = ms => new Promise(r => setTimeout(r, V.skip ? 0 : ms));
   const spd = ms => V.speed === 0 ? 0 : V.speed === 2 ? ms / 2 : ms;
 
@@ -467,7 +523,7 @@
   /** Окружение по местности: снег, пепел, туман, пыль, листья. */
   function ambient(dt) {
     if (!fxOn()) return;
-    const t = V.b.terrain, fx = V.fx, w = V.cw, h = V.ch, k = dt / 1000;
+    const t = V.b.terrain, fx = V.fx, w = V.worldW || V.cw, h = V.ch, k = dt / 1000;
     const chance = per => Math.random() < per * k;
     if (t === 'snow') { if (chance(30)) fx.add({ x: rnd(0, w), y: -5, vx: rnd(-12, 12), vy: rnd(22, 42), ax: 0, ay: 0, ttl: 12000, life: 0, size: rnd(1, 2.2), color: 'rgba(255,255,255,0.85)', shape: 'dot', shrink: false, fade: false, sway: true }); }
     else if (t === 'lava') { if (chance(14)) fx.add({ x: rnd(0, w), y: h + 2, vx: rnd(-8, 8), vy: -rnd(14, 34), ax: 0, ay: 0, ttl: 6000, life: 0, size: rnd(1, 2), color: ['#ff9a3a', '#ff5a1f', '#f2d34c'][Math.floor(Math.random() * 3)], shape: 'dot', shrink: false, glow: true, sway: true }); }
@@ -493,12 +549,12 @@
     for (const id in V.pos) { const p = V.pos[id]; if (p.shake > 0) p.shake -= dt; if (p.flash > 0) p.flash -= dt; }
     for (let i = 0; i < 2; i++) if (V.heroCast[i] > 0) V.heroCast[i] -= dt;
     if (V.fx) { V.fx.update(dt); ambient(dt); }
-    for (const c of V.clouds) { c.x += c.v * dt / 1000; if (c.x - c.w > V.cw) c.x = -c.w; }
+    for (const c of V.clouds) { c.x += c.v * dt / 1000; if (c.x - c.w > V.worldW) c.x = -c.w; }
     draw(ts);
   }
   function draw(ts) {
     const b = V.b, ctx = V.ctx, size = V.size;
-    ctx.setTransform(V.dpr, 0, 0, V.dpr, 0, 0); ctx.imageSmoothingEnabled = false;
+    ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
     ctx.drawImage(V.bg, 0, 0);
     for (const c of V.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + c.a + ')'; ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(c.x - c.w * 0.25, c.y + 2, c.w / 3.2, c.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(c.x + c.w * 0.22, c.y + 1, c.w / 3.5, c.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
@@ -555,7 +611,7 @@
       items.push({ y: p.y, draw: () => drawUnit(ctx, u, p, sc, ts) });
     }
     items.sort((a, b2) => a.y - b2.y); for (const it of items) it.draw();
-    if (V.fx) V.fx.drawOver(ctx, V.cw, V.ch);
+    if (V.fx) V.fx.drawOver(ctx, V.worldW * 2, V.ch * 2);
     // подсказка урона / стрелка направления
     if (V.hover && cur && isHuman(cur.side) && !V.spellMode) drawAttackHint(ctx, cur);
     // всплывающие
@@ -624,7 +680,7 @@
   /* ---------- ввод ---------- */
   function onMove(e) {
     if (!V.b) return;
-    const h = hexAt(e.offsetX, e.offsetY); V.hoverPx = [e.offsetX, e.offsetY];
+    const h = hexAt(e.offsetX, e.offsetY); V.hoverPx = toWorld(e.offsetX, e.offsetY);
     V.hover = h;
     const cur = Bt.current(V.b);
     if (!h) { UI.hideTip(); return; }
@@ -644,7 +700,7 @@
     if (!V.b || e.button === 2) return;
     H3.Audio.unlock();
     const h = hexAt(e.offsetX, e.offsetY); if (!h) return;
-    V.hoverPx = [e.offsetX, e.offsetY]; V.hover = h;
+    V.hoverPx = toWorld(e.offsetX, e.offsetY); V.hover = h;
     const b = V.b, cur = Bt.current(b);
     if (V.tactics) { tacticsClick(h); return; }
     if (!cur || !isHuman(cur.side)) { V.skip = true; setTimeout(() => { V.skip = false; }, 50); return; }
