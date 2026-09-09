@@ -213,6 +213,8 @@
   }
   function start(st) {
     G.state = st; G.selHero = null;
+    // застава, до ключника которой не дойти, — тупик; такие превращаем в стражей (и в старых сейвах тоже)
+    if (A.sanitizeGates(st)) AV.invalidate();
     AV.setState(st); showScreen('adv');
     const p = st.players[st.turn];
     const h = S.heroesOf(st, p.id)[0];

@@ -566,6 +566,38 @@ test('квесты и ключи: ключник и застава, страж-�
   }
 });
 
+test('заставы никогда не запирают игрока: ключник достижим, иначе застава становится стражами', () => {
+  const A = H3.Adventure;
+  // генератор: на каждой карте ключник каждой заставы достижим для игрока без ключей
+  for (const [size, opp] of [['S', 1], ['M', 2], ['L', 3]]) for (let seed = 1; seed <= (size === 'L' ? 4 : 10); seed++) {
+    const st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'castle' });
+    const guards = Object.values(st.objects).filter(o => o.type === 'border_guard').length;
+    assert.equal(A.sanitizeGates(st), 0, size + '/' + seed + ': застава без достижимого ключника (застав ' + guards + ')');
+  }
+  // первый сценарий кампании — тот, где это и было поймано
+  const sc = H3.Campaign.get('erathia').scenarios[0];
+  const st1 = S.newGame({ size: sc.size, seed: sc.seed, opponents: sc.opponents, difficulty: sc.difficulty, faction: sc.faction, goals: U.clone(sc.goals) });
+  assert.equal(A.sanitizeGates(st1), 0, 'сценарий 1 кампании проходим');
+  // подстроенный тупик: ключник замурован в горах — застава превращается в стражей
+  const st = S.newGame({ size: 'S', seed: 9, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const m = st.levels[0], h = S.heroesOf(st, 0)[0];
+  for (const o of Object.values(st.objects)) if (o.type === 'border_guard' || o.type === 'keymaster') A.removeObject(st, o);
+  const put = (type, x, y, extra) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const i = (y + dy) * m.w + x + dx; const old = m.objAt[i] >= 0 ? st.objects[m.objAt[i]] : null; if (old && old.type !== 'town') A.removeObject(st, old); m.obs[i] = 0; m.block[i] = 0; m.terrain[i] = R.TERRAIN_INDEX.grass; } const o = Object.assign({ id: st.nextId++, type, x, y, z: 0, visited: {} }, extra); st.objects[o.id] = o; m.objAt[y * m.w + x] = o.id; m.block[y * m.w + x] = 1; return o; };
+  const bg = put('border_guard', h.x + 4, h.y, { color: 'green' });
+  const km = put('keymaster', 30, 30, { color: 'green' });
+  for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === 2) { const i = (30 + dy) * m.w + 30 + dx; const old = m.objAt[i] >= 0 ? st.objects[m.objAt[i]] : null; if (old && old.type !== 'town') A.removeObject(st, old); m.obs[i] = 2; m.block[i] = 1; }
+  assert.equal(A.sanitizeGates(st), 1, 'замурованный ключник — застава заменена');
+  assert.equal(bg.type, 'monster'); assert.ok(bg.cid && bg.n > 0);
+  assert.ok(st.log.some(l => /Застава без ключа/.test(l.text)));
+  // а достижимого ключника предохранитель не трогает
+  const st2 = S.newGame({ size: 'S', seed: 9, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const m2 = st2.levels[0], h2 = S.heroesOf(st2, 0)[0];
+  for (const o of Object.values(st2.objects)) if (o.type === 'border_guard' || o.type === 'keymaster') A.removeObject(st2, o);
+  const put2 = (type, x, y, extra) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const i = (y + dy) * m2.w + x + dx; const old = m2.objAt[i] >= 0 ? st2.objects[m2.objAt[i]] : null; if (old && old.type !== 'town') A.removeObject(st2, old); m2.obs[i] = 0; m2.block[i] = 0; m2.terrain[i] = R.TERRAIN_INDEX.grass; } const o = Object.assign({ id: st2.nextId++, type, x, y, z: 0, visited: {} }, extra); st2.objects[o.id] = o; m2.objAt[y * m2.w + x] = o.id; m2.block[y * m2.w + x] = 1; return o; };
+  const bg2 = put2('border_guard', h2.x + 4, h2.y, { color: 'green' }); put2('keymaster', h2.x - 3, h2.y, { color: 'green' });
+  assert.equal(A.sanitizeGates(st2), 0); assert.equal(bg2.type, 'border_guard');
+});
+
 console.log('editor');
 test('редактор: документ карты, проверка, экспорт и партия по своей карте', () => {
   const ME = H3.MapEdit;
