@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta name="ths-lang" content="ru">
 <title>Threshold</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Threshold">
 <meta name="theme-color" content="#FEFAE0">
-<meta name="ths-lang" content="ru">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;500;700&display=swap">
 <style>
 /* Tokens — Threshold design system (пакет Threshold_Design_System, взвешивание B3).
@@ -50,7 +50,7 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .modal{z-index:5}
 .screen.pinned{overflow:hidden}.feed{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin:0 -20px;padding:0 20px 8px}
 .eyebrow{font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-eyebrow)}
-.eyebrow.soft{color:var(--text-eyebrow-soft)}
+.eyebrow.soft{color:var(--text-eyebrow)}
 .eyebrow.dark{color:var(--sage500)}
 .act{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-action);display:inline-flex;align-items:center;min-height:44px;padding:0 2px;cursor:pointer;white-space:nowrap}.act::after{content:'›';margin-left:6px;font-size:18px;line-height:1}.act.dark{color:var(--sage300)}
 [tabindex="0"]:focus-visible{outline:3px solid var(--border-strong);outline-offset:2px}
@@ -67,7 +67,7 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .card{border-radius:24px;padding:18px 20px;background:var(--surface-card)}
 .card.quiet{background:var(--surface-quiet);box-shadow:var(--ring-hairline)}
 .card.dark{background:var(--surface-dark);box-shadow:var(--shadow-card)}
-.card.lift{background:var(--surface-lift)}
+.card.lift{background:var(--surface-lift);border-radius:10px}
 .card.accent{background:var(--surface-accent);box-shadow:var(--shadow-card)}
 .card.answered{background:var(--surface-answered)}
 .card.line{background:transparent;box-shadow:var(--ring-hairline)}
@@ -81,7 +81,7 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .btn.cream{background:var(--cream50);color:var(--forest)}
 .btn:focus-visible{outline:3px solid var(--border-strong);outline-offset:2px}
 .link{font-size:15px;font-weight:700;text-align:center;padding:12px;color:var(--text-action);cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center}
-.top{display:flex;justify-content:space-between;align-items:baseline;user-select:none}
+.top{display:flex;justify-content:space-between;align-items:baseline;user-select:none;flex-wrap:wrap;gap:2px 12px}
 .nav{display:flex;gap:6px;padding-top:14px;border-top:2px solid var(--border-strong)}
 .nav div{flex:1;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-eyebrow);min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;cursor:pointer}
 .nav div.on{background:var(--surface-card);color:var(--forest)}
@@ -89,8 +89,8 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .seg div{font-size:13px;font-weight:500;color:var(--text-soft);text-align:center;padding:6px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:16px;cursor:pointer}
 .seg div.on{background:var(--forest);color:var(--cream50);font-weight:700}
 .scale{border-radius:24px;padding:16px 18px 12px;background:var(--surface-quiet);box-shadow:var(--ring-hairline);display:flex;flex-direction:column;gap:6px}
-.scale .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
-.scale .val{display:flex;align-items:baseline;gap:8px;justify-content:flex-end;min-width:110px}
+.scale .head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.scale .val{display:flex;align-items:baseline;gap:8px;justify-content:flex-end;min-width:0;flex-wrap:wrap;margin-left:auto}
 .anchors{display:flex;justify-content:space-between}
 .segs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}.segs div{min-height:44px;border-radius:14px;background:var(--cream50);box-shadow:var(--ring-hairline);display:flex;align-items:center;justify-content:center;font-family:Oswald,Impact,"Arial Narrow",sans-serif;font-weight:700;font-size:18px;color:var(--forest);cursor:pointer}.segs div.on{background:var(--forest);color:var(--cream50);box-shadow:none}
 .stool{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -120,10 +120,12 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .chip{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);background:var(--cream50);border-radius:12px;padding:6px 10px;display:inline-block}
 .chip.sage{background:var(--sage100)}
 .pips{display:flex;gap:6px}.pips div{width:8px;height:8px;border-radius:4px;background:var(--sage300)}.pips div.on{width:24px;background:var(--forest)}.pips.dark div{background:var(--sage600)}.pips.dark div.on{background:var(--cream50)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0s!important}}
+.display{margin:0}h1.display,h2.display{font-size:inherit}
 .stack{display:flex;flex-direction:column;gap:8px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .list .m{padding:12px 16px;border-radius:24px;background:var(--surface-quiet);font-size:14px;cursor:pointer}
 .list .m.on{background:var(--surface-card);font-weight:700}
 .bar{height:8px;border-radius:6px;background:var(--track-empty);overflow:hidden}.bar i{display:block;height:100%;background:var(--track-fill);border-radius:6px}
@@ -154,7 +156,6 @@ html,body{margin:0;height:100%;background:var(--stage);font-family:Inter,system-
 .node .box{border-radius:20px;padding:12px 14px;background:var(--surface-quiet);margin-bottom:6px}
 .node.cur .box{background:var(--surface-card);box-shadow:none}
 .node.ahead .box{background:transparent;box-shadow:inset 0 0 0 2px var(--surface-quiet)}
-.node.ahead .box .body,.node.ahead .box .eyebrow{color:var(--text-muted)}
 </style>
 </head>
 <body>
@@ -196,7 +197,7 @@ en:{
  mealsInCard:n=>n?`Meals today: ${n}`:'No meals yet today', addMeal:'Add', addMealFull:'Add a meal',
  mealTitle:'What did you eat', photo:'Photo', voice:'Voice', type:'Text', mealHow:'Photo, voice or text — whichever is easier. We recognise the food group and remember it.', mealProto:'In this prototype — pick from recent dishes.', mealConfirm:'Check the dish and the group, then save.', recognized:'Recognized', isProbe:"This is today's test dose — counted.", save:'Save', fix:'Fix', mealSaved:'Meal saved',
  presets:['Oatmeal with milk','Caesar salad','Garlic pasta','Apple','Chicken and rice'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]], times:['08:30','13:10','16:00','19:20','21:00'],
- pathTitle:'Your path', pathPos:(s,d)=>`${s} · day ${d}`, nodes:{obs:'Observing',obsDone:'completed',insight:'First insight',susp:'A lead',check:n=>`Theory ${n}`,answer:n=>`Answer ${n}`,next:'Next test'}, fullDays:'full', rough:'rough', good:'good', needLine:(r,g)=>`Need 10 rough and 10 good days with meals — so far ${r} and ${g}.`, obsDays:n=>`day ${n} of ~21`, aheadDay:'day 7', whenReady:'when the data is in', afterAnswer:'after the answer', daysRange:(a,b)=>`days ${a}–${b}`, checkStatus:{run:'in progress',done:'completed',discard:'one day not counted',paused:'paused'},
+ pathTitle:'Your path', pathPos:(s,d)=>`${s} · day ${d}`, nodes:{obs:'Observing',obsDone:'completed',insight:'First insight',susp:'A lead',check:n=>`Test ${n}`,answer:n=>`Answer ${n}`,next:'Next test'}, fullDays:'full', rough:'rough', good:'good', needLine:(r,g)=>`Need 10 rough and 10 good days with meals — so far ${r} and ${g}.`, obsDays:n=>`day ${n} of ~21`, aheadDay:'day 7', whenReady:'when the data is in', afterAnswer:'after the answer', daysRange:(a,b)=>`days ${a}–${b}`, checkStatus:{run:'theory in progress',done:'theory tested',discard:'one day not counted',paused:'paused'},
  mapTitle:'Tolerance map', tested:t=>`tested: ${t}`, testedFine:'tested: tolerated', threshText:'up to 125 ml', obs:'observing', mapEmpty:'Your first answer will appear after the first test.', doctorPage:'Page for your doctor', nOf6:n=>`${n} of 6 tested`,
  tipsTitle:s=>`Tips · ${s}`, tipSets:{obs:[['Eating out — as usual','No restrictions while we watch. Order what you like and snap a photo if it is convenient.'],['Is yogurt okay?','Right now everything is on the table. If dairy ever becomes a lead, we will suggest testing it — not banning it.'],['Why photos of meals','A day with meals counts towards finding a lead. A day without meals counts for wellbeing only.'],['Why the first insight is about sleep','A week of data is enough to see sleep, not food. We do not guess about food early.']],check:[['Swaps for today','Oatmeal with water, lactose-free cheese, coffee with oat milk — all from what you already eat.'],['At a party','Ask what is in the dish. If you cannot avoid the group, note it — the day will simply not count.'],['Ate it by accident','Nothing is lost. Mark the meal, the day is not counted, the test continues tomorrow.'],['Why a short night is not counted','Short sleep causes symptoms on its own. We cannot tell it apart from the food, so the dose moves to the next day.']],after:[['How to use the threshold','Up to the dose that was fine — freely. Above it — expect symptoms. The threshold is yours, not a general rule.'],['What is next','Observation continues. The next lead appears when the data is in.']]}, assistantNote:'An assistant that answers from your own data comes in the next version.',
  suspEye:'A lead', suspTitle:f=>`${cap(f)} keeps showing up on your rough days`, suspBody:(f,a,b,c,d)=>`${cap(f)} showed up in ${a} of your ${b} rough days. On good days — ${c} of ${d}.`, roughWith:f=>`rough days with ${f}`, goodWith:f=>`good days with ${f}`,
@@ -250,7 +251,7 @@ ru:{
  mealsInCard:n=>n?`Еда за день: ${n}`:'Еды за день пока нет', addMeal:'Добавить', addMealFull:'Добавить еду',
  mealTitle:'Что вы ели', photo:'Фото', voice:'Голосом', type:'Текстом', mealHow:'Фото, голосом или текстом — как удобнее. Распознаем группу и запомним.', mealProto:'В прототипе — выберите из недавних блюд.', mealConfirm:'Проверьте блюдо и группу, потом запишите.', recognized:'Распознано', isProbe:'Это ваша проба на сегодня — засчитано.', save:'Записать', fix:'Исправить', mealSaved:'Еда записана',
  presets:['Овсянка с молоком','Салат цезарь','Паста с чесноком','Яблоко','Рис с курицей'], presetGroups:[['lactose'],['lactose'],['fructans'],['fructose','sorbitol'],[]], times:['08:30','13:10','16:00','19:20','21:00'],
- pathTitle:'Ваш путь', pathPos:(s,d)=>`${s} · день ${d}`, nodes:{obs:'Наблюдение',obsDone:'пройдено',insight:'Первый вывод',susp:'Зацепка',check:n=>`Версия ${n}`,answer:n=>`Ответ ${n}`,next:'Следующая проверка'}, fullDays:'полных', rough:'плохих', good:'хороших', needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}.`, obsDays:n=>`день ${n} из ~21`, aheadDay:'день 7', whenReady:'когда наберутся данные', afterAnswer:'после ответа', daysRange:(a,b)=>`дни ${a}–${b}`, checkStatus:{run:'идёт',done:'завершена',discard:'один день не засчитан',paused:'пауза'},
+ pathTitle:'Ваш путь', pathPos:(s,d)=>`${s} · день ${d}`, nodes:{obs:'Наблюдение',obsDone:'пройдено',insight:'Первый вывод',susp:'Зацепка',check:n=>`Проверка ${n}`,answer:n=>`Ответ ${n}`,next:'Следующая проверка'}, fullDays:'полных', rough:'плохих', good:'хороших', needLine:(r,g)=>`Нужно 10 плохих и 10 хороших дней с едой — пока ${r} и ${g}.`, obsDays:n=>`день ${n} из ~21`, aheadDay:'день 7', whenReady:'когда наберутся данные', afterAnswer:'после ответа', daysRange:(a,b)=>`дни ${a}–${b}`, checkStatus:{run:'версия в работе',done:'версия проверена',discard:'один день не засчитан',paused:'пауза'},
  mapTitle:'Карта переносимости', tested:t=>`проверено: ${t}`, testedFine:'проверено: переносится', threshText:'до 125 мл', obs:'в наблюдении', mapEmpty:'Первый ответ появится после первой проверки.', doctorPage:'Страница для врача', nOf6:n=>`проверено ${n} из 6`,
  tipsTitle:s=>`Советы · ${s}`, tipSets:{obs:[['В кафе — как обычно','Пока мы наблюдаем, ограничений нет. Берите что хотите и сфотографируйте, если удобно.'],['Можно ли йогурт?','Сейчас можно всё. Если молочное станет зацепкой, мы предложим это проверить, а не запретим.'],['Зачем фото еды','День с едой идёт в поиск зацепки. День без еды — только в самочувствие.'],['Почему первый вывод про сон','Недели данных хватает, чтобы увидеть сон, но не еду. Про еду мы рано не гадаем.']],check:[['Замены на сегодня','Овсянка на воде, безлактозный сыр, кофе с овсяным молоком — всё из того, что вы и так едите.'],['В гостях','Спросите, что в блюде. Если группу не обойти — отметьте, день просто не засчитается.'],['Съел случайно','Ничего не пропало. Отметьте приём пищи, день не засчитан, проверка продолжается завтра.'],['Почему короткая ночь не считается','Короткий сон сам даёт симптомы. Мы не отличим его от еды, поэтому доза переносится.']],after:[['Как пользоваться порогом','До дозы, которая переносилась, — свободно. Выше — ждите симптомов. Порог ваш, не общее правило.'],['Что дальше','Наблюдение продолжается. Следующая зацепка появится, когда наберутся данные.']]}, assistantNote:'Ассистент, который отвечает по вашим данным, появится в следующей версии.',
  suspEye:'Зацепка', suspTitle:f=>`${cap(f)} слишком часто попадает на плохие дни`, suspBody:(f,a,b,c,d)=>`В ${a} из ${b} ваших плохих дней было ${f}. В хороших днях — в ${c} из ${d}.`, roughWith:f=>`плохих дней с: ${f}`, goodWith:f=>`хороших дней с: ${f}`,
@@ -322,7 +323,7 @@ const streak=()=>{let n=0;for(let i=st.day-1;i>=0&&st.log[i];i--)n++;return n};
 
 /* ---------- pieces ---------- */
 const topRow=(l,r,dark)=>`<div class="top" data-taptop><div class="eyebrow${dark?' dark':''}">${l}</div><div class="eyebrow${dark?' dark':''}">${r}</div></div>`;
-const nav=on=>{const t=T();return `<div class="nav"><div class="${on==='today'?'on':''}" data-tab="today">${t.today}</div><div class="${on==='path'?'on':''}" data-tab="path">${t.path}</div><div class="${on==='tips'?'on':''}" data-tab="tips">${t.tips}</div></div>`};
+const nav=on=>{const t=T();return `<nav class="nav" aria-label="${t.today} · ${t.path} · ${t.tips}"><div class="${on==='today'?'on':''}" data-tab="today">${t.today}</div><div class="${on==='path'?'on':''}" data-tab="path">${t.path}</div><div class="${on==='tips'?'on':''}" data-tab="tips">${t.tips}</div></nav>`};
 const dots=p=>{const m={d:'d-done',t:'d-today',a:'d-ahead',s:'d-skip'};return `<div class="dots">${[...p].map(c=>`<div class="${m[c]}"></div>`).join('')}</div>`};
 const sw=(key,on)=>`<div class="switch${on?' on':''}" data-switch="${key}"><i></i></div>`;
 const hint=(x,extra='')=>`<div class="body soft" style="font-size:12px;line-height:1.4;${extra}">${x}</div>`;
@@ -399,16 +400,16 @@ function today(){const t=T();const c=st.check;
  const btn=c&&c.paused?`<button class="btn primary" data-act="resume">${t.resume}</button>`:c&&c.discard?`<button class="btn primary" data-act="discardOk">${t.ok}</button>`:`${hint(t.closeHint,'text-align:center')}<button class="btn primary" data-act="openDay">${t.closeDay}</button>`;
  return `<div class="screen pinned">${topRow(`${t.today} · ${t.dayN(st.day)}`,stageLabel())}<div class="feed">${pauseBanner()}${rhythmCard()}${hero}${progressRow()}${mealsBlock()}${restRow()}${bgCard(true)}${tipCard()}${yesterdayRow()}</div>${btn}${nav('today')}</div>`}
 
-const scale=(key,label,sub,v)=>{const t=T();return `<div class="scale"><div class="head"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${sub}</div></div><div class="val"><div class="numeral" style="font-size:40px">${v}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.lvl[v]}</div></div></div><div class="segs" style="margin-top:6px">${[0,1,2,3,4,5,6,7,8,9,10].map(i=>`<div class="${v===i?'on':''}" data-segscale="${key}:${i}">${i}</div>`).join('')}</div><div class="anchors" style="margin-top:4px"><div class="eyebrow soft" style="letter-spacing:.12em">0 · ${t.lvl[0]}</div><div class="eyebrow soft" style="letter-spacing:.12em">10 · ${t.lvl[10]}</div></div></div>`};
+const scale=(key,label,sub,v)=>{const t=T();return `<div class="scale"><div class="head"><div><div class="eyebrow">${label}</div><div class="body soft" style="font-size:12px;margin-top:2px">${sub}</div></div><div class="val"><div class="numeral" style="font-size:40px">${v}</div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${t.lvl[v]}</div></div></div><div class="segs" style="margin-top:6px" role="group" aria-label="${label}">${[0,1,2,3,4,5,6,7,8,9,10].map(i=>`<div class="${v===i?'on':''}" data-segscale="${key}:${i}" aria-pressed="${v===i}">${i}</div>`).join('')}</div><div class="anchors" style="margin-top:4px"><div class="eyebrow soft" style="letter-spacing:.12em">0 · ${t.lvl[0]}</div><div class="eyebrow soft" style="letter-spacing:.12em">10 · ${t.lvl[10]}</div></div></div>`};
 const stoolPicker=v=>{const t=T();return `<div class="stack" style="gap:6px"><div class="row" style="align-items:baseline"><div><div class="eyebrow">${t.stool}</div><div class="body soft" style="font-size:12px;margin-top:2px">${t.stoolSub}</div></div><div class="eyebrow" style="letter-spacing:.12em;color:var(--forest)">${v>0?`${v} · ${t.stoolTypes[v]}`:t.stoolTypes[0]}</div></div>
- <div class="stool">${[0,1,2,3,4,5,6,7].map(i=>`<div class="t${v===i?' on':''}" data-stool="${i}"><div class="n">${i===0?'—':i}</div><div class="shape s${i}"></div><div class="l">${t.stoolTypes[i]}</div></div>`).join('')}</div>
+ <div class="stool" role="group" aria-label="${t.stool}">${[0,1,2,3,4,5,6,7].map(i=>`<div class="t${v===i?' on':''}" data-stool="${i}" aria-pressed="${v===i}"><div class="n">${i===0?'—':i}</div><div class="shape s${i}"></div><div class="l">${t.stoolTypes[i]}</div></div>`).join('')}</div>
  <div class="body soft" style="font-size:11px;text-align:center">${t.stoolKey}</div></div>`};
 function dayCard(){const t=T();const s=st.scores;const ed=st.editDay!==null;
  return `<div class="screen modal pinned">${topRow(ed?t.editTitle(st.editDay):t.dayCardTitle,t.dayN(ed?st.editDay:st.day))}<div class="feed"><div class="row" style="align-items:flex-start"><div><div class="display" style="font-size:26px">${t.howToday}</div><div class="body soft" style="font-size:13px;margin-top:4px">${t.worst}</div></div><div class="act" data-act="${ed?'cancelEdit':'closeCard'}" style="margin-top:-8px">${t.back}</div></div>
   ${scale('belly',t.belly,t.bellySub,s.belly)}${scale('bloat',t.bloat,t.bloatSub,s.bloat)}${stoolPicker(s.stool)}
   ${bgCard(true)}
   ${hint(t.flagsHint)}
-  <div class="grid2"><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="alcohol"><div class="body" style="font-size:14px">${t.alcohol}</div><div class="switch${st.alcohol?' on':''}"><i></i></div></div><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="illness"><div class="body" style="font-size:14px">${t.illness}</div><div class="switch${st.illness?' on':''}"><i></i></div></div></div>
+  <div class="grid2"><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="alcohol" role="switch" aria-checked="${st.alcohol}"><div class="body" style="font-size:14px">${t.alcohol}</div><div class="switch${st.alcohol?' on':''}"><i></i></div></div><div class="card quiet row" style="padding:10px 16px;min-height:52px;cursor:pointer" data-switch="illness" role="switch" aria-checked="${st.illness}"><div class="body" style="font-size:14px">${t.illness}</div><div class="switch${st.illness?' on':''}"><i></i></div></div></div>
   <div class="row" style="border-radius:24px;padding:4px 16px;min-height:52px;box-shadow:inset 0 0 0 2px var(--sage500);cursor:pointer" data-act="blood"><div class="body soft" style="font-size:14px">${t.blood}</div><div class="act">${t.report}</div></div>
   <div class="card quiet row" style="padding:4px 16px;min-height:52px;cursor:pointer" data-act="addMealCard"><div class="body" style="font-size:14px">${t.mealsInCard(st.meals.length)}</div><div class="act">${t.addMeal}</div></div></div>
   <div class="stack">${ed?`<button class="btn primary" data-act="saveEdit">${t.saveEdit}</button><div class="link" data-act="cancelEdit">${t.cancel}</div>`:`<button class="btn primary" data-act="closeDay">${t.closeDay}</button>${hint(t.closeSaves,'text-align:center')}`}</div></div>`}
@@ -506,11 +507,18 @@ function render(){let html='';
  if(st.modal==='redConfirm'||(st.modal==='doctor'&&st.docFrom==='card')||(st.modal==='addMeal'&&st.mealFrom==='card')) html+=dayCard();
  if(st.modal==='doctor'&&st.docFrom==='red') html+=redFlag();
  if(st.modal&&modals[st.modal]) html+=modals[st.modal]();
- html+=`<div class="toast${st.toast?' show':''}">${st.toast}</div>`;
+ html+=`<div class="toast${st.toast?' show':''}" role="status" aria-live="polite">${st.toast}</div>`;
  document.getElementById('phone').innerHTML=html;
- document.querySelectorAll('#phone '+SEL.split(',').join(',#phone ')).forEach(el=>{if(el.tagName==='BUTTON'||el.tagName==='INPUT')return;if(el.dataset.taptop!==undefined&&!el.dataset.act)return;el.setAttribute('role','button');el.setAttribute('tabindex','0')});
+ document.querySelectorAll('#phone '+SEL.split(',').join(',#phone ')).forEach(el=>{if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.getAttribute('role'))return;if(el.dataset.taptop!==undefined&&!el.dataset.act)return;el.setAttribute('role','button');el.setAttribute('tabindex','0')});
+ /* semantics: first display of each screen becomes a heading; base feed is main; extra screens are dialogs; background goes inert */
+ const screens=[...document.querySelectorAll('#phone .screen')];
+ screens.forEach((sc,i)=>{const d=sc.querySelector('.display');if(d&&!/^H[12]$/.test(d.tagName)){const h=document.createElement(i?'h2':'h1');[...d.attributes].forEach(a=>h.setAttribute(a.name,a.value));h.innerHTML=d.innerHTML;d.replaceWith(h);h.id=h.id||('ttl'+i)}
+  if(i){sc.setAttribute('role','dialog');sc.setAttribute('aria-modal','true');const h=sc.querySelector('h2');if(h)sc.setAttribute('aria-labelledby',h.id)}else{const f=sc.querySelector('.feed');if(f)f.setAttribute('role','main')}
+  if(i<screens.length-1)sc.setAttribute('inert','');else sc.removeAttribute('inert')});
+ if(st.modal!==lastModal){const last=screens[screens.length-1];if(st.modal){const f=last.querySelector('button,[tabindex="0"]');if(f)f.focus({preventScroll:true})}else if(lastTrigger){const el=document.querySelector('#phone '+lastTrigger);if(el)el.focus({preventScroll:true})}lastModal=st.modal}
  document.documentElement.lang=st.lang;
 }
+let lastModal=null,lastTrigger=null;
 
 /* ---------- events ---------- */
 let taps=[];
@@ -531,6 +539,7 @@ document.addEventListener('click',e=>{const el=e.target.closest(SEL);if(!el)retu
  if(el.dataset.meal){st.mealPick=null;render();return}
  if(el.dataset.pick!==undefined){st.mealPick=+el.dataset.pick;render();return}
  const a=el.dataset.act;
+ if(a&&!st.modal)lastTrigger=`[data-act="${a}"]`;
  switch(a){
   case 'health': st.health=!st.health;break;
   case 'introNext': st.intro=Math.min(st.intro+1,T().intro.length-1);break;
@@ -582,7 +591,9 @@ document.addEventListener('click',e=>{const el=e.target.closest(SEL);if(!el)retu
 let sx=null,sy=null;
 document.addEventListener('touchstart',e=>{if(!e.target.closest('[data-intro]'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
 document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx))return;const t=T();if(dx<0)st.intro=Math.min(st.intro+1,t.intro.length-1);else st.intro=Math.max(st.intro-1,0);render()},{passive:true});
-document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest&&e.target.closest(SEL)&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();e.target.click();return}
+const ESC={dayCard:'closeCard',addMeal:'mealFix',plan:'closeModal',restaurant:'closeModal',switcher:'closeModal',doctor:'closeDoc',redConfirm:'closeModalToCard',red:'redBack',otherSuspects:'backSusp'};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.modal&&ESC[st.modal]){const act=st.editDay!==null&&st.modal==='dayCard'?'cancelEdit':ESC[st.modal];const el=document.querySelector(`#phone [data-act="${act}"]`);if(el){el.click();return}}
+ if((e.key==='Enter'||e.key===' ')&&e.target.closest&&e.target.closest(SEL)&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();e.target.click();return}
  if(st.introDone||st.onboarded)return;const t=T();if(e.key==='ArrowRight')st.intro=Math.min(st.intro+1,t.intro.length-1);else if(e.key==='ArrowLeft')st.intro=Math.max(st.intro-1,0);else return;render()});
 document.addEventListener('input',e=>{const k=e.target.dataset.slider;if(k){const v=+e.target.value;st.scores[k]=v;const sc=e.target.closest('.scale');sc.querySelector('[data-num]').textContent=v;sc.querySelector('[data-lvl]').textContent=T().lvl[v]}});
 st=base();render();
