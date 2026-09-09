@@ -3,7 +3,7 @@ const assert = require('assert');
 const H3 = require('./load.js');
 const U = H3.U, R = H3.Rules, S = H3.State, Bt = H3.Battle, C = H3.Creatures, PF = H3.Pathfind, HE = H3.Heroes;
 let passed = 0, failed = 0;
-function test(name, fn) { try { fn(); passed++; console.log('  ok  ' + name); } catch (e) { failed++; console.log('  FAIL ' + name + '\n       ' + (e.message || e)); } }
+function test(name, fn) { try { fn(); passed++; console.log('  ok  ' + name); } catch (e) { failed++; console.log('  FAIL ' + name + '\n       ' + (e.message || e) + (process.env.TRACE ? '\n' + e.stack : '')); } }
 const army = list => { const a = [null, null, null, null, null, null, null]; list.forEach(([cid, n], i) => a[i] = { cid, n }); return a; };
 const mkHero = (tid, lvl) => { const st = { nextId: 1, heroes: {}, _rng: { misc: new U.RNG(5) } }; const h = R.makeHero(st, tid, 0, 0, 0, true); h.level = lvl || 1; return h; };
 
@@ -429,6 +429,41 @@ test('умный ИИ боя обыгрывает жадный', () => {
     total++; if (b.result.winner === smart) win++;
   }
   assert.ok(win / total >= 0.65, 'умный ИИ выиграл лишь ' + win + ' из ' + total);
+});
+
+test('ИИ карты: прогон боя отсеивает безнадёжные цели', () => {
+  const st = S.newGame({ size: 'S', seed: 12, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const hero = st.heroes[st.players[0].heroes[0]];
+  hero.army = army([['pikeman', 5]]);           // заведомо слабая армия
+  hero.move = 100000;
+  // ставим рядом с героем стража, которого не победить, и убираем остальные соблазны
+  for (const id of Object.keys(st.objects)) { const o = st.objects[id]; if (o.type !== 'town' && (o.z || 0) === 0) H3.Adventure.removeObject(st, o); }
+  let spot = null;
+  for (let r = 2; r < 8 && !spot; r++) for (let dy = -r; dy <= r && !spot; dy++) for (let dx = -r; dx <= r; dx++) {
+    const x = hero.x + dx, y = hero.y + dy;
+    if (!S.inMap(st, x, y, 0) || S.isBlocked(st, x, y, 0) || S.objAt(st, x, y, 0)) continue;
+    if (Math.abs(dx) + Math.abs(dy) < 3) continue;
+    spot = [x, y]; break;
+  }
+  assert.ok(spot, 'нашлось место для стража');
+  const m = S.lvl(st, 0), i = spot[1] * m.w + spot[0];
+  const guard = { id: st.nextId++, type: 'monster', x: spot[0], y: spot[1], z: 0, cid: 'black_dragon', n: 20, mood: 10, character: 'aggressive', value: 999999 };
+  st.objects[guard.id] = guard; m.objAt[i] = guard.id; m.block[i] = 1;
+  S.computeVisibility(st, 0);
+  hero._role = 'main';
+  st._ai = { 0: { threat: null } };
+  const pf = S.pathfield(st, hero);
+  // при выключенном прогоне ИИ судит по отношению сил и в такую драку не полезет тоже,
+  // поэтому проверяем главное: с прогоном цель точно отвергнута
+  H3.AI.FLAGS.sim = true;
+  const t = H3.AI.chooseTarget(st, hero, pf, new Set(), true);
+  assert.ok(!t || t.key !== 'm' + guard.id, 'ИИ не должен идти на 20 чёрных драконов с пятью копейщиками');
+  // сам прогон должен давать разные вердикты для безнадёжного и посильного боя
+  const hopeless = H3.AI.simFight(st, hero, army([['black_dragon', 20]]), null, 'grass', 1);
+  assert.equal(hopeless.p, 0, 'бой с 20 чёрными драконами обязан проигрываться');
+  const easy = H3.AI.simFight(st, hero, army([['goblin', 3]]), null, 'grass', 1);
+  assert.equal(easy.p, 1, 'трёх гоблинов пять копейщиков обязаны бить');
+  assert.ok(easy.kept > 0.7, 'и почти без потерь, а осталось ' + Math.round(easy.kept * 100) + ' %');
 });
 
 console.log('save');
