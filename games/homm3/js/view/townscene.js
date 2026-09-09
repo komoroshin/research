@@ -57,8 +57,10 @@
     return sh;
   }
 
-  function create(canvas, town) {
-    const st = H3.Game.state, f = F.get(town.faction), sc = SCENE[town.faction] || SCENE.castle, tint = TINT[town.faction];
+  /** opts.state — состояние вместо живой партии (сцена в главном меню), opts.static — без призраков построек и проверок canBuild. */
+  function create(canvas, town, opts) {
+    opts = opts || {};
+    const st = opts.state || H3.Game.state, f = F.get(town.faction), sc = SCENE[town.faction] || SCENE.castle, tint = TINT[town.faction];
     const ctx = canvas.getContext('2d');
     canvas.width = W; canvas.height = H;
     const rng = new U.RNG(U.hashStr(town.name + town.faction));
@@ -128,9 +130,9 @@
     /* ---------- постройки на сцене ---------- */
     function rebuild() {
       const t = town, has = id => !!t.buildings[id], items = [];
-      const stt = H3.Game.state;
+      const stt = opts.state || H3.Game.state;
       const push = (o) => { const sh = shapeOf(o.sprite, o.tint === null ? undefined : tint); if (!sh) return; o.shape = sh; o.bx = o.pos[0] - sh.ax; o.by = o.pos[1] - sh.ay; items.push(o); };
-      const next = (id) => { const chk = R.canBuild(stt, t, id); const b = B.get(t.faction, id); return b ? { id, name: b.name, cost: b.cost, ok: chk.ok, reason: chk.reason } : null; };
+      const next = (id) => { if (opts.static) return null; const chk = R.canBuild(stt, t, id); const b = B.get(t.faction, id); return b ? { id, name: b.name, cost: b.cost, ok: chk.ok, reason: chk.reason } : null; };
       // ратуша (всегда) и её улучшение
       const hall = R.townHallLevel(t);
       push({ key: 'hall', sprite: 'bld_hall_' + hall, pos: LAYOUT.hall, name: B.BY_ID['hall_' + hall].name, tab: 'build', upgrade: hall < 4 ? next('hall_' + (hall + 1)) : null, smoke: true });
@@ -146,7 +148,7 @@
         else push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], name: B.BY_ID[id].name, ghost: next(id) });
       }
       if (has('shipyard')) push({ key: 'shipyard', sprite: 'shipyard', pos: LAYOUT.shipyard, name: 'Верфь', tab: 'smith', tint: null });
-      else if (R.canBuild(stt, t, 'shipyard').ok) push({ key: 'shipyard', sprite: 'shipyard', pos: LAYOUT.shipyard, name: 'Верфь', ghost: next('shipyard'), tint: null });
+      else if (!opts.static && R.canBuild(stt, t, 'shipyard').ok) push({ key: 'shipyard', sprite: 'shipyard', pos: LAYOUT.shipyard, name: 'Верфь', ghost: next('shipyard'), tint: null });
       for (let i = 1; i <= 7; i++) {
         const b = B.get(t.faction, 'dwell_' + i);
         if (has('dwell_' + i)) {
@@ -206,7 +208,7 @@
       else if (fid === 'stronghold') { c.fillStyle = '#5a3a1c'; for (let x = 2; x < sh.w; x += 7) c.fillRect(it.bx + x, it.pos[1] - 8, 2, 8); c.fillStyle = '#e8e8ea'; c.fillRect(it.bx + 2, it.pos[1] - 12, 4, 4); }
       else if (fid === 'fortress') { c.fillStyle = '#7fa838'; roof(4, (x, y, i) => { if (i % 8 === 0) c.fillRect(x, y + 1, 3, 2); }); c.fillStyle = 'rgba(60,90,90,0.5)'; c.fillRect(it.bx, it.pos[1] - 2, sh.w, 3); }
       else { // замок: вымпел цвета игрока на коньке
-        const p = H3.Game.state.players[town.owner]; let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; }
+        const p = st.players[town.owner]; let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; }
         if (p && px >= 0 && it.key !== 'hall') { const x = it.bx + px, y = it.by + py; c.fillStyle = '#2a1a10'; c.fillRect(x, y - 8, 1, 8); c.fillStyle = p.color; const wv = Math.round(Math.sin(ts / 150 + px) * 1.5); c.fillRect(x + 1, y - 8 + wv, 5, 3); }
       }
     }
