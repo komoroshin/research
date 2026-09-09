@@ -13,7 +13,11 @@
     canvas: null, ctx: null, mini: null, state: null, mapCanvas: [null, null], miniCanvas: null, layer: 0,
     cam: { x: 0, y: 0, z: 1.5 }, dirty: true, hover: null, pending: null, path: null, pf: null, pfHero: null,
     anim: null, drag: null, w: 0, h: 0, dpr: 1, lastTime: 0, busy: false, tipTimer: null,
+    fx: null, ts: 0, water: [null, null],
   };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  // сколько «ночи» в каждом дне недели: окна светятся вечером и ранним утром
+  const NIGHT = [0.45, 0.1, 0, 0, 0, 0.55, 0.95];
 
   function init() {
     V.canvas = UI.$('#mapCanvas'); V.ctx = V.canvas.getContext('2d'); V.mini = UI.$('#minimap');
@@ -38,6 +42,7 @@
   function setState(state) {
     V.state = state; V.layer = 0; V.mapCanvas = [T.renderMap(state, 0), null]; V.miniCanvas = document.createElement('canvas');
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
+    V.fx = H3.Fx.scene(); V.water = [null, null];
     resize(); V.dirty = true;
   }
   function invalidate() { V.pf = null; V.dirty = true; }
@@ -150,7 +155,7 @@
       else if (obj.type === 'resource') parts.push('<b>' + UI.esc(O.RES_NAMES[obj.res]) + '</b>');
       else if (obj.type === 'artifact') parts.push('<b>' + UI.esc(AR.get(obj.art).name) + '</b><br><span class="muted">' + UI.esc(AR.get(obj.art).desc) + '</span>');
       else if (obj.type === 'dwelling') { const c = C.get(obj.cid); parts.push('<b>Жилище: ' + UI.esc(c.name) + '</b>' + (obj.owner === st.turn ? ' — доступно ' + obj.avail : '')); }
-      else if (!t.obstacle) { let s = '<b>' + UI.esc(t.name) + '</b>'; if (t.desc) s += '<br><span class="muted">' + UI.esc(t.desc) + '</span>'; const sel = H3.Game.selected(); if (sel && obj.visited && obj.visited['h' + sel.id]) s += '<br><i>уже посещали</i>'; parts.push(s); }
+      else if (!t.obstacle) { let s = '<b>' + UI.esc(t.name) + '</b>'; const qd = H3.Quest.describe(obj); if (qd) s += '<br><span class="muted">' + UI.esc(qd) + '</span>'; else if (t.desc) s += '<br><span class="muted">' + UI.esc(t.desc) + '</span>'; const sel = H3.Game.selected(); if (sel && obj.visited && obj.visited['h' + sel.id]) s += '<br><i>уже посещали</i>'; parts.push(s); }
       else parts.push('<b>' + UI.esc(t.name) + '</b>');
     }
     if (!parts.length) parts.push('<b>' + UI.esc(R.TERRAIN_NAMES[S.terrainAt(st, x, y, V.layer)]) + '</b>' + (S.lvl(st, V.layer).road[S.idx(st, x, y, V.layer)] ? ' (дорога)' : ''));
@@ -193,6 +198,8 @@
       if (a.i >= a.steps.length) { V.anim = null; a.resolve(); }
       V.dirty = true;
     }
+    V.ts = ts;
+    if (V.fx) { V.fx.update(dt); ambient(dt); }
     // idle-анимация требует перерисовки и без событий; вне движения — 30 к/с
     if (V.dirty || V.anim) { draw(ts); V.dirty = false; V.lastDraw = ts; }
     else if (ts - (V.lastDraw || 0) >= 33) { draw(ts); V.lastDraw = ts; }
@@ -217,6 +224,8 @@
     const x1 = Math.min(m.w - 1, Math.ceil((V.cam.x + V.w / z) / TILE) + 1), y1 = Math.min(m.h - 1, Math.ceil((V.cam.y + V.h / z) / TILE) + 2);
     // местность
     ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
+    V.view = { x0, y0, x1, y1 };
     // выделение героя
     const sel = H3.Game.selected();
     if (sel && !sel.dead && (sel.z || 0) === V.layer) { const [hx, hy] = heroDrawPos(sel); ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 200)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(hx * TILE + 16, hy * TILE + 26, 13, 6, 0, 0, Math.PI * 2); ctx.stroke(); }
@@ -229,8 +238,10 @@
       if (it.o) drawObject(ctx, st, it.o, vis, ts);
       else drawHero(ctx, st, it.h, it.px, it.py, ts);
     }
+    if (V.fx) V.fx.drawOver(ctx, 0, 0);
     // свет дня: неделя проживается от прохладного утра к закату (под землёй неба нет)
     if (!V.layer) T.applyDaylight(ctx, st.day, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    drawLights(ctx, st, items, ts);
     // туман: маска в один пиксель на клетку, растянутая со сглаживанием —
     // граница разведанного получается мягкой, а не лесенкой из квадратов
     drawFog(ctx, st, vis, x0, y0, x1, y1);
@@ -273,6 +284,7 @@
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
     if (o.type === 'artifact') { Sp.draw(ctx, 'artifact', px, py - 8, 1); return; }
     if (t.bank && o.empty) { ctx.globalAlpha = 0.55; Sp.draw(ctx, t.sprite, px, py, 1); ctx.globalAlpha = 1; return; }
+    if (o.type === 'keymaster' || o.type === 'border_guard') { const kc = H3.Quest.KEY_COLORS[o.color]; Sp.draw(ctx, t.sprite, px, py, 1, false, kc ? { r: kc.hex } : undefined); return; }
     if (t.sprite) Sp.draw(ctx, t.sprite, px, py, 1);
   }
   /** Покой существа на карте: дыхание, у летающих — парение. */
@@ -281,9 +293,100 @@
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
-    ctx.fillStyle = '#2a1a10'; ctx.fillRect(Math.round(x), Math.round(y), 1, h + 3);
-    ctx.fillStyle = color; ctx.fillRect(Math.round(x) + 1, Math.round(y), w, h - 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(Math.round(x) + 1, Math.round(y), w, 1);
+    x = Math.round(x); y = Math.round(y);
+    ctx.fillStyle = '#2a1a10'; ctx.fillRect(x, y, 1, h + 3);
+    // полотнище полощется: каждый столбец сдвинут по синусоиде, дальше от древка — сильнее
+    const ph = (x * 0.37 + y * 0.11), t = V.ts / 140;
+    ctx.fillStyle = color;
+    for (let i = 0; i < w; i++) { const dy = Math.round(Math.sin(t + ph + i * 0.9) * (i / w) * 1.6); ctx.fillRect(x + 1 + i, y + dy, 1, h - 2); }
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    for (let i = 0; i < w; i++) { const dy = Math.round(Math.sin(t + ph + i * 0.9) * (i / w) * 1.6); ctx.fillRect(x + 1 + i, y + dy, 1, 1); }
+  }
+  /* ---------- живая карта: вода, окружение, дым, огни ---------- */
+  /** Индексы водных клеток слоя — считаются один раз. */
+  function waterTiles(m, z) {
+    if (V.water[z] && V.water[z].m === m) return V.water[z].list;
+    const list = [];
+    for (let i = 0; i < m.terrain.length; i++) if (m.terrain[i] === R.TERRAIN_INDEX.water) list.push(i);
+    V.water[z] = { m, list };
+    return list;
+  }
+  /** Блики на воде: короткие светлые штрихи бегут по клетке. */
+  function drawWater(ctx, m, vis, x0, y0, x1, y1, ts) {
+    const list = waterTiles(m, V.layer); if (!list.length) return;
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    const t = ts / 1400;
+    for (const i of list) {
+      const x = i % m.w, y = (i - x) / m.w;
+      if (x < x0 || x > x1 || y < y0 || y > y1 || !vis[i]) continue;
+      const ph = (x * 0.61 + y * 0.37);
+      for (let k = 0; k < 2; k++) {
+        const f = (t + ph + k * 0.5) % 1;
+        const gx = x * TILE + f * (TILE - 8), gy = y * TILE + 6 + ((x * 7 + y * 5 + k * 9) % 18);
+        const len = 4 + Math.sin((t + ph) * Math.PI * 2 + k) * 2;
+        ctx.globalAlpha = 0.18 + 0.18 * Math.sin(f * Math.PI);
+        ctx.fillRect(Math.round(gx), Math.round(gy), Math.round(len), 1);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  /** Окружение по местности под камерой + дым над городами и шахтами. */
+  function ambient(dt) {
+    const st = V.state, fx = V.fx, view = V.view; if (!st || !view || !fx || H3.Game.settings().animSpeed === 0) return;
+    if (fx.S.p.length > 260) return;
+    const m = S.lvl(st, V.layer), vis = st.players[st.turn].vis[V.layer];
+    const k = dt / 1000, W = (view.x1 - view.x0 + 1) * TILE, X0 = view.x0 * TILE, Y0 = view.y0 * TILE, H = (view.y1 - view.y0 + 1) * TILE;
+    // считаем, какая местность в кадре преобладает, по случайной выборке клеток
+    let snow = 0, lava = 0, swamp = 0, sand = 0, grass = 0, n = 0;
+    for (let i = 0; i < 12; i++) {
+      const x = view.x0 + Math.floor(Math.random() * (view.x1 - view.x0 + 1)), y = view.y0 + Math.floor(Math.random() * (view.y1 - view.y0 + 1));
+      const idx = y * m.w + x; if (!vis[idx]) continue; n++;
+      const t = R.TERRAINS[m.terrain[idx]];
+      if (t === 'snow') snow++; else if (t === 'lava') lava++; else if (t === 'swamp') swamp++; else if (t === 'sand') sand++; else if (t === 'grass' || t === 'dirt') grass++;
+    }
+    if (!n) return;
+    const area = W * H / (640 * 480);
+    const chance = per => Math.random() < per * k * area;
+    if (snow && chance(40 * snow / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(-8, 8), vy: rnd(18, 34), ax: 0, ay: 0, ttl: 14000, life: 0, size: rnd(0.8, 1.6), color: 'rgba(255,255,255,0.85)', shape: 'dot', shrink: false, fade: false, sway: true });
+    if (lava && chance(18 * lava / n)) { const x = rnd(X0, X0 + W), y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor(x / TILE); if (R.TERRAINS[m.terrain[ti]] === 'lava' && vis[ti]) fx.add({ x, y, vx: rnd(-4, 4), vy: -rnd(8, 18), ax: 0, ay: 0, ttl: 2500, life: 0, size: rnd(0.8, 1.5), color: ['#ff9a3a', '#ff5a1f', '#f2d34c'][Math.floor(Math.random() * 3)], shape: 'dot', glow: true, shrink: true, sway: true }); }
+    if (swamp && chance(3 * swamp / n)) { const x = rnd(X0, X0 + W), y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor(x / TILE); if (R.TERRAINS[m.terrain[ti]] === 'swamp' && vis[ti]) fx.add({ x, y, vx: rnd(2, 6), vy: 0, ax: 0, ay: 0, ttl: 7000, life: 0, size: rnd(10, 18), color: 'rgba(170,200,160,0.2)', shape: 'puff', grow: 0.5 }); }
+    if (sand && chance(8 * sand / n)) { const y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor((X0 + 2) / TILE); if (vis[ti]) fx.add({ x: X0 - 4, y, vx: rnd(40, 70), vy: rnd(-2, 2), ax: 0, ay: 0, ttl: 6000, life: 0, size: 1.2, color: 'rgba(240,220,160,0.55)', shape: 'spark', shrink: false, fade: false }); }
+    if (grass && chance(2.5 * grass / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(6, 16), vy: rnd(14, 24), ax: 0, ay: 0, ttl: 14000, life: 0, size: rnd(1.2, 2), color: ['#5cb84a', '#a67c1c', '#e8792b'][Math.floor(Math.random() * 3)], shape: 'square', shrink: false, fade: false, sway: true });
+    // дым из труб: города и шахты в кадре
+    for (const id in st.objects) {
+      const o = st.objects[id]; if ((o.z || 0) !== V.layer) continue;
+      if (o.type !== 'town' && o.type !== 'mine') continue;
+      if (o.x < view.x0 || o.x > view.x1 || o.y < view.y0 || o.y > view.y1 || !vis[o.y * m.w + o.x]) continue;
+      if (!chance(o.type === 'town' ? 6 : 2.5)) continue;
+      const px = o.x * TILE + 16, py = o.y * TILE + 32;
+      const [sx, sy] = o.type === 'town' ? [px - 6 + rnd(-2, 2), py - 42] : [px + 7, py - 22];
+      fx.add({ x: sx, y: sy, vx: rnd(3, 8), vy: -rnd(6, 12), ax: 0, ay: 0, ttl: 2600, life: 0, size: rnd(2, 3.5), color: 'rgba(200,200,210,0.32)', shape: 'puff', grow: 1.6 });
+    }
+    fx.S.bounds = { w: m.w * TILE, h: m.h * TILE };
+  }
+  /** Вечером и ранним утром в окнах городов и жилищ загорается свет. */
+  function drawLights(ctx, st, items, ts) {
+    if (V.layer) return;
+    const night = NIGHT[(st.day - 1) % 7]; if (!night) return;
+    const flick = 0.85 + 0.15 * Math.sin(ts / 170);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const it of items) {
+      const o = it.o; if (!o) continue;
+      let spots = null;
+      const px = o.x * TILE + 16, py = o.y * TILE + 32;
+      if (o.type === 'town') spots = [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]];
+      else if (o.type === 'dwelling' || o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
+      else if (o.type === 'mine') spots = [[px + 1, py - 8]];
+      else if (o.type === 'keymaster') spots = [[px, py - 8]];
+      if (!spots) continue;
+      for (const [x, y] of spots) {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, 12);
+        g.addColorStop(0, 'rgba(255,200,110,' + (0.85 * night * flick).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,160,60,0)');
+        ctx.fillStyle = g; ctx.fillRect(x - 12, y - 12, 24, 24);
+        ctx.fillStyle = 'rgba(255,240,180,' + (0.95 * night).toFixed(2) + ')'; ctx.fillRect(Math.round(x) - 1, Math.round(y) - 1, 3, 2);
+      }
+    }
+    ctx.restore();
   }
   function drawHero(ctx, st, h, px, py, ts) {
     const color = st.players[h.owner].color;

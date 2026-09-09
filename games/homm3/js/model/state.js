@@ -51,7 +51,7 @@
       const fid = doc ? doc.players[i].faction : (i === 0 ? settings.faction : factions.pop());
       state.players.push({
         id: i, name: i === 0 ? (settings.name || 'Игрок') : F.PLAYER_NAMES[i] + ' лорд', color: F.PLAYER_COLORS[i], faction: fid, isAI: i > 0,
-        res: Object.assign({}, diff.res), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {},
+        res: Object.assign({}, diff.res), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {}, keys: {},
       });
     }
     if (doc) H3.MapEdit.build(state, doc); else H3.Mapgen.generate(state, size);
@@ -163,6 +163,15 @@
     return out;
   }
   /** Стоимость входа в клетку для героя (с учётом дорог, навыка, полёта). */
+  /** Заставы и стражи-квесторы рядом с клеткой: их зона контроля — как у стражей. */
+  function gatesNear(state, x, y, z) {
+    const out = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const o = inMap(state, x + dx, y + dy, z) ? objAt(state, x + dx, y + dy, z) : null;
+      if (o && H3.Objects.get(o.type).gate) out.push(o);
+    }
+    return out;
+  }
   function moveCost(state, hero, x, y) {
     const z = hero.z || 0;
     if (!inMap(state, x, y, z)) return Infinity;
@@ -198,6 +207,7 @@
     const h = heroAt(state, x, y, z);
     if (h && h.id !== hero.id) return true;
     for (const m of monstersNear(state, x, y, z)) if (m) return true;
+    if (gatesNear(state, x, y, z).length) return true;
     return false;
   }
   function pathfield(state, hero) {
@@ -206,6 +216,7 @@
       w: m.w, h: m.h, start: [hero.x, hero.y],
       cost: (x, y) => moveCost(state, hero, x, y),
       terminal: (x, y) => isTerminal(state, hero, x, y),
+      through: (x, y) => { const o = objAt(state, x, y, hero.z || 0); return !!(o && H3.Objects.get(o.type).gate); },
     });
   }
 
@@ -292,7 +303,7 @@
   H3.State = {
     lvl, resolveGoals, applyCarry, carryOf,
     VERSION, DIFFICULTY, SIZES, newGame, attachRng, syncRng, learnTownSpells,
-    idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, moveCost, isTerminal, pathfield,
+    idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, gatesNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.State;

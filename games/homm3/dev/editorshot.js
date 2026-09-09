@@ -38,6 +38,11 @@ const path = require('path');
     doc.objects.push(ME.makeObj('subter_gate', 24, 12, 0, { pair: 1 }));
     doc.objects.push(ME.makeObj('subter_gate', 24, 12, 1, { pair: 1 }));
     doc.players[1].faction = 'necropolis';
+    // квесты и ключи: провидец, застава с ключником, ящик
+    doc.objects.push(ME.makeObj('seer_hut', 20, 17, 0, { tier: 1, qctx: {} }));
+    doc.objects.push(ME.makeObj('keymaster', 6, 12, 0, { color: 'green' }));
+    doc.objects.push(ME.makeObj('border_guard', 22, 16, 0, { color: 'green' }));
+    doc.objects.push(ME.makeObj('pandora_box', 10, 18, 0, { tier: 1 }));
     E.V.prev = null; E.V.bake = [null, null]; E.V.changed = true;
     return { objects: doc.objects.length };
   });
@@ -58,6 +63,11 @@ const path = require('path');
   await page.screenshot({ path: out.replace('.png', '_under.png') });
   await page.evaluate(() => document.querySelector('[data-lay="0"]').click());
 
+  // застава без ключника — ошибка проверки
+  await page.evaluate(() => { H3.Editor.V.doc.objects.push(H3.MapEdit.makeObj('border_guard', 30, 10, 0, { color: 'purple' })); });
+  await page.click('#edCheck'); await page.waitForTimeout(300);
+  console.log('застава без ключника:', (await page.evaluate(() => document.querySelector('.modal .body').textContent)).slice(0, 90));
+  await page.evaluate(() => { H3.UI.closeTop(); const d = H3.Editor.V.doc; d.objects = d.objects.filter(o => !(o.type === 'border_guard' && o.color === 'purple')); });
   // проверка карты
   await page.click('#edCheck'); await page.waitForTimeout(300);
   console.log('проверка:', (await page.evaluate(() => document.querySelector('.modal .body').textContent)).slice(0, 160));
@@ -116,7 +126,8 @@ const path = require('path');
     const h = H3.State.heroesOf(st, 0)[0];
     const pf = H3.State.pathfield(st, h);
     return { screen: H3.Game.G.screen, players: st.players.map(p => p.faction), towns: Object.keys(st.towns).length,
-      objects: Object.keys(st.objects).length, hero: h.name + '@' + h.x + ',' + h.y, reach: pf.dist.filter(d => d < Infinity).length };
+      objects: Object.keys(st.objects).length, hero: h.name + '@' + h.x + ',' + h.y, reach: pf.dist.filter(d => d < Infinity).length,
+      quests: Object.values(st.objects).filter(o => /seer|keymaster|border|pandora/.test(o.type)).map(o => o.type + (o.color ? ':' + o.color : '') + (o.quest ? ':' + H3.Quest.text(o.quest) : '')) };
   });
   console.log('партия:', JSON.stringify(game));
   await page.screenshot({ path: out.replace('.png', '_play.png') });

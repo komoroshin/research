@@ -41,6 +41,7 @@
     h += '<div class="edsec"><h4>Местность</h4><div class="edgrid">' + R.TERRAINS.map(t => '<button class="edb terr' + (isOn('terrain', t) ? ' on' : '') + '" data-kind="terrain" data-val="' + t + '" title="' + TERRAIN_TITLES[t] + '"><i style="background:' + terrColor(t) + '"></i><span>' + TERRAIN_TITLES[t] + '</span></button>').join('') + '</div></div>';
     h += '<div class="edsec"><h4>Поверх</h4>' + b('road', '1', 'Дорога') + b('obs', '1', 'Лес') + b('obs', '2', 'Горы') + b('obs', '3', 'Камни') + '</div>';
     h += '<div class="edsec"><h4>Ключевое</h4>' + b('town', '', 'Город…', 'Город: фракция и владелец') + b('mine', '', 'Шахта…') + b('monster', '', 'Стражи…') + b('dwelling', '', 'Жилище…') + b('resource', '', 'Ресурсы…') + b('artifact', '', 'Артефакт…') + b('gate', '', 'Врата (пара)', 'Ставит врата сразу на оба слоя') + '</div>';
+    h += '<div class="edsec"><h4>Квесты и ключи</h4>' + b('seer', '', 'Провидец…', 'Хижина провидца: задание и награда') + b('questguard', '', 'Страж-квестор…', 'Проход по условию') + b('keymaster', '', 'Ключник…', 'Шатёр ключника: цвет') + b('border', '', 'Застава…', 'Пропускает с ключом цвета') + b('pandora', '', 'Ящик Пандоры…', 'Стражи и награда внутри') + '</div>';
     h += '<div class="edsec"><h4>Объекты</h4><div class="edgrid one">' + SIMPLE.map(t => b('simple', t, O.get(t).name, O.get(t).desc || O.get(t).name)).join('') + '</div></div>';
     return h;
   }
@@ -141,6 +142,15 @@
         if (!art) return;
         V.brush = { kind: 'object', type: 'artifact', opts: { art } };
       } else V.brush = { kind: 'object', type: 'artifact', opts: { art: 'random', cls } };
+    } else if (kind === 'seer' || kind === 'questguard' || kind === 'pandora') {
+      const tier = await UI.choose(kind === 'pandora' ? 'Ящик Пандоры' : 'Задание', 'Насколько сложным сделать?', [{ id: '1', label: 'Лёгкое', desc: 'для стартовой зоны' }, { id: '2', label: 'Среднее' }, { id: '3', label: 'Трудное', desc: 'для сокровищницы' }]);
+      if (!tier) return;
+      const type = kind === 'seer' ? 'seer_hut' : kind === 'questguard' ? 'quest_guard' : 'pandora_box';
+      V.brush = { kind: 'object', type, opts: { tier: +tier, qctx: { arts: V.doc.objects.filter(o => o.type === 'artifact' && o.art !== 'random').map(o => o.art), cids: V.doc.objects.filter(o => o.type === 'dwelling').map(o => o.cid) } } };
+    } else if (kind === 'keymaster' || kind === 'border') {
+      const color = await UI.choose(kind === 'keymaster' ? 'Ключник' : 'Застава', 'Какого цвета?', H3.Quest.COLOR_IDS.map(c => ({ id: c, label: H3.Quest.KEY_COLORS[c].name })));
+      if (!color) return;
+      V.brush = { kind: 'object', type: kind === 'keymaster' ? 'keymaster' : 'border_guard', opts: { color } };
     } else if (kind === 'gate') {
       V.brush = { kind: 'gate' };
     } else if (kind === 'simple') {

@@ -51,6 +51,12 @@
     bank_dwarven: { name: 'Сокровищница гномов', sprite: 'bank_dwarven', value: 5000, once: 'remove', bank: true, desc: 'Охраняется гномами. Награда: золото и кристаллы.' },
     bank_griffin: { name: 'Заповедник грифонов', sprite: 'bank_griffin', value: 12000, once: 'remove', bank: true, desc: 'Охраняется грифонами. Награда: ангелы.' },
     bank_utopia: { name: 'Утопия драконов', sprite: 'bank_utopia', value: 40000, once: 'remove', bank: true, desc: 'Охраняется драконами. Награда: 20 000 золота и 4 артефакта.' },
+    // квесты и ключи (v2.5)
+    seer_hut: { name: 'Хижина провидца', sprite: 'seer_hut', value: 3000, once: 'player', quest: true, desc: 'Даёт задание и награду за него.' },
+    quest_guard: { name: 'Страж-квестор', sprite: 'quest_guard', value: 0, once: null, quest: true, gate: true, desc: 'Перекрывает проход, пока не выполнишь его условие.' },
+    keymaster: { name: 'Шатёр ключника', sprite: 'keymaster', value: 2500, once: 'player', desc: 'Даёт ключ своего цвета — им открывают заставу того же цвета.' },
+    border_guard: { name: 'Пограничная застава', sprite: 'border_guard', value: 0, once: null, gate: true, desc: 'Пропускает только с ключом своего цвета.' },
+    pandora_box: { name: 'Ящик Пандоры', sprite: 'pandora_box', value: 4000, once: 'remove', bank: true, desc: 'Внутри награда — и стражи, которые её берегут.' },
     // препятствия (непроходимы, не взаимодействуют)
     tree: { name: 'Лес', sprite: null, obstacle: true },
     mountain: { name: 'Горы', sprite: null, obstacle: true },
@@ -71,6 +77,7 @@
     ['windmill', 3, 1], ['water_wheel', 3, 1], ['mercenary_camp', 2, 1], ['marletto_tower', 2, 1], ['shrine_1', 3, 1], ['dwelling', 5, 1], ['artifact', 4, 1], ['oasis', 2, 1],
     ['artifact', 6, 2], ['shrine_2', 3, 2], ['witch_hut', 3, 2], ['arena', 2, 2], ['star_axis', 2, 2], ['garden_revelation', 2, 2], ['tree_knowledge', 2, 2], ['dwelling', 5, 2], ['bank_crypt', 3, 2], ['bank_dwarven', 3, 2], ['hill_fort', 2, 2], ['trading_post', 2, 2], ['tavern', 2, 2], ['observatory', 2, 2],
     ['artifact', 6, 3], ['shrine_3', 3, 3], ['bank_griffin', 3, 3], ['bank_utopia', 2, 3], ['dwelling', 4, 3], ['tree_knowledge', 2, 3],
+    ['pandora_box', 3, 2], ['pandora_box', 3, 3],
   ];
 
   H3.Objects = { TYPES, get: id => TYPES[id], BANKS, TREASURE_TABLE, RES_NAMES, RES_NAMES_GEN, MINE_NAMES, MINE_INCOME };

@@ -10,11 +10,13 @@
   const U = H3.U;
 
   /**
-   * opts: { w, h, start:[x,y], cost(x,y) → число|Infinity, terminal(x,y) → bool, maxCost }
+   * opts: { w, h, start:[x,y], cost(x,y) → число|Infinity, terminal(x,y) → bool, maxCost,
+   *         through(x,y) → bool — в такую клетку можно шагнуть даже из терминальной
+   *         (застава: её зона контроля терминальна, но к самой заставе подойти надо) }
    * → { dist: Float64Array, prev: Int32Array, w, h }
    */
   function dijkstra(opts) {
-    const { w, h, start, cost, terminal } = opts;
+    const { w, h, start, cost, terminal, through } = opts;
     const maxCost = opts.maxCost || Infinity;
     const N = w * h;
     const dist = new Float64Array(N).fill(Infinity);
@@ -30,11 +32,13 @@
       done[i] = 1;
       if (p > maxCost) break;
       const x = i % w, y = (i - x) / w;
-      if (i !== s && terminal && terminal(x, y)) continue;
+      const term = i !== s && terminal && terminal(x, y);
+      if (term && !through) continue;
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
         if (!dx && !dy) continue;
         const nx = x + dx, ny = y + dy;
         if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        if (term && !through(nx, ny)) continue;
         const c = cost(nx, ny, x, y);
         if (!(c < Infinity)) continue;
         const nd = p + ((dx && dy) ? c * 1.41 : c);
