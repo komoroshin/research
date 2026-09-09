@@ -7,17 +7,6 @@
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, C = H3.Creatures, F = H3.Factions, B = H3.Buildings, SP = H3.Spells, HE = H3.Heroes, Sp = H3.Sprites, UI = H3.UI, A = H3.Adventure, O = H3.Objects;
 
-  const TINT = {
-    castle: { n: '#d8d0c0', N: '#9a9280', r: '#3b6fd4', R: '#243f8c' }, rampart: { n: '#b8a888', N: '#7a6a50', r: '#4a9a3a', R: '#2d6b2a' },
-    tower: { n: '#e8eef4', N: '#a8b8c8', r: '#5b8fd6', R: '#2f5fa0' }, inferno: { n: '#6a3a2a', N: '#3a1a10', r: '#c8332a', R: '#7a1a14' },
-    necropolis: { n: '#5a5a6a', N: '#2a2a3a', r: '#4e2a72', R: '#2a1a40' }, dungeon: { n: '#6a5a6a', N: '#3a2a3a', r: '#9a58c8', R: '#4e2a72' },
-    stronghold: { n: '#9a6a3c', N: '#5a3a1c', r: '#c88a2a', R: '#8a5a10' }, fortress: { n: '#7a8a5a', N: '#4a5a3a', r: '#4a8a5a', R: '#2a5a3a' },
-  };
-  const LAYOUT = {
-    dwell_7: [320, 118], dwell_2: [150, 128], dwell_3: [500, 128], dwell_5: [62, 178], dwell_6: [586, 180], hall: [320, 202], guild: [215, 208],
-    dwell_1: [96, 234], dwell_4: [560, 240], tavern: [180, 266], blacksmith: [470, 266], market: [330, 280], silo: [600, 296], walls: [320, 318],
-  };
-
   let cur = null; // { town, hero, tab, sel: {army, i} }
 
   function open(town) {
@@ -26,58 +15,55 @@
       const hero = town.visiting ? st.heroes[town.visiting] : null;
       cur = { town, hero, tab: 'build', sel: null, resolve };
       const wrap = UI.el('div', ''); wrap.id = 'townView';
-      const left = UI.el('div', ''); const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; pic.width = 640; pic.height = 320; left.appendChild(pic);
-      const armies = UI.el('div', 'garr'); armies.id = 'townArmies'; left.appendChild(armies);
-      const right = UI.el('div', ''); right.id = 'townRight';
-      wrap.appendChild(left); wrap.appendChild(right);
+      const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; wrap.appendChild(pic);
+      const below = UI.el('div', ''); below.id = 'townBelow';
+      const armies = UI.el('div', 'garr'); armies.id = 'townArmies'; below.appendChild(armies);
+      const right = UI.el('div', ''); right.id = 'townRight'; below.appendChild(right);
+      wrap.appendChild(below);
       cur.pic = pic; cur.right = right; cur.armies = armies;
-      pic.addEventListener('click', e => { const r = pic.getBoundingClientRect(); onPicClick((e.clientX - r.left) * 640 / r.width, (e.clientY - r.top) * 320 / r.height); });
-      pic.addEventListener('mousemove', e => { const r = pic.getBoundingClientRect(); const hit = hitBuilding((e.clientX - r.left) * 640 / r.width, (e.clientY - r.top) * 320 / r.height); if (hit) UI.tip(e.clientX, e.clientY, '<b>' + UI.esc(hit.name) + '</b>' + (hit.desc ? '<br>' + UI.esc(hit.desc) : '')); else UI.hideTip(); });
-      pic.addEventListener('mouseleave', UI.hideTip);
+      cur.scene = H3.TownScene.create(pic, town);
+      const TS = H3.TownScene;
+      const at = e => { const r = pic.getBoundingClientRect(); return [(e.clientX - r.left) * TS.W / r.width, (e.clientY - r.top) * TS.H / r.height]; };
+      pic.addEventListener('click', e => { const [x, y] = at(e); onPicClick(x, y, false); });
+      pic.addEventListener('contextmenu', e => { e.preventDefault(); const [x, y] = at(e); onPicClick(x, y, true); });
+      pic.addEventListener('mousemove', e => { const [x, y] = at(e); const hit = cur.scene.hit(x, y); cur.scene.hover = hit; if (hit) UI.tip(e.clientX, e.clientY, itemTip(hit)); else UI.hideTip(); });
+      pic.addEventListener('mouseleave', () => { UI.hideTip(); if (cur) cur.scene.hover = null; });
       UI.modal({ title: town.name + ' — ' + F.get(town.faction).name, titleRight: '<span class="small muted">' + UI.esc(F.get(town.faction).desc) + '</span>', html: wrap, wide: true,
-        buttons: [{ label: 'Закрыть', cls: 'primary', value: true }], closable: true }).then(() => { UI.hideTip(); cur = null; resolve(); });
+        buttons: [{ label: 'Закрыть', cls: 'primary', value: true }], closable: true }).then(() => { UI.hideTip(); if (cur && cur.scene) cur.scene.destroy(); cur = null; resolve(); });
       render();
+      const loop = ts => { if (!cur || cur.pic !== pic) return; cur.scene.draw(ts); requestAnimationFrame(loop); };
+      requestAnimationFrame(loop);
     });
   }
   function render() { drawPic(); renderArmies(); renderRight(); }
 
   /* ---------- картинка ---------- */
-  function buildingsOnPic() {
-    const t = cur.town, list = [];
-    const has = id => !!t.buildings[id];
-    const hall = R.townHallLevel(t); list.push({ key: 'hall', sprite: 'bld_hall_' + hall, pos: LAYOUT.hall, id: 'hall_' + (hall < 4 ? hall + 1 : 4), name: B.BY_ID['hall_' + hall].name });
-    const fl = R.fortLevel(t); if (fl) list.push({ key: 'walls', sprite: ['', 'bld_fort', 'bld_citadel', 'bld_castle'][fl], pos: LAYOUT.walls, id: fl < 3 ? ['fort', 'citadel', 'castle'][fl] : 'castle', name: B.BY_ID[['fort', 'citadel', 'castle'][fl - 1]].name, wide: true });
-    const gl = R.guildLevel(t); if (gl) list.push({ key: 'guild', sprite: 'bld_guild_' + gl, pos: LAYOUT.guild, id: 'guild', name: 'Гильдия магов ' + ['', 'I', 'II', 'III', 'IV'][gl], tab: 'guild' });
-    for (const id of ['tavern', 'market', 'blacksmith', 'silo']) if (has(id)) list.push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], id, name: B.BY_ID[id].name, tab: id === 'tavern' ? 'tavern' : id === 'market' ? 'market' : id === 'blacksmith' ? 'smith' : null });
-    for (let i = 1; i <= 7; i++) if (has('dwell_' + i)) { const b = B.get(t.faction, 'dwell_' + i); list.push({ key: 'dwell_' + i, sprite: 'bld_dwell_' + i, pos: LAYOUT['dwell_' + i], id: 'dwell_' + i, name: b.name + (has('dwell_up_' + i) ? ' (улучш.)' : ''), desc: C.get(has('dwell_up_' + i) ? F.creaturesOf(t.faction, i)[1].id : b.creature).name + ': доступно ' + t.avail[i - 1], tab: 'recruit', upg: has('dwell_up_' + i) }); }
-    return list;
+  function drawPic() { if (cur && cur.scene) cur.scene.rebuild(); }
+  function itemTip(it) {
+    let s = '<b>' + UI.esc(it.name) + '</b>';
+    if (it.desc) s += '<br>' + UI.esc(it.desc);
+    if (it.ghost) s += '<br>' + (it.ghost.ok ? '<span class="green">Клик — построить за</span> ' : '<span class="red">' + UI.esc(it.ghost.reason) + '</span> · ') + UI.costHtml(it.ghost.cost, H3.Game.state.players[cur.town.owner].res);
+    else if (it.upgrade) s += '<br><span class="muted">ПКМ — ' + UI.esc(it.upgrade.name) + ': </span>' + UI.costHtml(it.upgrade.cost, H3.Game.state.players[cur.town.owner].res) + (it.upgrade.ok ? '' : ' <span class="red">' + UI.esc(it.upgrade.reason) + '</span>');
+    if (it.tab && !it.ghost) s += '<br><span class="muted">клик — ' + ({ build: 'стройка', recruit: 'найм', guild: 'гильдия', tavern: 'таверна', market: 'рынок', smith: 'кузница' })[it.tab] + '</span>';
+    return s;
   }
-  function drawPic() {
-    const t = cur.town, cv = cur.pic, ctx = cv.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
-    const terrain = F.get(t.faction).terrain, st = H3.Terrain.STYLE[terrain];
-    const sky = { grass: ['#4d8fe0', '#bcdcf7'], snow: ['#7a9ac0', '#e8f0f8'], lava: ['#2a1010', '#8a3a20'], dirt: ['#4a4a6a', '#b8b0a0'], subter: ['#1a1220', '#4a3a58'], rough: ['#6a88b0', '#d8d0b8'], swamp: ['#4a6a5a', '#a8b898'], sand: ['#7fb6e8', '#f2e4c0'] }[terrain] || ['#4d8fe0', '#bcdcf7'];
-    const g = ctx.createLinearGradient(0, 0, 0, 200); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, 640, 320);
-    const rng = new U.RNG(U.hashStr(t.name));
-    ctx.fillStyle = st.base[1]; ctx.beginPath(); ctx.moveTo(0, 150); for (let x = 0; x <= 640; x += 32) ctx.lineTo(x, 130 + Math.sin(x / 70) * 14 + rng.int(-4, 4)); ctx.lineTo(640, 320); ctx.lineTo(0, 320); ctx.fill();
-    ctx.fillStyle = st.base[0]; ctx.fillRect(0, 150, 640, 170);
-    for (let i = 0; i < 500; i++) { ctx.fillStyle = rng.pick(st.spec); ctx.fillRect(rng.int(0, 640), rng.int(150, 320), rng.int(1, 3), 1); }
-    const tint = TINT[t.faction];
-    const list = buildingsOnPic().slice().sort((a, b) => a.pos[1] - b.pos[1]);
-    for (const b of list) {
-      if (b.wide) { ctx.fillStyle = tint.n; ctx.fillRect(0, 318 - 56, 640, 56); ctx.fillStyle = tint.N; for (let x = 0; x < 640; x += 16) ctx.fillRect(x, 318 - 56, 8, 8); }
-      Sp.draw(ctx, b.sprite, b.pos[0], b.pos[1], 2, false, tint);
-      if (b.upg) Sp.draw(ctx, 'bld_upg', b.pos[0] + 20, b.pos[1] - 60, 2);
-    }
-    // флаг владельца на ратуше
-    const p = H3.Game.state.players[t.owner]; if (p) H3.AdvView.drawFlag(ctx, LAYOUT.hall[0] + 2, LAYOUT.hall[1] - 100, p.color);
+  async function buildNow(b) {
+    const st = H3.Game.state, t = cur.town;
+    if (!b.ok) { UI.toast(b.reason, 'warn'); return; }
+    const ok = await UI.confirm('Построить', 'Построить «' + UI.esc(b.name) + '» за ' + UI.costHtml(b.cost) + '?', 'Построить', 'Отмена');
+    if (!ok || !cur) return;
+    const r = R.build(st, t, b.id);
+    if (r.ok) { H3.Audio.play('build'); UI.toast('Построено: ' + b.name); if (cur.hero) S.learnTownSpells(st, cur.hero, t); render(); H3.Game.refresh(false); }
+    else UI.toast(r.reason, 'warn');
   }
-  function hitBuilding(x, y) {
-    const list = buildingsOnPic().slice().sort((a, b) => b.pos[1] - a.pos[1]);
-    for (const b of list) { const cv = Sp.render(b.sprite, 2); if (!cv) continue; const w = cv.width, h = cv.height; const bx = b.pos[0] - w / 2, by = b.pos[1] - h; if (b.wide ? (y >= 318 - 56) : (x >= bx && x <= bx + w && y >= by && y <= b.pos[1])) return b; }
-    return null;
+  function onPicClick(x, y, alt) {
+    const it = cur.scene.hit(x, y); if (!it) return;
+    H3.Audio.play('click');
+    if (it.ghost) { buildNow(it.ghost); return; }
+    if (alt && it.upgrade) { buildNow(it.upgrade); return; }
+    if (it.tab) { cur.tab = it.tab; renderRight(); return; }
+    if (it.upgrade) buildNow(it.upgrade);
   }
-  function onPicClick(x, y) { const b = hitBuilding(x, y); if (!b) return; H3.Audio.play('click'); if (b.tab) { cur.tab = b.tab; renderRight(); } else if (b.key === 'hall' || b.key === 'walls') { cur.tab = 'build'; renderRight(); } }
 
   /* ---------- армии ---------- */
   function renderArmies() {
@@ -250,5 +236,5 @@
     draw();
   }
 
-  H3.TownView = { open, marketUI, TINT, LAYOUT };
+  H3.TownView = { open, marketUI, TINT: H3.TownScene.TINT, LAYOUT: H3.TownScene.LAYOUT };
 })(typeof window !== 'undefined' ? window : globalThis);
