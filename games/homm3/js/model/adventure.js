@@ -840,9 +840,13 @@
     checkGoals(state);
     const alive = state.players.filter(p => p.alive);
     if (state.winner === null) {
-      // страховка на случай, если целей нет: обычная победа «остался один»
+      // страховка на случай, если целей нет: обычная победа «остался один».
+      // Но если сценарий требует другого (все города, артефакт, казна) — выбывание противников победы не даёт:
+      // их города стали нейтральными, и их всё ещё нужно взять.
+      const goals = state.goals || DEFAULT_GOALS;
+      const killAllWins = goals.win.some(g => g.type === 'kill_all');
       if (!state.players[0].alive) state.winner = alive.length ? alive[0].id : -1;
-      else if (alive.length === 1) state.winner = 0;
+      else if (alive.length === 1 && killAllWins) { state.winner = 0; state.endReason = GOAL_TEXT.kill_all(); }
     }
   }
 
