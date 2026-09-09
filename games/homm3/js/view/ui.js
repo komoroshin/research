@@ -36,7 +36,8 @@
       bg._close = close; box._close = close; bg._opts = opts;
       if (opts.onOpen) opts.onOpen(box, close);
       if (opts.closable !== false) bg.addEventListener('pointerdown', e => { if (e.target === bg && opts.closable !== false) close(opts.cancelValue !== undefined ? opts.cancelValue : null); });
-      const first = actions.querySelector('button.primary') || actions.querySelector('button'); if (first) setTimeout(() => first.focus(), 0);
+      // фокус на кнопку — без прокрутки: иначе длинное окно (город) на телефоне уезжает к нижней кнопке
+      const first = actions.querySelector('button.primary') || actions.querySelector('button'); if (first) setTimeout(() => { try { first.focus({ preventScroll: true }); } catch (e) { first.focus(); } }, 0);
     });
   }
   function closeTop(value) { const bg = stack[stack.length - 1]; if (bg && bg._opts.closable !== false) bg._close(value === undefined ? null : value); }

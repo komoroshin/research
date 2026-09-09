@@ -18,7 +18,12 @@
       const picWrap = UI.el('div', ''); picWrap.id = 'townPicWrap';
       const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; picWrap.appendChild(pic); wrap.appendChild(picWrap);
       // на телефоне сцена шире экрана — показываем её середину
-      setTimeout(() => { if (picWrap.scrollWidth > picWrap.clientWidth) picWrap.scrollLeft = (picWrap.scrollWidth - picWrap.clientWidth) / 2; }, 0);
+      setTimeout(() => {
+        if (picWrap.scrollWidth <= picWrap.clientWidth + 8) return;
+        picWrap.scrollLeft = (picWrap.scrollWidth - picWrap.clientWidth) / 2;
+        let seen = false; try { seen = !!localStorage.getItem('homm3.hint.townpan'); localStorage.setItem('homm3.hint.townpan', '1'); } catch (e) { /* ignore */ }
+        if (!seen) UI.toast('Сцену города можно двигать пальцем ⟷');
+      }, 0);
       const below = UI.el('div', ''); below.id = 'townBelow';
       const armies = UI.el('div', 'garr'); armies.id = 'townArmies'; below.appendChild(armies);
       const right = UI.el('div', ''); right.id = 'townRight'; below.appendChild(right);
@@ -29,9 +34,15 @@
       const at = e => { const r = pic.getBoundingClientRect(); return [(e.clientX - r.left) * TS.W / r.width, (e.clientY - r.top) * TS.H / r.height]; };
       let lastTouch = false, pressTimer = null, pressed = null;
       pic.addEventListener('pointerdown', e => { lastTouch = e.pointerType === 'touch'; pressed = [e.clientX, e.clientY]; if (lastTouch) { clearTimeout(pressTimer); pressTimer = setTimeout(() => { const [x, y] = at(e); const it = cur && cur.scene.hit(x, y); pressed = null; if (it) UI.alert(it.name, itemTip(it), it.sprite); }, 550); } });
-      pic.addEventListener('pointermove', e => { if (pressed && Math.hypot(e.clientX - pressed[0], e.clientY - pressed[1]) > 8) { clearTimeout(pressTimer); pressed = null; } });
+      // палец поехал — это панорама сцены, а не тап: двигаем прокрутку сами (если браузер не сделал этого раньше)
+      let dragging = null;
+      pic.addEventListener('pointermove', e => {
+        if (pressed && Math.hypot(e.clientX - pressed[0], e.clientY - pressed[1]) > 8) { clearTimeout(pressTimer); if (lastTouch) dragging = { x: e.clientX, sl: picWrap.scrollLeft, from: pressed[0] }; pressed = null; }
+        if (dragging) { picWrap.scrollLeft = dragging.sl - (e.clientX - dragging.from); }
+      });
+      pic.addEventListener('pointerup', () => { dragging = null; });
       pic.addEventListener('pointerup', () => { clearTimeout(pressTimer); });
-      pic.addEventListener('pointercancel', () => { clearTimeout(pressTimer); pressed = null; });
+      pic.addEventListener('pointercancel', () => { clearTimeout(pressTimer); pressed = null; dragging = null; });
       pic.addEventListener('click', e => { if (!pressed && lastTouch) return; pressed = null; const [x, y] = at(e); if (lastTouch) touchSheet(x, y); else onPicClick(x, y, false); });
       pic.addEventListener('contextmenu', e => { e.preventDefault(); if (lastTouch) return; const [x, y] = at(e); onPicClick(x, y, true); });
       pic.addEventListener('mousemove', e => { const [x, y] = at(e); const hit = cur.scene.hit(x, y); cur.scene.hover = hit; if (hit) UI.tip(e.clientX, e.clientY, itemTip(hit)); else UI.hideTip(); });
@@ -39,6 +50,7 @@
       UI.modal({ title: town.name + ' — ' + F.get(town.faction).name, titleRight: '<span class="small muted">' + UI.esc(F.get(town.faction).desc) + '</span>', html: wrap, wide: true,
         buttons: [{ label: 'Закрыть', cls: 'primary', value: true }], closable: true }).then(() => { UI.hideTip(); if (cur && cur.scene) cur.scene.destroy(); cur = null; resolve(); });
       render();
+      // на узком экране сцена шире окна — подсказываем один раз, что её можно двигать
       const loop = ts => { if (!cur || cur.pic !== pic) return; cur.scene.draw(ts); requestAnimationFrame(loop); };
       requestAnimationFrame(loop);
     });
