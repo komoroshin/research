@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.2.1';
+  const VERSION = '3.3';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -159,6 +159,7 @@
           html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
             + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? '✔ пройден' : open ? '' : 'закрыт') + '</span></div>'
             + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
+            + (i ? '<div class="small muted">Переходит из прошлого: ' + UI.esc(H3.Campaign.carryText(sc)) + '</div>' : '')
             + (open ? '<button class="' + (done ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
             + '</div>';
         });
@@ -182,6 +183,7 @@
       name: 'Игрок', hero: sc.hero || null,
       goals: JSON.parse(JSON.stringify(sc.goals)),
       carryHero: idx > 0 ? st.carry : null,
+      carry: sc.carry || null,
       campaign: { id: cid, scenario: sid },
     });
     newGame(opts);
@@ -572,7 +574,7 @@
     let extra = html;
     if (camp) {
       extra += '<div class="parch"><p><b>Сценарий пройден.</b>' + (camp.hero ? ' ' + UI.esc(camp.hero.name) + ' (' + camp.hero.level + ' ур.) переходит в следующий сценарий вместе с армией и артефактами.' : '') + '</p>'
-        + (camp.next ? '<p>Дальше: <b>' + UI.esc(camp.next.name) + '</b> — ' + UI.esc(camp.next.brief) + '</p>' : '<p>Кампания <b>«' + UI.esc(camp.camp.name) + '»</b> пройдена целиком. Поздравляем!</p>') + '</div>';
+        + (camp.next ? '<p>Дальше: <b>' + UI.esc(camp.next.name) + '</b> — ' + UI.esc(camp.next.brief) + '</p><p class="small">Переходит: ' + UI.esc(H3.Campaign.carryText(camp.next)) + '.</p>' : '<p>Кампания <b>«' + UI.esc(camp.camp.name) + '»</b> пройдена целиком. Поздравляем!</p>') + '</div>';
     }
     const buttons = camp && camp.next ? [{ value: 'next', label: 'Следующий сценарий', cls: 'primary' }, { value: 'menu', label: 'В меню' }]
       : [{ value: 'menu', label: 'В меню', cls: 'primary' }];
