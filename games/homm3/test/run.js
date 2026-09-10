@@ -712,6 +712,38 @@ test('кампания: перенос героя между сценариям�
   assert.ok(st4.goals.lose.some(g => g.type === 'lose_hero' && g.heroId != null), 'цель «не потерять героя» привязана к герою');
 });
 
+test('противник с городом не сдаётся сам: победу дают только за взятые города', () => {
+  const A = H3.Adventure;
+  const st = S.newGame({ size: 'M', seed: 1205, opponents: 2, difficulty: 'normal', faction: 'necropolis',
+    goals: { win: [{ type: 'kill_all' }], lose: [{ type: 'lose_all' }] } });
+  // игрок берёт один вражеский город и становится многократно сильнее остальных
+  const foeTown = Object.values(st.towns).find(t => t.owner > 0);
+  A.captureTown(st, foeTown, 0, S.heroesOf(st, 0)[0]);
+  const me = S.heroesOf(st, 0)[0];
+  me.army = [{ cid: 'bone_dragon', n: 30 }, { cid: 'vampire_lord', n: 40 }, null, null, null, null, null];
+  const rivals = st.players.filter(p => p.id !== 0 && p.alive && p.towns.length);
+  assert.ok(rivals.length, 'хотя бы у одного противника остался город');
+  const owned = rivals.map(p => p.towns.length);
+  for (let d = 0; d < 8; d++) A.newDay(st);
+  rivals.forEach((p, i) => {
+    assert.equal(p.alive, true, 'противник с городом остался в игре');
+    assert.equal(p.towns.length, owned[i], 'города не перешли игроку сами');
+  });
+  assert.equal(st.winner, null, 'победу за чужую слабость не присуждают');
+});
+
+test('противник без городов выбывает через семь дней', () => {
+  const A = H3.Adventure;
+  const st = S.newGame({ size: 'S', seed: 5, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const foe = st.players[1];
+  for (const tid of foe.towns.slice()) st.towns[tid].owner = -1;
+  foe.towns = [];
+  for (let d = 0; d < 6; d++) A.newDay(st);
+  assert.equal(foe.alive, true, 'шесть дней без города — ещё в игре');
+  A.newDay(st);
+  assert.equal(foe.alive, false, 'седьмой день без города — выбывает');
+});
+
 test('кампании: каждый сценарий генерируется, противники и цели — по сценарию', () => {
   const CP = H3.Campaign, B = H3.Buildings, AR = H3.Artifacts;
   assert.ok(CP.LIST.length >= 2, 'две кампании');
