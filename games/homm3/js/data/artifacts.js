@@ -48,6 +48,30 @@
   ];
   const BY_ID = Object.create(null);
   LIST.forEach(x => { BY_ID[x.id] = x; });
+
+  /* Сборные наборы: собранный комплект даёт эффект сверх суммы частей.
+     Части — обычные артефакты, поэтому набор собирается по ходу партии сам собой и даёт
+     вторую цель кроме захвата городов: искать недостающее. */
+  const SETS = [
+    { id: 'gnoll', name: 'Наследие гноллов', parts: ['gnoll_flail', 'gnoll_buckler'], fx: { att: 1, def: 1, morale: 1 }, desc: '+1 к атаке, защите и морали' },
+    { id: 'fortune', name: 'Дары фортуны', parts: ['badge_courage', 'clover_fortune', 'pendant_courage'], fx: { morale: 2, luck: 2 }, desc: '+2 к морали и удаче' },
+    { id: 'rider', name: 'Снаряжение всадника', parts: ['boots_speed', 'equestrian_gloves', 'cape_velocity'], fx: { move: 500, speed: 1 }, desc: '+500 очков движения, +1 к скорости существ' },
+    { id: 'damned', name: 'Доспехи проклятого', parts: ['blackshard', 'shield_yawning_dead', 'skull_helmet', 'rib_cage'], fx: { att: 2, def: 2, enemyMorale: -1 }, desc: '+2 к атаке и защите, −1 мораль врагу' },
+    { id: 'titan', name: 'Регалии титана', parts: ['titan_gladius', 'sentinel_shield', 'titan_cuirass', 'helm_enlightenment'], fx: { att: 3, def: 3, pow: 3, kno: 3 }, desc: '+3 ко всем навыкам' },
+  ];
+  const SET_BY_ID = Object.create(null);
+  const SET_OF = Object.create(null);
+  SETS.forEach(st => { SET_BY_ID[st.id] = st; st.parts.forEach(id => { SET_OF[id] = st.id; }); });
+  /** Наборы, части которых надеты на герое: [{ set, worn, complete }]. Рюкзак не считается. */
+  function setsOf(hero) {
+    const worn = {};
+    for (const slot in hero.arts) { const sid = SET_OF[hero.arts[slot]]; if (sid) (worn[sid] = worn[sid] || []).push(hero.arts[slot]); }
+    return Object.keys(worn).map(sid => {
+      const set = SET_BY_ID[sid];
+      const uniq = set.parts.filter(id => worn[sid].includes(id));
+      return { set, worn: uniq, complete: uniq.length === set.parts.length };
+    });
+  }
   const CLASS_VALUE = { treasure: 2000, minor: 5000, major: 10000, relic: 20000 };
   const CLASS_NAMES = { treasure: 'Сокровище', minor: 'Малый', major: 'Большой', relic: 'Реликвия' };
   const SLOTS = ['helm', 'neck', 'cape', 'weapon', 'shield', 'armor', 'ring1', 'ring2', 'boots', 'misc1', 'misc2'];
@@ -60,6 +84,6 @@
   }
   function byClass(cls) { return LIST.filter(x => x.cls === cls); }
 
-  H3.Artifacts = { LIST, BY_ID, get: id => BY_ID[id], CLASS_VALUE, CLASS_NAMES, SLOTS, SLOT_NAMES, slotsFor, byClass };
+  H3.Artifacts = { LIST, BY_ID, get: id => BY_ID[id], SETS, SET_BY_ID, SET_OF, setsOf, CLASS_VALUE, CLASS_NAMES, SLOTS, SLOT_NAMES, slotsFor, byClass };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Artifacts;
 })(typeof window !== 'undefined' ? window : globalThis);

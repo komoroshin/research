@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.1';
+  const VERSION = '3.2';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -333,7 +333,15 @@
   async function handleStop(hero, stop) {
     const st = G.state;
     if (stop.kind === 'nomove') { UI.toast('Очки движения закончились', 'warn'); return; }
-    if (stop.kind === 'town') { if (stop.town.owner === hero.owner) await openTown(stop.town); return; }
+    if (stop.kind === 'town') {
+      if (stop.town.owner === hero.owner) {
+        // подарок особой постройки за первый визит показываем до окна города
+        const g = st.lastGift; st.lastGift = null;
+        if (g) { H3.Audio.play('levelup'); await UI.alert(g.name, '<p>' + UI.esc(g.text) + '</p>'); }
+        await openTown(stop.town);
+      }
+      return;
+    }
     if (stop.kind === 'hero') { await HV.open(hero, stop.hero); return; }
     if (stop.kind === 'enemyHero') {
       const e = stop.hero; const tw = A.townOfHero(st, e);
@@ -505,7 +513,7 @@
   }
 
   /* ---------- экраны города и героя ---------- */
-  async function openTown(town) { if (town.owner !== G.state.turn) return; await TV.open(town); AV.invalidate(); refresh(false); }
+  async function openTown(town, tab) { if (town.owner !== G.state.turn) return; await TV.open(town, tab); AV.invalidate(); refresh(false); }
   async function openHero(hero) { await HV.open(hero); refresh(false); }
   function openSpellbook() { const h = selected(); if (!h) { UI.toast('Выберите героя'); return; } HV.spellbook(h); }
 
@@ -657,6 +665,7 @@
     else if (k === 'arrowdown' || k === 's') { cam.y += step; AV.V.dirty = true; }
     else if (k === 'e' || k === 'enter') endTurn();
     else if (k === 'h') nextHero();
+    else if (k === 'k') H3.Kingdom.open();
     else if (k === 't') { const h = selected(); const t = (h && A.townOfHero(G.state, h)) || S.townsOf(G.state, G.state.turn)[0]; if (t) openTown(t); }
     else if (k === 'c') openSpellbook();
     else if (k === 'm') AV.toggleMini();

@@ -23,7 +23,15 @@
     const w = cur.wrap; w.innerHTML = '';
     w.appendChild(heroColumn(cur.hero, 0));
     if (cur.other) w.appendChild(heroColumn(cur.other, 1));
+    checkSets();
     H3.Game.refresh(false);
+  }
+  /** Собранный набор — событие: о нём говорим один раз, когда он сложился. */
+  function checkSets() {
+    const done = {};
+    for (const h of [cur.hero, cur.other]) if (h) for (const st of AR.setsOf(h)) if (st.complete) done[h.id + ':' + st.set.id] = st.set;
+    if (cur.setsDone) for (const k in done) if (!cur.setsDone[k]) { H3.Audio.play('levelup'); UI.toast('Набор собран: ' + done[k].name + ' — ' + done[k].desc, 'good'); }
+    cur.setsDone = done;
   }
   const sign = v => (v > 0 ? '+' : '') + v;
   const partsText = (parts, none) => parts.length ? parts.map(p => p[0] + ' ' + sign(p[1])).join('<br>') : none;
@@ -42,6 +50,7 @@
       + '<div class="small muted">Армия · ' + (exch ? 'тап — выбрать, второй тап — переместить к любому герою' : 'тап — выбрать, второй тап — переместить; долгое нажатие — сведения') + '</div>' + UI.armyHtml(h.army, selHere ? cur.sel.i : -1)
       + (selHere ? UI.selBarHtml(h.army[cur.sel.i], cur.split) : '')
       + '<div class="small muted">Артефакты · тап — снять, из рюкзака — надеть; долгое нажатие — описание</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
+      + setsHtml(h)
       + machinesHtml(h)
       + '<div class="small muted">Рюкзак</div><div class="artslots" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>'
       + (exch || !h.spells.length ? '' : '<div class="small muted">Заклинания · тап — книга</div><div class="hrow" data-book>' + h.spells.map(id => '<span class="chip">' + UI.icon('sp_' + id, 1) + ' ' + UI.esc(SP.get(id).name) + '</span>').join('') + '</div>');
@@ -57,11 +66,25 @@
     const bm = col.querySelector('[data-mor]'); if (bm) bm.onclick = () => UI.alert('Мораль ' + sign(mor.value), partsText(mor.parts, 'Нет модификаторов.'), 'ic_morale');
     const bl = col.querySelector('[data-luck]'); if (bl) bl.onclick = () => UI.alert('Удача ' + sign(luck.value), partsText(luck.parts, 'Нет модификаторов.'), 'ic_luck');
     const bk = col.querySelector('[data-book]'); if (bk) bk.onclick = () => spellbook(h);
+    col.querySelectorAll('[data-set]').forEach(b => { b.onclick = () => setInfo(h, b.dataset.set); });
     const btns = UI.el('div', 'row wrap hbtns');
     const b1 = UI.el('button', 'sm', UI.icon('ic_spellbook') + ' Книга заклинаний'); b1.onclick = () => spellbook(h); btns.appendChild(b1);
     if (!exch) { const b2 = UI.el('button', 'sm danger', 'Распустить героя'); b2.onclick = async () => { if (await UI.confirm('Распустить', 'Распустить героя ' + UI.esc(h.name) + '? Армия и артефакты будут потеряны.')) { A.dismissHero(H3.Game.state, h); UI.closeTop(); H3.Game.selectHero(null); H3.Game.refresh(true); } }; btns.appendChild(b2); }
     col.appendChild(btns);
     return col;
+  }
+  /** Надетые части сборных наборов: сколько собрано и чего не хватает. */
+  function setsHtml(h) {
+    const list = AR.setsOf(h); if (!list.length) return '';
+    return '<div class="small muted">Наборы</div><div class="hrow">' + list.map(st =>
+      '<button class="chip' + (st.complete ? ' done' : '') + '" data-set="' + st.set.id + '">' + (st.complete ? '★ ' : '') + UI.esc(st.set.name) + ' ' + st.worn.length + '/' + st.set.parts.length + '</button>').join('') + '</div>';
+  }
+  function setInfo(h, sid) {
+    const set = AR.SET_BY_ID[sid]; if (!set) return;
+    const worn = Object.keys(h.arts).map(k => h.arts[k]);
+    const rows = set.parts.map(id => { const a = AR.get(id); const has = worn.includes(id); return '<div class="' + (has ? 'green' : 'muted') + '">' + (has ? '✔ ' : '□ ') + UI.esc(a.name) + '</div>'; }).join('');
+    const done = set.parts.every(id => worn.includes(id));
+    UI.alert(set.name, '<div class="parch"><p><b>' + UI.esc(set.desc) + '</b>' + (done ? ' <span class="green">— набор собран</span>' : ' <span class="muted">— пока не собран</span>') + '</p>' + rows + '</div>');
   }
   /** Боевые машины героя (покупаются в кузнице). */
   function machinesHtml(h) {

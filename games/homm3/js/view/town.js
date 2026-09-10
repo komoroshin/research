@@ -9,11 +9,11 @@
 
   let cur = null; // { town, hero, tab, sel: {army, i} }
 
-  function open(town) {
+  function open(town, tab) {
     return new Promise(resolve => {
       const st = H3.Game.state;
       const hero = town.visiting ? st.heroes[town.visiting] : null;
-      cur = { town, hero, tab: 'build', sel: null, split: 0, resolve };
+      cur = { town, hero, tab: tab || 'build', sel: null, split: 0, resolve };
       const wrap = UI.el('div', ''); wrap.id = 'townView';
       const picWrap = UI.el('div', ''); picWrap.id = 'townPicWrap';
       const pic = UI.el('canvas', 'px'); pic.id = 'townPic'; picWrap.appendChild(pic); wrap.appendChild(picWrap);

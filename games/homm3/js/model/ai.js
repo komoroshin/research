@@ -144,6 +144,7 @@
         if (b.id === 'market') return 1600;
         if (b.id === 'blacksmith') return 1400;
         if (b.id === 'silo') return 1200;
+        if (b.id === 'special') return 3000;   // особая постройка фракции окупается лучше складов
         if (b.id === 'shipyard') return 600;
         return 500;
     }

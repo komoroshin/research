@@ -34,7 +34,7 @@
   const LAYOUT = {
     dwell_7: [480, 150], dwell_5: [120, 216], dwell_6: [845, 218], dwell_2: [250, 176], dwell_3: [715, 178],
     hall: [480, 262], guild: [318, 268], dwell_1: [160, 300], dwell_4: [810, 302],
-    tavern: [280, 344], blacksmith: [690, 344], market: [500, 352], silo: [900, 372], shipyard: [70, 372], walls: [480, 398],
+    tavern: [280, 344], blacksmith: [690, 344], market: [500, 352], silo: [900, 372], shipyard: [70, 372], special: [620, 300], walls: [480, 398],
   };
   const NIGHT = [0.45, 0.1, 0, 0, 0, 0.55, 0.95];
 
@@ -146,6 +146,12 @@
         const tab = id === 'tavern' ? 'tavern' : id === 'market' ? 'market' : id === 'blacksmith' ? 'smith' : null;
         if (has(id)) push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], name: B.BY_ID[id].name, tab, smoke: id === 'blacksmith' || id === 'tavern' });
         else push({ key: id, sprite: 'bld_' + id, pos: LAYOUT[id], name: B.BY_ID[id].name, ghost: next(id) });
+      }
+      // особая постройка фракции: то, ради чего играют именно за неё
+      const spb = B.get(t.faction, 'special');
+      if (spb) {
+        if (has('special')) push({ key: 'special', sprite: 'bld_special', pos: LAYOUT.special, name: spb.name, desc: spb.desc, tab: 'build', magic: true, smoke: false });
+        else push({ key: 'special', sprite: 'bld_special', pos: LAYOUT.special, name: spb.name, desc: spb.desc, ghost: next('special') });
       }
       if (has('shipyard')) push({ key: 'shipyard', sprite: 'shipyard', pos: LAYOUT.shipyard, name: 'Верфь', tab: 'smith', tint: null });
       else if (!opts.static && R.canBuild(stt, t, 'shipyard').ok) push({ key: 'shipyard', sprite: 'shipyard', pos: LAYOUT.shipyard, name: 'Верфь', ghost: next('shipyard'), tint: null });

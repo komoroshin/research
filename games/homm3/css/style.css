@@ -219,6 +219,7 @@ table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabula
 .chip, button.chip { display: inline-flex; align-items: center; gap: 4px; background: #0006; border: 1px solid #000; border-radius: 3px; padding: 4px 8px; font-size: 12px; color: var(--text); font-family: var(--font-b); text-shadow: none; box-shadow: none; min-height: 32px; }
 button.chip { cursor: pointer; } button.chip:hover { border-color: var(--gold); background: #0008; }
 .chip img { width: 16px; height: 16px; }
+.chip.done { border-color: #4a7a30; background: #1a2a1080; color: #9be07f; }
 .selbar { background: #1a2a1080; border: 1px solid #4a7a30; border-radius: 3px; padding: 4px 6px; margin-top: 4px; }
 .selbar .grow { min-width: 0; }
 .hbtns { margin-top: 4px; }
@@ -373,6 +374,15 @@ canvas.finale { width: 100%; max-width: 480px; height: auto; align-self: center;
 @media (prefers-reduced-motion: reduce) {
   .modal, .modal-bg, .screen:not(.hidden), #resbar span b { animation: none !important; }
 }
+
+/* ---------- королевство ---------- */
+.kingdom { display: flex; flex-direction: column; gap: 6px; }
+.kres { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.kres span { display: flex; flex-direction: column; align-items: center; background: #0006; border: 1px solid #000; border-radius: 3px; padding: 3px 1px; font-size: 12px; }
+.kres b { color: var(--gold2); font-weight: normal; }
+.kres i { font-style: normal; font-size: 10px; color: #9be07f; }
+.kcard { background: #0005; border: 1px solid #000; border-radius: 4px; padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; }
+.kingdom h4 { margin-top: 6px; }
 
 /* ---------- кампания ---------- */
 .camp { display: grid; gap: 8px; margin: 6px 0 10px; }
