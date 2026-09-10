@@ -694,7 +694,6 @@
       weeklySpecials(state);
     } else S.addLog(state, S.dateStr(state.day) + '.', 'day');
     for (const p of state.players) if (p.alive) S.computeVisibility(state, p.id);
-    checkCapitulation(state);
     checkPlayersAlive(state);
   }
   /** Понедельник: Мистический пруд приносит редкий ресурс, Портал призыва собирает внешние жилища. */
@@ -737,21 +736,10 @@
     for (const t of S.townsOf(state, pid)) v += R.armyPower(t.garrison, null);
     return v;
   }
-  function checkCapitulation(state) {
-    const human = state.players[0]; if (!human.alive) return;
-    const hp = playerPower(state, 0);
-    for (const p of state.players) {
-      if (!p.isAI || !p.alive) continue;
-      const weak = (!p.towns.length) || (p.towns.length && human.towns.length >= 2 && playerPower(state, p.id) < 0.2 * hp);
-      p.weakDays = weak ? (p.weakDays || 0) + 1 : 0;
-      if (p.weakDays >= 3 && !p.towns.length) { eliminate(state, p, 'капитуляция'); }
-      else if (p.weakDays >= 3) {
-        for (const tid of p.towns.slice()) captureTown(state, state.towns[tid], 0, null);
-        eliminate(state, p, 'капитуляция');
-        S.addLog(state, p.name + ' капитулировал: его города переходят вам!', 'good');
-      }
-    }
-  }
+  /* Автоматической капитуляции больше нет. Правило «слабый ИИ через три дня отдаёт свои города»
+     дописывало игроку чужие владения и обрывало сценарий: в финале кампании хватало взять один
+     замок из трёх, чтобы получить победу «победить всех». Город, который держит противник, теперь
+     нужно брать самому; противник без городов выбывает по общему правилу — семь дней без города. */
   /* ---------- предохранитель застав ----------
      Клетки, куда игрок может дойти, если побеждать всех стражей, но не
      открывать застав и стражей-квесторов. Врата в подземелье проходятся. */
