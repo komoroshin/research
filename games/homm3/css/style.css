@@ -284,6 +284,7 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
   .seg.full { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; } .seg.full button { padding: 6px 3px; white-space: normal; font-size: 13px; }
   /* экраны меню во весь экран, шапка и низ учитывают вырез и полосу жестов */
   .mscreen { width: 100%; height: 100%; max-height: none; border: 0; border-radius: 0; box-shadow: none; }
+  .mscreen::after { display: none; }
   .mhead { padding-top: calc(8px + env(safe-area-inset-top)); }
   .mfoot { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   .mscreen.main .mbody { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
@@ -300,7 +301,7 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
   #battleBar .row.wrap { width: 100%; } #battleLog { width: 100%; order: -1; font-size: 11px; }
   /* окна — нижние листы: прижаты к низу, кнопки всегда под пальцем */
   .modal-bg { align-items: flex-end; }
-  .modal { width: 100vw; max-width: 100vw; max-height: 92vh; border-radius: 12px 12px 0 0; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; }
+  .modal { animation: sheetIn .22s cubic-bezier(.2,.9,.3,1); width: 100vw; max-width: 100vw; max-height: 92vh; border-radius: 12px 12px 0 0; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; }
   .modal .body { overflow: auto; flex: 1; min-height: 0; }
   .modal .actions { position: sticky; bottom: 0; background: linear-gradient(transparent, #2a1a0c 30%); padding-top: 8px; margin-top: 4px; }
   .modal .actions button { min-height: 44px; flex: 1; }
@@ -316,6 +317,61 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
   .modal.wide { width: 100vw; }
   button.big { min-height: 48px; }
   .bside { min-width: 0; font-size: 11px; }
+}
+
+/* ---------- ручная работа: фактура, резьба, свет, движение ---------- */
+/* дерево: волокна и лёгкая грязь поверх заливки — панель перестаёт быть плоским прямоугольником */
+.wood::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .38;
+  background:
+    repeating-linear-gradient(93deg, rgba(255,214,150,.05) 0 2px, rgba(0,0,0,0) 2px 7px),
+    repeating-linear-gradient(87deg, rgba(0,0,0,.05) 0 3px, rgba(0,0,0,0) 3px 11px),
+    radial-gradient(120% 80% at 30% 0%, rgba(255,220,160,.07), rgba(0,0,0,0) 60%);
+}
+/* резные уголки: четыре золотые скобки внутри рамки */
+.wood::after {
+  content: ''; position: absolute; inset: 4px; border-radius: 3px; pointer-events: none; opacity: .7;
+  background:
+    linear-gradient(var(--gold3), var(--gold3)) left 0 top 0 / 11px 2px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) left 0 top 0 / 2px 11px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) right 0 top 0 / 11px 2px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) right 0 top 0 / 2px 11px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) left 0 bottom 0 / 11px 2px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) left 0 bottom 0 / 2px 11px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) right 0 bottom 0 / 11px 2px no-repeat,
+    linear-gradient(var(--gold3), var(--gold3)) right 0 bottom 0 / 2px 11px no-repeat;
+}
+/* пергамент: волокна бумаги и пятна времени */
+.parch { position: relative; }
+.parch::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .5;
+  background:
+    repeating-linear-gradient(0deg, rgba(120,90,40,.05) 0 1px, rgba(0,0,0,0) 1px 3px),
+    repeating-linear-gradient(90deg, rgba(120,90,40,.04) 0 1px, rgba(0,0,0,0) 1px 4px),
+    radial-gradient(60% 40% at 18% 12%, rgba(150,110,50,.10), rgba(0,0,0,0) 70%),
+    radial-gradient(50% 40% at 85% 80%, rgba(150,110,50,.09), rgba(0,0,0,0) 70%);
+}
+.parch > * { position: relative; }
+/* золото на главной кнопке слегка светится, нажатие — вдавливание */
+button.primary { box-shadow: inset 0 1px 0 #fff3c7, 0 0 12px rgba(241,207,116,.22), 0 2px 4px #000a; }
+button.primary:hover { box-shadow: inset 0 1px 0 #fff3c7, 0 0 18px rgba(241,207,116,.38), 0 2px 4px #000a; }
+button:active { box-shadow: inset 0 2px 5px #000a; }
+/* появление окон и экранов */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes sheetIn { from { transform: translateY(28px); opacity: .3; } to { transform: none; opacity: 1; } }
+@keyframes resUp { 0% { transform: none; } 25% { transform: translateY(-4px) scale(1.2); color: #9be07f; } 100% { transform: none; } }
+@keyframes resDown { 0% { transform: none; } 25% { transform: translateY(3px) scale(1.12); color: #ff8a6a; } 100% { transform: none; } }
+.modal-bg { animation: fadeIn .16s ease-out; }
+.modal { animation: popIn .2s cubic-bezier(.2,.9,.3,1.15); }
+.screen:not(.hidden) { animation: fadeIn .22s ease-out; }
+#resbar span.res-up b, #resbar span.res-down b { display: inline-block; }
+#resbar span.res-up b { animation: resUp .75s ease-out; }
+#resbar span.res-down b { animation: resDown .75s ease-out; }
+/* картина финала партии */
+canvas.finale { width: 100%; max-width: 480px; height: auto; align-self: center; border: 2px solid #1a1007; border-radius: 3px; box-shadow: 0 3px 10px #000a; }
+@media (prefers-reduced-motion: reduce) {
+  .modal, .modal-bg, .screen:not(.hidden), #resbar span b { animation: none !important; }
 }
 
 /* ---------- кампания ---------- */

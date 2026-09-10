@@ -13,11 +13,19 @@
     canvas: null, ctx: null, mini: null, state: null, mapCanvas: [null, null], miniCanvas: null, layer: 0,
     cam: { x: 0, y: 0, z: 1.5 }, dirty: true, hover: null, pending: null, path: null, pf: null, pfHero: null,
     anim: null, drag: null, w: 0, h: 0, dpr: 1, lastTime: 0, busy: false, tipTimer: null,
-    fx: null, ts: 0, water: [null, null],
+    fx: null, ts: 0, water: [null, null], clouds: null, vign: null,
   };
   const rnd = (a, b) => a + Math.random() * (b - a);
   // сколько «ночи» в каждом дне недели: окна светятся вечером и ранним утром
   const NIGHT = [0.45, 0.1, 0, 0, 0, 0.55, 0.95];
+  /* Погода держится двое суток и выводится из сида карты: ясно / дождь / морось-туман.
+     Она же попадает в строку даты, чтобы игрок понимал, почему картинка изменилась. */
+  const WEATHER = { clear: { name: '' }, rain: { name: 'Дождь' }, fog: { name: 'Туман' } };
+  function weatherOf(st) {
+    if (!st) return 'clear';
+    const h = U.hashStr('weather:' + st.seed + ':' + Math.floor((st.day - 1) / 2)) % 100;
+    return h < 22 ? 'rain' : h < 34 ? 'fog' : 'clear';
+  }
 
   function init() {
     V.canvas = UI.$('#mapCanvas'); V.ctx = V.canvas.getContext('2d'); V.mini = UI.$('#minimap');
@@ -228,6 +236,7 @@
     // местность
     ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
+    drawCloudShadows(ctx, st, ts, x0, y0, x1, y1);
     V.view = { x0, y0, x1, y1 };
     // выделение героя
     const sel = H3.Game.selected();
@@ -237,6 +246,11 @@
     for (const id in st.objects) { const o = st.objects[id]; if ((o.z || 0) !== V.layer) continue; if (o.x < x0 - 2 || o.x > x1 + 2 || o.y < y0 || o.y > y1 + 2) continue; if (!vis[o.y * m.w + o.x]) continue; items.push({ y: o.y, x: o.x, o }); }
     for (const id in st.heroes) { const h = st.heroes[id]; if (h.dead || (h.z || 0) !== V.layer) continue; if (h.owner !== me && vis[h.y * m.w + h.x] !== 2) continue; if (h.inTown && h.owner !== me) continue; const [px, py] = heroDrawPos(h); if (px < x0 - 1 || px > x1 + 1 || py < y0 - 1 || py > y1 + 1) continue; items.push({ y: py + 0.01, x: px, h, px, py }); }
     items.sort((a, b) => a.y - b.y);
+    // тени отдельным проходом: иначе тень переднего объекта ложилась бы на уже нарисованного соседа
+    for (const it of items) {
+      if (it.o) { const sp = objSprite(st, it.o); if (sp) castShadow(ctx, sp.name, sp.x, sp.y, 1); }
+      else if (!it.h.boat) castShadow(ctx, 'hero_' + it.h.cls, it.px * TILE + 16, it.py * TILE + 30, 1, it.h.facing === 'l');
+    }
     for (const it of items) {
       if (it.o) drawObject(ctx, st, it.o, vis, ts);
       else drawHero(ctx, st, it.h, it.px, it.py, ts);
@@ -252,6 +266,10 @@
     if (V.path && sel && !V.anim) drawPath(ctx, sel);
     // наведение
     if (V.hover && !isTouch()) { ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1; ctx.strokeRect(V.hover[0] * TILE + 0.5, V.hover[1] * TILE + 0.5, TILE - 1, TILE - 1); }
+    // погода и виньетка — поверх кадра, в экранных координатах
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawWeather(ctx, st, ts);
+    drawVignette(ctx);
     drawMini(st, me);
   }
   /** Туман войны мягкой маской (1 px на клетку → растяжение со сглаживанием). */
@@ -272,6 +290,100 @@
     ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, w * TILE, h * TILE);
     ctx.imageSmoothingEnabled = prev;
   }
+  /* ---------- атмосфера: падающие тени, тени облаков, погода, виньетка ---------- */
+  /** Что и где рисуется у объекта — нужно и для спрайта, и для его тени. */
+  function objSprite(st, o) {
+    const px = o.x * TILE + 16, py = o.y * TILE + 32;
+    const t = O.get(o.type);
+    if (o.type === 'town') return { name: 'town_' + st.towns[o.townId].faction, x: px, y: py - 2 };
+    if (o.type === 'mine') return { name: 'mine_' + o.res, x: px, y: py };
+    if (o.type === 'dwelling') return { name: 'dwelling_' + Math.min(7, C.get(o.cid).tier), x: px, y: py };
+    if (o.type === 'monster') return { name: o.cid, x: px, y: py - 2 };
+    if (o.type === 'resource' || o.type === 'artifact') return null;   // лежит на земле — тень не нужна
+    if (t.bank && o.empty) return null;
+    return t.sprite ? { name: t.sprite, x: px, y: py } : null;
+  }
+  /** Падающая тень объекта карты (под землёй солнца нет). */
+  function castShadow(ctx, name, x, y, scale, flip) {
+    if (V.layer) return;
+    T.castShadow(ctx, name, x, y, scale, flip, V.state.day);
+  }
+  /** Тени облаков ползут по земле — самый дешёвый способ оживить большие открытые поля. */
+  function cloudShadows(st, m) {
+    if (V.clouds && V.clouds.m === m) return V.clouds.list;
+    const rng = new U.RNG(U.hashStr('clouds:' + st.seed));
+    const list = [];
+    const W = m.w * TILE, H = m.h * TILE;
+    for (let i = 0; i < Math.max(6, Math.round(W * H / 260000)); i++) {
+      list.push({ x: rng.int(0, W), y: rng.int(0, H), rx: rng.int(70, 190), ry: rng.int(40, 110), v: rng.int(4, 11), a: rng.int(14, 26) / 100 });
+    }
+    V.clouds = { m, list };
+    return list;
+  }
+  function drawCloudShadows(ctx, st, ts, x0, y0, x1, y1) {
+    if (V.layer) return;
+    const m = S.lvl(st, V.layer), W = m.w * TILE;
+    const list = cloudShadows(st, m);
+    const X0 = x0 * TILE, Y0 = y0 * TILE, X1 = (x1 + 1) * TILE, Y1 = (y1 + 1) * TILE;
+    ctx.save(); ctx.globalCompositeOperation = 'multiply';
+    for (const c of list) {
+      const x = ((c.x + c.v * ts / 1000) % (W + 400)) - 200;
+      if (x + c.rx < X0 || x - c.rx > X1 || c.y + c.ry < Y0 || c.y - c.ry > Y1) continue;
+      const g = ctx.createRadialGradient(x, c.y, 0, x, c.y, c.rx);
+      g.addColorStop(0, 'rgba(48,52,78,' + c.a.toFixed(2) + ')');
+      g.addColorStop(0.6, 'rgba(48,52,78,' + (c.a * 0.55).toFixed(2) + ')');
+      g.addColorStop(1, 'rgba(48,52,78,0)');
+      ctx.fillStyle = g;
+      ctx.save(); ctx.translate(x, c.y); ctx.scale(1, c.ry / c.rx);
+      ctx.beginPath(); ctx.arc(0, 0, c.rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+    ctx.restore();
+  }
+  /** Погода поверх кадра, в экранных координатах: косой дождь или низкий туман. */
+  function drawWeather(ctx, st, ts) {
+    const w = weatherOf(st); if (w === 'clear' || V.layer) return;
+    const W = V.w, H = V.h;
+    if (w === 'rain') {
+      ctx.save();
+      ctx.fillStyle = 'rgba(40,55,80,0.10)'; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(195,220,255,0.42)'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      const n = Math.round(W * H / 3400);
+      for (let i = 0; i < n; i++) {
+        const seed = i * 97.13;
+        const speed = 900 + (i % 7) * 130;
+        const x = (seed * 7.7 + ts * 0.06) % (W + 120) - 60;
+        const y = ((seed * 13.3 + ts * speed / 1000) % (H + 60)) - 30;
+        const len = 9 + (i % 5) * 3;
+        ctx.moveTo(x, y); ctx.lineTo(x - len * 0.32, y + len);
+      }
+      ctx.stroke(); ctx.restore();
+      return;
+    }
+    // туман: две мягкие полосы, плывущие в разные стороны
+    ctx.save();
+    for (let k = 0; k < 2; k++) {
+      const y = H * (0.35 + k * 0.3) + Math.sin(ts / 4000 + k) * 20;
+      const g = ctx.createLinearGradient(0, y - H * 0.3, 0, y + H * 0.3);
+      g.addColorStop(0, 'rgba(220,228,238,0)'); g.addColorStop(0.5, 'rgba(220,228,238,' + (k ? 0.16 : 0.2) + ')'); g.addColorStop(1, 'rgba(220,228,238,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, y - H * 0.3, W, H * 0.6);
+    }
+    ctx.restore();
+  }
+  /** Виньетка: края кадра уходят в тень, взгляд собирается к центру. */
+  function drawVignette(ctx) {
+    const W = V.w, H = V.h;
+    let cv = V.vign;
+    if (!cv || cv.width !== W || cv.height !== H) {
+      cv = V.vign = document.createElement('canvas'); cv.width = Math.max(1, W); cv.height = Math.max(1, H);
+      const c = cv.getContext('2d');
+      const g = c.createRadialGradient(W / 2, H * 0.46, Math.min(W, H) * 0.34, W / 2, H * 0.46, Math.max(W, H) * 0.78);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.65, 'rgba(0,0,0,0.16)'); g.addColorStop(1, 'rgba(10,8,6,0.46)');
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+    }
+    ctx.drawImage(cv, 0, 0);
+  }
+
   function drawObject(ctx, st, o, vis, ts) {
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
@@ -402,7 +514,8 @@
       Sp.draw(ctx, 'boat', x, y + 4 + bob, 1, h.facing === 'l');
       An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', { st: An.state({ t: ts, phase: An.phaseOf(h.id), idle: true }) }, { b: color });
     } else {
-      ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(x, y, 11 - Math.max(0, -a.dy) * 0.25, 4, 0, 0, Math.PI * 2); ctx.fill();
+      // мягкое пятно под ногами: падающая тень уже нарисована общим проходом
+      ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(x, y, 9 - Math.max(0, -a.dy) * 0.25, 3, 0, 0, Math.PI * 2); ctx.fill();
       An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { st: a }, { b: color });
     }
     drawFlag(ctx, x + (h.facing === 'l' ? -13 : 8), y - 30, color, true);
@@ -447,8 +560,15 @@
     const st = V.state, G = H3.Game; if (!st) return;
     const p = st.players[st.turn];
     const inc = p.income || S.playerIncome(st, p.id);
-    UI.$('#resbar').innerHTML = U.RES.map(r => '<span title="' + UI.esc(O.RES_NAMES[r]) + ': +' + (inc[r] || 0) + ' в день">' + UI.resIcon(r) + '<b>' + U.fmt(p.res[r]) + '</b></span>').join('') + '<span class="muted" title="Доход в день">' + UI.icon('ic_day') + '+' + U.fmt(inc.gold) + '</span>';
-    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
+    // изменившийся ресурс вспыхивает: доход и трата видны, не разглядывая цифры
+    const prev = V.prevRes && V.prevRes.pid === p.id ? V.prevRes.res : null;
+    UI.$('#resbar').innerHTML = U.RES.map(r => {
+      const cls = prev && p.res[r] !== prev[r] ? (p.res[r] > prev[r] ? ' class="res-up"' : ' class="res-down"') : '';
+      return '<span' + cls + ' title="' + UI.esc(O.RES_NAMES[r]) + ': +' + (inc[r] || 0) + ' в день">' + UI.resIcon(r) + '<b>' + U.fmt(p.res[r]) + '</b></span>';
+    }).join('') + '<span class="muted" title="Доход в день">' + UI.icon('ic_day') + '+' + U.fmt(inc.gold) + '</span>';
+    const wx = WEATHER[weatherOf(st)].name;
+    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (wx ? ' · ' + wx : '') + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
+    V.prevRes = { pid: p.id, res: Object.assign({}, p.res) };
     const sel = G.selected();
     const hp = UI.$('#heroPanel');
     if (sel) {
@@ -489,5 +609,5 @@
     V.dirty = true;
   }
 
-  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini };
+  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini, weatherOf };
 })(typeof window !== 'undefined' ? window : globalThis);

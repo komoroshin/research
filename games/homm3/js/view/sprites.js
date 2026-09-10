@@ -65,7 +65,7 @@
      лёгкий градиент сверху вниз — вес. Все масштабы рисуются с этой 2×-основы. Иконки интерфейса
      (ic_*) не трогаем: пиктограмме важна не мягкость, а знак. */
   const DETAIL = { on: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
-  function setDetail(v) { DETAIL.on = !!v; cache.clear(); urlCache.clear(); hiCache.clear(); }
+  function setDetail(v) { DETAIL.on = !!v; cache.clear(); urlCache.clear(); hiCache.clear(); shadowCache.clear(); }
   const hiCache = new Map();
   const NONE = -1;
   function parseColor(col) { const n = parseInt(col.slice(1), 16); return col.length === 4 ? ((n >> 8 & 15) * 17 << 16) | ((n >> 4 & 15) * 17 << 8) | ((n & 15) * 17) : n; }
@@ -240,5 +240,21 @@
   }
   function img(name, scale, cls) { return '<img class="px ' + (cls || '') + '" src="' + url(name, scale) + '" alt="">'; }
 
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, setDetail, DETAIL, _registry: registry };
+  /** Чёрный силуэт спрайта — из него рисуются падающие тени (наклон + сплющивание). */
+  const shadowCache = new Map();
+  function silhouette(name, scale, flip) {
+    const key = name + '|' + (scale || 1) + '|' + (flip ? 1 : 0);
+    if (shadowCache.has(key)) return shadowCache.get(key);
+    const src = render(name, scale, flip);
+    if (!src) { shadowCache.set(key, null); return null; }
+    const cv = document.createElement('canvas'); cv.width = src.width; cv.height = src.height;
+    const c = cv.getContext('2d');
+    c.drawImage(src, 0, 0);
+    c.globalCompositeOperation = 'source-in'; c.fillStyle = '#000'; c.fillRect(0, 0, cv.width, cv.height);
+    cv._w = src._w; cv._h = src._h; cv._anchor = src._anchor;
+    shadowCache.set(key, cv);
+    return cv;
+  }
+
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, setDetail, DETAIL, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);

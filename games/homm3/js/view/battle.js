@@ -9,7 +9,7 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
   const W = Bt.W, H = Bt.H;
 
-  const V = { b: null, canvas: null, ctx: null, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null, tactics: null, fx: null, heroCast: [0, 0], clouds: [], margin: 24, showHeroes: false, cam: { x: 0, y: 0, z: 1 }, ptrs: new Map(), pinch: null, pan: null, pressTimer: null };
+  const V = { b: null, canvas: null, ctx: null, day: 4, size: 26, ox: 0, oy: 0, dpr: 1, hover: null, reach: null, human: [], auto: false, speed: 1, floats: [], anims: [], skip: false, spellMode: null, resolve: null, bg: null, pos: {}, done: false, tapTarget: null, tactics: null, fx: null, heroCast: [0, 0], clouds: [], margin: 24, showHeroes: false, cam: { x: 0, y: 0, z: 1 }, ptrs: new Map(), pinch: null, pan: null, pressTimer: null };
 
   function init() {
     V.canvas = UI.$('#battleCanvas'); V.ctx = V.canvas.getContext('2d');
@@ -62,7 +62,8 @@
     // поля по краям шире одного гекса: крупные существа на крайних колоннах
     // выступают за свои гексы и иначе обрезались бы краем канвы
     // на широком экране по краям поля стоят герои — им нужны поля пошире
-    const M = bw >= 760 ? 76 : 24; V.margin = M; V.showHeroes = M >= 60;
+    // поля по краям держат фигуры героев — на телефоне тоже: поле шире экрана и двигается пальцем
+    const M = bw >= 760 ? 76 : 64; V.margin = M; V.showHeroes = true;
     const narrow = bw < 600;
     // телефон в портрете: гексы считаем по высоте, поле шире экрана — его двигают пальцем
     const size = narrow ? Math.min(26, Math.floor((bh - 60) / (1.5 * H + 0.5))) : Math.floor(Math.min((bw - 2 * M) / (Math.sqrt(3) * (W + 0.5)), (bh - 80) / (1.5 * H + 0.5)));
@@ -75,12 +76,70 @@
     V.canvas.width = V.cw * V.dpr; V.canvas.height = V.ch * V.dpr; V.canvas.style.width = V.cw + 'px'; V.canvas.style.height = V.ch + 'px';
     V.zFit = V.cw / V.worldW;
     V.cam = { x: 0, y: 0, z: 1 }; clampCam();
-    V.bg = makeBg(V.b.terrain, V.worldW, V.ch, H3.Game && H3.Game.state ? H3.Game.state.day : 4);
+    V.day = H3.Game && H3.Game.state ? H3.Game.state.day : 4;
+    // горизонт проходит чуть выше верхнего ряда гексов: поле стоит на земле, а не висит в небе
+    const hz = U.clamp((V.oy - V.size * 0.8) / V.ch, 0.10, 0.5);
+    V.bg = makeBgLayers(V.b.terrain, V.worldW, V.ch, V.day, hz);
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
     if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
     // облака над полем (под землёй неба нет)
     V.clouds = [];
     if (V.b.terrain !== 'subter') for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
+  }
+  /** Задник тремя слоями: небо и дальняя гряда, силуэты среднего плана, земля. Слои едут с разной скоростью. */
+  function makeBgLayers(terrain, w, h, day, hz) {
+    const layer = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+    const sky = layer(), mid = layer(), ground = layer();
+    const rng = new U.RNG(U.hashStr(terrain));
+    paintSky(sky.getContext('2d'), terrain, w, h, rng, day, hz);
+    paintMid(mid.getContext('2d'), terrain, w, h, rng, day, hz);
+    paintGround(ground.getContext('2d'), terrain, w, h, rng, day, hz);
+    return { sky, mid, ground };
+  }
+  function paintSky(ctx, terrain, w, h, rng, day, hz) {
+    const HZ = h * hz;
+    const sky = { grass: ['#5f9be8', '#b9d8f5'], dirt: ['#6a7a9a', '#c9c2b0'], sand: ['#7fb6e8', '#f2e4c0'], snow: ['#8aa8c8', '#e8f0f8'], swamp: ['#5a7a6a', '#a8b898'], rough: ['#7a90b0', '#d0c8b0'], lava: ['#3a1a1a', '#8a3a20'], subter: ['#2a2230', '#5a4a58'] }[terrain] || ['#5f9be8', '#b9d8f5'];
+    const g = ctx.createLinearGradient(0, 0, 0, HZ * 1.15); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, w, HZ + 40);
+    if (terrain !== 'subter') {
+      // светило и дальняя гряда — самый медленный план
+      ctx.globalAlpha = 0.55; ctx.fillStyle = terrain === 'lava' ? '#ff9a4a' : '#fff6d0';
+      ctx.beginPath(); ctx.arc(w * 0.8, HZ * 0.32, 16, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = terrain === 'snow' ? '#c9d5de' : terrain === 'lava' ? '#5a2a20' : terrain === 'sand' ? '#c2a866' : '#6f8a9a';
+      ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(0, HZ);
+      for (let x = 0; x <= w; x += 30) ctx.lineTo(x, HZ - 34 * Math.abs(Math.sin(x / 190 + 0.4)) - rng.int(0, 8));
+      ctx.lineTo(w, HZ + 12); ctx.lineTo(0, HZ + 12); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    T.applyDaylight(ctx, day || 4, 0, 0, w, h);
+  }
+  function paintMid(ctx, terrain, w, h, rng, day, hz) {
+    const HZ = h * hz;
+    if (terrain !== 'subter') {
+      ctx.fillStyle = terrain === 'snow' ? '#b6c6d2' : terrain === 'lava' ? '#4a2018' : terrain === 'sand' ? '#b09858' : '#5f7a86';
+      ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(0, HZ + 6);
+      for (let x = 0; x <= w; x += 26) ctx.lineTo(x, HZ + 6 - 22 * Math.abs(Math.sin(x / 120 + 1.7)) - rng.int(0, 6));
+      ctx.lineTo(w, HZ + 18); ctx.lineTo(0, HZ + 18); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    bgDetails(ctx, terrain, w, h, rng, hz);   // силуэты на горизонте
+    T.applyDaylight(ctx, day || 4, 0, 0, w, h);
+  }
+  function paintGround(ctx, terrain, w, h, rng, day, hz) {
+    const HZ = h * hz, st = T.STYLE[terrain] || T.STYLE.grass;
+    ctx.fillStyle = st.base[0]; ctx.beginPath(); ctx.moveTo(0, HZ + 10);
+    for (let x = 0; x <= w; x += 20) ctx.lineTo(x, HZ + 10 - 14 + Math.sin(x / 60) * 8 + rng.int(-3, 3)); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+    ctx.fillStyle = st.base[1]; ctx.beginPath(); ctx.moveTo(0, HZ + 22); for (let x = 0; x <= w; x += 25) ctx.lineTo(x, HZ + 22 + Math.cos(x / 90) * 10); ctx.lineTo(w, HZ + 40); ctx.lineTo(0, HZ + 40); ctx.fill();
+    ctx.fillStyle = st.base[0]; ctx.fillRect(0, HZ + 40, w, h - HZ - 40);
+    // фактура земли: тайлы карты приглушённо, поверх — крапинка и кочки
+    ctx.globalAlpha = 0.30;
+    for (let y = Math.round(HZ); y < h; y += 32) for (let x = 0; x < w; x += 32) ctx.drawImage(T.tile(terrain, (x / 32 * 7 + y / 32 * 13) % 9), x, y);
+    ctx.globalAlpha = 1;
+    for (let i = 0; i < 600; i++) { ctx.fillStyle = rng.pick(st.spec); ctx.fillRect(rng.int(0, w), rng.int(HZ, h), rng.int(1, 3), 1); }
+    for (let i = 0; i < 50; i++) { ctx.fillStyle = rng.pick(st.spec); const x = rng.int(0, w), y = rng.int(HZ + 20, h); ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.ellipse(x, y, rng.int(4, 12), rng.int(1, 4), 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    T.applyDaylight(ctx, day || 4, 0, 0, w, h);
+    // виньетка поля: края уходят в тень, взгляд собирается к середине
+    const g = ctx.createRadialGradient(w / 2, (HZ + h) / 2, Math.min(w, h) * 0.3, w / 2, (HZ + h) / 2, Math.max(w, h) * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(12,10,8,0.4)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
   }
   function makeBg(terrain, w, h, day) {
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const ctx = cv.getContext('2d');
@@ -98,9 +157,10 @@
     return cv;
   }
   /** Детали заднего плана по местности: дальние холмы, силуэты деревьев, солнце. */
-  function bgDetails(ctx, terrain, w, h, rng) {
+  function bgDetails(ctx, terrain, w, h, rng, hz) {
+    const HZ = h * (hz === undefined ? 0.44 : hz);
     const st = T.STYLE[terrain] || T.STYLE.grass;
-    if (terrain !== 'subter') {
+    if (false) {
       // солнце или луна и дальняя гряда
       ctx.globalAlpha = 0.55; ctx.fillStyle = terrain === 'lava' ? '#ff9a4a' : '#fff6d0'; ctx.beginPath(); ctx.arc(w * 0.8, h * 0.12, 16, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
       ctx.fillStyle = terrain === 'snow' ? '#c9d5de' : terrain === 'lava' ? '#5a2a20' : terrain === 'sand' ? '#c2a866' : '#6f8a9a';
@@ -112,7 +172,7 @@
     const dark = terrain === 'snow' ? '#7f8f9a' : terrain === 'sand' ? '#a08a50' : terrain === 'lava' ? '#2a1010' : terrain === 'subter' ? '#1a1418' : '#2f4a2a';
     ctx.fillStyle = dark; ctx.globalAlpha = 0.75;
     for (let x = rng.int(0, 30); x < w; x += rng.int(18, 40)) {
-      const y = h * 0.47 + rng.int(-4, 4), s = rng.int(8, 18);
+      const y = HZ + 10 + rng.int(-4, 4), s = rng.int(8, 18);
       if (terrain === 'subter') { ctx.beginPath(); ctx.moveTo(x - s * 0.3, 0); ctx.lineTo(x + s * 0.3, 0); ctx.lineTo(x, s * 2); ctx.fill(); continue; }
       if (terrain === 'sand') { ctx.fillRect(x, y - s, 2, s); for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.ellipse(x + 1, y - s, s * 0.6, 2, k * 0.8 - 1.2, 0, Math.PI * 2); ctx.fill(); } continue; }
       if (terrain === 'rough' || terrain === 'lava' || terrain === 'dirt') { ctx.beginPath(); ctx.moveTo(x - s * 0.6, y); ctx.lineTo(x, y - s * 0.8); ctx.lineTo(x + s * 0.7, y); ctx.fill(); continue; }
@@ -121,7 +181,7 @@
     }
     ctx.globalAlpha = 1;
     // кочки и камешки на переднем плане
-    for (let i = 0; i < 24; i++) { ctx.fillStyle = rng.pick(st.spec); const x = rng.int(0, w), y = rng.int(h * 0.55, h); ctx.beginPath(); ctx.ellipse(x, y, rng.int(3, 9), rng.int(1, 3), 0, 0, Math.PI * 2); ctx.fill(); }
+
   }
   /* ---------- камера ---------- */
   function toWorld(px, py) { return [px / V.cam.z + V.cam.x, py / V.cam.z + V.cam.y]; }
@@ -418,8 +478,9 @@
     const [x, y] = heroPos(side);
     const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / 600 : 0;
     const st = An.state({ t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast });
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.55, V.size * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
     const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
+    T.castShadow(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, V.day, 0.8, 0.5);
     An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, { st }, { b: color });
     if (cast > 0 && fxOn() && Math.random() < 0.5) V.fx.add({ x: x + rnd(-8, 8), y: y - V.size * 1.6, vx: rnd(-10, 10), vy: -rnd(20, 40), ax: 0, ay: 0, ttl: 400, life: 0, size: 2, color: '#e6a0ff', shape: 'spark', glow: true, shrink: true });
   }
@@ -556,7 +617,11 @@
     const b = V.b, ctx = V.ctx, size = V.size;
     ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
-    ctx.drawImage(V.bg, 0, 0);
+    // параллакс: небо и дальний план отстают от земли, поле получает глубину при панораме
+    const cx = V.cam.x;
+    ctx.drawImage(V.bg.sky, Math.round(cx * 0.72), 0);
+    ctx.drawImage(V.bg.mid, Math.round(cx * 0.34), 0);
+    ctx.drawImage(V.bg.ground, 0, 0);
     for (const c of V.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + c.a + ')'; ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(c.x - c.w * 0.25, c.y + 2, c.w / 3.2, c.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(c.x + c.w * 0.22, c.y + 1, c.w / 3.5, c.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
     const cur = Bt.current(b);
     // гексы
@@ -570,7 +635,8 @@
       if (Bt.isMoat(b, c, r)) fill = 'rgba(40,90,180,0.45)';
       if (V.spellMode && V.spellMode.area && V.hover && Hex.dist(c, r, V.hover[0], V.hover[1]) <= (V.spellMode.area === 'ring' ? 1 : V.spellMode.area) && !(V.spellMode.area === 'ring' && Hex.dist(c, r, V.hover[0], V.hover[1]) === 0)) fill = 'rgba(200,80,255,0.25)';
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      ctx.strokeStyle = 'rgba(0,0,0,0.13)'; ctx.lineWidth = 1; ctx.stroke();
+      // сетка почти не видна: поле — картина, а не миллиметровка; ярче только там, куда можно пойти
+      ctx.strokeStyle = fill ? 'rgba(0,0,0,0.16)' : 'rgba(0,0,0,0.055)'; ctx.lineWidth = 1; ctx.stroke();
     }
     // наведение: у крупного стека показываем оба гекса, куда он встанет
     if (V.hover) {
@@ -594,7 +660,7 @@
     const sc = size / 14; // масштаб спрайтов
     const items = [];
     if (V.showHeroes) for (let s = 0; s < 2; s++) if (b.sides[s].hero) items.push({ y: -1, draw: () => drawHeroFigure(ctx, s, sc, ts) });
-    for (const o of b.obstacles) { const [x, y] = Hex.center(o.x, o.y, size, V.ox, V.oy); items.push({ y, draw: () => Sp.draw(ctx, o.kind, x, y + size * 0.6, sc * 0.9) }); }
+    for (const o of b.obstacles) { const [x, y] = Hex.center(o.x, o.y, size, V.ox, V.oy); items.push({ y, draw: () => { T.castShadow(ctx, o.kind, x, y + size * 0.6, sc * 0.9, false, V.day, 0.75, 0.5); Sp.draw(ctx, o.kind, x, y + size * 0.6, sc * 0.9); } }); }
     if (b.siege) for (let r = 0; r < H; r++) {
       const [x, y] = Hex.center(Bt.WALL_COL, r, size, V.ox, V.oy);
       const ws = Bt.wallState(b, Bt.WALL_COL, r);
@@ -639,11 +705,13 @@
     });
     const lift = Math.max(0, -st.dy);
     const big = Bt.isBig(u);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath();
-    ctx.ellipse(p.x, y - 1, V.size * (big ? 1.25 : 0.6) * (1 - Math.min(0.3, lift / 30)), V.size * 0.22 * (1 - Math.min(0.35, lift / 26)), 0, 0, Math.PI * 2); ctx.fill();
+    // мягкое пятно под ногами + падающая тень силуэтом: отряд перестаёт «висеть» над гексом
+    ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath();
+    ctx.ellipse(p.x, y - 1, V.size * (big ? 1.1 : 0.5) * (1 - Math.min(0.3, lift / 30)), V.size * 0.18 * (1 - Math.min(0.35, lift / 26)), 0, 0, Math.PI * 2); ctx.fill();
     // крупное существо заметно больше обычного, но не вдвое: спрайты рисовались
     // под один гекс, и двойной масштаб залезал бы на соседние ряды
     const scale = Math.max(1, Math.round(sc * (big ? 1.65 : 1.4) * 2) / 2);
+    if (u.alive) T.castShadow(ctx, u.cid, x, y - 2, scale, u.side === 1, V.day, 0.8, 0.5);
     An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, { st });
     if (p.flash > 0) { ctx.globalAlpha = Math.min(0.7, p.flash / 350); ctx.fillStyle = p.flashColor; ctx.beginPath(); ctx.arc(p.x, p.y, V.size * 0.9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     if (u.alive) {

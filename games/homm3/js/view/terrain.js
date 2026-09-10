@@ -314,6 +314,25 @@
     { name: 'Закат', col: '#f0a878', a: 0.12, warm: 0.08 },
   ];
   function daylight(day) { return DAYLIGHT[((day - 1) % 7 + 7) % 7]; }
+  /* Солнце по времени суток (день недели = час дня): куда падает тень, насколько она вытянута и густа.
+     Утром светило на востоке — тени длинные на запад; в полдень короткие; к закату длинные на восток. */
+  const SUN = [
+    { dx: -1.25, k: 0.55, a: 0.26 }, { dx: -0.80, k: 0.42, a: 0.30 }, { dx: -0.30, k: 0.30, a: 0.32 },
+    { dx: 0.15, k: 0.28, a: 0.32 }, { dx: 0.65, k: 0.38, a: 0.30 }, { dx: 1.15, k: 0.52, a: 0.24 }, { dx: 1.60, k: 0.62, a: 0.16 },
+  ];
+  function sun(day) { return SUN[((day - 1) % 7 + 7) % 7]; }
+  /** Падающая тень: чёрный силуэт спрайта, наклонённый и сплющенный по солнцу. */
+  function castShadow(ctx, name, x, y, scale, flip, day, mul, squash) {
+    const s = sun(day); if (!s) return;
+    const cv = H3.Sprites.silhouette(name, scale || 1, flip); if (!cv) return;
+    const sc = scale || 1, ax = cv._anchor[0] * sc, ay = cv._anchor[1] * sc;
+    ctx.save();
+    ctx.globalAlpha = s.a * (mul === undefined ? 1 : mul);
+    ctx.translate(x, y);
+    ctx.transform(1, 0, -s.dx, s.k * (squash === undefined ? 1 : squash), 0, 0);
+    ctx.drawImage(cv, -ax, -ay, cv.width, cv.height);
+    ctx.restore();
+  }
   /** Наложить свет дня на уже отрисованный кадр карты (в координатах карты). */
   function applyDaylight(ctx, day, x, y, w, h) {
     const d = daylight(day);
@@ -355,5 +374,5 @@
     for (const id in state.heroes) { const h = state.heroes[id]; if (h.dead || (h.z || 0) !== z || !vis[h.y * map.w + h.x]) continue; ctx.fillStyle = state.players[h.owner].color; ctx.fillRect(h.x - 1, h.y - 1, 3, 3); ctx.fillStyle = '#fff'; ctx.fillRect(h.x, h.y, 1, 1); }
   }
 
-  H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, applyDaylight };
+  H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, sun, castShadow, applyDaylight };
 })(typeof window !== 'undefined' ? window : globalThis);
