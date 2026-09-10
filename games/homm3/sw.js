@@ -1,7 +1,7 @@
 /* Service worker: офлайн-кеш всех файлов игры. Имя кеша — версия из index.html (?v=…):
    новая версия — новый кеш, старые удаляются при активации. Стратегия: сеть с запасным
    вариантом из кеша для index.html (чтобы обновления доходили), кеш-first для остального. */
-const VERSION = 'v211';
+const VERSION = 'v212';
 const CACHE = 'homm3-' + VERSION;
 const CORE = ['./', './index.html', './manifest.json'];
 self.addEventListener('install', e => {
