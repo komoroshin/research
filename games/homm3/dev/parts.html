@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><title>Части и анимация</title>
+<style>body{background:#2a2f3a;color:#ddd;font:12px monospace;margin:0;padding:8px}canvas{image-rendering:pixelated;background:#3c4452;display:block;margin-bottom:8px}</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="../js/core/util.js"></script>
+<script src="../js/view/sprites.js"></script>
+<script src="../js/view/anim.js"></script>
+<script>
+// ?names=pikeman,archer&scale=4&mode=parts|walk|attack|fly
+const q = new URLSearchParams(location.search);
+const names = (q.get('names') || 'pikeman,archer,griffin,cavalier,zombie,lich').split(',');
+const scale = +(q.get('scale') || 4);
+const mode = q.get('mode') || 'parts';
+const files = ['view/sprites_castle.js','view/sprites_necropolis.js','view/sprites_rampart.js','view/sprites_stronghold.js','view/sprites_heroes.js','view/sprites_objects.js','view/sprites_towns.js','view/sprites_icons.js','view/sprites_dungeon.js','view/sprites_tower.js','view/sprites_inferno.js','view/sprites_fortress.js','view/sprites_machines.js','view/sprites_quest.js'];
+let loaded = 0;
+const COL = { head: '#ff5a5a', torso: '#5cff8a', leg: '#5aa8ff', legs: '#5aa8ff', prop: '#ffd45a' };
+function go() {
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const cell = 46 * scale / 2, cols = mode === 'parts' ? names.length : 8;
+  cv.width = Math.max(1, cols * cell + 8); cv.height = (mode === 'parts' ? 1 : names.length) * (cell + 18) + 8;
+  ctx.imageSmoothingEnabled = false;
+  const out = [];
+  if (mode === 'parts') {
+    names.forEach((n, i) => {
+      const P = H3.Anim.parts(n, scale, false);
+      const x = 4 + i * cell + cell / 2, y = 4 + cell - 10;
+      if (!P) { ctx.fillStyle = '#f66'; ctx.fillText('нет: ' + n, x - 30, y); out.push(n + ':нет'); return; }
+      const k = P.k, ax = P.anchor[0] * scale, ay = P.anchor[1] * scale;
+      for (const p of P.parts) {
+        ctx.drawImage(p.cv, Math.round(x - ax + p.x * k), Math.round(y - ay + p.y * k), p.cv.width * k, p.cv.height * k);
+        ctx.globalAlpha = 0.45; ctx.fillStyle = COL[p.kind] || '#fff';
+        ctx.fillRect(Math.round(x - ax + p.x * k), Math.round(y - ay + p.y * k), p.cv.width * k, p.cv.height * k);
+        ctx.globalAlpha = 1;
+      }
+      ctx.fillStyle = '#fff'; ctx.fillText(n + ' · ' + P.parts.length, 4 + i * cell, 4 + cell + 12);
+      out.push(n + ':' + P.parts.map(p => p.kind).join('+'));
+    });
+  } else {
+    names.forEach((n, r) => {
+      for (let f = 0; f < 8; f++) {
+        const t = f * 90;
+        const o = { t, phase: 0, dir: 1 };
+        if (mode === 'walk') o.moving = true;
+        if (mode === 'fly') { o.flying = true; o.moving = true; }
+        if (mode === 'attack') o.lunge = Math.sin(f / 7 * Math.PI * 2);
+        o.st = H3.Anim.state(o);
+        const x = 4 + f * cell + cell / 2, y = 4 + r * (cell + 18) + cell - 10;
+        H3.Anim.draw(ctx, n, x, y, scale, false, o);
+      }
+      ctx.fillStyle = '#fff'; ctx.fillText(n, 4, 4 + r * (cell + 18) + cell + 12);
+    });
+  }
+  window.__parts = out.join(' | ');
+}
+files.forEach(f => { const s = document.createElement('script'); s.src = '../js/' + f; s.onload = s.onerror = () => { if (++loaded === files.length) go(); }; document.body.appendChild(s); });
+</script>
+</body></html>

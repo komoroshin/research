@@ -6,13 +6,13 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.0';
+  const VERSION = '3.1';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
   /* ---------- настройки ---------- */
   function settings() {
-    if (!G.settingsObj) { G.settingsObj = { animSpeed: 1, confirmEndTurn: true, quickBattle: false, aiSmart: true, detailSprites: true }; try { Object.assign(G.settingsObj, JSON.parse(localStorage.getItem(SET_KEY) || '{}')); } catch (e) { /* ignore */ } }
+    if (!G.settingsObj) { G.settingsObj = { animSpeed: 1, confirmEndTurn: true, quickBattle: false, aiSmart: true, detailSprites: true, livingSprites: true }; try { Object.assign(G.settingsObj, JSON.parse(localStorage.getItem(SET_KEY) || '{}')); } catch (e) { /* ignore */ } }
     return G.settingsObj;
   }
   function saveSettings() { try { localStorage.setItem(SET_KEY, JSON.stringify(settings())); } catch (e) { /* ignore */ } }
@@ -116,7 +116,8 @@
       + '<label><input type="checkbox" id="oSound" ' + (H3.Audio.isEnabled() ? 'checked' : '') + '><span>Звук</span></label>'
       + '<label><input type="checkbox" id="oConfirm" ' + (st.confirmEndTurn ? 'checked' : '') + '><span>Спрашивать при конце хода</span></label>'
       + '<label><input type="checkbox" id="oQuick" ' + (st.quickBattle ? 'checked' : '') + '><span>Быстрый бой (ИИ за меня)</span></label>'
-      + '<label><input type="checkbox" id="oDetail" ' + (st.detailSprites !== false ? 'checked' : '') + '><span>Детальные спрайты (объём и мягкий контур)</span></label></div>'
+      + '<label><input type="checkbox" id="oDetail" ' + (st.detailSprites !== false ? 'checked' : '') + '><span>Детальные спрайты (объём и мягкий контур)</span></label>'
+      + '<label><input type="checkbox" id="oLiving" ' + (st.livingSprites !== false ? 'checked' : '') + '><span>Живая анимация (шаг, замах, взмах крыльев)</span></label></div>'
       + '<div class="opt"><label>Скорость анимации</label><div class="seg full">' + ['мгновенно', 'обычно', 'быстро'].map((l, i) => '<button data-sp="' + i + '" class="' + (st.animSpeed === i ? 'on' : '') + '">' + l + '</button>').join('') + '</div></div>';
   }
   function bindSettings(box) {
@@ -125,6 +126,7 @@
     box.querySelector('#oConfirm').onchange = e => { st.confirmEndTurn = e.target.checked; saveSettings(); };
     box.querySelector('#oQuick').onchange = e => { st.quickBattle = e.target.checked; saveSettings(); };
     box.querySelector('#oDetail').onchange = e => { st.detailSprites = e.target.checked; saveSettings(); Sp.setDetail(st.detailSprites); AV.invalidate(); refresh(false); };
+    box.querySelector('#oLiving').onchange = e => { st.livingSprites = e.target.checked; saveSettings(); H3.Anim.setParts(st.livingSprites); AV.invalidate(); refresh(false); };
     box.querySelectorAll('[data-sp]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); st.animSpeed = +b.dataset.sp; saveSettings(); box.querySelectorAll('[data-sp]').forEach(x => x.classList.toggle('on', x === b)); }; });
   }
   function settingsDialog() {
@@ -668,6 +670,7 @@
   /* ---------- запуск ---------- */
   function boot() {
     Sp.setDetail(settings().detailSprites !== false);
+    H3.Anim.setParts(settings().livingSprites !== false);
     AV.init(); BV.init();
     window.addEventListener('keydown', keys);
     window.addEventListener('error', e => { console.error(e.error || e.message); try { UI.toast('Ошибка: ' + (e.message || 'см. консоль'), 'warn'); } catch (x) { /* ignore */ } });

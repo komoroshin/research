@@ -507,16 +507,18 @@
     const color = st.players[h.owner].color;
     const x = px * TILE + 16, y = py * TILE + 30;
     const walking = !!(V.anim && V.anim.hero.id === h.id);
-    const a = An.state({ t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking });
+    const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking };
+    const a = An.state(ao); ao.st = a;
     if (h.boat) {
       // под парусом: герой стоит в лодке, лодка покачивается на волне
       const bob = Math.sin(ts / 520 + An.phaseOf(h.id)) * 1.5;
       Sp.draw(ctx, 'boat', x, y + 4 + bob, 1, h.facing === 'l');
-      An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', { st: An.state({ t: ts, phase: An.phaseOf(h.id), idle: true }) }, { b: color });
+      const bo = { t: ts, phase: An.phaseOf(h.id), idle: true }; bo.st = An.state(bo);
+      An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', bo, { b: color });
     } else {
       // мягкое пятно под ногами: падающая тень уже нарисована общим проходом
       ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(x, y, 9 - Math.max(0, -a.dy) * 0.25, 3, 0, 0, Math.PI * 2); ctx.fill();
-      An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', { st: a }, { b: color });
+      An.draw(ctx, 'hero_' + h.cls, x, y, 1, h.facing === 'l', ao, { b: color });
     }
     drawFlag(ctx, x + (h.facing === 'l' ? -13 : 8), y - 30, color, true);
     if (h.owner === st.turn && h.move <= 0 && !V.anim) { ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(x - 8, y + 1, 16, 2); }
