@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '2.12';
+  const VERSION = '3.0';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -566,7 +566,13 @@
     }
     const buttons = camp && camp.next ? [{ value: 'next', label: 'Следующий сценарий', cls: 'primary' }, { value: 'menu', label: 'В меню' }]
       : [{ value: 'menu', label: 'В меню', cls: 'primary' }];
-    const ch = await UI.modal({ title: won ? 'Победа!' : 'Поражение', html: extra, buttons, closable: false });
+    // картина финала: то же небо, тот же город — только исход другой
+    const box = UI.el('div', 'col');
+    const art = UI.el('canvas', 'px finale'); box.appendChild(art);
+    const body = UI.el('div', ''); body.innerHTML = extra; box.appendChild(body);
+    const me = st.players[0];
+    const ch = await UI.modal({ title: won ? 'Победа!' : 'Поражение', html: box, buttons, closable: false,
+      onOpen: () => { try { H3.Art.finale(art, { won, faction: me.faction, color: me.color, seed: st.seed }); } catch (e) { console.error(e); art.remove(); } } });
     try { localStorage.removeItem(SAVE_KEY + 'auto'); } catch (e) { /* ignore */ }
     G.state = null;
     if (ch === 'next' && camp && camp.next) { startScenario(camp.camp.id, camp.next.id); return; }
