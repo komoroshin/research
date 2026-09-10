@@ -97,3 +97,26 @@ Threshold от Volta Circuit, Threshold Sports. Пакет npm «threshold»
    Хендлы под довесок проверять заново.
 3. Перед выставкой достаточно решить про довесок; заявки в USPTO и
    EUIPO — после консультации с поверенным, с поиском по сходным знакам.
+
+## 6. Вариации написания (проверено 10.09.2026)
+
+Юридически вариация не спасает: знак с намеренной опечаткой (TRESHOLD,
+THRESHHOLD, THRSHLD) экспертиза сравнивает по звучанию и смыслу, а звучат
+они как THRESHOLD. Реестры это подтверждают: все такие знаки в USPTO уже
+были и умерли (TRESHOLD Alberto-Culver, THRSHLD ×3, THRESHOLDS ×4), в
+EUIPO их нет вовсе. THRESH в США плотный: семь заявок 2025–2026, в том
+числе класс 9 (Thresh Labs) и 41/44 (Thresh Holdings).
+
+| Вариант | Домены | Хендлы |
+|---|---|---|
+| treshold | .com занят (2025, похоже на перекуп); .app, .io, .co, .health по RDAP свободны | Telegram и Threads свободны; TikTok и YouTube заняты |
+| thresh | .com, .app, .co заняты; .io свободен | не проверялись, знак плотный |
+| thresholds | .com, .app, .io заняты | заняты везде |
+| threshld / thrshld | заняты (.com, .app, .io) | заняты везде |
+| thresholdhealth, threshold_health, thresholdfood | thresholdhealth.com занят | свободны в Telegram, TikTok, YouTube, Threads |
+
+Практический вывод: опечатка не даёт защиты и ломает поиск (люди наберут
+threshold и попадут к Target). Если нужна единая связка домен + хендлы,
+брать описательный довесок, например threshold.health уже занят Beeline,
+но хендлы thresholdhealth и thresholdfood свободны на всех проверенных
+площадках.
