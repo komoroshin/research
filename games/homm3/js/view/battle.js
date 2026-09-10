@@ -477,11 +477,12 @@
     if (!Sp.has(name)) return;
     const [x, y] = heroPos(side);
     const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / 600 : 0;
-    const st = An.state({ t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast });
+    const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast };
+    const st = An.state(ao); ao.st = st;
     ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
     const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
     T.castShadow(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, V.day, 0.8, 0.5);
-    An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, { st }, { b: color });
+    An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, ao, { b: color });
     if (cast > 0 && fxOn() && Math.random() < 0.5) V.fx.add({ x: x + rnd(-8, 8), y: y - V.size * 1.6, vx: rnd(-10, 10), vy: -rnd(20, 40), ax: 0, ay: 0, ttl: 400, life: 0, size: 2, color: '#e6a0ff', shape: 'spark', glow: true, shrink: true });
   }
   /** Эффект заклинания: по школе и типу, с поправкой на конкретные заклинания. */
@@ -696,13 +697,15 @@
     const c = C.get(u.cid);
     const x = p.x, y = p.y + V.size * 0.55;
     ctx.globalAlpha = p.fade !== undefined && !u.alive ? p.fade : 1;
-    // процедурная анимация: дыхание, шаг, замах, отдача, оседание
-    const st = An.state({
+    // процедурная анимация: дыхание, шаг, замах, отдача, оседание.
+    // опции нужны целиком: по ним же двигаются отдельные части спрайта
+    const ao = {
       t: ts, phase: p.phase, dir: u.side === 0 ? 1 : -1, flying: C.isFlyer(c),
       moving: !!p.moving, lunge: p.lunge, cast: p.cast,
       hurt: p.shake > 0 ? Math.min(1, p.shake / 180) : 0,
       dead: !u.alive && p.fade !== undefined ? p.fade : undefined,
-    });
+    };
+    const st = An.state(ao); ao.st = st;
     const lift = Math.max(0, -st.dy);
     const big = Bt.isBig(u);
     // мягкое пятно под ногами + падающая тень силуэтом: отряд перестаёт «висеть» над гексом
@@ -712,7 +715,7 @@
     // под один гекс, и двойной масштаб залезал бы на соседние ряды
     const scale = Math.max(1, Math.round(sc * (big ? 1.65 : 1.4) * 2) / 2);
     if (u.alive) T.castShadow(ctx, u.cid, x, y - 2, scale, u.side === 1, V.day, 0.8, 0.5);
-    An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, { st });
+    An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, ao);
     if (p.flash > 0) { ctx.globalAlpha = Math.min(0.7, p.flash / 350); ctx.fillStyle = p.flashColor; ctx.beginPath(); ctx.arc(p.x, p.y, V.size * 0.9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     if (u.alive) {
       // счётчик
