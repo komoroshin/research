@@ -76,10 +76,26 @@
     S.computeVisibility(state, hero.owner);
     return { steps, stop };
   }
+  /** Зал Валгаллы, Клетка полководцев, Орден Огня: разовая прибавка герою за первый визит. */
+  const VISIT_GIFT = { stronghold: ['att', 'атаке'], fortress: ['def', 'защите'], inferno: ['pow', 'силе магии'] };
+  function townVisitGift(state, hero, town) {
+    if (!town.buildings.special) return null;
+    const g = VISIT_GIFT[town.faction]; if (!g) return null;
+    const key = 'special:' + town.id;
+    hero.visited = hero.visited || {};
+    if (hero.visited[key]) return null;
+    hero.visited[key] = 1;
+    hero.pri[g[0]]++;
+    const b = H3.Buildings.SPECIAL[town.faction];
+    S.addLog(state, hero.name + ' посетил(а) «' + b.name + '»: +1 к ' + g[1] + '.', 'good');
+    return { text: b.name + ': +1 к ' + g[1] + ' навсегда.', name: b.name };
+  }
   function enterOwnTown(state, hero, town) {
     hero.inTown = town.id; town.visiting = hero.id;
     const learned = S.learnTownSpells(state, hero, town);
     if (R.guildLevel(town)) hero.mana = Math.max(hero.mana, R.heroMaxMana(hero));
+    const gift = townVisitGift(state, hero, town);
+    if (gift) state.lastGift = gift;   // интерфейс покажет и очистит
     return learned;
   }
   /** Герой стоит в городе (на его клетке). */
@@ -498,7 +514,7 @@
       summary.xp = res.xp; summary.levelUps = R.gainXp(winnerHero, res.xp);
       if (attWon) state.stats.won++;
       // некромантия
-      const nec = R.skillVal(winnerHero, 'necromancy');
+      const nec = R.skillVal(winnerHero, 'necromancy') + (R.hasSpecial(state, winnerHero.owner, 'necropolis') ? 10 : 0);
       if (nec > 0) {
         let killed = 0, hp = 0; for (const k of res.killedLiving) { killed += k.n; hp += k.n * k.hp; }
         const raised = Math.min(Math.floor(killed * nec / 100), Math.floor(hp / 6));
@@ -656,11 +672,13 @@
       const inc = S.playerIncome(state, p.id);
       if (p.isAI) { inc.gold = Math.floor(inc.gold * (1 + diff.aiGold)); inc.wood = Math.floor(inc.wood * (1 + diff.aiWood)); inc.ore = Math.floor(inc.ore * (1 + diff.aiWood)); for (const r of U.RARE) inc[r] = Math.floor(inc[r] * (1 + diff.aiRare)); }
       U.addRes(p.res, inc); p.income = inc;
+      const stables = R.hasSpecial(state, p.id, 'castle') ? 400 : 0;   // Конюшни Замка
       for (const h of S.heroesOf(state, p.id)) {
+        if (isWeek) h.bonuses = {};
+        h.bonuses.stables = stables;
         h.move = R.heroMaxMove(h);
         const t = townOfHero(state, h);
         if (t && R.guildLevel(t)) h.mana = R.heroMaxMana(h); else h.mana = Math.min(R.heroMaxMana(h), h.mana + 1 + R.skillVal(h, 'mysticism'));
-        if (isWeek) h.bonuses = {};
       }
       for (const t of S.townsOf(state, p.id)) { t.builtToday = false; if (isWeek) R.newTownWeek(t); }
       if (!p.towns.length) { p.daysWithoutTown++; if (p.daysWithoutTown >= 7) eliminate(state, p, '7 дней без города'); } else p.daysWithoutTown = 0;
@@ -673,10 +691,37 @@
       }
       for (const id in state.towns) { const t = state.towns[id]; if (t.owner < 0) R.newTownWeek(t); }
       S.addLog(state, S.dateStr(state.day) + '. Новая неделя: прирост существ, стражи усилились.', 'day');
+      weeklySpecials(state);
     } else S.addLog(state, S.dateStr(state.day) + '.', 'day');
     for (const p of state.players) if (p.alive) S.computeVisibility(state, p.id);
     checkCapitulation(state);
     checkPlayersAlive(state);
+  }
+  /** Понедельник: Мистический пруд приносит редкий ресурс, Портал призыва собирает внешние жилища. */
+  function weeklySpecials(state) {
+    const rng = state._rng.misc;
+    for (const p of state.players) {
+      if (!p.alive) continue;
+      for (const t of S.townsOf(state, p.id)) {
+        if (!t.buildings.special) continue;
+        if (t.faction === 'rampart') {
+          const res = rng.pick(U.RARE), n = rng.int(1, 3);
+          p.res[res] = (p.res[res] || 0) + n;
+          if (!p.isAI) S.addLog(state, 'Мистический пруд: ' + n + ' ' + (O.RES_NAMES_GEN[res] || res) + '.', 'good');
+        }
+        if (t.faction === 'dungeon') {
+          let total = 0;
+          for (const id in state.objects) {
+            const o = state.objects[id];
+            if (o.type !== 'dwelling' || o.owner !== p.id || !o.avail) continue;
+            const room = R.canAddToArmy(t.garrison, o.cid);
+            if (!room) continue;
+            R.addToArmy(t.garrison, o.cid, o.avail); total += o.avail; o.avail = 0;
+          }
+          if (total && !p.isAI) S.addLog(state, 'Портал призыва: в ' + t.name + ' пришло существ — ' + total + '.', 'good');
+        }
+      }
+    }
   }
   function eliminate(state, p, why) {
     if (!p.alive) return;
@@ -850,7 +895,7 @@
     }
   }
 
-  H3.Adventure = { reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { townVisitGift, weeklySpecials, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);

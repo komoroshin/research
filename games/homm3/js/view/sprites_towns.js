@@ -7,6 +7,39 @@
    ========================================================================== */
 (function () {
   H3.Sprites.defineMany({
+
+    /* ---------- особая постройка фракции 30×26: павильон с куполом и чашей ---------- */
+    bld_special: {
+      rows: [
+        '..........kkkk................',
+        '.........kyyyyk...............',
+        '........kyYYYYyk..............',
+        '.......kkkkkkkkkk.............',
+        '......kneeeeeeeenk............',
+        '.....kneeeeeeeeeenk...........',
+        '.....kneekkkkkkeenk...........',
+        '.....kneekyyyykeenk...........',
+        '.....kneekyYYykeenk...........',
+        '.....kneekyyyykeenk...........',
+        '.....kneekkkkkkeenk...........',
+        '.....kneeeeeeeeeenk...........',
+        '....knneeeeeeeeeennk..........',
+        '....kneekeeeeeekeenk..........',
+        '....kneekeeeeeekeenk..........',
+        '....kneekeeeeeekeenk..........',
+        '....kneekeeeeeekeenk..........',
+        '....knnnkkkkkkkknnnk..........',
+        '....kNNNNNNNNNNNNNNk..........',
+        '....kNNkkkkkkkkkkNNk..........',
+        '....kNNkTTTTTTTTkNNk..........',
+        '....kNNkTTTTTTTTkNNk..........',
+        '....kNNkTTTTTTTTkNNk..........',
+        '....kNNkTTTTTTTTkNNk..........',
+        '....kkkkkkkkkkkkkkkk..........',
+        '..............................',
+      ],
+    },
+
     town_castle: { // 56×48
       rows: [
         '........................................................',

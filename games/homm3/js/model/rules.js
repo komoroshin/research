@@ -24,6 +24,8 @@
       const art = AR.get(hero.arts[slot]); if (!art) continue;
       for (const k in art.fx) fx[k] = (fx[k] || 0) + art.fx[k];
     }
+    // собранный набор даёт эффект сверх суммы частей
+    for (const st of AR.setsOf(hero)) if (st.complete) for (const k in st.set.fx) fx[k] = (fx[k] || 0) + st.set.fx[k];
     return fx;
   }
   function heroPrimary(hero) {
@@ -51,6 +53,7 @@
     const fx = artifactFx(hero);
     base += fx.move || 0;
     base += (hero.bonuses && hero.bonuses.move) || 0;
+    base += (hero.bonuses && hero.bonuses.stables) || 0;
     return base;
   }
   function armySize(army) { return army.filter(s => s && s.n > 0).length; }
@@ -196,11 +199,25 @@
     town.builtToday = true;
     if (b.kind === 'guild') fillGuild(state, town, b.level);
     if (b.kind === 'dwell') town.avail[b.tier - 1] = growthOf(town, b.tier); // первая партия сразу
+    // Библиотека достраивается к уже собранной гильдии: доливаем по заклинанию на уровень,
+    // а не пересобираем список — иначе у героев пропали бы уже выученные
+    if (bid === 'special' && town.faction === 'tower') {
+      for (let l = 1; l <= 5; l++) {
+        if (!town.guild[l] || !town.buildings['guild_' + l]) continue;
+        const pool = SP.byLevel(l).filter(x => (x.kind !== 'adventure' || l === 4) && !town.guild[l].includes(x.id));
+        if (pool.length) town.guild[l].push(state._rng.misc.pick(pool).id);
+      }
+    }
     return { ok: true, building: b };
+  }
+  /** Есть ли у игрока город нужной фракции с особой постройкой (эффект действует на всё королевство). */
+  function hasSpecial(state, pid, faction) {
+    if (pid < 0 || !state.players[pid]) return false;
+    return state.players[pid].towns.some(tid => { const t = state.towns[tid]; return t && t.faction === faction && t.buildings.special; });
   }
   function fillGuild(state, town, level) {
     const rng = state._rng.misc;
-    const n = B.GUILD_SPELLS[level];
+    const n = B.GUILD_SPELLS[level] + (town.buildings.special && town.faction === 'tower' ? 1 : 0);
     const pool = SP.byLevel(level).filter(s => s.kind !== 'adventure' || level === 4);
     const banned = town.faction === 'necropolis' ? ['resurrection', 'cure', 'bless'] : [];
     const forced = [];
@@ -310,7 +327,7 @@
     armySize, armyEmpty, addToArmy, canAddToArmy, armyPower, armyCost, cleanArmy, factionsInArmy,
     heroMorale, heroLuck, MORALE_CHANCE, LUCK_CHANCE,
     xpToNext, gainXp, pendingLevels, levelUpOptions, applyLevelUp,
-    townHallLevel, townIncome, growthOf, guildLevel, fortLevel, coastalTown, canBuild, build, fillGuild, townSpells, canLearn,
+    townHallLevel, townIncome, growthOf, guildLevel, fortLevel, coastalTown, canBuild, build, fillGuild, townSpells, hasSpecial, canLearn,
     recruitCost, maxRecruit, recruit, upgradeStackCost, canUpgradeIn, newTownWeek,
     startingArmy, makeHero, tavernCandidates, HERO_COST, marketRate,
   };

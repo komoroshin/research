@@ -28,12 +28,27 @@
   ];
   const GUILD_SPELLS = { 1: 5, 2: 4, 3: 3, 4: 2, 5: 1 };
 
+  /* Особая постройка фракции — то, ради чего играют именно за неё.
+     Половина даёт постоянный эффект королевству, половина — разовый подарок герою при первом визите. */
+  const SPECIAL = {
+    castle: { name: 'Конюшни', cost: { gold: 2000, wood: 10 }, desc: 'Все ваши герои получают +400 очков движения в день.' },
+    rampart: { name: 'Мистический пруд', cost: { gold: 2000, wood: 5, ore: 5 }, desc: 'Каждый понедельник приносит 1–3 единицы случайного редкого ресурса.' },
+    tower: { name: 'Библиотека', cost: { gold: 2500, wood: 5, ore: 5, gems: 4 }, desc: 'В гильдии магов на одно заклинание больше на каждом уровне.' },
+    dungeon: { name: 'Портал призыва', cost: { gold: 2500, ore: 10, sulfur: 4 }, desc: 'Каждый понедельник существа из ваших внешних жилищ приходят в гарнизон этого города.' },
+    stronghold: { name: 'Зал Валгаллы', cost: { gold: 2000, wood: 10, ore: 10 }, desc: 'Первый визит героя даёт ему +1 к атаке навсегда.' },
+    fortress: { name: 'Клетка полководцев', cost: { gold: 2000, wood: 10, ore: 10 }, desc: 'Первый визит героя даёт ему +1 к защите навсегда.' },
+    inferno: { name: 'Орден Огня', cost: { gold: 2500, ore: 5, sulfur: 4 }, desc: 'Первый визит героя даёт ему +1 к силе магии навсегда.' },
+    necropolis: { name: 'Усилитель некромантии', cost: { gold: 2500, wood: 5, ore: 5, mercury: 4 }, desc: 'Некромантия ваших героев работает на 10 % лучше.' },
+  };
+
   /** Полный список построек фракции (общие + жилища + улучшения). */
   const cache = {};
   function forFaction(fid) {
     if (cache[fid]) return cache[fid];
     const f = H3.Factions.get(fid);
     const list = COMMON.filter(b => !(b.kind === 'guild' && b.level > f.guildMax)).map(b => Object.assign({}, b));
+    const sp = SPECIAL[fid];
+    if (sp) list.push({ id: 'special', name: sp.name, cost: sp.cost, req: ['fort'], desc: sp.desc, kind: 'special' });
     for (let t = 1; t <= 7; t++) {
       const dw = f.dwellings[t - 1];
       const [base, upg] = H3.Factions.creaturesOf(fid, t);
@@ -57,8 +72,8 @@
 
   /** Порядок постройки для ИИ (ТЗ §8.1). */
   const AI_ORDER = ['tavern', 'hall_2', 'dwell_2', 'dwell_3', 'guild_1', 'market', 'blacksmith', 'hall_3', 'fort', 'citadel', 'dwell_4', 'dwell_5', 'castle', 'dwell_6', 'hall_4', 'dwell_7',
-    'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'guild_5', 'shipyard', 'silo'];
+    'special', 'dwell_up_1', 'dwell_up_2', 'dwell_up_3', 'dwell_up_4', 'dwell_up_5', 'dwell_up_6', 'dwell_up_7', 'guild_2', 'guild_3', 'guild_4', 'guild_5', 'shipyard', 'silo'];
 
-  H3.Buildings = { COMMON, BY_ID, forFaction, get, GUILD_SPELLS, AI_ORDER };
+  H3.Buildings = { COMMON, BY_ID, forFaction, get, GUILD_SPELLS, SPECIAL, AI_ORDER };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Buildings;
 })(typeof window !== 'undefined' ? window : globalThis);

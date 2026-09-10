@@ -734,6 +734,74 @@ test('кампании: каждый сценарий генерируется, 
   }
 });
 
+test('особые постройки фракций: ход, гильдия, пруд, портал, разовый подарок, некромантия', () => {
+  const A = H3.Adventure, B = H3.Buildings;
+  const mk = f => S.newGame({ size: 'S', seed: 11, opponents: 1, difficulty: 'normal', faction: f });
+  for (const fid of H3.Factions.LIST.map(f => f.id)) assert.ok(B.get(fid, 'special'), 'у ' + fid + ' есть особая постройка');
+  // Конюшни: +400 очков движения всем героям игрока
+  let st = mk('castle'), t = S.townsOf(st, 0)[0], h = S.heroesOf(st, 0)[0];
+  const move0 = R.heroMaxMove(h);
+  t.buildings.fort = true; t.buildings.special = true;
+  A.newDay(st);
+  assert.equal(R.heroMaxMove(S.heroesOf(st, 0)[0]), move0 + 400, 'конюшни дают +400');
+  // Библиотека: на заклинание больше на уровень, уже выученные не пропадают
+  st = mk('tower'); t = S.townsOf(st, 0)[0]; t.buildings.fort = true;
+  R.build(st, t, 'guild_1');
+  const spells0 = t.guild[1].slice();
+  t.builtToday = false; Object.assign(st.players[0].res, { gold: 99999, wood: 99, ore: 99, gems: 99 });
+  R.build(st, t, 'special');
+  assert.equal(t.guild[1].length, spells0.length + 1, 'библиотека добавила заклинание');
+  for (const id of spells0) assert.ok(t.guild[1].includes(id), 'старые заклинания на месте');
+  // Мистический пруд: редкий ресурс в понедельник
+  st = mk('rampart'); t = S.townsOf(st, 0)[0]; t.buildings.special = true;
+  const rare0 = U.RARE.reduce((a, r) => a + st.players[0].res[r], 0);
+  A.weeklySpecials(st);
+  assert.ok(U.RARE.reduce((a, r) => a + st.players[0].res[r], 0) > rare0, 'пруд принёс редкий ресурс');
+  // Портал призыва: внешние жилища идут в гарнизон
+  st = mk('dungeon'); t = S.townsOf(st, 0)[0]; t.buildings.special = true; t.garrison = [null, null, null, null, null, null, null];
+  const dw = Object.values(st.objects).find(o => o.type === 'dwelling');
+  dw.owner = 0; dw.avail = 5;
+  A.weeklySpecials(st);
+  assert.equal(dw.avail, 0, 'жилище опустело');
+  assert.ok(t.garrison.some(x => x && x.cid === dw.cid && x.n === 5), 'существа пришли в гарнизон');
+  // Зал Валгаллы: подарок один раз на героя
+  st = mk('stronghold'); t = S.townsOf(st, 0)[0]; t.buildings.special = true; h = S.heroesOf(st, 0)[0];
+  const att0 = h.pri.att;
+  A.enterOwnTown(st, h, t); assert.equal(h.pri.att, att0 + 1, 'первый визит дал +1 к атаке');
+  A.enterOwnTown(st, h, t); assert.equal(h.pri.att, att0 + 1, 'второй визит ничего не даёт');
+  // Усилитель некромантии виден правилам
+  st = mk('necropolis'); t = S.townsOf(st, 0)[0];
+  assert.equal(R.hasSpecial(st, 0, 'necropolis'), false);
+  t.buildings.special = true;
+  assert.equal(R.hasSpecial(st, 0, 'necropolis'), true);
+});
+
+test('сборные артефакты: комплект даёт эффект сверх суммы частей', () => {
+  const AR = H3.Artifacts;
+  for (const set of AR.SETS) {
+    assert.ok(set.parts.length >= 2, set.id + ': в наборе хотя бы две части');
+    for (const id of set.parts) assert.ok(AR.get(id), set.id + ': часть ' + id + ' существует');
+  }
+  const st = S.newGame({ size: 'S', seed: 3, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const h = S.heroesOf(st, 0)[0];
+  h.arts = { weapon: 'gnoll_flail' };
+  const one = R.artifactFx(h);
+  assert.equal(one.att, 4, 'одна часть — только её эффект');
+  assert.ok(!one.morale, 'неполный набор бонуса не даёт');
+  let sets = AR.setsOf(h);
+  assert.equal(sets.length, 1); assert.equal(sets[0].complete, false);
+  h.arts.shield = 'gnoll_buckler';
+  const full = R.artifactFx(h);
+  assert.equal(full.att, 5, '+1 от собранного набора');
+  assert.equal(full.def, 5, 'защита тоже выросла');
+  assert.equal(full.morale, 1, 'мораль от набора');
+  sets = AR.setsOf(h);
+  assert.equal(sets[0].complete, true, 'набор собран');
+  // части в рюкзаке не считаются
+  h.arts = { weapon: 'gnoll_flail' }; h.backpack = ['gnoll_buckler'];
+  assert.equal(AR.setsOf(h)[0].complete, false, 'рюкзак не собирает набор');
+});
+
 console.log('save');
 test('сериализация туда-обратно', () => {
   const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'hard', faction: 'necropolis' });

@@ -598,6 +598,7 @@
     const town = sel && H3.Adventure.townOfHero(st, sel);
     btn(UI.icon('ic_town'), () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Город (T)');
     btn(UI.icon('ic_spellbook'), () => G.openSpellbook(), '', 'Книга заклинаний (C)');
+    btn(UI.icon('ic_crown'), () => H3.Kingdom.open(), '', 'Королевство (K)');
     btn(UI.icon('ic_flag'), () => toggleMini(), V.miniOpen ? 'on' : '', 'Карта и журнал (M)');
     btn(UI.icon('ic_save'), () => G.openMenu(), '', 'Меню');
     const lg = UI.$('#log'); lg.innerHTML = st.log.filter(l => l.p === undefined || l.p === -1 || l.p === st.turn).slice(-40).map(l => '<div class="' + l.cls + '">' + UI.esc(l.text) + '</div>').join(''); lg.scrollTop = lg.scrollHeight;
@@ -607,7 +608,7 @@
   function toggleMini(force) {
     V.miniOpen = force === undefined ? !V.miniOpen : !!force;
     UI.$('#miniWrap').classList.toggle('hidden', !V.miniOpen);
-    const b = UI.$('#advButtons'); if (b) { const btns = b.querySelectorAll('button'); if (btns[4]) btns[4].classList.toggle('on', V.miniOpen); }
+    const b = UI.$('#advButtons'); if (b) { const btns = b.querySelectorAll('button'); if (btns[5]) btns[5].classList.toggle('on', V.miniOpen); }
     V.dirty = true;
   }
 
