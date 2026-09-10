@@ -74,7 +74,7 @@
     // после генерации — разворачиваем их здесь
     if (state.goals) resolveGoals(state);
     // герой, перенесённый из прошлого сценария кампании
-    if (settings.carryHero) applyCarry(state, settings.carryHero);
+    if (settings.carryHero) applyCarry(state, settings.carryHero, settings.carry);
     for (const p of state.players) computeVisibility(state, p.id);
     for (const p of state.players) p.income = playerIncome(state, p.id);
     addLog(state, 'Месяц 1, неделя 1, день 1. Партия началась.', 'day');
@@ -108,15 +108,55 @@
     (state.goals.lose || []).forEach(pick);
   }
   /** Перенести героя из прошлого сценария кампании на место стартового. */
-  function applyCarry(state, carry) {
+  /* Правила переноса задаёт сценарий (см. data/campaign.js). Что можно ограничить:
+       hero: false — предыдущий герой не приходит вовсе;
+       army: 'none' — армию набираешь заново, 'part' — половина каждого отряда и не больше трёх,
+             'full' — всё войско целиком;
+       arts: false — артефакты, рюкзак и боевые машины остаются в прошлом;
+       levelCap: N — уровень срезается до N, лишние очки первичных навыков снимаются с самого
+             высокого (это обратная сторона повышений уровня). */
+  const DEFAULT_CARRY = { hero: true, army: 'part', arts: true, levelCap: 0 };
+  const PART_STACKS = 3;
+  function carryRules(rules) { return Object.assign({}, DEFAULT_CARRY, rules || {}); }
+  /** Отряды, которые доходят до следующей карты, по правилу армии. */
+  function carriedArmy(carry, mode) {
+    const src = (carry.army || []).filter(s => s && s.n > 0);
+    if (mode === 'none' || !src.length) return [];
+    if (mode === 'full') return src.map(s => ({ cid: s.cid, n: s.n }));
+    const half = src.map(s => ({ cid: s.cid, n: Math.max(1, Math.ceil(s.n / 2)) }));
+    half.sort((a, b) => R.armyPower([b], null) - R.armyPower([a], null));
+    return half.slice(0, PART_STACKS);
+  }
+  function applyCarry(state, carry, rules) {
     const hero = heroesOf(state, 0)[0];
     if (!hero || !carry) return;
+    const r = carryRules(rules);
+    if (!r.hero) return;   // сценарий начинается с чистого героя
     hero.level = carry.level; hero.xp = carry.xp; hero.pri = U.clone(carry.pri);
     hero.skills = U.clone(carry.skills); hero.spells = carry.spells.slice(); hero.hasBook = carry.hasBook;
-    hero.arts = U.clone(carry.arts); hero.backpack = carry.backpack.slice();
-    hero.machines = U.clone(carry.machines || {});
-    if (carry.army && carry.army.some(Boolean)) {
-      for (let i = 0; i < 7; i++) hero.army[i] = carry.army[i] ? { cid: carry.army[i].cid, n: carry.army[i].n } : hero.army[i];
+    if (r.arts) { hero.arts = U.clone(carry.arts); hero.backpack = carry.backpack.slice(); hero.machines = U.clone(carry.machines || {}); }
+    // потолок уровня: снимаем лишние очки с самого высокого первичного навыка
+    if (r.levelCap && hero.level > r.levelCap) {
+      let extra = hero.level - r.levelCap;
+      const keys = ['att', 'def', 'pow', 'kno'];
+      while (extra-- > 0) {
+        const k = keys.slice().sort((a, b) => hero.pri[b] - hero.pri[a])[0];
+        if (hero.pri[k] > 0) hero.pri[k]--;
+      }
+      hero.level = r.levelCap; hero.xp = HE.xpForLevel(r.levelCap);
+    }
+    const troops = carriedArmy(carry, r.army);
+    if (troops.length) {
+      // пришедшие отряды встают первыми; местное ополчение занимает только свободные слоты
+      // и не подмешивается к перенесённым — иначе «половина войска» тихо превращалась бы в полторы
+      const local = hero.army.filter(s => s && s.n > 0).map(s => ({ cid: s.cid, n: s.n }));
+      hero.army = [null, null, null, null, null, null, null];
+      for (const s of troops) R.addToArmy(hero.army, s.cid, s.n);
+      for (const s of local) {
+        if (hero.army.some(x => x && x.cid === s.cid)) continue;
+        const free = hero.army.findIndex(x => !x || x.n <= 0);
+        if (free >= 0) hero.army[free] = { cid: s.cid, n: s.n };
+      }
     }
     hero.name = carry.name; hero.tid = carry.tid; hero.cls = carry.cls; hero.portrait = carry.portrait; hero.spec = carry.spec;
     hero.mana = R.heroMaxMana(hero); hero.move = R.heroMaxMove(hero);
@@ -303,7 +343,7 @@
   }
 
   H3.State = {
-    lvl, resolveGoals, applyCarry, carryOf,
+    lvl, resolveGoals, applyCarry, carryOf, carryRules, carriedArmy, DEFAULT_CARRY,
     VERSION, DIFFICULTY, SIZES, newGame, attachRng, syncRng, learnTownSpells,
     idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, gatesNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,

@@ -684,7 +684,7 @@ test('цели: выбывание всех противников не даёт
 
 test('кампания: перенос героя между сценариями и шаблонные цели', () => {
   const CP = H3.Campaign, sc = CP.get('erathia').scenarios;
-  const start = (s, carry) => S.newGame({ size: s.size, seed: s.seed, opponents: s.opponents, difficulty: s.difficulty, faction: s.faction, goals: U.clone(s.goals), carryHero: carry || null });
+  const start = (s, carry) => S.newGame({ size: s.size, seed: s.seed, opponents: s.opponents, difficulty: s.difficulty, faction: s.faction, goals: U.clone(s.goals), carryHero: carry || null, carry: { army: 'full' } });
   assert.ok(sc.length >= 5, 'в кампании пять сценариев');
   // прошли первый сценарий «прокачанным» героем
   const st1 = start(sc[0]);
@@ -699,7 +699,7 @@ test('кампания: перенос героя между сценариям�
   assert.deepEqual(h2.skills, { wisdom: 3, offense: 2 });
   assert.ok(h2.spells.includes('fireball'), 'заклинания перенесены');
   assert.equal(h2.arts.head, 'centaur_axe'); assert.ok(h2.backpack.includes('ring_of_vitality'));
-  assert.deepEqual(h2.army[0], { cid: 'archangel', n: 4 }, 'армия перенесена');
+  assert.deepEqual(h2.army[0], { cid: 'archangel', n: 4 }, 'при правиле «всё войско» армия перенесена целиком');
   assert.equal(st2.carried, h2.id);
   assert.equal(h2.move, R.heroMaxMove(h2), 'ход полный, а не остаток прошлой карты');
   assert.notStrictEqual(h2.skills, carry.skills, 'перенос копией, а не ссылкой');
@@ -742,6 +742,60 @@ test('противник без городов выбывает через се�
   assert.equal(foe.alive, true, 'шесть дней без города — ещё в игре');
   A.newDay(st);
   assert.equal(foe.alive, false, 'седьмой день без города — выбывает');
+});
+
+test('перенос между сценариями подчиняется правилам сценария', () => {
+  const CP = H3.Campaign;
+  const base = { size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' };
+  const mkCarry = () => {
+    const st = S.newGame(base);
+    const h = S.heroesOf(st, 0)[0];
+    h.level = 12; h.xp = H3.Heroes.xpForLevel(12); h.pri = { att: 9, def: 7, pow: 4, kno: 3 };
+    h.skills = { logistics: 3 }; h.spells = ['fireball']; h.hasBook = true;
+    h.arts = { weapon: 'titan_gladius' }; h.backpack = ['clover_fortune'];
+    h.army = [{ cid: 'pikeman', n: 30 }, { cid: 'archer', n: 12 }, { cid: 'griffin', n: 9 }, { cid: 'swordsman', n: 6 }, null, null, null];
+    return S.carryOf(h);
+  };
+  const start = (carry, rules) => S.newGame(Object.assign({}, base, { seed: 8, carryHero: carry, carry: rules }));
+  const carry = mkCarry();
+  // умолчание: герой, половина войска (не больше трёх отрядов), артефакты
+  let h = S.heroesOf(start(carry, null), 0)[0];
+  assert.equal(h.level, 12, 'герой перенёсся');
+  assert.equal(h.arts.weapon, 'titan_gladius', 'артефакт при нём');
+  // само правило отбора: половина каждого отряда, три сильнейших
+  const part = S.carriedArmy(carry, 'part');
+  assert.equal(part.length, 3, 'переносятся три отряда');
+  assert.deepEqual(part.map(x => x.cid).sort(), ['griffin', 'pikeman', 'swordsman'], 'самые ценные три');
+  assert.equal(part.find(x => x.cid === 'griffin').n, 5, 'девять грифонов дошли пятью');
+  assert.equal(part.find(x => x.cid === 'pikeman').n, 15, 'тридцать копейщиков дошли пятнадцатью');
+  assert.equal(S.carriedArmy(carry, 'none').length, 0, 'при «заново» не переносится ничего');
+  assert.equal(S.carriedArmy(carry, 'full').length, 4, 'при «всё войско» переносятся все отряды');
+  const mine = h.army.filter(x => x && x.n > 0);
+  assert.equal(mine.find(x => x.cid === 'griffin').n, 5, 'в новой партии грифонов половина');
+  assert.equal(mine.find(x => x.cid === 'pikeman').n, 15, 'и копейщиков половина, а не половина плюс местные');
+  // 'full' — всё войско целиком
+  h = S.heroesOf(start(carry, { army: 'full' }), 0)[0];
+  assert.equal(h.army.find(x => x && x.cid === 'pikeman').n, 30, 'копейщики пришли полностью');
+  assert.ok(h.army.some(x => x && x.cid === 'archer' && x.n === 12), 'и лучники тоже');
+  // 'none' — армия только местная, перенесённых отрядов нет
+  const stNone = start(carry, { army: 'none' });
+  h = S.heroesOf(stNone, 0)[0];
+  assert.ok(!h.army.some(x => x && x.cid === 'griffin' && x.n === 9), 'войско не перенеслось');
+  assert.equal(h.level, 12, 'герой всё равно перенёсся');
+  // артефакты можно отобрать
+  h = S.heroesOf(start(carry, { arts: false }), 0)[0];
+  assert.ok(!h.arts.weapon, 'артефакты остались в прошлом');
+  assert.equal(h.backpack.length, 0, 'и рюкзак пуст');
+  assert.equal(h.level, 12, 'уровень при этом сохранён');
+  // потолок уровня срезает и уровень, и лишние очки навыков
+  h = S.heroesOf(start(carry, { levelCap: 9 }), 0)[0];
+  assert.equal(h.level, 9, 'уровень срезан');
+  assert.equal(h.pri.att + h.pri.def + h.pri.pow + h.pri.kno, 23 - 3, 'три лишних очка сняты');
+  // герой может не прийти вовсе
+  h = S.heroesOf(start(carry, { hero: false }), 0)[0];
+  assert.notEqual(h.level, 12, 'начали с чистого героя');
+  // у каждого сценария кампаний правила читаются текстом
+  for (const c of CP.LIST) for (const sc of c.scenarios) assert.ok(CP.carryText(sc).length > 5, c.id + '/' + sc.id + ': правила переноса описаны');
 });
 
 test('кампании: каждый сценарий генерируется, противники и цели — по сценарию', () => {
