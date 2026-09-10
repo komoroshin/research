@@ -68,19 +68,21 @@
 
   /** Отрисовка спрайта с деформацией; якорь (низ-центр) попадает в (x, y). */
   function draw(ctx, name, x, y, scale, flip, o, extraTint) {
-    const cv = Sp.render(name, scale || 1, flip, extraTint);
-    if (!cv) { Sp.draw(ctx, name, x, y, scale, flip, extraTint); return; }
+    const im = Sp.image(name, scale || 1, flip, extraTint);
+    if (!im) { Sp.draw(ctx, name, x, y, scale, flip, extraTint); return; }
+    const cv = im.cv, k = im.k, dw = cv.width * k, dh = cv.height * k;
     const st = o && o.st ? o.st : state(o || {});
     const ax = cv._anchor[0] * (scale || 1), ay = cv._anchor[1] * (scale || 1);
     const flat = st.sx === 1 && st.sy === 1 && !st.skew;
     ctx.save();
+    if (k !== 1) Sp.smoothFor(ctx, k);
     if (flat) {
-      ctx.drawImage(cv, Math.round(x + st.dx - ax), Math.round(y + st.dy - ay));
+      ctx.drawImage(cv, Math.round(x + st.dx - ax), Math.round(y + st.dy - ay), dw, dh);
     } else {
       ctx.translate(Math.round(x + st.dx), Math.round(y + st.dy));
       // сдвиг растёт с высотой над «землёй»: ноги стоят, корпус качается
       ctx.transform(st.sx, 0, st.skew, st.sy, 0, 0);
-      ctx.drawImage(cv, -ax, -ay);
+      ctx.drawImage(cv, -ax, -ay, dw, dh);
     }
     ctx.restore();
   }

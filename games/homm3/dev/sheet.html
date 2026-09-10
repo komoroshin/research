@@ -17,6 +17,7 @@ const cs = +(q.get('cell') || 34); // размер ячейки в пиксел�
 let loaded = 0;
 function go() {
   const S = H3.Sprites;
+  if (S.setDetail) S.setDetail(q.get('detail') !== '0'); // ?detail=0 — классический рендер без 2×-конвейера
   let names = S.names().filter(n => !filter || n.startsWith(filter));
   if (only.length) names = only;
   const cell = cs * scale + 8, cellH = cs * scale + 22;
