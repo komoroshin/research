@@ -1,0 +1,696 @@
+/* ---------------------------------------------------------------------------
+   Threshold deck.
+
+   Register: calm precision. Paper ground, ink text, one restrained accent.
+   The deck deliberately looks like the document the product produces — the
+   one-page summary a person takes to their doctor — rather than a clinical
+   white or a wellness pastel.
+
+   Type floor: the canvas is a fixed 1920×1080 box scaled to the viewport, so
+   every size below is exact. The minimum content size is 26px = 2.41% of the
+   slide height, above the 2.2% floor. Only the slide number and the example
+   badge sit below it; they are chrome, not content.
+--------------------------------------------------------------------------- */
+
+:root {
+  --paper: #EEF0EC;
+  --paper-2: #E4E7E2;
+  --ink: #0B1F24;
+  --ink-2: #3D5257;
+  --ink-3: #71858A;
+  --rule: #C3CAC5;
+  --accent: #C8871F;      /* marigold, darkened for contrast on paper */
+  --accent-soft: #F0E2C8;
+  --react: #9C3B72;       /* used only where the content distinguishes states */
+  --clear: #2C6E59;
+
+  --fs-body: 34px;
+  --fs-small: 26px;       /* the floor */
+  --fs-lead: 40px;
+  --fs-h1: 78px;
+  --fs-h1-long: 62px;
+  --fs-big: 150px;
+
+  --m-x: 132px;           /* side margin */
+  --m-y: 96px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #1A1C1B;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.canvas {
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+  background: var(--paper);
+  position: absolute;
+  overflow: hidden;
+  display: none;
+}
+.canvas.is-current { display: block; }
+
+/* Служебное состояние для проверки переполнения: показать все холсты сразу,
+   иначе у скрытых слайдов нулевая высота и проверка ничего не находит. */
+body.measure-all .canvas { display: block; visibility: hidden; }
+body.measure-all .slide { display: flex; opacity: 1; animation: none; }
+
+/* --- slide skeleton ------------------------------------------------------ */
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: var(--m-y) var(--m-x);
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+}
+.slide.is-current {
+  display: flex;
+  animation: appear 180ms ease-out forwards;
+}
+@keyframes appear { from { opacity: 0 } to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) {
+  .slide.is-current { animation: none; opacity: 1; }
+}
+
+.eyebrow {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* The one identity carry-over from the product: a single marigold hairline
+   per slide. It marks the line the argument is standing on. */
+.rule {
+  height: 2px;
+  background: var(--accent);
+  width: 148px;
+  margin: 26px 0 44px;
+  flex: none;
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  margin: 0;
+  max-width: 24ch;
+}
+h1.long { font-size: var(--fs-h1-long); max-width: 30ch; }
+
+p, li {
+  font-size: var(--fs-body);
+  line-height: 1.42;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 46ch;
+}
+.lead { font-size: var(--fs-lead); color: var(--ink); max-width: 40ch; }
+strong { color: var(--ink); font-weight: 600; }
+
+.body { display: flex; flex-direction: column; gap: 26px; flex: 1 1 auto; min-height: 0; }
+
+ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 20px; }
+li { position: relative; padding-left: 40px; }
+li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.62em;
+  width: 14px; height: 2px;
+  background: var(--accent);
+}
+
+/* --- chrome -------------------------------------------------------------- */
+
+.num {
+  position: absolute;
+  right: var(--m-x); bottom: 54px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+}
+.badge {
+  position: absolute;
+  left: var(--m-x); bottom: 54px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 18px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--react);
+}
+
+/* --- title slide --------------------------------------------------------- */
+
+.slide[data-layout='title'] { justify-content: center; }
+.slide[data-layout='title'] h1 {
+  font-size: 132px;
+  letter-spacing: 0.06em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.slide[data-layout='title'] .body { flex: none; margin-top: 40px; }
+.slide[data-layout='title'] p { font-size: var(--fs-lead); max-width: 38ch; }
+
+/* --- metric -------------------------------------------------------------- */
+
+.metrics { display: flex; gap: 120px; align-items: flex-end; flex-wrap: wrap; }
+.metric-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-big);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  color: var(--ink);
+}
+.metric-unit {
+  font-size: var(--fs-small);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-left: 16px;
+}
+
+/* Раскладка metric: три числа одной строкой, подпись — под числом. Флексом
+   они переносились на вторую строку и съедали половину слайда. */
+.slide[data-layout='metric'] .metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+/* Диапазон «$188–249» длиннее одиночного числа — переносился на вторую
+   строку и ломал ряд. Кегль подобран так, чтобы самое длинное значение
+   помещалось в свою треть. */
+.slide[data-layout='metric'] .metric-value { font-size: 100px; white-space: nowrap; }
+.slide[data-layout='metric'] .metric-unit { display: block; margin: 14px 0 0; }
+.slide[data-layout='metric'] li { max-width: none; }
+.slide[data-layout='metric'] .body { gap: 34px; }
+
+/* --- slide 7: arithmetic ------------------------------------------------- */
+
+.arith {
+  border-top: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding: 40px 0;
+  margin: 12px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 62px;
+  line-height: 1.16;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: none;
+}
+
+/* --- slide 9: levels table ----------------------------------------------- */
+
+.levels { width: 100%; border-collapse: collapse; }
+.levels td {
+  font-size: var(--fs-body);
+  line-height: 1.34;
+  color: var(--ink-2);
+  padding: 30px 32px 30px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.levels td:first-child {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  width: 22%;
+  white-space: nowrap;
+}
+.levels td:nth-child(2) { color: var(--ink); font-weight: 600; width: 26%; }
+.levels tr.cols-2 td:nth-child(2) {
+  color: var(--ink-2);
+  font-weight: 400;
+  width: auto;
+  padding-right: 0;
+}
+.slide[data-layout='levels'] .levels tr:last-child td {
+  border-bottom: none;
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.slide[data-layout='levels'] .levels tr:last-child td:first-child { color: var(--ink); }
+.slide[data-layout='levels'] .levels tr:last-child td:first-child { box-shadow: inset 4px 0 0 var(--accent); padding-left: 28px; }
+/* Рамка-акцент под таблицей уровней: компактнее, чем гейт капитала, — на
+   слайде уже стоит таблица, и 36px моноширинного сюда не помещаются. */
+.slide[data-layout='levels'] .gate { margin-top: 22px; padding: 14px 28px; font-size: 28px; }
+
+/* --- слайды 11 и 12: широкая мера ---------------------------------------- */
+
+/* 46ch — мера коротких тезисов версии 1. На слайдах с длинными строками она
+   даёт колонку в треть слайда и вытесняет содержимое за нижний край. */
+.slide[data-layout='thresholds'] li,
+.slide[data-layout='dense'] li,
+.slide[data-layout='risks'] li { max-width: 86ch; }
+.slide[data-layout='thresholds'] ul,
+.slide[data-layout='dense'] ul { gap: 18px; }
+
+/* Плотные слайды версии 2 несут больше строк, чем тезисные слайды версии 1.
+   Воздух под линейкой и между блоками ужат ровно настолько, чтобы содержимое
+   помещалось в поле набора; кегли не трогаем. */
+.slide[data-layout='thresholds'] .rule,
+.slide[data-layout='dense'] .rule,
+.slide[data-layout='risks'] .rule,
+.slide[data-layout='capital'] .rule { margin-bottom: 26px; }
+.slide[data-layout='dense'] .body { gap: 18px; }
+/* Заголовок в 30ch ломается на три строки и съедает строку содержимого. */
+.slide[data-layout='dense'] h1.long { max-width: 36ch; }
+.slide[data-layout='dense'] .footnote { padding-top: 20px; margin-bottom: 0; }
+.slide[data-layout='dense'] .footnote { margin-bottom: 0; }
+
+/* --- слайд 12: риски ------------------------------------------------------ */
+
+.slide[data-layout='risks'] .levels td:first-child {
+  width: 24%;
+  white-space: normal;
+  line-height: 1.24;
+  padding-right: 44px;
+}
+.slide[data-layout='risks'] .levels td { padding: 24px 0 24px 0; }
+.slide[data-layout='risks'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+
+/* --- слайд 11: пороги по CAC --------------------------------------------- */
+
+/* Три порога — это шкала, а не список: у каждой строки левая колонка задаёт
+   границу, правая — что при ней делаем. Средний столбец таблицы уровней здесь
+   не нужен, поэтому границы получают акцент, а не фон. */
+.slide[data-layout='thresholds'] .levels td { padding: 14px 32px 14px 0; }
+.slide[data-layout='thresholds'] .levels td:first-child {
+  width: 16%;
+  color: var(--accent);
+}
+.slide[data-layout='thresholds'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+
+/* --- слайд 14: капитал по рубежам ---------------------------------------- */
+
+.capital-cols {
+  display: grid;
+  grid-template-columns: 2.05fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.capital-cols > div:first-child { display: flex; flex-direction: column; gap: 14px; }
+.slide[data-layout='capital'] p { font-size: var(--fs-small); color: var(--ink-3); max-width: none; }
+.slide[data-layout='capital'] .body { gap: 12px; }
+.slide[data-layout='capital'] .gate { margin-top: 24px; padding: 16px 32px; font-size: 32px; }
+.slide[data-layout='capital'] .footnote { margin-top: 16px; margin-bottom: 0; padding-top: 16px; }
+
+table.capital { width: 100%; border-collapse: collapse; }
+table.capital th {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-align: left;
+  padding: 0 24px 12px 0;
+  border-bottom: 2px solid var(--ink);
+}
+table.capital th:not(:first-child),
+table.capital td:not(:first-child) { text-align: right; width: 14%; white-space: nowrap; }
+table.capital td {
+  font-size: var(--fs-body);
+  line-height: 1.3;
+  color: var(--ink-2);
+  padding: 13px 24px 13px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.capital td:not(:first-child) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink);
+  padding-right: 0;
+}
+table.capital tr:last-child td { border-bottom: none; }
+
+/* Роль команды — три равные колонки под таблицей: это не список по важности,
+   а три строки одного бюджета. */
+.roles { border-top: 2px solid var(--ink); padding-top: 16px; margin-top: 4px; }
+.roles h2 {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.roles ul { gap: 18px; }
+.roles li { font-size: var(--fs-small); line-height: 1.34; max-width: none; }
+
+/* --- слайд 15: гейт и капитал далее --------------------------------------- */
+
+.slide[data-layout='outlook'] p { font-size: var(--fs-small); color: var(--ink-3); max-width: none; }
+.slide[data-layout='outlook'] .body { gap: 10px; }
+.slide[data-layout='outlook'] .rule { margin-bottom: 26px; }
+.slide[data-layout='outlook'] table.capital td { padding: 10px 24px 10px 0; }
+.slide[data-layout='outlook'] .levels td { padding: 11px 32px 11px 0; }
+.slide[data-layout='outlook'] .levels td:first-child { width: 16%; color: var(--accent); }
+.slide[data-layout='outlook'] .levels td:nth-child(2) { color: var(--ink-2); font-weight: 400; width: auto; }
+.slide[data-layout='outlook'] .footnote { margin-top: 12px; margin-bottom: 0; padding-top: 14px; }
+
+/* --- слайд 14: ask двумя этапами ------------------------------------------ */
+
+.slide[data-layout='ask'] h1.long { max-width: 42ch; }
+.slide[data-layout='ask'] .rule { margin-bottom: 26px; }
+.slide[data-layout='ask'] .tranches { gap: 64px; }
+/* Ask несёт два описания этапов и две сноски. 30px — всё ещё выше нижней
+   границы 26px, ниже неё в этом деке не опускается ничего. */
+.slide[data-layout='ask'] .tranche p { max-width: none; font-size: 28px; line-height: 1.34; }
+.slide[data-layout='ask'] .tranche h2 { font-size: 28px; letter-spacing: 0.08em; margin-bottom: 0; }
+.slide[data-layout='ask'] .tranche { display: flex; flex-direction: column; gap: 12px; padding-top: 18px; }
+.slide[data-layout='ask'] .gate { margin-top: 18px; padding: 16px 30px; font-size: 27px; }
+.slide[data-layout='ask'] .footnote { margin-top: 14px; margin-bottom: 0; padding-top: 14px; }
+
+/* --- приложение: сметы ----------------------------------------------------- */
+
+table.budget { width: 100%; border-collapse: collapse; }
+table.budget th {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-align: left;
+  padding: 0 0 12px;
+  border-bottom: 2px solid var(--ink);
+}
+table.budget th:last-child, table.budget td:last-child {
+  text-align: right;
+  width: 18%;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink);
+}
+table.budget td {
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--ink-2);
+  padding: 9px 32px 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.budget tr.sum td { border-bottom: none; border-top: 2px solid var(--ink); color: var(--ink); }
+.slide[data-layout='budget'] p { font-size: var(--fs-small); max-width: none; }
+.slide[data-layout='budget'] .body { gap: 16px; }
+.slide[data-layout='budget'] .rule { margin-bottom: 24px; }
+
+/* Пометка «не для показа» стоит там же, где метка подставного контента. */
+.private {
+  position: absolute;
+  left: var(--m-x); bottom: 54px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--react);
+}
+.slide[data-internal='1'] .eyebrow { color: var(--react); }
+
+/* --- slide 12: tranches -------------------------------------------------- */
+
+.tranches { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+.tranche { border-top: 2px solid var(--ink); padding-top: 26px; }
+.tranche h2 {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0 0 18px;
+  color: var(--ink);
+}
+.gate {
+  margin: 40px 0 0;
+  border: 2px solid var(--accent);
+  padding: 30px 36px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 36px;
+  line-height: 1.3;
+  color: var(--ink);
+  max-width: none;
+  position: relative;
+}
+.gate::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -15px; left: 30px;
+  background: var(--paper);
+  padding: 0 12px;
+  font-size: 20px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.footnote {
+  margin-top: auto;
+  margin-bottom: 44px;
+  border-top: 1px solid var(--rule);
+  padding-top: 26px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+  max-width: none;
+}
+
+/* --- slide 4: phases diagram --------------------------------------------- */
+
+/* Слайд 4 несёт объяснение метода и три вывода поверх самой диаграммы —
+   больше текста, чем было в версии 3. Кегль не трогаем (34px везде), режем
+   межстрочный интервал и отступы, как на других плотных слайдах. Три вывода
+   под диаграммой — единственный список на этом слайде: диаграмма рисуется
+   отдельным SVG, не тегом ul, так что `ul` здесь однозначно адресует его. */
+.slide[data-layout='phases'] .body { gap: 4px; }
+.slide[data-layout='phases'] p { line-height: 1.1; }
+.slide[data-layout='phases'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 48px;
+}
+.slide[data-layout='phases'] li { break-inside: avoid; line-height: 1.1; margin-bottom: 8px; }
+.slide[data-layout='phases'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='phases'] .rule { margin-bottom: 4px; }
+
+/* flex: none и явная высота — иначе внутри переполненного flex-контейнера
+   SVG без заданной высоты схлопывается до нуля (виден только на слайде 4
+   после того как контента стало больше, чем помещается: раньше эта ветка
+   просто не срабатывала). */
+.diagram { width: 100%; height: 231px; margin-top: 0; flex: none; }
+.diagram text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  fill: var(--ink-3);
+}
+.diagram text.on { fill: var(--ink); }
+.diagram text.big { font-size: 30px; fill: var(--ink); }
+
+/* --- слайд 7: горизонт --------------------------------------------------- */
+
+.timeline { width: 100%; margin: 4px 0 0; flex: none; }
+.timeline text.when {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 26px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--ink-3);
+}
+.timeline text.when.on { fill: var(--accent); }
+.timeline text.what { font-size: 34px; font-weight: 600; fill: var(--ink-2); }
+.timeline text.what.on { fill: var(--ink); }
+.slide[data-layout='timeline'] li { max-width: none; }
+/* Пять пунктов в одну колонку не помещаются под таймлайном, а кегль на этом
+   слайде не трогаем. Две колонки набора: строки короче, высота вдвое меньше,
+   слова не тронуты. */
+.slide[data-layout='timeline'] ul {
+  display: block;
+  column-count: 2;
+  column-gap: 64px;
+}
+/* Интерлиньяж на этом слайде плотнее общего 1,42 — кегль при этом остаётся
+   34px, как на всех остальных слайдах. */
+.slide[data-layout='timeline'] li { break-inside: avoid; margin-bottom: 12px; line-height: 1.32; }
+.slide[data-layout='timeline'] li:last-child { margin-bottom: 0; }
+.slide[data-layout='timeline'] .body { gap: 10px; }
+.slide[data-layout='timeline'] .rule { margin-bottom: 8px; }
+/* Сноска про телемедицину прижата к низу, но без запаса в 44px:
+   на этом слайде он выталкивал последний буллет за поле набора. */
+.slide[data-layout='timeline'] .footnote { margin-bottom: 0; padding-top: 12px; line-height: 1.34; }
+.slide[data-layout='timeline'] h1.long { max-width: 40ch; }
+
+/* --- appendix marker ----------------------------------------------------- */
+
+.slide[data-appendix='1'] .eyebrow { color: var(--accent); }
+
+/* --- goto / help overlays ------------------------------------------------ */
+
+.overlay {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: none;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(11, 31, 36, 0.92);
+  color: var(--paper);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  z-index: 10;
+}
+.overlay.show { display: flex; }
+
+/* --- print / PDF --------------------------------------------------------- */
+
+@page { size: 1920px 1080px; margin: 0; }
+
+@media print {
+  html, body { background: #fff; height: auto; }
+  .stage { position: static; display: block; overflow: visible; }
+  .canvas {
+    transform: none !important;
+    page-break-after: always;
+    break-after: page;
+    position: relative;
+    display: block !important;
+    width: 1920px;
+    height: 1080px;
+  }
+  .canvas:last-child { page-break-after: auto; break-after: auto; }
+  .slide { display: flex !important; opacity: 1 !important; animation: none !important; position: absolute; }
+  .overlay, .badge { display: none !important; }
+}
+
+/* --- управление касанием -------------------------------------------------
+   Клавиатуры на телефоне нет, поэтому показ должен листаться пальцем.
+   Кнопки появляются только там, где нет мыши либо экран узкий: на проекторе
+   и в PDF их нет. */
+
+.deck-controls,
+.deck-picker { display: none; }
+
+@media (hover: none), (max-width: 900px) {
+  .deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(11, 31, 36, 0.82);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+  }
+  .deck-controls button {
+    min-width: 46px;
+    height: 40px;
+    border: none;
+    background: none;
+    color: var(--paper);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 22px;
+    line-height: 1;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .deck-controls button.counter { font-size: 14px; letter-spacing: 0.08em; min-width: 74px; }
+  .deck-controls button:disabled { opacity: 0.28; }
+  .deck-controls button:active { background: rgba(255, 255, 255, 0.14); }
+
+  .deck-picker {
+    position: fixed;
+    left: 50%;
+    bottom: 68px;
+    transform: translateX(-50%);
+    display: none;
+    grid-template-columns: repeat(6, 46px);
+    gap: 6px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(11, 31, 36, 0.94);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    max-width: calc(100vw - 24px);
+  }
+  .deck-picker.show { display: grid; }
+  .deck-picker button {
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--paper);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .deck-picker button.appendix { background: rgba(200, 135, 31, 0.22); color: #F0E2C8; }
+  .deck-picker button.on { background: var(--accent); color: var(--ink); }
+}
+
+@media print {
+  .deck-controls, .deck-picker { display: none !important; }
+}
+
+/* --- слайд со снимком экрана --------------------------------------------
+   Текст слева, телефон справа во всю высоту тела слайда. Снимок сделан из
+   самого прототипа, а не нарисован. */
+
+.screenshot-cols {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 64px;
+  align-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Отступ справа: номер слайда стоит в правом нижнем углу, и без него
+     рамка телефона наезжает на цифру. */
+  padding-right: 78px;
+}
+
+.screenshot-cols > div { display: flex; flex-direction: column; gap: 26px; }
+
+.shot { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.shot img {
+  display: block;
+  height: 636px;
+  width: auto;
+  border-radius: 26px;
+}
+.shot figcaption {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: center;
+  max-width: 22ch;
+}
