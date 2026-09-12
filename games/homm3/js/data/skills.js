@@ -29,7 +29,7 @@
     { id: 'first_aid', name: 'Первая помощь', value: [50, 75, 100], fmt: 'Палатка лечит {v} HP; целью управляет герой', w: { might: 3, magic: 3 } },
     { id: 'leadership', name: 'Лидерство', value: [1, 2, 3], fmt: 'Мораль +{v}', w: { might: 5, magic: 2 } },
     { id: 'luck', name: 'Удача', value: [1, 2, 3], fmt: 'Удача +{v}', w: { might: 4, magic: 3 } },
-    { id: 'necromancy', name: 'Некромантия', value: [10, 20, 30], fmt: '{v} % убитых врагов поднимаются скелетами', w: { might: 0, magic: 0 } },
+    { id: 'necromancy', name: 'Некромантия', value: [10, 20, 30], fmt: '{v} % убитых врагов поднимаются скелетами', w: { might: 3, magic: 3 } },
     { id: 'estates', name: 'Поместья', value: [125, 250, 500], fmt: '+{v} золота в день', w: { might: 3, magic: 3 } },
     { id: 'diplomacy', name: 'Дипломатия', value: [1, 2, 3], fmt: 'Нейтралы охотнее присоединяются (+{v}); сдача дешевле на {d} %', w: { might: 3, magic: 3 } },
     { id: 'learning', name: 'Обучение', value: [5, 10, 15], fmt: 'Опыт +{v} %', w: { might: 2, magic: 3 } },

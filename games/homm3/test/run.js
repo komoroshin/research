@@ -939,5 +939,20 @@ test('роспуск отряда: слот пустеет, последний �
   assert.equal(A.disbandStack(a, 3, false), false);
 });
 
+test('Некромантию предлагают только героям Некрополиса, и она вообще предлагается', () => {
+  const mk = cls => { const st = { nextId: 1, heroes: {}, _rng: { misc: new U.RNG(1) } };
+    const t = HE.HEROES.find(h => h.cls === cls); const h = R.makeHero(st, t.id, 0, 0, 0, true);
+    delete h.skills.necromancy; return h; };
+  const rate = h => { let n = 0; for (let i = 0; i < 300; i++) if (R.levelUpOptions(h, new U.RNG(i * 13 + 7)).choices.some(c => c.id === 'necromancy')) n++; return n; };
+  assert.ok(rate(mk('deathknight')) > 0, 'рыцарю смерти Некромантия не предлагается');
+  assert.ok(rate(mk('necromancer')) > 0, 'некроманту Некромантия не предлагается');
+  assert.equal(rate(mk('knight')), 0);
+  assert.equal(rate(mk('wizard')), 0);
+  // все герои Некрополиса стартуют с ней
+  const st = { nextId: 1, heroes: {}, _rng: { misc: new U.RNG(1) } };
+  for (const t of HE.HEROES.filter(h => ['deathknight', 'necromancer'].includes(h.cls)))
+    assert.ok(R.makeHero(st, t.id, 0, 0, 0, true).skills.necromancy >= 1, t.name + ' без Некромантии');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
