@@ -923,5 +923,21 @@ test('движение, подбор, дипломатия, конец хода'
   const gold = p.res.gold; H3.Adventure.endPlayerTurn(st); H3.Adventure.endPlayerTurn(st); assert.equal(st.day, 2); assert.ok(p.res.gold >= gold + 500); assert.equal(h.move, R.heroMaxMove(h));
 });
 
+test('роспуск отряда: слот пустеет, последний отряд героя не отдаётся', () => {
+  const A = H3.Adventure;
+  const a = army([['pikeman', 10], ['archer', 5]]);
+  assert.equal(A.disbandStack(a, 1, true), true);
+  assert.equal(a[1], null);
+  assert.equal(R.armySize(a), 1);
+  // последний отряд героя (keepLast) не распускается
+  assert.equal(A.disbandStack(a, 0, true), false);
+  assert.equal(a[0].n, 10);
+  // гарнизон (keepLast = false) можно опустошить полностью
+  assert.equal(A.disbandStack(a, 0, false), true);
+  assert.equal(R.armySize(a), 0);
+  // пустой слот распустить нельзя
+  assert.equal(A.disbandStack(a, 3, false), false);
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);

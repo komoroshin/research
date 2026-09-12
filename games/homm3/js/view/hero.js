@@ -48,7 +48,7 @@
         + '<div class="hrow"><button class="chip" data-mor>' + UI.icon('ic_morale') + ' Мораль ' + sign(mor.value) + '</button><button class="chip" data-luck>' + UI.icon('ic_luck') + ' Удача ' + sign(luck.value) + '</button><span class="chip">' + UI.icon('ic_move') + ' ' + Math.round(h.move) + '/' + R.heroMaxMove(h) + '</span><span class="chip">' + UI.icon('ic_mana') + ' ' + h.mana + '/' + R.heroMaxMana(h) + '</span></div>'
         + '<div class="skills">' + Object.keys(h.skills).map(id => '<button class="skill" data-skill="' + id + '">' + UI.icon('sk_' + id) + '<b>' + UI.esc(SK.get(id).name) + '</b> ' + UI.esc(SK.levelName(h.skills[id])) + '</button>').join('') + (Object.keys(h.skills).length ? '' : '<span class="muted small">нет вторичных навыков</span>') + '</div>')
       + '<div class="small muted">Армия · ' + (exch ? 'тап — выбрать, второй тап — переместить к любому герою' : 'тап — выбрать, второй тап — переместить; долгое нажатие — сведения') + '</div>' + UI.armyHtml(h.army, selHere ? cur.sel.i : -1)
-      + (selHere ? UI.selBarHtml(h.army[cur.sel.i], cur.split) : '')
+      + (selHere ? UI.selBarHtml(h.army[cur.sel.i], cur.split, R.armySize(h.army) > 1) : '')
       + '<div class="small muted">Артефакты · тап — снять, из рюкзака — надеть; долгое нажатие — описание</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
       + setsHtml(h)
       + machinesHtml(h)
@@ -58,6 +58,7 @@
     const bar = col.querySelector('.selbar');
     if (bar) {
       const bs = bar.querySelector('[data-split]'); if (bs) bs.onclick = () => askSplit();
+      const bd = bar.querySelector('[data-disband]'); if (bd) bd.onclick = () => askDisband(h.army, render);
       bar.querySelector('[data-unsel]').onclick = () => { cur.sel = null; cur.split = 0; render(); };
     }
     col.querySelectorAll('.artslot[data-slot]').forEach(s => UI.press(s, { tap: () => onArtSlot(h, s.dataset.slot), long: () => { const id = h.arts[s.dataset.slot]; UI.alert(id ? AR.get(id).name : AR.SLOT_NAMES[s.dataset.slot], id ? UI.esc(AR.get(id).desc) : 'Слот пуст. Артефакт из рюкзака надевается тапом по нему.', id ? 'art_' + id : null); } }));
@@ -104,6 +105,17 @@
     const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько отделить?', src.n - 1, Math.floor(src.n / 2));
     if (!cur) return;
     cur.split = n || 0; render();
+  }
+  /** «Распустить»: подтверждение, затем слот пустеет — существа теряются. Последний отряд героя не отдаём. */
+  async function askDisband(army, redraw) {
+    const sel = cur.sel; if (!sel || sel.army !== army) return;
+    const src = army[sel.i]; if (!src) return;
+    const c = C.get(src.cid);
+    if (!await UI.confirm('Распустить отряд', UI.esc(c.name) + ' ×' + src.n + ' будут распущены и потеряны навсегда. Точно?')) return;
+    if (!cur || !cur.sel || cur.sel.army !== army || army[cur.sel.i] !== src) return;
+    if (!A.disbandStack(army, cur.sel.i, true)) { UI.toast('Герой не может остаться без армии', 'warn'); return; }
+    H3.Audio.play('click');
+    cur.sel = null; cur.split = 0; redraw();
   }
   function onSlot(army, i, shift) {
     const sel = cur.sel;

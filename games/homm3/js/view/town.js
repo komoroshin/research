@@ -108,12 +108,14 @@
   function renderArmies() {
     const t = cur.town, h = cur.hero, box = cur.armies;
     const selOf = army => cur.sel && cur.sel.army === army ? cur.sel.i : -1;
-    const bar = army => cur.sel && cur.sel.army === army ? UI.selBarHtml(army[cur.sel.i], cur.split) : '';
+    // в гарнизоне можно распустить даже последний отряд, у героя — нет
+    const bar = army => cur.sel && cur.sel.army === army ? UI.selBarHtml(army[cur.sel.i], cur.split, army === t.garrison || R.armySize(army) > 1) : '';
     box.innerHTML = '<div class="small muted">Гарнизон' + (t.buildings.tavern ? ' (+1 мораль при обороне)' : '') + ' · тап — выбрать, второй тап — переместить; долгое нажатие — сведения</div>' + UI.armyHtml(t.garrison, selOf(t.garrison)) + bar(t.garrison)
       + (h ? '<div class="row small" style="margin-top:4px">' + UI.heroPortrait(h, 1) + ' <b class="w">' + UI.esc(h.name) + '</b> <span class="muted">(' + h.level + ' ур.)</span></div>' + UI.armyHtml(h.army, selOf(h.army)) + bar(h.army) : '<div class="small muted" style="margin-top:4px">В городе нет героя</div>');
     const arm = box.querySelectorAll('.army7');
     UI.bindArmy(arm[0], t.garrison, (i, e) => onSlot(t.garrison, i, e.shiftKey)); if (h && arm[1]) UI.bindArmy(arm[1], h.army, (i, e) => onSlot(h.army, i, e.shiftKey));
     box.querySelectorAll('[data-split]').forEach(b => { b.onclick = () => askSplit(); });
+    box.querySelectorAll('[data-disband]').forEach(b => { b.onclick = () => askDisband(); });
     box.querySelectorAll('[data-unsel]').forEach(b => { b.onclick = () => { cur.sel = null; cur.split = 0; renderArmies(); }; });
   }
   async function askSplit() {
@@ -122,6 +124,17 @@
     const n = await UI.askNumber('Разделить стек', UI.esc(C.get(src.cid).name) + ' ×' + src.n + '. Сколько отделить?', src.n - 1, Math.floor(src.n / 2));
     if (!cur) return;
     cur.split = n || 0; renderArmies();
+  }
+  /** «Распустить»: подтверждение, затем слот пустеет. У героя последний отряд не отдаём — его можно сложить в гарнизон. */
+  async function askDisband() {
+    const sel = cur.sel; if (!sel) return;
+    const army = sel.army, src = army[sel.i]; if (!src) return;
+    const c = C.get(src.cid);
+    if (!await UI.confirm('Распустить отряд', UI.esc(c.name) + ' ×' + src.n + ' будут распущены и потеряны навсегда. Точно?')) return;
+    if (!cur || !cur.sel || cur.sel.army !== army || army[cur.sel.i] !== src) return;
+    if (!A.disbandStack(army, cur.sel.i, army !== cur.town.garrison)) { UI.toast('Герой не может остаться без армии — переложи отряд в гарнизон', 'warn'); return; }
+    H3.Audio.play('click');
+    cur.sel = null; cur.split = 0; renderArmies(); H3.Game.refresh(false);
   }
   function onSlot(army, i, shift) {
     const sel = cur.sel;
