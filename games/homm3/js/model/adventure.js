@@ -634,6 +634,14 @@
     if (a2[j]) a2[j].n += n; else a2[j] = { cid: s1.cid, n };
     s1.n -= n; return true;
   }
+  /** Распустить отряд: слот пустеет, существа теряются. keepLast — не отдавать последний стек (армия героя). */
+  function disbandStack(army, i, keepLast) {
+    const s = army[i];
+    if (!s || s.n <= 0) return false;
+    if (keepLast && R.armySize(army) <= 1) return false;
+    army[i] = null;
+    return true;
+  }
   function castTownPortal(state, hero, townId) {
     const sp = SP.get('town_portal');
     if (!hero.spells.includes('town_portal')) return { ok: false, reason: 'Герой не знает Городской портал' };
@@ -884,6 +892,6 @@
   }
 
   H3.Adventure = { townVisitGift, weeklySpecials, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
-    startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
+    startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, disbandStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);

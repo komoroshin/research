@@ -122,11 +122,13 @@
       long: () => { const st = army[i]; if (!st || st.n <= 0) return; const c = C.get(st.cid); modal({ title: c.name + ' ×' + st.n, html: creatureCard(c) }); },
     }));
   }
-  /** Панель выбранного отряда: кому куда, «Разделить», «Отмена». */
-  function selBarHtml(st, split) {
+  /** Панель выбранного отряда: кому куда, «Разделить», «Распустить», «Отмена». */
+  function selBarHtml(st, split, canDisband) {
     const c = C.get(st.cid);
     return '<div class="selbar row"><span class="grow small">' + (split ? 'Куда положить ' + esc(c.name) + ' ×' + split + '? Тапни по слоту.' : esc(c.name) + ' ×' + st.n + ' — тапни, куда переместить') + '</span>'
-      + (st.n > 1 && !split ? '<button class="sm" data-split>Разделить</button>' : '') + '<button class="sm" data-unsel>Отмена</button></div>';
+      + (st.n > 1 && !split ? '<button class="sm" data-split>Разделить</button>' : '')
+      + (canDisband && !split ? '<button class="sm danger" data-disband>Распустить</button>' : '')
+      + '<button class="sm" data-unsel>Отмена</button></div>';
   }
 
   /** Ввод числа с ползунком: returns Promise<number|null> */
