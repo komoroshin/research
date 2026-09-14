@@ -985,5 +985,19 @@ test('все 11 фракций комплектны: существа, жили�
   }
 });
 
+test('для каждого класса и фракции есть спрайт: hero_*, portrait_*_a/_b, town_*', () => {
+  // спрайты живут в js/view и в node не исполняются — проверяем по исходникам,
+  // что для каждого имени, которое движок соберёт из cls/faction, объявление существует
+  const fs = require('fs'), path = require('path');
+  const dir = path.join(__dirname, '..', 'js', 'view');
+  let src = '';
+  for (const f of fs.readdirSync(dir)) if (f.startsWith('sprites')) src += fs.readFileSync(path.join(dir, f), 'utf8');
+  const need = [];
+  for (const c of HE.CLASSES) need.push('hero_' + c.id, 'portrait_' + c.id + '_a', 'portrait_' + c.id + '_b');
+  for (const f of H3.Factions.LIST) need.push('town_' + f.id);
+  const missing = need.filter(n => !new RegExp('\\b' + n + ':').test(src));
+  assert.deepEqual(missing, [], 'нет спрайтов: ' + missing.join(', '));
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
