@@ -52,7 +52,12 @@
     let data; try { data = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; } catch (e) { return null; }
     const w = cv.width, h = cv.height, top = new Int16Array(w).fill(-1), windows = [];
     for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) { if (data[(y * w + x) * 4 + 3] > 40) { top[x] = y; break; } }
-    for (let y = 0; y < h; y += SC) for (let x = 0; x < w; x += SC) {
+    const def = Sp.resolve(sprite);
+    if (def && def.hd) {
+      // крупная сетка: окна — буква y в исходной сетке (конвейер затеняет цвет, по пикселям их не поймать)
+      const u = def.unit || 1;
+      for (let y = 0; y < def.rows.length; y += u) for (let x = 0; x < def.rows[y].length; x += u) if (def.rows[y][x] === 'y') windows.push([Math.round(x / u * SC), Math.round(y / u * SC)]);
+    } else for (let y = 0; y < h; y += SC) for (let x = 0; x < w; x += SC) {
       const k = (y * w + x) * 4;
       // окна нарисованы «золотом» палитры (#f2d34c): их и зажигаем ночью
       if (data[k + 3] > 40 && data[k] > 225 && data[k + 1] > 195 && data[k + 1] < 225 && data[k + 2] < 110) windows.push([x, y]);
@@ -280,7 +285,7 @@
       drawProps(ctx, 1);
       // герой-гость стоит у ворот
       const hero = town.visiting ? st.heroes[town.visiting] : null;
-      if (hero && Sp.has('hero_' + hero.cls)) { const p = st.players[hero.owner]; An.draw(ctx, 'hero_' + hero.cls, 430, 392, SC, false, { t: ts, phase: An.phaseOf('h' + hero.id) }, { b: p ? p.color : '#999' }); }
+      if (hero && Sp.has('hero_' + hero.cls)) { const p = st.players[hero.owner]; An.draw(ctx, 'hero_' + hero.cls, 430, 392, SC, false, { t: ts, phase: An.phaseOf('h' + hero.id) }, Sp.teamTint(p ? p.color : '#999')); }
       scene.fx.drawOver(ctx, W, H);
       T.applyDaylight(ctx, day, 0, 0, W, H);
       // в пещере неба нет — ночь там не темнее вечера

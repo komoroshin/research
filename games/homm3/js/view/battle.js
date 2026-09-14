@@ -482,7 +482,7 @@
     ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
     const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
     T.castShadow(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, V.day, 0.8, 0.5);
-    An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, ao, { b: color });
+    An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, ao, Sp.teamTint(color));
     if (cast > 0 && fxOn() && Math.random() < 0.5) V.fx.add({ x: x + rnd(-8, 8), y: y - V.size * 1.6, vx: rnd(-10, 10), vy: -rnd(20, 40), ax: 0, ay: 0, ttl: 400, life: 0, size: 2, color: '#e6a0ff', shape: 'spark', glow: true, shrink: true });
   }
   /** Эффект заклинания: по школе и типу, с поправкой на конкретные заклинания. */

@@ -23,7 +23,7 @@ def stretch(rows, target, ranges):
     for i in picks: rows.insert(i, rows[i])
     return rows
 
-def block(name, rows, comment, base=None, tint=None, extra=None, unit=2, paint=None):
+def block(name, rows, comment, base=None, tint=None, extra=None, unit=2, paint=None, anchor=None):
     """paint — словарь переопределений paint-конвейера для этого спрайта (например {'silDome': 0, 'rim': 0} для портретов)"""
     if base:
         parts = ["base: '%s'" % base]
@@ -33,6 +33,7 @@ def block(name, rows, comment, base=None, tint=None, extra=None, unit=2, paint=N
     W = max(len(r) for r in rows); rows = pad(rows, W)
     body = '\n'.join("        '%s'," % r for r in rows)
     pt = (' paint: { ' + ', '.join('%s: %s' % (k, v) for k, v in paint.items()) + ' },') if paint else ''
+    if anchor: pt += ' anchor: [%d, %d],' % tuple(anchor)   # якорь в ИСХОДНЫХ пикселях сетки (движок делит на unit)
     return "    /* %s (%d×%d) */\n    %s: {\n      hd: true, unit: %d,%s\n      rows: [\n%s\n      ],\n    },\n" % (comment, W, len(rows), name, unit, pt, body)
 
 # читаем троих готовых из прототипа

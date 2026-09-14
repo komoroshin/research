@@ -390,5 +390,12 @@
     return cv;
   }
 
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, setDetail, setPaint, setPaintVolume, DETAIL, PAINT, _registry: registry };
+  /** Подмена цвета команды: буква b — цвет игрока, B — его тёмный оттенок (попона героя, знамя). */
+  const teamCache = new Map();
+  function teamTint(color) {
+    let t = teamCache.get(color);
+    if (!t) { const c = mix(parseColor(color), -0.42); t = { b: color, B: '#' + c.toString(16).padStart(6, '0') }; teamCache.set(color, t); }
+    return t;
+  }
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, DETAIL, PAINT, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);
