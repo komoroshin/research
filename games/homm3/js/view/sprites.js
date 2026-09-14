@@ -47,7 +47,7 @@
         for (const [x, y, ch] of def.extra) if (rows[y] && x < rows[y].length) rows[y][x] = ch;
         rows = rows.map(r => r.join(''));
       }
-      return { rows, pal, anchor: def.anchor || b.anchor, hd: def.hd !== undefined ? def.hd : b.hd, unit: def.unit || b.unit };
+      return { rows, pal, anchor: def.anchor || b.anchor, hd: def.hd !== undefined ? def.hd : b.hd, unit: def.unit || b.unit, paint: def.paint || b.paint };
     }
     return null;
   }
@@ -160,8 +160,9 @@
         утоньшается до двух: наружная — почти чёрная, внутренняя — тёмный оттенок соседнего материала. */
   const PAINT = { S: 4, sigma: 0.55, lineBoost: 1.35, light: [-0.45, -0.75, 0.55], domeR: 10, matR: 4, silDome: 0.5, matDome: 0, outline: 'none', ambient: 0.82, diffuse: 0.3, spec: 0.25, rim: 0.18, ao: 0.12 };
   function setPaintVolume(v) { Object.assign(PAINT, v); clearAll(); }
-  function refinePaint(src) {
-    const { w, h, g } = src, S = PAINT.S, W = w * S, H = h * S;
+  function refinePaint(src, ov) {
+    const P = ov ? Object.assign({}, PAINT, ov) : PAINT;   // ov — переопределения параметров для одного спрайта (sp.paint)
+    const { w, h, g } = src, S = P.S, W = w * S, H = h * S;
     const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h) ? NONE : g[y * w + x];
     const dark = c => c !== NONE && lum(c) < 0.16;
     const line = new Uint8Array(w * h), thin = new Uint8Array(w * h);
@@ -176,7 +177,7 @@
     // ядро шире одного исходного пикселя (гаусс σ≈0,55 по окну 4×4): лестница диагонали усредняется
     // в кривую; контурная линия получает надбавку веса, иначе однопиксельная линия истончилась бы
     const hi = new Int32Array(W * H).fill(NONE), hline = new Uint8Array(W * H), alpha = new Uint8Array(W * H);
-    const SIG2 = 2 * PAINT.sigma * PAINT.sigma;
+    const SIG2 = 2 * P.sigma * P.sigma;
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       const sx = (x + 0.5) / S - 0.5, sy = (y + 0.5) / S - 0.5;
       const x0 = Math.floor(sx) - 1, y0 = Math.floor(sy) - 1;
@@ -186,7 +187,7 @@
         const inside = !(cx < 0 || cy < 0 || cx >= w || cy >= h);
         const c = inside ? g[cy * w + cx] : NONE;
         let wgt = Math.exp(-d2 / SIG2);
-        if (inside && (line[cy * w + cx] || thin[cy * w + cx])) wgt *= PAINT.lineBoost;
+        if (inside && (line[cy * w + cx] || thin[cy * w + cx])) wgt *= P.lineBoost;
         totW += wgt; if (c !== NONE) opW += wgt;
         const v = (acc.get(c) || 0) + wgt; acc.set(c, v);
         if (v > bestW) { bestW = v; bestC = c; }
@@ -194,7 +195,7 @@
       }
       // без контура: край силуэта сглаживаем альфой — прозрачная точка с заметной долей непрозрачного
       // веса красится лучшим непрозрачным цветом и получает частичную прозрачность
-      if (PAINT.outline === 'none') {
+      if (P.outline === 'none') {
         const a = totW ? opW / totW : 0;
         if (bestC === NONE && a > 0.22) { bestC = bestOp; alpha[y * W + x] = Math.round(255 * Math.min(1, (a - 0.22) / 0.5)); }
         else if (bestC !== NONE) alpha[y * W + x] = a < 0.72 ? Math.round(255 * Math.min(1, 0.5 + a * 0.7)) : 255;
@@ -222,9 +223,9 @@
     // высота: купол силуэта + купол материала
     const dome = (d, R) => { const t = Math.min(1, d / R); return Math.sqrt(t); };
     const hgt = new Float32Array(W * H);
-    for (let i = 0; i < W * H; i++) if (hi[i] !== NONE) hgt[i] = dome(dSil[i], PAINT.domeR) * PAINT.silDome + dome(dMat[i], PAINT.matR) * PAINT.matDome;
+    for (let i = 0; i < W * H; i++) if (hi[i] !== NONE) hgt[i] = dome(dSil[i], P.domeR) * P.silDome + dome(dMat[i], P.matR) * P.matDome;
     const hg = (x, y) => (x < 0 || y < 0 || x >= W || y >= H || hi[y * W + x] === NONE) ? 0 : hgt[y * W + x];
-    const [lx, ly, lz] = PAINT.light; const ll = Math.hypot(lx, ly, lz); const Lx = lx / ll, Ly = ly / ll, Lz = lz / ll;
+    const [lx, ly, lz] = P.light; const ll = Math.hypot(lx, ly, lz); const Lx = lx / ll, Ly = ly / ll, Lz = lz / ll;
     // 3. свет
     const out = new Int32Array(hi);
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -232,7 +233,7 @@
       if (c === NONE) continue;
       // 4. контур: утоньшаем — дальше двух пикселей от края линии закрашиваем соседним материалом
       if (hline[i]) {
-        if (PAINT.outline === 'none') {
+        if (P.outline === 'none') {
           let nb = NONE;
           for (let r = 1; r <= 4 && nb === NONE; r++) for (let dy = -r; dy <= r && nb === NONE; dy++) for (let dx = -r; dx <= r; dx++) { const v = hat(x + dx, y + dy); if (v !== NONE && !dark(v) && !hline[(y + dy) * W + (x + dx)]) { nb = v; break; } }
           out[i] = nb === NONE ? c : mix(nb, -0.1);
@@ -254,14 +255,14 @@
       const sat = (Math.max(r, gg, b) - Math.min(r, gg, b)) / 255;
       const metal = sat < 0.12 && l > 0.25 && l < 0.85;            // сталь, серебро
       const shiny = metal ? 1 : (l > 0.85 ? 0.3 : 0.45);
-      let k = PAINT.ambient + PAINT.diffuse * Math.max(0, ndl) - 1;   // множитель яркости относительно базы
+      let k = P.ambient + P.diffuse * Math.max(0, ndl) - 1;   // множитель яркости относительно базы
       // блик: отражённый вектор ≈ (2·(N·L)·N − L), смотрим на зрителя (0,0,1)
-      const rz = 2 * ndl * Nz - Lz; const sp = Math.pow(Math.max(0, rz), metal ? 14 : 6) * PAINT.spec * shiny;
+      const rz = 2 * ndl * Nz - Lz; const sp = Math.pow(Math.max(0, rz), metal ? 14 : 6) * P.spec * shiny;
       k += sp * (metal ? 1.1 : 0.6);
       // затенение в стыках материалов с теневой стороны
-      if (dMat[i] < 2.5 && ndl < 0.35) k -= PAINT.ao * (1 - dMat[i] / 2.5);
+      if (dMat[i] < 2.5 && ndl < 0.35) k -= P.ao * (1 - dMat[i] / 2.5);
       // холодный ободок с теневой стороны силуэта
-      let rim = 0; if (dSil[i] < 2.2 && ndl < 0.2) rim = PAINT.rim * (1 - dSil[i] / 2.2);
+      let rim = 0; if (dSil[i] < 2.2 && ndl < 0.2) rim = P.rim * (1 - dSil[i] / 2.2);
       let col = mix(c, Math.max(-0.55, Math.min(0.5, k)));
       if (rim) { const cr = col >> 16 & 255, cg = col >> 8 & 255, cb = col & 255; col = (Math.min(255, Math.round(cr + (170 - cr) * rim)) << 16) | (Math.min(255, Math.round(cg + (200 - cg) * rim)) << 8) | Math.min(255, Math.round(cb + (255 - cb) * rim)); }
       out[i] = col;
@@ -277,7 +278,7 @@
   function hiRes(name, sp, flip, extraTint) {
     const key = name + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '');
     let cv = hiCache.get(key);
-    if (!cv) { const grid = colorGrid(sp, flip, extraTint); cv = (DETAIL.paint && sp.hd) ? refinePaint(grid) : refine(grid); hiCache.set(key, cv); }
+    if (!cv) { const grid = colorGrid(sp, flip, extraTint); cv = (DETAIL.paint && sp.hd) ? refinePaint(grid, sp.paint) : refine(grid); hiCache.set(key, cv); }
     return cv;
   }
 
