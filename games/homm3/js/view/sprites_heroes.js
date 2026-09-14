@@ -1397,5 +1397,14 @@
     portrait_mercenary_b: { base: 'portrait_barbarian_b', tint: { j: 's', G: 'S', N: 'd', n: 'H' } },
     portrait_artificer_a: { base: 'portrait_alchemist_a', tint: { b: 'O', B: 'D', p: 'e', P: 'u' } },
     portrait_artificer_b: { base: 'portrait_alchemist_b', tint: { b: 'O', B: 'D', p: 'e', P: 'u' } },
+
+    /* ---------- герои трёх новых фракций на карте: перекраска доспеха и одежды.
+       Буквы b/B не трогаем — их движок заливает цветом игрока. ---------- */
+    hero_planeswalker: { base: 'hero_knight', tint: { e: 'c', E: 'C', n: 'l', N: 'e' } },
+    hero_elementalist: { base: 'hero_wizard', tint: { p: 'A', P: 'a', l: 'w' } },
+    hero_captain: { base: 'hero_ranger', tint: { O: 'T', N: 'n', g: 'C', G: 'Q' } },
+    hero_navigator: { base: 'hero_druid', tint: { n: 'C', N: 'Q', T: 'l' } },
+    hero_mercenary: { base: 'hero_barbarian', tint: { e: 'H', E: 'j', n: 'd', N: 'D' } },
+    hero_artificer: { base: 'hero_alchemist', tint: { l: 'e', e: 'O', c: 'y' } },
   });
 })();
