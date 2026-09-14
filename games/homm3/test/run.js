@@ -1016,5 +1016,21 @@ test('у каждого существа есть спрайт в крупной
   assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
 });
 
+test('у каждого города и портрета есть версия в крупной сетке (sprites_towns_*_hd.js, sprites_portraits_*_hd.js), файлы подключены', () => {
+  const fs = require('fs'), path = require('path');
+  const root = path.join(__dirname, '..');
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const dir = path.join(root, 'js', 'view');
+  const files = fs.readdirSync(dir).filter(f => /^sprites_(towns|portraits)_\d+_hd\.js$/.test(f));
+  let src = ''; const notWired = [];
+  for (const f of files) { src += fs.readFileSync(path.join(dir, f), 'utf8'); if (index.indexOf('js/view/' + f) < 0) notWired.push(f); }
+  const need = [];
+  for (const f of H3.Factions.LIST) need.push('town_' + f.id);
+  for (const c of HE.CLASSES) need.push('portrait_' + c.id + '_a', 'portrait_' + c.id + '_b');
+  const missing = need.filter(n => !new RegExp('\\n    ' + n + ': \\{').test(src));
+  assert.deepEqual(missing, [], 'нет крупных версий: ' + missing.join(', '));
+  assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
