@@ -1032,5 +1032,24 @@ test('у каждого города, портрета и всадника ес�
   assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
 });
 
+test('у каждого объекта карты, боя и сцены города есть версия в крупной сетке (sprites_objects_*_hd.js), файлы подключены', () => {
+  const fs = require('fs'), path = require('path');
+  const root = path.join(__dirname, '..');
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const dir = path.join(root, 'js', 'view');
+  const names = [];
+  for (const f of ['sprites_objects.js', 'sprites_quest.js', 'sprites_machines.js', 'sprites_towns.js']) {
+    const src = fs.readFileSync(path.join(dir, f), 'utf8');
+    for (const m of src.matchAll(/\n    ([a-z_0-9]+): \{/g)) if (!/^town_/.test(m[1])) names.push(m[1]);
+  }
+  const files = fs.readdirSync(dir).filter(f => /^sprites_objects_\d+_hd\.js$/.test(f));
+  let src = ''; const notWired = [];
+  for (const f of files) { src += fs.readFileSync(path.join(dir, f), 'utf8'); if (index.indexOf('js/view/' + f) < 0) notWired.push(f); }
+  const missing = names.filter(n => !new RegExp('\\n    ' + n + ': \\{').test(src));
+  assert.ok(names.length > 100, 'мало имён объектов: ' + names.length);
+  assert.deepEqual(missing, [], 'нет крупных версий: ' + missing.join(', '));
+  assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
