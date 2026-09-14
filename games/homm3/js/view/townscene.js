@@ -19,6 +19,8 @@
     tower: { n: '#e8eef4', N: '#a8b8c8', r: '#5b8fd6', R: '#2f5fa0' }, inferno: { n: '#6a3a2a', N: '#3a1a10', r: '#c8332a', R: '#7a1a14' },
     necropolis: { n: '#5a5a6a', N: '#2a2a3a', r: '#4e2a72', R: '#2a1a40' }, dungeon: { n: '#6a5a6a', N: '#3a2a3a', r: '#9a58c8', R: '#4e2a72' },
     stronghold: { n: '#9a6a3c', N: '#5a3a1c', r: '#c88a2a', R: '#8a5a10' }, fortress: { n: '#7a8a5a', N: '#4a5a3a', r: '#4a8a5a', R: '#2a5a3a' },
+    conflux: { n: '#dfe6ee', N: '#9aa8bc', r: '#7fd9ea', R: '#3a9ab8' }, cove: { n: '#b89a6a', N: '#6f5a3e', r: '#3a9ab8', R: '#0f4f45' },
+    factory: { n: '#a04a12', N: '#5a2a0c', r: '#6a6a74', R: '#3b3b44' },
   };
   const SCENE = {
     castle: { sky: ['#4d8fe0', '#bcdcf7'], far: ['#6f8aa0', '#8fa8b8'], terrain: 'grass', trees: ['tree_1', 'tree_2'], water: 'river', flowers: true },
@@ -29,6 +31,9 @@
     dungeon: { sky: ['#1a1220', '#2a2030'], far: ['#2a2230', '#3a2a40'], terrain: 'subter', trees: [], water: 'cave', cave: true },
     stronghold: { sky: ['#6a88b0', '#e0d0b0'], far: ['#8a7a5a', '#a89a78'], terrain: 'rough', trees: ['tree_3'], water: 'none', stakes: true, dust: true },
     fortress: { sky: ['#4a6a5a', '#a8c0a0'], far: ['#4a6a4a', '#6a8a6a'], terrain: 'swamp', trees: ['tree_swamp'], water: 'swamp', reeds: true, fog: true },
+    conflux: { sky: ['#6fb0e0', '#e8f4ff'], far: ['#8fa8c8', '#bcd4e8'], terrain: 'grass', trees: ['tree_1', 'tree_2'], water: 'lake', flowers: true },
+    cove: { sky: ['#3a7ab8', '#bfe0f4'], far: ['#3a6a7a', '#5f8a9a'], terrain: 'swamp', trees: ['tree_swamp'], water: 'lake', reeds: true },
+    factory: { sky: ['#8a7a6a', '#e0cfa8'], far: ['#7a6a52', '#9a8a6a'], terrain: 'sand', trees: ['tree_dead'], water: 'none', dust: true },
   };
   // слоты сцены: x — центр, y — земля (низ спрайта)
   const LAYOUT = {

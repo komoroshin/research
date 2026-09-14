@@ -50,6 +50,21 @@
       classes: ['beastmaster', 'witch'], siloRes: { wood: 1, ore: 1 },
       dwellings: [d('Хижина гноллов', 300, 5), d('Логово ящеров', 1000, 0, 5), d('Улей змиев', 1500, 5, 5), d('Яма василисков', 1500, 5, 5, { sulfur: 5 }),
         d('Логово горгон', 2000, 5, 5), d('Гнездо виверн', 3000, 10, 10), d('Пруд гидр', 10000, 10, 10, { sulfur: 20 })] },
+    { id: 'conflux', name: 'Сопряжение', adj: 'Сопряжения', terrain: 'grass', color: '#6fd4c8', rare: 'mercury', guildMax: 5, alignment: 'neutral',
+      desc: 'Элементали. Почти вся армия неживая: не боится магии разума и морали. Жар-птицы растут по две в неделю.',
+      classes: ['planeswalker', 'elementalist'], siloRes: { mercury: 1 },
+      dwellings: [d('Поляна фей', 300, 5), d('Вихревая башня', 1000, 0, 5), d('Ключ стихий', 1000, 5, 5), d('Огненное озеро', 1500, 0, 5, { mercury: 3 }),
+        d('Каменная пасть', 2000, 5, 5), d('Магический вихрь', 2500, 5, 5, { mercury: 6, crystal: 6 }), d('Гнездо жар-птиц', 12000, 5, 5, { mercury: 20 })] },
+    { id: 'cove', name: 'Бухта', adj: 'Бухты', terrain: 'swamp', color: '#3a9ab8', rare: 'crystal', guildMax: 4, alignment: 'neutral',
+      desc: 'Пираты. Три стрелка и быстрые летуны: бьёт первой и не даёт ответить. Хаспиды отвечают без ограничений.',
+      classes: ['captain', 'navigator'], siloRes: { wood: 1, crystal: 1 },
+      dwellings: [d('Хижина нимф', 400, 5), d('Матросский кубрик', 1000, 5, 5), d('Пиратская пещера', 1500, 5, 5), d('Скала буревестников', 1500, 5, 5),
+        d('Хижина ведьмы', 2000, 5, 5, { crystal: 5 }), d('Заводь никс', 2500, 5, 10), d('Логово морских змеев', 11000, 10, 10, { crystal: 20 })] },
+    { id: 'factory', name: 'Фабрика', adj: 'Фабрики', terrain: 'sand', color: '#c08a3a', rare: 'sulfur', guildMax: 4, alignment: 'neutral',
+      desc: 'Машины и первопроходцы. Стрелок на первом тире и на шестом, половина линейки неживая, коатли дороги, но быстры.',
+      classes: ['mercenary', 'artificer'], siloRes: { ore: 1, sulfur: 1 },
+      dwellings: [d('Норы полуросликов', 400, 5, 5), d('Мастерская', 1000, 5, 5), d('Загон армадиллов', 1500, 0, 10), d('Сборочный цех', 2000, 5, 10),
+        d('Песчаная яма', 2000, 5, 5, { sulfur: 5 }), d('Тир', 2500, 10, 5, { sulfur: 5 }), d('Пернатое гнездовье', 12000, 10, 10, { sulfur: 20 })] },
   ];
   const BY_ID = Object.create(null);
   LIST.forEach(f => { BY_ID[f.id] = f; });
@@ -60,6 +75,9 @@
       if (faction.id === 'necropolis') return { gold: 15000, mercury: 20 };
       if (faction.id === 'stronghold') return { gold: 15000, crystal: 10 };
       if (faction.id === 'fortress') return { gold: 15000, sulfur: 20 };
+      if (faction.id === 'conflux') return { gold: 15000, mercury: 20 };
+      if (faction.id === 'cove') return { gold: 15000, crystal: 20 };
+      if (faction.id === 'factory') return { gold: 15000, sulfur: 20 };
       return { gold: 20000, mercury: 10, sulfur: 10, crystal: 10, gems: 10 };
     }
     const base = faction.dwellings[tier - 1].cost;

@@ -150,6 +150,64 @@
       ['wyvern_monarch', 'Монарх виверн', 6, 14, 14, 18, 22, 70, 11, 2, 1100, [FLY, 'onHit:poison:100', 'large']],
       ['hydra', 'Гидра', 7, 16, 18, 25, 45, 175, 5, 1, 2200, ['attackAll', 'noRetaliation', 'large']],
       ['chaos_hydra', 'Гидра хаоса', 7, 18, 20, 25, 45, 250, 7, 1, 3500, ['attackAll', 'noRetaliation', 'large'], { sulfur: 1 }],
+    ]),
+
+    /* ---------- Сопряжение: элементали, из Armageddon's Blade ----------
+       Стихии вместо живых существ: почти вся линейка неживая (не боится морали
+       и магии разума), зато у каждой пары своя уязвимость по школе. */
+    mk('conflux', [
+      ['pixie', 'Фея', 1, 2, 2, 1, 2, 3, 7, 16, 30, [FLY]],
+      ['sprite', 'Спрайт', 1, 4, 2, 1, 3, 5, 9, 16, 40, [FLY, 'noRetaliation']],
+      ['air_elemental', 'Воздушный элементаль', 2, 5, 5, 2, 5, 16, 7, 9, 130, [NL, 'mindImmune']],
+      ['storm_elemental', 'Штормовой элементаль', 2, 6, 5, 3, 5, 16, 8, 9, 160, [NL, 'mindImmune', 'shooter:8']],
+      ['water_elemental', 'Водяной элементаль', 3, 7, 8, 4, 7, 25, 5, 7, 180, [NL, 'mindImmune']],
+      ['ice_elemental', 'Ледяной элементаль', 3, 8, 8, 5, 8, 25, 6, 7, 220, [NL, 'mindImmune', 'shooter:12']],
+      ['fire_elemental', 'Огненный элементаль', 4, 10, 9, 6, 9, 36, 6, 4, 260, [NL, 'mindImmune', 'fireImmune']],
+      ['energy_elemental', 'Энергетический элементаль', 4, 12, 9, 7, 10, 42, 8, 4, 320, [NL, 'mindImmune', 'fireImmune', 'noRetaliation']],
+      ['earth_elemental', 'Земляной элементаль', 5, 11, 12, 9, 13, 58, 5, 3, 350, [NL, 'mindImmune', 'spellDamageReduce:50']],
+      ['magma_elemental', 'Магмовый элементаль', 5, 12, 14, 10, 14, 64, 6, 3, 400, [NL, 'mindImmune', 'spellDamageReduce:75', 'fireImmune']],
+      ['psychic_elemental', 'Псионический элементаль', 6, 16, 15, 16, 26, 95, 7, 2, 750, [NL, 'mindImmune', 'attackAll', 'large']],
+      ['magic_elemental', 'Магический элементаль', 6, 17, 15, 17, 27, 100, 9, 2, 800, [NL, 'mindImmune', 'attackAll', 'spellImmune:5', 'large']],
+      ['firebird', 'Жар-птица', 7, 18, 18, 30, 40, 150, 15, 2, 1800, [FLY, 'fireImmune', 'large'], { mercury: 1 }],
+      ['phoenix', 'Феникс', 7, 21, 18, 30, 40, 180, 21, 2, 2100, [FLY, 'fireImmune', 'resurrectOnce', 'large'], { mercury: 1 }],
+    ]),
+
+    /* ---------- Бухта: пираты, из Horn of the Abyss ----------
+       Много стрелков и быстрых летунов, ставка на первый удар, а не на размен. */
+    mk('cove', [
+      ['nymph', 'Нимфа', 1, 4, 4, 1, 3, 8, 6, 14, 60, [FLY]],
+      ['oceanid', 'Океанида', 1, 5, 5, 1, 3, 10, 7, 14, 75, [FLY, 'magicResist:20']],
+      ['crew_mate', 'Матрос', 2, 6, 5, 2, 4, 14, 5, 9, 110, []],
+      ['seaman', 'Морской волк', 2, 7, 6, 2, 5, 16, 6, 9, 140, ['minMorale']],
+      ['pirate', 'Пират', 3, 8, 6, 2, 4, 18, 6, 7, 220, ['shooter:8', 'noMeleePenalty']],
+      ['corsair', 'Корсар', 3, 9, 7, 3, 4, 18, 7, 7, 260, ['shooter:8', 'noMeleePenalty', 'noRetaliation']],
+      ['stormbird', 'Буревестник', 4, 11, 10, 6, 9, 35, 9, 4, 320, [FLY]],
+      ['ayssid', 'Айссид', 4, 12, 11, 6, 9, 36, 10, 4, 380, [FLY, 'deathBlow:20']],
+      ['sea_witch', 'Морская ведьма', 5, 12, 10, 8, 11, 40, 6, 3, 430, ['shooter:6', 'onHit:weakness:100']],
+      ['sorceress', 'Колдунья', 5, 13, 11, 8, 11, 45, 7, 3, 500, ['shooter:6', 'onHit:weakness:100', 'castRandomBuff']],
+      ['nix', 'Никса', 6, 14, 15, 11, 16, 75, 6, 2, 800, ['ignoreDefense:20', 'large']],
+      ['nix_warrior', 'Никса-воин', 6, 15, 16, 11, 16, 82, 7, 2, 900, ['ignoreDefense:40', 'large']],
+      ['sea_serpent', 'Морской змей', 7, 17, 17, 25, 40, 180, 7, 1, 2600, ['onHit:poison:100', 'large'], { crystal: 1 }],
+      ['haspid', 'Хаспид', 7, 19, 18, 25, 40, 200, 9, 1, 3000, ['onHit:poison:100', 'retaliations:2', 'large'], { crystal: 1 }],
+    ]),
+
+    /* ---------- Фабрика: машины, из Horn of the Abyss ----------
+       Половина линейки неживая, два стрелка по краям линейки, дорогой поздний тир. */
+    mk('factory', [
+      ['halfling', 'Полурослик', 1, 4, 3, 1, 2, 6, 5, 16, 50, ['shooter:6', 'moraleBonus']],
+      ['halfling_grenadier', 'Гренадёр', 1, 5, 4, 1, 3, 8, 6, 16, 65, ['shooter:8', 'moraleBonus', 'ignoreDefense:20']],
+      ['mechanic', 'Механик', 2, 6, 6, 2, 4, 16, 5, 8, 120, ['breath']],
+      ['engineer', 'Инженер', 2, 7, 7, 2, 4, 18, 6, 8, 150, ['breath', 'regenerate']],
+      ['armadillo', 'Армадилл', 3, 7, 9, 4, 6, 25, 5, 7, 190, []],
+      ['bellwether_armadillo', 'Вожак армадиллов', 3, 8, 10, 4, 6, 28, 6, 7, 230, ['magicResist:20']],
+      ['automaton', 'Автоматон', 4, 10, 12, 5, 8, 35, 5, 4, 300, [NL, 'immuneJoust']],
+      ['sentinel_automaton', 'Автоматон-страж', 4, 11, 13, 5, 8, 40, 6, 4, 360, [NL, 'immuneJoust', 'noRetaliation']],
+      ['sandworm', 'Песчаный червь', 5, 13, 10, 10, 14, 45, 6, 3, 420, ['blindImmune', 'mindImmune', 'large']],
+      ['olgoi_khorkhoi', 'Олгой-хорхой', 5, 14, 11, 10, 14, 50, 7, 3, 480, ['blindImmune', 'mindImmune', 'lifeDrain', 'large']],
+      ['gunslinger', 'Стрелок', 6, 16, 12, 12, 18, 70, 6, 2, 850, ['shooter:12', 'noMeleePenalty']],
+      ['bounty_hunter', 'Охотник за головами', 6, 17, 13, 13, 19, 75, 7, 2, 950, ['shooter:24', 'noMeleePenalty']],
+      ['couatl', 'Коатль', 7, 20, 18, 30, 45, 170, 11, 1, 2800, [FLY, 'manaChannel', 'large'], { sulfur: 1 }],
+      ['crimson_couatl', 'Багровый коатль', 7, 22, 19, 30, 45, 190, 13, 1, 3200, [FLY, 'manaChannel', 'spellImmune:3', 'large'], { sulfur: 1 }],
     ])
   );
 
@@ -224,7 +282,7 @@
     fireShield: 'Огненный щит', fireImmune: 'Иммунитет к огню', manaDrain: 'Вытягивает ману', bind: 'Связывает', resistAura: 'Аура сопротивления',
     wallShooter: 'Стреляет по стенам', resurrectOnce: 'Воскрешение (раз за бой)', raiseDemons: 'Поднимает демонов', castRandomBuff: 'Благословляет союзников',
     castBloodlust: 'Жажда крови союзнику', manaChannel: 'Перехват маны', immuneJoust: 'Иммунитет к разгону', blindImmune: 'Иммунитет к ослеплению', large: 'Крупное (занимает 2 гекса)',
-    machine: 'Боевая машина', immobile: 'Не двигается', healer: 'Лечит союзников', ammo: 'Боезапас союзников не кончается', passive: 'Не действует',
+    deathBlow: 'Смертельный удар', machine: 'Боевая машина', immobile: 'Не двигается', healer: 'Лечит союзников', ammo: 'Боезапас союзников не кончается', passive: 'Не действует',
   };
   function abilityText(c) {
     return c.ab.map(a => {
