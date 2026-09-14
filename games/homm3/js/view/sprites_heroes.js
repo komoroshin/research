@@ -1382,5 +1382,20 @@
         'kkjjGGGGGGGGGGGGGGGQQQkk',
       ],
     },
+
+    /* ---------- портреты трёх новых фракций: перекраска доспеха и одежды на базе
+       существующих портретов (лица общие, как и у остальных классов) ---------- */
+    portrait_planeswalker_a: { base: 'portrait_knight_a', tint: { e: 'c', E: 'C', r: 'A', l: 'w' } },
+    portrait_planeswalker_b: { base: 'portrait_knight_b', tint: { e: 'c', E: 'C', r: 'A', l: 'w' } },
+    portrait_elementalist_a: { base: 'portrait_wizard_a', tint: { b: 'A', B: 'a', p: 'c', P: 'C' } },
+    portrait_elementalist_b: { base: 'portrait_wizard_b', tint: { b: 'A', B: 'a', p: 'c', P: 'C' } },
+    portrait_captain_a: { base: 'portrait_ranger_a', tint: { g: 'B', G: 'z', n: 'T', N: 'n' } },
+    portrait_captain_b: { base: 'portrait_ranger_b', tint: { g: 'B', G: 'z', n: 'T', N: 'n' } },
+    portrait_navigator_a: { base: 'portrait_druid_a', tint: { g: 'C', G: 'Q', n: 'b', N: 'B' } },
+    portrait_navigator_b: { base: 'portrait_druid_b', tint: { g: 'C', G: 'Q', n: 'b', N: 'B' } },
+    portrait_mercenary_a: { base: 'portrait_barbarian_a', tint: { j: 's', G: 'S', N: 'd', n: 'H' } },
+    portrait_mercenary_b: { base: 'portrait_barbarian_b', tint: { j: 's', G: 'S', N: 'd', n: 'H' } },
+    portrait_artificer_a: { base: 'portrait_alchemist_a', tint: { b: 'O', B: 'D', p: 'e', P: 'u' } },
+    portrait_artificer_b: { base: 'portrait_alchemist_b', tint: { b: 'O', B: 'D', p: 'e', P: 'u' } },
   });
 })();

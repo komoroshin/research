@@ -26,6 +26,12 @@
     cls('battlemage', 'Боевой маг', 'stronghold', 'magic', [2, 1, 1, 1], [30, 20, 25, 25]),
     cls('beastmaster', 'Повелитель зверей', 'fortress', 'might', [0, 4, 1, 1], [30, 50, 10, 10]),
     cls('witch', 'Ведьма', 'fortress', 'magic', [0, 1, 2, 2], [5, 15, 40, 40]),
+    cls('planeswalker', 'Странник планов', 'conflux', 'might', [1, 1, 2, 1], [25, 25, 25, 25]),
+    cls('elementalist', 'Элементалист', 'conflux', 'magic', [0, 0, 3, 3], [10, 10, 40, 40]),
+    cls('captain', 'Капитан', 'cove', 'might', [2, 2, 1, 1], [35, 35, 15, 15]),
+    cls('navigator', 'Навигатор', 'cove', 'magic', [1, 1, 2, 2], [20, 20, 30, 30]),
+    cls('mercenary', 'Наёмник', 'factory', 'might', [3, 1, 1, 1], [45, 30, 15, 10]),
+    cls('artificer', 'Механикус', 'factory', 'magic', [1, 1, 2, 2], [20, 25, 30, 25]),
   ];
   const CLASS_BY_ID = Object.create(null);
   CLASSES.forEach(c => { CLASS_BY_ID[c.id] = c; });
@@ -72,6 +78,21 @@
     h('wystan', 'Вистан', 'beastmaster', { type: 'creature', id: 'lizardman' }, [{ id: 'armorer', lvl: 1 }, { id: 'archery', lvl: 1 }], 'b'),
     h('mirlanda', 'Мирланда', 'witch', { type: 'spell', id: 'weakness' }, [{ id: 'wisdom', lvl: 1 }, { id: 'water', lvl: 1 }], 'a', 'weakness'),
     h('styg', 'Стиг', 'witch', { type: 'skill', id: 'sorcery' }, [{ id: 'wisdom', lvl: 1 }, { id: 'sorcery', lvl: 1 }], 'b', 'shield'),
+    // Conflux
+    h('pasis', 'Пасис', 'planeswalker', { type: 'creature', id: 'pixie' }, [{ id: 'offense', lvl: 1 }, { id: 'luck', lvl: 1 }], 'a'),
+    h('thunar', 'Тунар', 'planeswalker', { type: 'creature', id: 'earth_elemental' }, [{ id: 'armorer', lvl: 1 }, { id: 'tactics', lvl: 1 }], 'b'),
+    h('erdamon', 'Эрдамон', 'elementalist', { type: 'spell', id: 'haste' }, [{ id: 'wisdom', lvl: 1 }, { id: 'earth', lvl: 1 }], 'a', 'haste'),
+    h('ignissa', 'Игнисса', 'elementalist', { type: 'spell', id: 'fireball' }, [{ id: 'wisdom', lvl: 1 }, { id: 'fire', lvl: 1 }], 'b', 'magic_arrow'),
+    // Cove
+    h('corkes', 'Коркес', 'captain', { type: 'creature', id: 'pirate' }, [{ id: 'offense', lvl: 1 }, { id: 'archery', lvl: 1 }], 'a'),
+    h('illor', 'Иллор', 'captain', { type: 'skill', id: 'logistics' }, [{ id: 'logistics', lvl: 1 }, { id: 'leadership', lvl: 1 }], 'b'),
+    h('casmetra', 'Касметра', 'navigator', { type: 'spell', id: 'weakness' }, [{ id: 'wisdom', lvl: 1 }, { id: 'water', lvl: 1 }], 'a', 'weakness'),
+    h('anabel', 'Анабель', 'navigator', { type: 'skill', id: 'sorcery' }, [{ id: 'wisdom', lvl: 1 }, { id: 'sorcery', lvl: 1 }], 'b', 'bless'),
+    // Factory
+    h('ziph', 'Зиф', 'mercenary', { type: 'creature', id: 'halfling' }, [{ id: 'archery', lvl: 1 }, { id: 'offense', lvl: 1 }], 'a'),
+    h('tark', 'Тарк', 'mercenary', { type: 'skill', id: 'offense' }, [{ id: 'offense', lvl: 2 }], 'b'),
+    h('wynona', 'Уинона', 'artificer', { type: 'creature', id: 'automaton' }, [{ id: 'wisdom', lvl: 1 }, { id: 'armorer', lvl: 1 }], 'a', 'shield'),
+    h('agar', 'Агар', 'artificer', { type: 'skill', id: 'intelligence' }, [{ id: 'wisdom', lvl: 1 }, { id: 'intelligence', lvl: 1 }], 'b', 'magic_arrow'),
   ];
   const HERO_BY_ID = Object.create(null);
   HEROES.forEach(x => { HERO_BY_ID[x.id] = x; });

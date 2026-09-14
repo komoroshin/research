@@ -680,7 +680,7 @@
       const inc = S.playerIncome(state, p.id);
       if (p.isAI) { inc.gold = Math.floor(inc.gold * (1 + diff.aiGold)); inc.wood = Math.floor(inc.wood * (1 + diff.aiWood)); inc.ore = Math.floor(inc.ore * (1 + diff.aiWood)); for (const r of U.RARE) inc[r] = Math.floor(inc[r] * (1 + diff.aiRare)); }
       U.addRes(p.res, inc); p.income = inc;
-      const stables = R.hasSpecial(state, p.id, 'castle') ? 400 : 0;   // Конюшни Замка
+      const stables = (R.hasSpecial(state, p.id, 'castle') || R.hasSpecial(state, p.id, 'cove')) ? 400 : 0;   // Конюшни Замка / Маяк Бухты
       for (const h of S.heroesOf(state, p.id)) {
         if (isWeek) h.bonuses = {};
         h.bonuses.stables = stables;
@@ -711,12 +711,12 @@
       if (!p.alive) continue;
       for (const t of S.townsOf(state, p.id)) {
         if (!t.buildings.special) continue;
-        if (t.faction === 'rampart') {
+        if (t.faction === 'rampart' || t.faction === 'conflux') {
           const res = rng.pick(U.RARE), n = rng.int(1, 3);
           p.res[res] = (p.res[res] || 0) + n;
-          if (!p.isAI) S.addLog(state, 'Мистический пруд: ' + n + ' ' + (O.RES_NAMES_GEN[res] || res) + '.', 'good');
+          if (!p.isAI) S.addLog(state, H3.Buildings.SPECIAL[t.faction].name + ': ' + n + ' ' + (O.RES_NAMES_GEN[res] || res) + '.', 'good');
         }
-        if (t.faction === 'dungeon') {
+        if (t.faction === 'dungeon' || t.faction === 'factory') {
           let total = 0;
           for (const id in state.objects) {
             const o = state.objects[id];
@@ -725,7 +725,7 @@
             if (!room) continue;
             R.addToArmy(t.garrison, o.cid, o.avail); total += o.avail; o.avail = 0;
           }
-          if (total && !p.isAI) S.addLog(state, 'Портал призыва: в ' + t.name + ' пришло существ — ' + total + '.', 'good');
+          if (total && !p.isAI) S.addLog(state, H3.Buildings.SPECIAL[t.faction].name + ': в ' + t.name + ' пришло существ — ' + total + '.', 'good');
         }
       }
     }
