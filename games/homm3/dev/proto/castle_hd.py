@@ -23,7 +23,8 @@ def stretch(rows, target, ranges):
     for i in picks: rows.insert(i, rows[i])
     return rows
 
-def block(name, rows, comment, base=None, tint=None, extra=None, unit=2):
+def block(name, rows, comment, base=None, tint=None, extra=None, unit=2, paint=None):
+    """paint — словарь переопределений paint-конвейера для этого спрайта (например {'silDome': 0, 'rim': 0} для портретов)"""
     if base:
         parts = ["base: '%s'" % base]
         if tint: parts.append('tint: { ' + ', '.join("%s: '%s'" % kv for kv in tint.items()) + ' }')
@@ -31,7 +32,8 @@ def block(name, rows, comment, base=None, tint=None, extra=None, unit=2):
         return "    /* %s */\n    %s: { %s },\n" % (comment, name, ', '.join(parts))
     W = max(len(r) for r in rows); rows = pad(rows, W)
     body = '\n'.join("        '%s'," % r for r in rows)
-    return "    /* %s (%d×%d) */\n    %s: {\n      hd: true, unit: %d,\n      rows: [\n%s\n      ],\n    },\n" % (comment, W, len(rows), name, unit, body)
+    pt = (' paint: { ' + ', '.join('%s: %s' % (k, v) for k, v in paint.items()) + ' },') if paint else ''
+    return "    /* %s (%d×%d) */\n    %s: {\n      hd: true, unit: %d,%s\n      rows: [\n%s\n      ],\n    },\n" % (comment, W, len(rows), name, unit, pt, body)
 
 # читаем троих готовых из прототипа
 proto = io.open(os.path.join(os.path.dirname(__file__), 'big.js'), encoding='utf-8').read()
