@@ -280,7 +280,7 @@
       drawProps(ctx, 1);
       // герой-гость стоит у ворот
       const hero = town.visiting ? st.heroes[town.visiting] : null;
-      if (hero && Sp.has('hero_' + hero.cls)) { const p = st.players[hero.owner]; An.draw(ctx, 'hero_' + hero.cls, 430, 392, SC, false, { t: ts, phase: An.phaseOf('h' + hero.id) }, { b: p ? p.color : '#999' }); }
+      if (hero && Sp.has('hero_' + hero.cls)) { const p = st.players[hero.owner]; An.draw(ctx, 'hero_' + hero.cls, 430, 392, SC, false, { t: ts, phase: An.phaseOf('h' + hero.id) }, Sp.teamTint(p ? p.color : '#999')); }
       scene.fx.drawOver(ctx, W, H);
       T.applyDaylight(ctx, day, 0, 0, W, H);
       // в пещере неба нет — ночь там не темнее вечера
