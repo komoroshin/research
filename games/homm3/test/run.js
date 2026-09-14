@@ -999,5 +999,22 @@ test('для каждого класса и фракции есть спрайт
   assert.deepEqual(missing, [], 'нет спрайтов: ' + missing.join(', '));
 });
 
+test('у каждого существа есть спрайт в крупной сетке (sprites_<фракция>_hd.js) и файл подключён в index.html', () => {
+  const fs = require('fs'), path = require('path');
+  const root = path.join(__dirname, '..');
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const missing = [], notWired = [];
+  for (const f of H3.Factions.LIST) {
+    const file = 'sprites_' + f.id + '_hd.js';
+    const p = path.join(root, 'js', 'view', file);
+    if (!fs.existsSync(p)) { missing.push(file); continue; }
+    const src = fs.readFileSync(p, 'utf8');
+    for (const c of C.LIST) if (c.faction === f.id && !new RegExp('\\n    ' + c.id + ': \\{').test(src)) missing.push(c.id);
+    if (index.indexOf('js/view/' + file) < 0) notWired.push(file);
+  }
+  assert.deepEqual(missing, [], 'нет крупных спрайтов: ' + missing.join(', '));
+  assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
