@@ -47,7 +47,7 @@
         for (const [x, y, ch] of def.extra) if (rows[y] && x < rows[y].length) rows[y][x] = ch;
         rows = rows.map(r => r.join(''));
       }
-      return { rows, pal, anchor: def.anchor || b.anchor };
+      return { rows, pal, anchor: def.anchor || b.anchor, hd: def.hd !== undefined ? def.hd : b.hd, unit: def.unit || b.unit };
     }
     return null;
   }
@@ -64,8 +64,11 @@
      контур становится тонким снаружи и тёмным оттенком материала внутри, свет сверху-слева даёт объём,
      лёгкий градиент сверху вниз — вес. Все масштабы рисуются с этой 2×-основы. Иконки интерфейса
      (ic_*) не трогаем: пиктограмме важна не мягкость, а знак. */
-  const DETAIL = { on: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
-  function setDetail(v) { DETAIL.on = !!v; cache.clear(); urlCache.clear(); hiCache.clear(); shadowCache.clear(); }
+  const DETAIL = { on: true, paint: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
+  // paint-конвейер применяется к спрайтам с hd:true — крупная сетка (unit = исходных пикселей на номинальный), стиль без контура
+  function clearAll() { cache.clear(); urlCache.clear(); hiCache.clear(); shadowCache.clear(); }
+  function setDetail(v) { DETAIL.on = !!v; clearAll(); }
+  function setPaint(v) { DETAIL.paint = !!v; clearAll(); }
   const hiCache = new Map();
   const NONE = -1;
   function parseColor(col) { const n = parseInt(col.slice(1), 16); return col.length === 4 ? ((n >> 8 & 15) * 17 << 16) | ((n >> 4 & 15) * 17 << 8) | ((n & 15) * 17) : n; }
@@ -143,10 +146,138 @@
     ctx.putImageData(img, 0, 0);
     return cv;
   }
+
+  /* ---------- «Краска»: основа 4× с гладкими формами и освещением ----------
+     Та же сетка символов, но вместо удвоения с бевелом строится основа вчетверо крупнее:
+     1. Формы. Каждый цвет спрайта — отдельная маска; маски растягиваются билинейно и в каждой точке
+        побеждает самая весомая. Лестницы диагоналей превращаются в кривые, а границы между материалами
+        остаются чёткими (это «векторизация масок», а не размытие).
+     2. Объём. Два поля расстояний — до края силуэта и до края своего цветового пятна. Из них
+        собирается высота (общий купол тела плюс купол каждого материала), из высоты — нормаль.
+     3. Свет. Направленный источник сверху-слева: рассеянный свет, блик (сильнее на металле),
+        затенение в стыках материалов, холодный ободок с теневой стороны силуэта.
+     4. Контур. Исходная чёрная линия шириной в пиксель на 4× стала бы четырёхпиксельной — она
+        утоньшается до двух: наружная — почти чёрная, внутренняя — тёмный оттенок соседнего материала. */
+  const PAINT = { S: 4, sigma: 0.55, lineBoost: 1.35, light: [-0.45, -0.75, 0.55], domeR: 10, matR: 4, silDome: 0.5, matDome: 0, outline: 'none', ambient: 0.82, diffuse: 0.3, spec: 0.25, rim: 0.18, ao: 0.12 };
+  function setPaintVolume(v) { Object.assign(PAINT, v); clearAll(); }
+  function refinePaint(src) {
+    const { w, h, g } = src, S = PAINT.S, W = w * S, H = h * S;
+    const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h) ? NONE : g[y * w + x];
+    const dark = c => c !== NONE && lum(c) < 0.16;
+    const line = new Uint8Array(w * h), thin = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const c = at(x, y); if (c === NONE) continue;
+      if (dark(c) && (dark(at(x - 1, y)) || dark(at(x + 1, y)) || dark(at(x, y - 1)) || dark(at(x, y + 1)))) line[y * w + x] = 1;
+      // тонкая деталь: однопиксельная полоска любого цвета (перо, складка, звено кольчуги) — не даём ядру её размыть
+      if ((at(x - 1, y) !== c && at(x + 1, y) !== c) || (at(x, y - 1) !== c && at(x, y + 1) !== c)) thin[y * w + x] = 1;
+    }
+    // 1. гладкие формы: для каждой точки 4× берём четыре ближайших исходных пикселя с билинейными весами,
+    //    суммируем веса по цветам и выбираем самый весомый; прозрачность участвует наравне с цветами
+    // ядро шире одного исходного пикселя (гаусс σ≈0,55 по окну 4×4): лестница диагонали усредняется
+    // в кривую; контурная линия получает надбавку веса, иначе однопиксельная линия истончилась бы
+    const hi = new Int32Array(W * H).fill(NONE), hline = new Uint8Array(W * H), alpha = new Uint8Array(W * H);
+    const SIG2 = 2 * PAINT.sigma * PAINT.sigma;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const sx = (x + 0.5) / S - 0.5, sy = (y + 0.5) / S - 0.5;
+      const x0 = Math.floor(sx) - 1, y0 = Math.floor(sy) - 1;
+      const acc = new Map(); let bestC = NONE, bestW = -1, totW = 0, opW = 0, bestOp = NONE, bestOpW = -1;
+      for (let cy = y0; cy < y0 + 4; cy++) for (let cx = x0; cx < x0 + 4; cx++) {
+        const dx = cx - sx, dy = cy - sy; const d2 = dx * dx + dy * dy; if (d2 > 2.6) continue;
+        const inside = !(cx < 0 || cy < 0 || cx >= w || cy >= h);
+        const c = inside ? g[cy * w + cx] : NONE;
+        let wgt = Math.exp(-d2 / SIG2);
+        if (inside && (line[cy * w + cx] || thin[cy * w + cx])) wgt *= PAINT.lineBoost;
+        totW += wgt; if (c !== NONE) opW += wgt;
+        const v = (acc.get(c) || 0) + wgt; acc.set(c, v);
+        if (v > bestW) { bestW = v; bestC = c; }
+        if (c !== NONE && v > bestOpW) { bestOpW = v; bestOp = c; }
+      }
+      // без контура: край силуэта сглаживаем альфой — прозрачная точка с заметной долей непрозрачного
+      // веса красится лучшим непрозрачным цветом и получает частичную прозрачность
+      if (PAINT.outline === 'none') {
+        const a = totW ? opW / totW : 0;
+        if (bestC === NONE && a > 0.22) { bestC = bestOp; alpha[y * W + x] = Math.round(255 * Math.min(1, (a - 0.22) / 0.5)); }
+        else if (bestC !== NONE) alpha[y * W + x] = a < 0.72 ? Math.round(255 * Math.min(1, 0.5 + a * 0.7)) : 255;
+      } else if (bestC !== NONE) alpha[y * W + x] = 255;
+      hi[y * W + x] = bestC;
+      if (bestC !== NONE && dark(bestC)) {
+        // контур: помечаем, если ближайший исходный пиксель — линия
+        const nx = Math.min(w - 1, Math.max(0, Math.round(sx))), ny = Math.min(h - 1, Math.max(0, Math.round(sy)));
+        if (line[ny * w + nx]) hline[y * W + x] = 1;
+      }
+    }
+    const hat = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? NONE : hi[y * W + x];
+    // 2. поля расстояний (шахматная метрика, два прохода): до прозрачного и до чужого цвета
+    const distTo = (isEdge) => {
+      const d = new Float32Array(W * H).fill(1e4);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; if (isEdge(x, y)) { d[i] = 0; continue; }
+        let m = 1e4; if (y > 0) m = Math.min(m, d[i - W] + 1); if (x > 0) m = Math.min(m, d[i - 1] + 1); if (y > 0 && x > 0) m = Math.min(m, d[i - W - 1] + 1.4); if (y > 0 && x < W - 1) m = Math.min(m, d[i - W + 1] + 1.4); d[i] = m; }
+      for (let y = H - 1; y >= 0; y--) for (let x = W - 1; x >= 0; x--) { const i = y * W + x; let m = d[i];
+        if (y < H - 1) m = Math.min(m, d[i + W] + 1); if (x < W - 1) m = Math.min(m, d[i + 1] + 1); if (y < H - 1 && x < W - 1) m = Math.min(m, d[i + W + 1] + 1.4); if (y < H - 1 && x > 0) m = Math.min(m, d[i + W - 1] + 1.4); d[i] = m; }
+      return d;
+    };
+    const air = (x, y) => hat(x, y) === NONE;
+    const dSil = distTo((x, y) => air(x, y) || air(x - 1, y) || air(x + 1, y) || air(x, y - 1) || air(x, y + 1));
+    const dMat = distTo((x, y) => { const c = hat(x, y); if (c === NONE) return true; return hat(x - 1, y) !== c || hat(x + 1, y) !== c || hat(x, y - 1) !== c || hat(x, y + 1) !== c; });
+    // высота: купол силуэта + купол материала
+    const dome = (d, R) => { const t = Math.min(1, d / R); return Math.sqrt(t); };
+    const hgt = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) if (hi[i] !== NONE) hgt[i] = dome(dSil[i], PAINT.domeR) * PAINT.silDome + dome(dMat[i], PAINT.matR) * PAINT.matDome;
+    const hg = (x, y) => (x < 0 || y < 0 || x >= W || y >= H || hi[y * W + x] === NONE) ? 0 : hgt[y * W + x];
+    const [lx, ly, lz] = PAINT.light; const ll = Math.hypot(lx, ly, lz); const Lx = lx / ll, Ly = ly / ll, Lz = lz / ll;
+    // 3. свет
+    const out = new Int32Array(hi);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x, c = hi[i];
+      if (c === NONE) continue;
+      // 4. контур: утоньшаем — дальше двух пикселей от края линии закрашиваем соседним материалом
+      if (hline[i]) {
+        if (PAINT.outline === 'none') {
+          let nb = NONE;
+          for (let r = 1; r <= 4 && nb === NONE; r++) for (let dy = -r; dy <= r && nb === NONE; dy++) for (let dx = -r; dx <= r; dx++) { const v = hat(x + dx, y + dy); if (v !== NONE && !dark(v) && !hline[(y + dy) * W + (x + dx)]) { nb = v; break; } }
+          out[i] = nb === NONE ? c : mix(nb, -0.1);
+          continue;
+        }
+        const touchesAir = air(x, y - 1) || air(x, y + 1) || air(x - 1, y) || air(x + 1, y) || air(x - 1, y - 1) || air(x + 1, y + 1) || air(x - 1, y + 1) || air(x + 1, y - 1);
+        if (touchesAir) { out[i] = 0x0d0a08; continue; }
+        // расстояние до ближайшего не-контурного пикселя
+        let nb = NONE, nd = 9;
+        for (let r = 1; r <= 3 && nb === NONE; r++) for (let dy = -r; dy <= r && nb === NONE; dy++) for (let dx = -r; dx <= r; dx++) { const v = hat(x + dx, y + dy); if (v !== NONE && !dark(v) && !hline[(y + dy) * W + (x + dx)]) { nb = v; nd = r; break; } }
+        if (nb === NONE) { out[i] = 0x0d0a08; continue; }
+        out[i] = nd <= 1 ? mix(nb, -0.55) : mix(nb, -0.2);
+        continue;
+      }
+      const nx = -(hg(x + 1, y) - hg(x - 1, y)) * 2.2, ny = -(hg(x, y + 1) - hg(x, y - 1)) * 2.2, nz = 1;
+      const nl = Math.hypot(nx, ny, nz); const Nx = nx / nl, Ny = ny / nl, Nz = nz / nl;
+      const ndl = Nx * Lx + Ny * Ly + Nz * Lz;
+      const l = lum(c); const r = c >> 16 & 255, gg = c >> 8 & 255, b = c & 255;
+      const sat = (Math.max(r, gg, b) - Math.min(r, gg, b)) / 255;
+      const metal = sat < 0.12 && l > 0.25 && l < 0.85;            // сталь, серебро
+      const shiny = metal ? 1 : (l > 0.85 ? 0.3 : 0.45);
+      let k = PAINT.ambient + PAINT.diffuse * Math.max(0, ndl) - 1;   // множитель яркости относительно базы
+      // блик: отражённый вектор ≈ (2·(N·L)·N − L), смотрим на зрителя (0,0,1)
+      const rz = 2 * ndl * Nz - Lz; const sp = Math.pow(Math.max(0, rz), metal ? 14 : 6) * PAINT.spec * shiny;
+      k += sp * (metal ? 1.1 : 0.6);
+      // затенение в стыках материалов с теневой стороны
+      if (dMat[i] < 2.5 && ndl < 0.35) k -= PAINT.ao * (1 - dMat[i] / 2.5);
+      // холодный ободок с теневой стороны силуэта
+      let rim = 0; if (dSil[i] < 2.2 && ndl < 0.2) rim = PAINT.rim * (1 - dSil[i] / 2.2);
+      let col = mix(c, Math.max(-0.55, Math.min(0.5, k)));
+      if (rim) { const cr = col >> 16 & 255, cg = col >> 8 & 255, cb = col & 255; col = (Math.min(255, Math.round(cr + (170 - cr) * rim)) << 16) | (Math.min(255, Math.round(cg + (200 - cg) * rim)) << 8) | Math.min(255, Math.round(cb + (255 - cb) * rim)); }
+      out[i] = col;
+    }
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(W, H), d = img.data;
+    for (let i = 0; i < W * H; i++) { const c = out[i]; if (c === NONE) continue; d[i * 4] = c >> 16 & 255; d[i * 4 + 1] = c >> 8 & 255; d[i * 4 + 2] = c & 255; d[i * 4 + 3] = alpha[i] || 255; }
+    ctx.putImageData(img, 0, 0);
+    return cv;
+  }
+  /** Масштаб основы в номинальных пикселях: hd-спрайт — 4× на исходный пиксель, исходных на номинальный — unit. */
+  function baseScale(sp) { return (DETAIL.paint && sp && sp.hd) ? PAINT.S * (sp.unit || 1) : 2; }
   function hiRes(name, sp, flip, extraTint) {
     const key = name + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '');
     let cv = hiCache.get(key);
-    if (!cv) { cv = refine(colorGrid(sp, flip, extraTint)); hiCache.set(key, cv); }
+    if (!cv) { const grid = colorGrid(sp, flip, extraTint); cv = (DETAIL.paint && sp.hd) ? refinePaint(grid) : refine(grid); hiCache.set(key, cv); }
     return cv;
   }
 
@@ -158,12 +289,13 @@
     const sp = resolve(name);
     if (!sp) return null;
     const h = sp.rows.length, w = Math.max(...sp.rows.map(r => r.length));
+    const unit = sp.unit || 1, ps = scale / unit;   // масштаб на исходный пиксель сетки
     cv = document.createElement('canvas');
-    cv.width = Math.max(1, w * scale); cv.height = Math.max(1, h * scale);
+    cv.width = Math.max(1, Math.round(w * ps)); cv.height = Math.max(1, Math.round(h * ps));
     const ctx = cv.getContext('2d');
     if (DETAIL.on && !DETAIL.skip.test(name)) {
       const hi = hiRes(name, sp, flip, extraTint);
-      ctx.imageSmoothingEnabled = scale < 2; // уменьшение — усредняем, увеличение — резкие пиксели
+      ctx.imageSmoothingEnabled = scale < baseScale(sp); // уменьшение — усредняем, увеличение — резкие пиксели
       ctx.drawImage(hi, 0, 0, hi.width, hi.height, 0, 0, cv.width, cv.height);
     } else {
       for (let y = 0; y < h; y++) {
@@ -176,11 +308,11 @@
           } else col = colorOf(ch, sp.pal);
           if (!col) continue;
           ctx.fillStyle = col;
-          ctx.fillRect((flip ? (w - 1 - x) : x) * scale, y * scale, scale, scale);
+          ctx.fillRect((flip ? (w - 1 - x) : x) * ps, y * ps, ps, ps);
         }
       }
     }
-    cv._w = w; cv._h = h; cv._anchor = sp.anchor || [w / 2, h];
+    cv._w = w / unit; cv._h = h / unit; cv._anchor = sp.anchor ? [sp.anchor[0] / unit, sp.anchor[1] / unit] : [w / unit / 2, h / unit];
     cache.set(key, cv);
     return cv;
   }
@@ -192,7 +324,8 @@
    */
   function image(name, scale, flip, extraTint) {
     scale = scale || 1;
-    if (DETAIL.on && scale < 2 && !DETAIL.skip.test(name)) { const cv = render(name, 2, flip, extraTint); return cv ? { cv, k: scale / 2 } : null; }
+    const bs = baseScale(resolve(name));
+    if (DETAIL.on && scale < bs && !DETAIL.skip.test(name)) { const cv = render(name, bs, flip, extraTint); return cv ? { cv, k: scale / bs } : null; }
     const cv = render(name, scale, flip, extraTint); return cv ? { cv, k: 1 } : null;
   }
   /** Сглаживание при рисовании основы: уменьшение на экране — усреднять, увеличение — резко. */
@@ -256,5 +389,5 @@
     return cv;
   }
 
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, setDetail, DETAIL, _registry: registry };
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, setDetail, setPaint, setPaintVolume, DETAIL, PAINT, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);

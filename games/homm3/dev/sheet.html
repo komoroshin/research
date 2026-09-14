@@ -18,6 +18,10 @@ let loaded = 0;
 function go() {
   const S = H3.Sprites;
   if (S.setDetail) S.setDetail(q.get('detail') !== '0'); // ?detail=0 — классический рендер без 2×-конвейера
+  if (S.setPaint) S.setPaint(q.get('paint') !== '0');    // ?paint=0 — прежний 2×-конвейер без освещения
+  // ?vol=flat — без процедурного объёма (тона только из рисунка), ?vol=soft — лёгкий объём по силуэту, иначе полный
+  if (S.setPaintVolume && q.get('outline')) S.setPaintVolume({ outline: q.get('outline') });   // ?outline=none — без контурной линии
+  if (S.setPaintVolume) { const v = q.get('vol'); if (v === 'flat') S.setPaintVolume({ silDome: 0, matDome: 0, spec: 0, rim: 0.12, ao: 0.1, diffuse: 0, ambient: 1 }); else if (v === 'soft') S.setPaintVolume({ silDome: 0.5, matDome: 0, spec: 0.25, rim: 0.18, ao: 0.12, diffuse: 0.3, ambient: 0.82 }); }
   let names = S.names().filter(n => !filter || n.startsWith(filter));
   if (only.length) names = only;
   const cell = cs * scale + 8, cellH = cs * scale + 22;
