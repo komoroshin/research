@@ -839,3 +839,5 @@ carry: { hero: true, army: 'none' | 'part' | 'full', arts: true, levelCap: 0 }
 **Инструменты:** `dev/proto/compose.py` — композитор из примитивов (эллипс, полигон, линия, гребёнка перьев, автоконтур); `dev/proto/castle_hd.py` — сборка `js/view/sprites_castle_hd.js`; `dev/sheet.html?paint=0|1&vol=flat|soft&outline=none` — листы для сверки.
 
 **v3.6.** Некрополис в крупной сетке — `js/view/sprites_necropolis_hd.js`, сборка `dev/proto/necro_hd.py`. Правило тона в тёмном диапазоне: конь почти чёрный, всадник с стальными бликами.
+
+**v3.7.** Цитадель в крупной сетке — `js/view/sprites_stronghold_hd.js`, сборка `dev/proto/stronghold_hd.py`. Правило минимального размера приметной детали: не меньше 5×3 исходных пикселей (глаз циклопа).
