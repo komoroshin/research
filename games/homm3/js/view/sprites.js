@@ -47,7 +47,7 @@
         for (const [x, y, ch] of def.extra) if (rows[y] && x < rows[y].length) rows[y][x] = ch;
         rows = rows.map(r => r.join(''));
       }
-      return { rows, pal, anchor: def.anchor || b.anchor, hd: def.hd !== undefined ? def.hd : b.hd, unit: def.unit || b.unit, paint: def.paint || b.paint };
+      return { rows, pal, anchor: def.anchor || b.anchor, hd: def.hd !== undefined ? def.hd : b.hd, unit: def.unit || b.unit, paint: def.paint || b.paint, mat: def.mat || b.mat };
     }
     return null;
   }
@@ -64,11 +64,13 @@
      контур становится тонким снаружи и тёмным оттенком материала внутри, свет сверху-слева даёт объём,
      лёгкий градиент сверху вниз — вес. Все масштабы рисуются с этой 2×-основы. Иконки интерфейса
      (ic_*) не трогаем: пиктограмме важна не мягкость, а знак. */
-  const DETAIL = { on: true, paint: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
+  const DETAIL = { on: true, paint: true, materials: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
+  const MAT_FLAT = { spec: 0.6, pow: 8, ao: 1, rim: 1, grain: 'none', ga: 0, edge: 0, shade: 0, ek: 4 };   // как было до материалов
   // paint-конвейер применяется к спрайтам с hd:true — крупная сетка (unit = исходных пикселей на номинальный), стиль без контура
   function clearAll() { cache.clear(); urlCache.clear(); hiCache.clear(); shadowCache.clear(); }
   function setDetail(v) { DETAIL.on = !!v; clearAll(); }
   function setPaint(v) { DETAIL.paint = !!v; clearAll(); }
+  function setMaterials(v) { DETAIL.materials = !!v; clearAll(); }
   const hiCache = new Map();
   const NONE = -1;
   function parseColor(col) { const n = parseInt(col.slice(1), 16); return col.length === 4 ? ((n >> 8 & 15) * 17 << 16) | ((n >> 4 & 15) * 17 << 8) | ((n & 15) * 17) : n; }
@@ -78,10 +80,90 @@
     if (k > 0) { r += (255 - r) * k; g += (255 - g) * k; b += (255 - b) * k; } else { r *= 1 + k; g *= 1 + k; b *= 1 + k; }
     return (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(b);
   }
+  /* ---------- материалы ----------
+     Раньше материал угадывался по насыщенности цвета: всё серое считалось сталью,
+     остальное — «не сталью». Кольчуга и серая шкура выходили одинаковыми. Теперь у
+     каждой буквы палитры есть материал по умолчанию, а спрайт может его переопределить
+     полем mat: { r: 'skin' } — буква r у мага ткань, у демона кожа. */
+  const MATS = {
+    // мягкие: свет рассеивается — край почти без блика, форму держит зерно
+    cloth: { spec: 0.35, pow: 4, ao: 1.2, rim: 1.0, grain: 'weave', ga: 0.034, edge: 0.07, shade: 0.07, ek: 6 },
+    skin: { spec: 0.45, pow: 6, ao: 1.0, rim: 1.0, grain: 'none', ga: 0, edge: 0.08, shade: 0.07, ek: 5 },
+    leaf: { spec: 0.30, pow: 5, ao: 1.2, rim: 1.0, grain: 'speck', ga: 0.040, edge: 0.07, shade: 0.08, ek: 5 },
+    fur: { spec: 0.20, pow: 3, ao: 1.3, rim: 1.1, grain: 'fur', ga: 0.062, edge: 0.05, shade: 0.06, ek: 4 },
+    wood: { spec: 0.30, pow: 5, ao: 1.1, rim: 0.9, grain: 'wood', ga: 0.048, edge: 0.10, shade: 0.09, ek: 5 },
+    stone: { spec: 0.25, pow: 4, ao: 1.2, rim: 0.9, grain: 'speck', ga: 0.056, edge: 0.09, shade: 0.10, ek: 5 },
+    // твёрдые и блестящие: чёткая кромка блика, узкая полоса
+    bone: { spec: 0.55, pow: 8, ao: 1.1, rim: 1.0, grain: 'speck', ga: 0.028, edge: 0.18, shade: 0.11, ek: 4 },
+    steel: { spec: 1.40, pow: 16, ao: 0.7, rim: 1.2, grain: 'brush', ga: 0.022, edge: 0.30, shade: 0.16, ek: 3 },
+    gold: { spec: 1.30, pow: 14, ao: 0.7, rim: 1.1, grain: 'brush', ga: 0.020, edge: 0.26, shade: 0.14, ek: 3 },
+    crystal: { spec: 1.60, pow: 20, ao: 0.5, rim: 1.8, grain: 'facet', ga: 0.046, edge: 0.34, shade: 0.10, ek: 4 },
+    water: { spec: 1.10, pow: 12, ao: 0.6, rim: 1.4, grain: 'none', ga: 0, edge: 0.30, shade: 0.10, ek: 4 },
+    // светящееся: само себе свет, кромка не нужна
+    glow: { spec: 0.20, pow: 4, ao: 0.2, rim: 0.4, grain: 'none', ga: 0, emit: 0.16, edge: 0.03, shade: 0.02, ek: 3 },
+  };
+  const MAT_KEYS = Object.keys(MATS);
+  const MAT_ID = {}; MAT_KEYS.forEach((k, i) => { MAT_ID[k] = i; });
+  const MAT_LIST = MAT_KEYS.map(k => MATS[k]);
+  /** Материал по умолчанию для каждой буквы палитры. */
+  const MAT_OF = {
+    k: 'cloth', z: 'cloth', u: 'steel', e: 'steel', E: 'steel', l: 'steel',
+    w: 'bone', L: 'bone', i: 'bone', I: 'bone',
+    s: 'skin', S: 'skin', t: 'skin', T: 'skin', m: 'skin', v: 'skin', o: 'skin', g: 'skin', G: 'skin',
+    h: 'leaf', H: 'leaf', j: 'leaf',
+    n: 'fur', N: 'fur', d: 'fur', D: 'fur',
+    O: 'wood', y: 'gold', Y: 'gold',
+    r: 'cloth', R: 'cloth', M: 'cloth', b: 'cloth', B: 'cloth',
+    p: 'cloth', P: 'cloth', x: 'cloth', q: 'cloth', Q: 'cloth',
+    f: 'glow', F: 'glow', a: 'glow', A: 'glow',
+    c: 'crystal', C: 'water',
+  };
+  /* Буква не знает контекста: серый `e` у мечника — доспех, у замка — камень, у мельницы — доска.
+     Поэтому у групп спрайтов свой профиль по умолчанию, поверх которого работает поле mat спрайта. */
+  const MAT_PROFILE = [
+    // каменная кладка: серое и бежевое здесь — камень, не доспех и не доска.
+    // Сцена города перекрашивает буквы под фракцию, поэтому «коричневые» буквы тут тоже камень.
+    [/^(town_|bld_|bank_|shrine_|wall_|gate|siege_tower|moat|subter_gate|mountain_|rock_|crystal_rock|obst_rock|hill_fort|arena|temple|magic_well|fountain_fortune|star_axis|garden_revelation|observatory|marletto_tower|learning_stone|oasis|pandora_box|keymaster|border_guard|quest_guard|dwelling_)/,
+      { e: 'stone', E: 'stone', l: 'stone', u: 'stone', L: 'stone', i: 'stone', I: 'stone', t: 'stone', T: 'stone', n: 'stone', N: 'stone', d: 'stone', D: 'stone', O: 'stone' }],
+    // сруб, доски, стволы: дерево с волокном, камень для серого фундамента
+    [/^(mine_|tree_|obst_stump|obst_bush|windmill|water_wheel|sawmill|witch_hut|seer_hut|tavern|trading_post|mercenary_camp|shipyard|boat|flotsam|chest|sea_chest|ballista|ammo_cart|first_aid_tent|rally_flag|campfire)/,
+      { n: 'wood', N: 'wood', d: 'wood', D: 'wood', O: 'wood', e: 'stone', E: 'stone', l: 'stone' }],
+    // портреты: кость лица — кожа, а не блестящий череп
+    [/^portrait_/, { i: 'skin', I: 'skin' }],
+  ];
+  const profCache = new Map();
+  function matProfile(name) {
+    let p = profCache.get(name);
+    if (p === undefined) { const hit = MAT_PROFILE.find(([re]) => re.test(name)); p = hit ? hit[1] : null; profCache.set(name, p); }
+    return p;
+  }
+  function matIdOf(ch, spMat, prof) {
+    const name = (spMat && spMat[ch]) || (prof && prof[ch]) || MAT_OF[ch] || 'cloth';
+    const id = MAT_ID[name];
+    return id === undefined ? MAT_ID.cloth : id;
+  }
+  /** Дешёвый хеш-шум: одинаковый для одной точки, разный по сетке. */
+  function hash2(x, y) {
+    let n = (x | 0) * 374761393 + (y | 0) * 668265263;
+    n = (n ^ (n >> 13)) * 1274126177;
+    return ((n ^ (n >> 16)) >>> 0) / 4294967295;
+  }
+  /** Зерно материала в точке 4×-основы. Крупность 2–4 px: мельче не переживает уменьшение. */
+  function grainAt(kind, x, y) {
+    if (kind === 'speck') return hash2(x >> 1, y >> 1) * 2 - 1;
+    if (kind === 'fur') return (hash2(x >> 1, 0) * 2 - 1) * 0.65 + (hash2(x >> 1, y >> 2) * 2 - 1) * 0.35;
+    if (kind === 'brush') return (hash2(0, y >> 1) * 2 - 1) * 0.7 + (hash2(x >> 2, y >> 1) * 2 - 1) * 0.3;
+    if (kind === 'wood') return Math.sin(y * 0.38 + Math.sin(x * 0.045) * 2.6) * 0.6 + (hash2(x >> 1, y >> 1) * 2 - 1) * 0.3;
+    if (kind === 'weave') return Math.sin(x * 0.8) * Math.sin(y * 0.8) * 0.6 + (hash2(x >> 1, y >> 1) * 2 - 1) * 0.3;
+    if (kind === 'facet') return Math.sin((x * 0.22 + y * 0.38)) * 0.8;
+    return 0;
+  }
+
   /** Сетка цветов спрайта (int RGB или NONE) с учётом зеркала и подмены цветов. */
-  function colorGrid(sp, flip, extraTint) {
+  function colorGrid(sp, flip, extraTint, prof) {
     const h = sp.rows.length, w = Math.max(...sp.rows.map(r => r.length));
     const g = new Int32Array(w * h).fill(NONE);
+    const mg = new Uint8Array(w * h);
     for (let y = 0; y < h; y++) {
       const row = sp.rows[y];
       for (let x = 0; x < row.length; x++) {
@@ -89,10 +171,12 @@
         if (extraTint && extraTint[ch] !== undefined) { const t = extraTint[ch]; if (t[0] === '#') col = t; else { ch = t; col = colorOf(ch, sp.pal); } }
         else col = colorOf(ch, sp.pal);
         if (!col) continue;
-        g[y * w + (flip ? w - 1 - x : x)] = parseColor(col);
+        const di = y * w + (flip ? w - 1 - x : x);
+        g[di] = parseColor(col);
+        mg[di] = matIdOf(ch, sp.mat, prof);
       }
     }
-    return { w, h, g };
+    return { w, h, g, m: mg };
   }
   /** 2×-основа: EPX → маска краёв → бевел и градиент → тонкий контур. Возвращает canvas 2w×2h. */
   function refine(src) {
@@ -163,6 +247,8 @@
   function refinePaint(src, ov) {
     const P = ov ? Object.assign({}, PAINT, ov) : PAINT;   // ov — переопределения параметров для одного спрайта (sp.paint)
     const { w, h, g } = src, S = P.S, W = w * S, H = h * S;
+    const srcMat = src.m || new Uint8Array(w * h);
+    const himat = new Uint8Array(W * H);
     const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h) ? NONE : g[y * w + x];
     const dark = c => c !== NONE && lum(c) < 0.16;
     const line = new Uint8Array(w * h), thin = new Uint8Array(w * h);
@@ -201,6 +287,10 @@
         else if (bestC !== NONE) alpha[y * W + x] = a < 0.72 ? Math.round(255 * Math.min(1, 0.5 + a * 0.7)) : 255;
       } else if (bestC !== NONE) alpha[y * W + x] = 255;
       hi[y * W + x] = bestC;
+      {   // материал берём у ближайшего исходного пикселя — он же задал цвет
+        const mx = Math.min(w - 1, Math.max(0, Math.round(sx))), my = Math.min(h - 1, Math.max(0, Math.round(sy)));
+        himat[y * W + x] = srcMat[my * w + mx];
+      }
       if (bestC !== NONE && dark(bestC)) {
         // контур: помечаем, если ближайший исходный пиксель — линия
         const nx = Math.min(w - 1, Math.max(0, Math.round(sx))), ny = Math.min(h - 1, Math.max(0, Math.round(sy)));
@@ -251,18 +341,36 @@
       const nx = -(hg(x + 1, y) - hg(x - 1, y)) * 2.2, ny = -(hg(x, y + 1) - hg(x, y - 1)) * 2.2, nz = 1;
       const nl = Math.hypot(nx, ny, nz); const Nx = nx / nl, Ny = ny / nl, Nz = nz / nl;
       const ndl = Nx * Lx + Ny * Ly + Nz * Lz;
-      const l = lum(c); const r = c >> 16 & 255, gg = c >> 8 & 255, b = c & 255;
-      const sat = (Math.max(r, gg, b) - Math.min(r, gg, b)) / 255;
-      const metal = sat < 0.12 && l > 0.25 && l < 0.85;            // сталь, серебро
-      const shiny = metal ? 1 : (l > 0.85 ? 0.3 : 0.45);
+      const l = lum(c);
+      const M = DETAIL.materials ? MAT_LIST[himat[i]] : MAT_FLAT;
+      const shiny = l > 0.85 ? 0.45 : 1;                           // на почти белом блик не виден
       let k = P.ambient + P.diffuse * Math.max(0, ndl) - 1;   // множитель яркости относительно базы
       // блик: отражённый вектор ≈ (2·(N·L)·N − L), смотрим на зрителя (0,0,1)
-      const rz = 2 * ndl * Nz - Lz; const sp = Math.pow(Math.max(0, rz), metal ? 14 : 6) * P.spec * shiny;
-      k += sp * (metal ? 1.1 : 0.6);
+      const rz = 2 * ndl * Nz - Lz; const sp = Math.pow(Math.max(0, rz), M.pow) * P.spec * M.spec * shiny;
+      k += sp * 0.75;
+      if (M.emit) k += M.emit;                                     // свечение: огонь и магия светят сами
+      // зерно материала: мех штрихами, камень крапом, сталь протяжкой, дерево волокном
+      if (M.ga) k += grainAt(M.grain, x, y) * M.ga;
+      // свет по краю пятна: со стороны источника пятно светлеет, с теневой темнеет.
+      // Это не купол по центру (его отвергли как «подушку»), а ручная штриховка по границе:
+      // у стали кромка узкая и резкая, у ткани широкая и мягкая, у меха её почти нет.
+      if (M.edge || M.shade) {
+        const ek = M.ek;
+        let lit = 0, shd = 0;
+        for (let d = 1; d <= ek; d++) {
+          const jx = Math.round(x + Lx * d), jy = Math.round(y + Ly * d);
+          if (hat(jx, jy) !== c) { lit = 1 - (d - 1) / ek; break; }
+        }
+        for (let d = 1; d <= ek; d++) {
+          const jx = Math.round(x - Lx * d), jy = Math.round(y - Ly * d);
+          if (hat(jx, jy) !== c) { shd = 1 - (d - 1) / ek; break; }
+        }
+        k += M.edge * lit - M.shade * shd;
+      }
       // затенение в стыках материалов с теневой стороны
-      if (dMat[i] < 2.5 && ndl < 0.35) k -= P.ao * (1 - dMat[i] / 2.5);
+      if (dMat[i] < 2.5 && ndl < 0.35) k -= P.ao * M.ao * (1 - dMat[i] / 2.5);
       // холодный ободок с теневой стороны силуэта
-      let rim = 0; if (dSil[i] < 2.2 && ndl < 0.2) rim = P.rim * (1 - dSil[i] / 2.2);
+      let rim = 0; if (dSil[i] < 2.2 && ndl < 0.2) rim = P.rim * M.rim * (1 - dSil[i] / 2.2);
       let col = mix(c, Math.max(-0.55, Math.min(0.5, k)));
       if (rim) { const cr = col >> 16 & 255, cg = col >> 8 & 255, cb = col & 255; col = (Math.min(255, Math.round(cr + (170 - cr) * rim)) << 16) | (Math.min(255, Math.round(cg + (200 - cg) * rim)) << 8) | Math.min(255, Math.round(cb + (255 - cb) * rim)); }
       out[i] = col;
@@ -278,7 +386,7 @@
   function hiRes(name, sp, flip, extraTint) {
     const key = name + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '');
     let cv = hiCache.get(key);
-    if (!cv) { const grid = colorGrid(sp, flip, extraTint); cv = (DETAIL.paint && sp.hd) ? refinePaint(grid, sp.paint) : refine(grid); hiCache.set(key, cv); }
+    if (!cv) { const grid = colorGrid(sp, flip, extraTint, matProfile(name)); cv = (DETAIL.paint && sp.hd) ? refinePaint(grid, sp.paint) : refine(grid); hiCache.set(key, cv); }
     return cv;
   }
 
@@ -397,5 +505,5 @@
     if (!t) { const c = mix(parseColor(color), -0.42); t = { b: color, B: '#' + c.toString(16).padStart(6, '0') }; teamCache.set(color, t); }
     return t;
   }
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, DETAIL, PAINT, _registry: registry };
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, setMaterials, DETAIL, PAINT, MATS, MAT_OF, MAT_PROFILE, matProfile, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);

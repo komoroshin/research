@@ -1119,5 +1119,39 @@ test('вариативность: событие недели, тема карт
   assert.ok(gold('rich') > gold('normal') && gold('normal') > gold('harsh'), 'расклад не влияет на запасы');
 });
 
+test('материалы: каждая буква палитры знает свой материал, у камня и дерева свои профили', () => {
+  const fs = require('fs'), path = require('path');
+  const dir = path.join(__dirname, '..', 'js', 'view');
+  require('../js/view/sprites.js');
+  const Sp = (typeof window !== 'undefined' ? window : globalThis).H3.Sprites;
+  const known = Object.keys(Sp.MATS);
+  // 1. каждый материал описан полностью: без spec/ao/rim освещение получит undefined и станет NaN
+  for (const [id, m] of Object.entries(Sp.MATS))
+    for (const f of ['spec', 'pow', 'ao', 'rim', 'grain', 'ga', 'edge', 'shade', 'ek'])
+      assert.ok(m[f] !== undefined, 'у материала ' + id + ' нет поля ' + f);
+  // 2. все ссылки на материалы — из списка: и буквы по умолчанию, и профили групп, и поля mat спрайтов
+  const bad = Object.entries(Sp.MAT_OF).filter(([, v]) => !known.includes(v));
+  assert.deepEqual(bad, [], 'неизвестный материал в MAT_OF: ' + JSON.stringify(bad));
+  for (const [re, map] of Sp.MAT_PROFILE)
+    for (const [ch, v] of Object.entries(map))
+      assert.ok(known.includes(v), 'профиль ' + re + ': буква ' + ch + ' → неизвестный материал ' + v);
+  let src = '';
+  for (const f of fs.readdirSync(dir)) if (f.startsWith('sprites')) src += fs.readFileSync(path.join(dir, f), 'utf8');
+  for (const m of src.matchAll(/\bmat:\s*\{([^}]*)\}/g))
+    for (const q of m[1].matchAll(/'([a-z]+)'/g))
+      assert.ok(known.includes(q[1]), 'спрайт просит неизвестный материал: ' + q[1]);
+  // 3. постройка — камень, а не доспех: сцена города перекрашивает буквы под фракцию,
+  //    поэтому серое и коричневое у town_/bld_ должно читаться камнем, иначе стена блестит как сталь
+  for (const n of ['town_castle', 'town_necropolis', 'bld_fort', 'bld_hall_1', 'bank_dwarven']) {
+    const pr = Sp.matProfile(n);
+    assert.ok(pr, 'нет профиля материалов у ' + n);
+    for (const ch of ['e', 'E', 'l', 'n', 'd']) assert.equal(pr[ch], 'stone', n + ': буква ' + ch + ' должна быть камнем');
+  }
+  // сруб и ствол — дерево
+  for (const n of ['mine_wood', 'tree_1', 'boat']) assert.equal(Sp.matProfile(n).n, 'wood', n + ' должен быть деревом');
+  // существо профиля не имеет: у него серое — доспех
+  assert.equal(Sp.matProfile('swordsman'), null, 'у существа не должно быть профиля построек');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
