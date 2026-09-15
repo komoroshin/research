@@ -421,7 +421,7 @@
   }
   /** Покой существа на карте: дыхание, у летающих — парение. */
   function creatureIdle(cid, key, ts) {
-    return { t: ts, phase: An.phaseOf(key + ':' + cid), flying: C.isFlyer(C.get(cid)) };
+    return { t: ts, phase: An.phaseOf(key + ':' + cid), flying: C.isFlyer(C.get(cid)), key: key + ':' + cid, rate: An.rateOf(cid) };
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
@@ -524,13 +524,13 @@
     const color = st.players[h.owner].color;
     const x = px * TILE + 16, y = py * TILE + 30;
     const walking = !!(V.anim && V.anim.hero.id === h.id);
-    const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking };
+    const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking, key: h.id, rate: An.rateOf('hero_' + h.cls) };
     const a = An.state(ao); ao.st = a;
     if (h.boat) {
       // под парусом: герой стоит в лодке, лодка покачивается на волне
       const bob = Math.sin(ts / 520 + An.phaseOf(h.id)) * 1.5;
       Sp.draw(ctx, 'boat', x, y + 4 + bob, 1, h.facing === 'l');
-      const bo = { t: ts, phase: An.phaseOf(h.id), idle: true }; bo.st = An.state(bo);
+      const bo = { t: ts, phase: An.phaseOf(h.id), idle: true, key: h.id + ':boat', rate: An.rateOf('hero_' + h.cls) }; bo.st = An.state(bo);
       An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', bo, Sp.teamTint(color));
     } else {
       // мягкое пятно под ногами: падающая тень уже нарисована общим проходом

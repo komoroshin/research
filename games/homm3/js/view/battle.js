@@ -477,7 +477,7 @@
     if (!Sp.has(name)) return;
     const [x, y] = heroPos(side);
     const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / 600 : 0;
-    const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast };
+    const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast, key: 'bh' + side, rate: An.rateOf(name) };
     const st = An.state(ao); ao.st = st;
     ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
     const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
@@ -704,6 +704,7 @@
     // опции нужны целиком: по ним же двигаются отдельные части спрайта
     const ao = {
       t: ts, phase: p.phase, dir: u.side === 0 ? 1 : -1, flying: C.isFlyer(c),
+      key: 'u' + u.id, rate: An.rateOf(u.cid),
       moving: !!p.moving, lunge: p.lunge, cast: p.cast,
       hurt: p.shake > 0 ? Math.min(1, p.shake / 180) : 0,
       dead: !u.alive && p.fade !== undefined ? p.fade : undefined,
