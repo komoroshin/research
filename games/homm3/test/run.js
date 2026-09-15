@@ -1051,5 +1051,32 @@ test('у каждого объекта карты, боя и сцены горо
   assert.deepEqual(notWired, [], 'не подключены: ' + notWired.join(', '));
 });
 
+test('встреча своих героев: подход на клетку своего героя даёт обмен, и путь к нему открыт из интерфейса', () => {
+  const st = S.newGame({ size: 'S', seed: 11, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  const A = H3.Adventure;
+  const a = S.heroesOf(st, 0)[0];
+  let spot = null;
+  for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, -1]]) {
+    if (S.moveCost(st, a, a.x + dx, a.y + dy) < Infinity) { spot = [a.x + dx, a.y + dy]; break; }
+  }
+  assert.ok(spot, 'рядом с героем нет проходимой клетки');
+  const b = R.makeHero(st, 'valeska', 0, spot[0], spot[1], true);
+  st.heroes[b.id] = b; st.players[0].heroes.push(b.id); b.move = R.heroMaxMove(b);
+  a.move = R.heroMaxMove(a);
+  const res = A.moveHero(st, a, [spot]);
+  assert.equal(res.stop && res.stop.kind, 'hero', 'подход к своему герою должен давать встречу');
+  assert.equal(res.stop.hero.id, b.id);
+  // интерфейс: тап по соседнему своему герою не перехватывается выбором, есть кнопка обмена и экран встречи
+  const fs = require('fs'), path = require('path');
+  const adv = fs.readFileSync(path.join(__dirname, '..', 'js', 'view', 'adventure.js'), 'utf8');
+  const main = fs.readFileSync(path.join(__dirname, '..', 'js', 'main.js'), 'utf8');
+  const icons = fs.readFileSync(path.join(__dirname, '..', 'js', 'view', 'sprites_icons.js'), 'utf8');
+  assert.ok(/nextTo\(cur, x, y\)/.test(adv), 'тап по соседнему герою всё ещё перехватывается выбором');
+  assert.ok(/G\.meetHero\(sel, mate\)/.test(adv), 'нет кнопки обмена в панели карты');
+  assert.ok(/meetHero/.test(main) && /HV\.open\(a, b\)/.test(main), 'нет вызова встречи героев');
+  assert.ok(/\n    ic_exchange: \{/.test(icons), 'нет иконки обмена');
+  assert.ok(/HV\.open\(hero, stop\.hero\)/.test(main), 'подход к своему герою не открывает встречу');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);

@@ -124,10 +124,13 @@
     const G = H3.Game, st = V.state;
     const hero = S.heroAt(st, x, y, V.layer), town = S.townAt(st, x, y, V.layer);
     const me = st.turn;
-    // клик по своему герою — выбрать (или открыть экран героя при повторном)
+    // клик по своему герою: по выбранному — его экран; по соседнему своему — маршрут к нему
+    // (второй тап ведёт и открывает встречу героев с обменом армией); по дальнему — выбрать
     if (hero && hero.owner === me && !(G.selected() && G.selected().id === hero.id && V.pending && V.pending[0] === x && V.pending[1] === y)) {
-      if (G.selected() && G.selected().id === hero.id) { G.openHero(hero); return; }
-      G.selectHero(hero.id); V.pending = null; V.path = null; V.dirty = true; return;
+      const cur = G.selected();
+      if (cur && cur.id === hero.id) { G.openHero(hero); return; }
+      if (!(cur && nextTo(cur, x, y))) { G.selectHero(hero.id); V.pending = null; V.path = null; V.dirty = true; return; }
+      // сосед: дальше обычная логика цели — превью пути, повторный тап ведёт
     }
     if (town && town.owner === me && !G.selected()) { G.openTown(town); return; }
     const sel = G.selected(); if (!sel) return;
@@ -138,6 +141,11 @@
     if (!V.path) { if (!touch) UI.toast('Туда не пройти', 'warn'); V.dirty = true; return; }
     V.pending = [x, y]; V.dirty = true;
     if (!touch) { G.moveAlong(sel, V.path); V.pending = null; }
+  }
+  /** Соседняя клетка героя (включая диагонали), на том же слое карты. */
+  function nextTo(hero, x, y) {
+    return (hero.z || 0) === V.layer && !(hero.x === x && hero.y === y)
+      && Math.abs(hero.x - x) <= 1 && Math.abs(hero.y - y) <= 1;
   }
   function previewPath(x, y) {
     const G = H3.Game, sel = G && G.selected();
@@ -595,6 +603,9 @@
     const btn = (label, fn, cls, title) => { const b = UI.el('button', cls || '', label); b.onclick = () => { H3.Audio.play('click'); fn(); }; if (title) b.title = title; ab.appendChild(b); return b; };
     btn(UI.icon('ic_end_turn') + '<span class="lbl"> Конец хода</span>', () => G.endTurn(), 'primary wide', 'Конец хода (E)');
     btn(UI.icon('ic_hero'), () => G.nextHero(), '', 'Следующий герой (H)');
+    // рядом стоит свой герой — обмен армией и артефактами без траты очков движения
+    const mate = sel && S.heroesOf(st, p.id).find(h => h.id !== sel.id && (h.z || 0) === (sel.z || 0) && nextTo(h, sel.x, sel.y));
+    if (mate) btn(UI.icon('ic_exchange'), () => G.meetHero(sel, mate), '', 'Обмен с героем ' + mate.name);
     const town = sel && H3.Adventure.townOfHero(st, sel);
     btn(UI.icon('ic_town'), () => { const t = town || S.townsOf(st, p.id)[0]; if (t) G.openTown(t); }, '', 'Город (T)');
     btn(UI.icon('ic_spellbook'), () => G.openSpellbook(), '', 'Книга заклинаний (C)');
