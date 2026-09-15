@@ -616,6 +616,9 @@
   }
   function draw(ts) {
     const b = V.b, ctx = V.ctx, size = V.size;
+    // свет поля боя: небо по времени суток, отсвет земли по местности —
+    // на лаве отряды снизу горят оранжевым, на снегу получают холодный подбой
+    Sp.setScene(T.sceneLight(V.day || 4, b.terrain, b.terrain === 'subter'));
     ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
     // параллакс: небо и дальний план отстают от земли, поле получает глубину при панораме

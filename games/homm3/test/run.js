@@ -1153,5 +1153,28 @@ test('материалы: каждая буква палитры знает св
   assert.equal(Sp.matProfile('swordsman'), null, 'у существа не должно быть профиля построек');
 });
 
+test('свет сцены: солнце переходит с востока на запад, земля подсвечивает снизу', () => {
+  require('../js/view/sprites.js');
+  const g = (typeof window !== 'undefined' ? window : globalThis);
+  // terrain.js рисует тайлы и в node не исполняется — таблицу света читаем из исходника
+  const fs = require('fs'), path = require('path');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'js', 'view', 'terrain.js'), 'utf8');
+  const sky = src.slice(src.indexOf('const SKY = ['), src.indexOf('const BOUNCE'));
+  const lx = [...sky.matchAll(/lx:\s*(-?[\d.]+)/g)].map(m => +m[1]);
+  assert.equal(lx.length, 7, 'в SKY должно быть семь состояний неба — по дню недели');
+  assert.ok(lx[0] > 0 && lx[6] < 0, 'утром солнце на востоке, к закату на западе');
+  for (let i = 1; i < lx.length; i++) assert.ok(lx[i] < lx[i - 1], 'солнце должно идти в одну сторону, а не прыгать');
+  const bounce = src.slice(src.indexOf('const BOUNCE'), src.indexOf('/** Свет сцены для карты'));
+  for (const t of ['grass', 'snow', 'lava', 'water']) assert.ok(bounce.includes(t + ':'), 'нет отсвета земли для ' + t);
+  assert.ok(/lava:\s*\['#[0-9a-f]{6}',\s*0\.2/.test(bounce), 'лава должна подсвечивать сильнее травы');
+  // сам конвейер: смена света — это новый ключ кэша, возврат к прежнему свету бесплатен
+  const Sp = g.H3.Sprites;
+  Sp.setScene({ id: 'a', warm: '#ffffff', cool: '#000000', wk: 0.2, ck: 0.2 });
+  assert.equal(Sp.SCENE.id, 'a');
+  assert.ok(Math.abs(Math.hypot(Sp.SCENE.lx, Sp.SCENE.ly) - 1) < 1e-6, 'направление на источник должно быть единичным');
+  Sp.setScene({ id: '' });
+  assert.equal(Sp.SCENE.wk, 0, 'пустая сцена — студийный свет без подкраски');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);

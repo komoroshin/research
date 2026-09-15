@@ -67,6 +67,31 @@
   const DETAIL = { on: true, paint: true, materials: true, bevel: 0.24, side: 0.1, grad: 0.06, inner: 0.42, skip: /^ic_/ };
   const MAT_FLAT = { spec: 0.6, pow: 8, ao: 1, rim: 1, grain: 'none', ga: 0, edge: 0, shade: 0, ek: 4 };   // как было до материалов
   // paint-конвейер применяется к спрайтам с hd:true — крупная сетка (unit = исходных пикселей на номинальный), стиль без контура
+  /* ---------- свет сцены ----------
+     Спрайт нарисован при своём студийном свете, а стоит он то на рассвете, то в лаве, то ночью.
+     Плоская заливка поверх кадра красит всё одинаково и делает картинку мутной. Здесь свет сцены
+     запекается в сам спрайт: со стороны источника кромка формы теплеет, с теневой уходит в холод,
+     а снизу приходит отсвет земли — снег подсвечивает белым, лава оранжевым, трава зелёным. */
+  const SCENE = { id: '', wr: 0, wg: 0, wb: 0, cr: 0, cg: 0, cb: 0, br: 0, bg: 0, bb: 0, wk: 0, ck: 0, bk: 0, lx: -0.6, ly: -0.8, R: 4, bh: 0.34 };
+  function rgbOf(col) { const n = parseInt(String(col).slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+  /** Задать свет сцены. id — ключ кэша: тот же id = те же запечённые спрайты. */
+  function setScene(s) {
+    const id = s && s.id || '';
+    if (id === SCENE.id) return;
+    SCENE.id = id;
+    SCENE.wk = s && s.wk || 0; SCENE.ck = s && s.ck || 0; SCENE.bk = s && s.bk || 0;
+    const [wr, wg, wb] = rgbOf(s && s.warm || '#ffffff'); SCENE.wr = wr; SCENE.wg = wg; SCENE.wb = wb;
+    const [cr, cg, cb] = rgbOf(s && s.cool || '#40507a'); SCENE.cr = cr; SCENE.cg = cg; SCENE.cb = cb;
+    const [br, bg, bb] = rgbOf(s && s.bounce || '#808080'); SCENE.br = br; SCENE.bg = bg; SCENE.bb = bb;
+    const l = Math.hypot(s && s.lx || -0.6, s && s.ly || -0.8) || 1;
+    SCENE.lx = (s && s.lx !== undefined ? s.lx : -0.6) / l; SCENE.ly = (s && s.ly !== undefined ? s.ly : -0.8) / l;
+    SCENE.R = s && s.R || 4; SCENE.bh = s && s.bh || 0.34;
+    trimCache();
+  }
+  /* Свет сцены накладывается на уже готовый спрайт, а не на дорогую 4×-основу: пересчёт при
+     смене света стоит один проход по пикселям, а не всю покраску заново (было ~2 с на экран).
+     Ключи готовых спрайтов содержат id сцены, поэтому возврат к прошлому свету бесплатен. */
+  function trimCache() { if (cache.size > 900) { cache.clear(); urlCache.clear(); } }
   function clearAll() { cache.clear(); urlCache.clear(); hiCache.clear(); shadowCache.clear(); }
   function setDetail(v) { DETAIL.on = !!v; clearAll(); }
   function setPaint(v) { DETAIL.paint = !!v; clearAll(); }
@@ -390,9 +415,49 @@
     return cv;
   }
 
+  /* Свет сцены поверх готового спрайта. Форму читаем по альфе: поле расстояния до прозрачного
+     даёт нормаль края, направленную наружу, — по ней видно, какая сторона фигуры повёрнута
+     к источнику. Плюс отсвет земли в нижней части. */
+  function tintScene(cv, ps) {
+    if (!SCENE.wk && !SCENE.ck && !SCENE.bk) return;
+    const W = cv.width, H = cv.height;
+    if (W < 3 || H < 3) return;
+    const ctx = cv.getContext('2d');
+    let img; try { img = ctx.getImageData(0, 0, W, H); } catch (e) { return; }
+    const d = img.data, N = W * H;
+    const dist = new Float32Array(N);
+    for (let i = 0; i < N; i++) dist[i] = d[i * 4 + 3] < 128 ? 0 : 1e4;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; if (!dist[i]) continue;
+      let m = dist[i]; if (y > 0) m = Math.min(m, dist[i - W] + 1); if (x > 0) m = Math.min(m, dist[i - 1] + 1);
+      if (y > 0 && x > 0) m = Math.min(m, dist[i - W - 1] + 1.4); if (y > 0 && x < W - 1) m = Math.min(m, dist[i - W + 1] + 1.4); dist[i] = m; }
+    for (let y = H - 1; y >= 0; y--) for (let x = W - 1; x >= 0; x--) { const i = y * W + x; let m = dist[i];
+      if (y < H - 1) m = Math.min(m, dist[i + W] + 1); if (x < W - 1) m = Math.min(m, dist[i + 1] + 1);
+      if (y < H - 1 && x < W - 1) m = Math.min(m, dist[i + W + 1] + 1.4); if (y < H - 1 && x > 0) m = Math.min(m, dist[i + W - 1] + 1.4); dist[i] = m; }
+    const R = Math.max(2, SCENE.R * ps), y0 = H * (1 - SCENE.bh), bh = H * SCENE.bh;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x, o = i * 4;
+      if (d[o + 3] < 8) continue;
+      let r = d[o], g = d[o + 1], b = d[o + 2];
+      if (SCENE.wk || SCENE.ck) {
+        const wF = 0.4 + 0.6 * Math.max(0, 1 - dist[i] / R);   // к краю форма читается сильнее, но и середина в сцене
+        const gx = (x < W - 1 ? dist[i + 1] : 0) - (x > 0 ? dist[i - 1] : 0);
+        const gy = (y < H - 1 ? dist[i + W] : 0) - (y > 0 ? dist[i - W] : 0);
+        const gl = Math.hypot(gx, gy);
+        if (gl > 0.001) {
+          const f = (-gx / gl) * SCENE.lx + (-gy / gl) * SCENE.ly;   // наружу = против роста расстояния
+          if (f > 0 && SCENE.wk) { const t = SCENE.wk * f * wF; r += (SCENE.wr - r) * t; g += (SCENE.wg - g) * t; b += (SCENE.wb - b) * t; }
+          else if (f < 0 && SCENE.ck) { const t = SCENE.ck * -f * wF; r += (SCENE.cr - r) * t; g += (SCENE.cg - g) * t; b += (SCENE.cb - b) * t; }
+        }
+      }
+      if (SCENE.bk && y > y0) { const t = SCENE.bk * Math.min(1, (y - y0) / bh); r += (SCENE.br - r) * t; g += (SCENE.bg - g) * t; b += (SCENE.bb - b) * t; }
+      d[o] = r < 0 ? 0 : r > 255 ? 255 : r; d[o + 1] = g < 0 ? 0 : g > 255 ? 255 : g; d[o + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
   function render(name, scale, flip, extraTint) {
     scale = scale || 1;
-    const key = name + '|' + scale + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '');
+    const key = name + '|' + scale + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '') + '|' + SCENE.id;
     let cv = cache.get(key);
     if (cv) return cv;
     const sp = resolve(name);
@@ -421,6 +486,7 @@
         }
       }
     }
+    if (DETAIL.on && !DETAIL.skip.test(name)) tintScene(cv, ps);   // свет сцены: время суток и отсвет земли
     cv._w = w / unit; cv._h = h / unit; cv._anchor = sp.anchor ? [sp.anchor[0] / unit, sp.anchor[1] / unit] : [w / unit / 2, h / unit];
     cache.set(key, cv);
     return cv;
@@ -468,7 +534,7 @@
   const urlCache = new Map();
   /** dataURL для <img> в DOM. */
   function url(name, scale, flip) {
-    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0);
+    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + SCENE.id;
     let u = urlCache.get(key);
     if (u) return u;
     const cv = render(name, scale || 2, flip);
@@ -505,5 +571,5 @@
     if (!t) { const c = mix(parseColor(color), -0.42); t = { b: color, B: '#' + c.toString(16).padStart(6, '0') }; teamCache.set(color, t); }
     return t;
   }
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, setMaterials, DETAIL, PAINT, MATS, MAT_OF, MAT_PROFILE, matProfile, _registry: registry };
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, setMaterials, setScene, SCENE, DETAIL, PAINT, MATS, MAT_OF, MAT_PROFILE, matProfile, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);

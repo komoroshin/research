@@ -241,6 +241,15 @@
     ctx.imageSmoothingEnabled = false;
     const x0 = Math.max(0, Math.floor(V.cam.x / TILE) - 1), y0 = Math.max(0, Math.floor(V.cam.y / TILE) - 2);
     const x1 = Math.min(m.w - 1, Math.ceil((V.cam.x + V.w / z) / TILE) + 1), y1 = Math.min(m.h - 1, Math.ceil((V.cam.y + V.h / z) / TILE) + 2);
+    // Свет сцены для спрайтов: время суток плюс отсвет местности в центре экрана —
+    // на снегу фигуры получают холодный подбой снизу, в лаве оранжевый. Ставит его только
+    // карта: экран города лежит оверлеем поверх неё и рисуется тем же светом, а бой скрывает
+    // карту целиком и ставит свой. Иначе два экрана дёргали бы свет туда-сюда каждый кадр.
+    {
+      const cx = Math.max(0, Math.min(m.w - 1, Math.round((V.cam.x + V.w / z / 2) / TILE)));
+      const cy = Math.max(0, Math.min(m.h - 1, Math.round((V.cam.y + V.h / z / 2) / TILE)));
+      Sp.setScene(T.sceneLight(st.day, R.TERRAINS[m.terrain[cy * m.w + cx]], V.layer === 1));
+    }
     // местность
     ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
