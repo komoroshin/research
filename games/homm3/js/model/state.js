@@ -29,6 +29,18 @@
   function syncRng(state) { for (const k in state._rng) state.rng[k] = state._rng[k].save(); }
 
   /* ---------- Создание партии ---------- */
+  const START_KITS = {
+    normal: { id: 'normal', name: 'Обычный', desc: 'Стандартные запасы на старте.', mul: 1 },
+    rich: { id: 'rich', name: 'Богатый', desc: 'Вдвое больше ресурсов: можно сразу строиться широко.', mul: 2 },
+    harsh: { id: 'harsh', name: 'Суровый', desc: 'Вдвое меньше ресурсов: каждая доска на счету.', mul: 0.5 },
+  };
+  /** Стартовые запасы с учётом расклада: обычный / богатый / суровый. */
+  function startRes(base, kitId) {
+    const kit = START_KITS[kitId] || START_KITS.normal;
+    const out = {};
+    for (const k in base) out[k] = Math.max(1, Math.round(base[k] * kit.mul));
+    return out;
+  }
   function newGame(settings) {
     // своя карта из редактора: размеры, игроки и цели берём из документа
     const doc = settings.mapData || null;
@@ -53,7 +65,7 @@
       const fid = doc ? doc.players[i].faction : (i === 0 ? settings.faction : (foes[i - 1] || factions.pop()));
       state.players.push({
         id: i, name: i === 0 ? (settings.name || 'Игрок') : F.PLAYER_NAMES[i] + ' лорд', color: F.PLAYER_COLORS[i], faction: fid, isAI: i > 0,
-        res: Object.assign({}, diff.res), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {}, keys: {},
+        res: startRes(diff.res, settings.startKit), heroes: [], towns: [], vis: null, daysWithoutTown: 0, alive: true, visitedObjs: {}, keys: {},
       });
     }
     if (doc) H3.MapEdit.build(state, doc); else H3.Mapgen.generate(state, size);
@@ -344,7 +356,7 @@
 
   H3.State = {
     lvl, resolveGoals, applyCarry, carryOf, carryRules, carriedArmy, DEFAULT_CARRY,
-    VERSION, DIFFICULTY, SIZES, newGame, attachRng, syncRng, learnTownSpells,
+    VERSION, DIFFICULTY, SIZES, START_KITS, startRes, newGame, attachRng, syncRng, learnTownSpells,
     idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, gatesNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,
   };

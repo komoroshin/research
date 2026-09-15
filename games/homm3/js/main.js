@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.10.1';
+  const VERSION = '3.11';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -36,7 +36,7 @@
   function refresh(full) { if (!G.state) return; if (full) AV.invalidate(); AV.renderSidebar(); AV.V.dirty = true; }
 
   /* ---------- главное меню ---------- */
-  const NEW = { size: 'S', opponents: 1, difficulty: 'normal', faction: 'castle', hero: null, seed: '' , name: 'Игрок' };
+  const NEW = { size: 'S', opponents: 1, difficulty: 'normal', theme: 'random', startKit: 'normal', faction: 'castle', hero: null, seed: '' , name: 'Игрок' };
 
   /**
    * Оболочка экрана меню: шапка с «Назад», прокручиваемое тело, липкий низ с главными кнопками.
@@ -266,16 +266,19 @@
       sh.body.innerHTML = '<div class="opt"><label>Карта</label>' + seg('size', ['S', 'M', 'L'].map(k => [k, S.SIZES[k].name.replace(/\s*\(.*\)/, ''), SIZE_SUB[k]])) + '</div>'
         + '<div class="opt"><label>Противники</label>' + '<div class="seg full">' + [1, 2, 3].map(n => '<button data-k="opponents" data-v="' + n + '" class="' + (NEW.opponents === n ? 'on' : '') + '"' + (n > maxOpp ? ' disabled' : '') + '>' + n + (n > maxOpp ? '<small>' + (n === 2 ? 'средняя карта' : 'большая карта') + '</small>' : '') + '</button>').join('') + '</div></div>'
         + '<div class="opt"><label>Сложность</label>' + seg('difficulty', Object.keys(S.DIFFICULTY).map(k => [k, S.DIFFICULTY[k].name])) + '<div class="small muted note">' + UI.esc(S.DIFFICULTY[NEW.difficulty].desc) + '</div></div>'
+        + '<div class="opt"><label>Тема карты</label>' + seg('theme', [['random', 'Случайная']].concat(Object.keys(H3.Mapgen.THEMES).map(k => [k, H3.Mapgen.THEMES[k].name]))) + '<div class="small muted note">' + UI.esc(NEW.theme === 'random' ? 'Тема выбирается при создании карты: меняет земли, щедрость и силу стражей.' : H3.Mapgen.THEMES[NEW.theme].desc) + '</div></div>'
+        + '<div class="opt"><label>Начало</label>' + seg('startKit', Object.keys(S.START_KITS).map(k => [k, S.START_KITS[k].name])) + '<div class="small muted note">' + UI.esc((S.START_KITS[NEW.startKit] || S.START_KITS.normal).desc) + '</div></div>'
         + '<div class="opt"><label>Фракция</label><div class="factions">' + F.LIST.map(x => '<button data-k="faction" data-v="' + x.id + '" class="' + (NEW.faction === x.id ? 'on' : '') + '">' + UI.icon('town_' + x.id, 1) + x.name + '</button>').join('') + '</div><div class="small muted note">' + UI.esc(f.desc) + '</div></div>'
         + '<div class="opt"><label>Герой</label><div class="heroes4">' + heroes.map(h => '<button data-k="hero" data-v="' + h.id + '" class="' + (NEW.hero === h.id ? 'on' : '') + '">' + UI.icon('portrait_' + h.cls + '_' + h.portrait, 2) + h.name + '<small>' + UI.esc(HE.getClass(h.cls).name) + '</small></button>').join('') + '</div><div class="small muted note">' + UI.esc(HE.specText(hero)) + '</div></div>'
         + '<details class="more"' + (NEW.seed || NEW.more ? ' open' : '') + '><summary>Дополнительно</summary><div class="opt"><label>Сид карты</label><div class="row"><input type="text" id="seed" value="' + UI.esc(NEW.seed) + '" placeholder="случайный" inputmode="numeric" style="flex:1;min-width:0"><button class="sm" id="rndSeed">Случайный</button></div><div class="small muted note">Одинаковый сид — одинаковая карта. Пусто — случайная.</div></div></details>';
       sh.body.scrollTop = top;
       const opp = NEW.opponents + ' ' + (NEW.opponents === 1 ? 'противник' : 'противника');
-      sh.setFoot('<div class="msum small muted">' + UI.esc(S.SIZES[NEW.size].name.replace(/\s*\(.*\)/, '') + ' · ' + opp + ' · ' + S.DIFFICULTY[NEW.difficulty].name + ' · ' + f.name + ' · ' + hero.name) + '</div><button class="big primary" id="btnStart">Начать игру</button>');
+      const themeName = NEW.theme === 'random' ? 'случайная тема' : H3.Mapgen.THEMES[NEW.theme].name.toLowerCase();
+      sh.setFoot('<div class="msum small muted">' + UI.esc(S.SIZES[NEW.size].name.replace(/\s*\(.*\)/, '') + ' · ' + opp + ' · ' + S.DIFFICULTY[NEW.difficulty].name + ' · ' + themeName + ' · ' + f.name + ' · ' + hero.name) + '</div><button class="big primary" id="btnStart">Начать игру</button>');
       sh.body.querySelectorAll('[data-k]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); const k = b.dataset.k; NEW[k] = k === 'opponents' ? +b.dataset.v : b.dataset.v; NEW.seed = sh.body.querySelector('#seed').value; render(); }; });
       sh.body.querySelector('.more').ontoggle = e => { NEW.more = e.target.open; }; // раскрытие переживает перерисовку
       sh.body.querySelector('#rndSeed').onclick = () => { NEW.seed = String(Math.floor(Math.random() * 1e9)); render(); };
-      sh.foot.querySelector('#btnStart').onclick = () => { H3.Audio.unlock(); NEW.seed = sh.body.querySelector('#seed').value; const seed = NEW.seed ? (isNaN(+NEW.seed) ? U.hashStr(NEW.seed) : +NEW.seed) : Math.floor(Math.random() * 1e9); newGame({ size: NEW.size, opponents: NEW.opponents, difficulty: NEW.difficulty, faction: NEW.faction, hero: NEW.hero, seed, name: NEW.name }); };
+      sh.foot.querySelector('#btnStart').onclick = () => { H3.Audio.unlock(); NEW.seed = sh.body.querySelector('#seed').value; const seed = NEW.seed ? (isNaN(+NEW.seed) ? U.hashStr(NEW.seed) : +NEW.seed) : Math.floor(Math.random() * 1e9); newGame({ size: NEW.size, opponents: NEW.opponents, difficulty: NEW.difficulty, theme: NEW.theme, startKit: NEW.startKit, faction: NEW.faction, hero: NEW.hero, seed, name: NEW.name }); };
     };
     render();
   }
@@ -544,7 +547,11 @@
     } finally { ov.classList.add('hidden'); G.busy = false; AV.V.busy = false; }
     const day = st.day;
     showScreen('adv'); AV.invalidate(); refresh(false);
-    if (S.dayOfWeek(day) === 1) { H3.Audio.play('week'); UI.toast('Новая неделя! Прирост существ в городах.', '', 'ic_day'); }
+    if (S.dayOfWeek(day) === 1) {
+      H3.Audio.play('week');
+      const wk = st.week;
+      UI.toast(wk ? wk.name + (wk.id === 'plain' ? '. Прирост существ в городах.' : ' — ' + wk.desc) : 'Новая неделя! Прирост существ в городах.', '', 'ic_day');
+    }
     else UI.toast(S.dateStr(day), '', 'ic_day');
     const p = st.players[st.turn];
     const hs = S.heroesOf(st, p.id);

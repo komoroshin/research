@@ -31,6 +31,21 @@
     subter: ['rough', 'dirt', 'lava'],
   };
 
+  /* ---------- темы карты: меняют палитру местности, щедрость и силу стражей ---------- */
+  const THEMES = {
+    plain: { id: 'plain', name: 'Обычная', desc: 'Смешанные земли, ровная щедрость.', mids: MID_TERRAINS, res: 1, guards: 1 },
+    forest: { id: 'forest', name: 'Лесная', desc: 'Травы и болота, ресурсов больше, стражи слабее.', mids: ['grass', 'grass', 'swamp', 'dirt'], res: 1.2, guards: 0.9 },
+    wastes: { id: 'wastes', name: 'Пустоши', desc: 'Песок, камень и лава, ресурсов мало, стражи злее.', mids: ['sand', 'rough', 'lava', 'dirt'], res: 0.75, guards: 1.3 },
+    winter: { id: 'winter', name: 'Зимняя', desc: 'Снег и камень, ресурсов чуть меньше.', mids: ['snow', 'snow', 'rough', 'dirt'], res: 0.9, guards: 1.1 },
+  };
+  function pickTheme(state, rng) {
+    // по умолчанию «обычная»: кампании и тесты должны давать те же карты, что и раньше;
+    // случайную тему выбирает только игрок в «Новой игре»
+    const want = (state.settings && state.settings.theme) || 'plain';
+    if (want !== 'random' && THEMES[want]) return THEMES[want];
+    return rng.pick(Object.keys(THEMES).map(k => THEMES[k]));
+  }
+
   /* ---------- шум ---------- */
   function makeNoise(rng, size) {
     const g = new Float32Array(size * size);
@@ -72,18 +87,20 @@
     const w = size.w, h = size.h, N = w * h;
     const nPlayers = state.players.length;
     const diff = H3.State.DIFFICULTY[state.settings.difficulty] || H3.State.DIFFICULTY.normal;
-    const guardMul = diff.guards;
+    const theme = pickTheme(state, rng);
+    state.settings.themeId = theme.id;                       // какая тема выпала — видно в сводке партии
+    const guardMul = diff.guards;   // тема усиливает стражей только вне стартовых зон, см. populateZone
 
     for (let attempt = 0; attempt < 25; attempt++) {
       const map = newLevel(w, h);
       state.levels = [map, null]; state.objects = {}; state.towns = {}; state.nextId = 1;
       for (const p of state.players) p.towns = [];
-      const ctx = { state, map, z: 0, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
+      const ctx = { state, map, z: 0, rng, w, h, size, guardMul, guardMulBase: guardMul, theme, occupied: new Uint8Array(N) };
       if (!tryGenerate(ctx, nPlayers)) continue;
       // подземелье вторым слоем + врата между слоями
       const under = newLevel(w, h);
       state.levels[1] = under;
-      const uctx = { state, map: under, z: 1, rng, w, h, size, guardMul, occupied: new Uint8Array(N) };
+      const uctx = { state, map: under, z: 1, rng, w, h, size, guardMul, guardMulBase: guardMul, theme, occupied: new Uint8Array(N) };
       if (!generateUnder(uctx)) continue;
       if (!placeGates(ctx, uctx)) continue;
       // застава, до ключника которой человеку не дойти (проход в промежуточную зону
@@ -106,8 +123,11 @@
     for (const z of zones) {
       z.cx = Math.round(z.nx * (w - 1) + rng.int(-2, 2)); z.cy = Math.round(z.ny * (h - 1) + rng.int(-2, 2));
       z.cx = U.clamp(z.cx, 4, w - 5); z.cy = U.clamp(z.cy, 4, h - 5);
-      z.terrain = z.kind === 'start' ? F.get(state.players[z.player].faction).terrain : rng.pick(MID_TERRAINS);
-      z.terrain2 = rng.pick(SECONDARY[z.terrain] || SECONDARY.grass);
+      z.terrain = z.kind === 'start' ? F.get(state.players[z.player].faction).terrain : rng.pick(ctx.theme ? ctx.theme.mids : MID_TERRAINS);
+      // пятна вторичной местности берём из темы: на маленькой карте своих зон у темы почти нет,
+      // и только через пятна она видна на всей карте (снег по траве, песок по земле)
+      const tm = ctx.theme && ctx.theme.id !== 'plain' ? ctx.theme.mids.filter(t => t !== z.terrain && t !== 'subter') : null;
+      z.terrain2 = (tm && tm.length && rng.next() < 0.75) ? rng.pick(tm) : rng.pick(SECONDARY[z.terrain] || SECONDARY.grass);
     }
     // 1. принадлежность тайлов зонам
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -393,6 +413,8 @@
 
   function populateZone(ctx, z) {
     const { rng, state } = ctx;
+    // стартовая зона всегда проходима новичком: тема не трогает её стражей
+    ctx.guardMul = ctx.guardMulBase * (z.kind === 'start' ? 1 : (ctx.theme ? ctx.theme.guards : 1));
     const rad = zoneRadius(ctx, z);
     const rare = (z.kind === 'start') ? F.get(state.players[z.player].faction).rare : rng.pick(U.RARE);
     if (z.kind === 'start') {
@@ -427,6 +449,7 @@
   }
   function placeResources(ctx, z, n, tier) {
     const { rng } = ctx;
+    n = Math.max(1, Math.round(n * (ctx.theme ? ctx.theme.res : 1)));   // тема карты: щедрость земель
     for (let i = 0; i < n; i++) {
       const pos = randomTile(ctx, z, 3, zoneRadius(ctx, z)); if (!pos) continue;
       const res = rng.weighted(U.RES, r => (r === 'gold' ? 3 : r === 'wood' || r === 'ore' ? 4 : 2));
@@ -781,6 +804,6 @@
     return true;
   }
 
-  H3.Mapgen = { generate, TOWN_NAMES, guardCreature };
+  H3.Mapgen = { generate, TOWN_NAMES, guardCreature, THEMES};
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Mapgen;
 })(typeof window !== 'undefined' ? window : globalThis);

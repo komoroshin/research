@@ -54,6 +54,7 @@
     base += fx.move || 0;
     base += (hero.bonuses && hero.bonuses.move) || 0;
     base += (hero.bonuses && hero.bonuses.stables) || 0;
+    base += (hero.bonuses && hero.bonuses.week) || 0;
     return base;
   }
   function armySize(army) { return army.filter(s => s && s.n > 0).length; }
@@ -268,8 +269,15 @@
     const c = C.get(cid); if (!c.upgTo || c.upg) return false;
     return town.faction === c.faction && !!town.buildings['dwell_up_' + c.tier];
   }
-  function newTownWeek(town) {
-    for (let t = 1; t <= 7; t++) if (town.buildings['dwell_' + t]) town.avail[t - 1] += growthOf(town, t);
+  /** Понедельник: прибавка в жилищах города. week — событие недели (чума режет, неделя существа удваивает). */
+  function newTownWeek(town, week) {
+    for (let t = 1; t <= 7; t++) {
+      if (!town.buildings['dwell_' + t]) continue;
+      let n = growthOf(town, t);
+      if (week && week.id === 'plague') n = Math.max(1, Math.floor(n / 2));
+      if (week && week.id === 'creature' && F.creaturesOf(town.faction, t)[0].id === week.cid) n *= 2;
+      town.avail[t - 1] += n;
+    }
   }
 
   /* ---------- Герой: создание ---------- */

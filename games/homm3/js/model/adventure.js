@@ -671,9 +671,38 @@
     }
     state._rng && S.syncRng(state);
   }
+  /* ---------- событие недели ----------
+     Каждый понедельник разыгрывается одно событие: оно меняет прирост, ресурсы,
+     силу бродячих отрядов или запас хода на всю неделю. «Обычная» весит больше
+     остальных, чтобы события оставались событиями, а не фоном. */
+  const WEEK_EVENTS = [
+    { id: 'plain', w: 6, name: 'Обычная неделя', short: '', desc: 'Ничего особенного.' },
+    { id: 'creature', w: 4, short: 'прирост', desc: 'Прирост этого существа удвоен — и в городах, и во внешних жилищах.' },
+    { id: 'harvest', w: 2, name: 'Неделя урожая', short: 'урожай', desc: 'Всем по 2000 золота, 5 дерева и 5 руды.' },
+    { id: 'plague', w: 2, name: 'Неделя чумы', short: 'чума', desc: 'Прирост существ в городах вдвое меньше.' },
+    { id: 'swarm', w: 2, name: 'Нашествие', short: 'нашествие', desc: 'Бродячие отряды растут вдвое быстрее.' },
+    { id: 'wanderer', w: 2, name: 'Неделя странника', short: 'странник', desc: 'Все герои получают +250 очков движения.' },
+  ];
+  /** Разыгрывает событие недели. Хранится в state.week и действует до следующего понедельника. */
+  function rollWeek(state) {
+    const rng = state._rng.misc;
+    const e = rng.weighted(WEEK_EVENTS, x => x.w);
+    const out = { id: e.id, name: e.name, short: e.short, desc: e.desc };
+    if (e.id === 'creature') {
+      // существо берём из фракций, которые реально в партии, иначе событие чаще всего
+      // не касается никого: чужой грифон не растёт ни в чьём городе
+      const fids = state.players.filter(p => p.alive !== false).map(p => p.faction);
+      const pool = C.LIST.filter(x => !x.upg && x.tier <= 5 && fids.includes(x.faction));
+      const c = rng.pick(pool.length ? pool : C.LIST.filter(x => !x.upg && x.tier <= 5));
+      out.cid = c.id; out.name = 'Неделя существа: ' + c.name; out.short = c.name.toLowerCase();
+    }
+    return out;
+  }
   function newDay(state) {
     state.day++;
     const isWeek = S.dayOfWeek(state.day) === 1;
+    if (isWeek) state.week = rollWeek(state);
+    const wk = state.week || null;
     const diff = S.DIFFICULTY[state.settings.difficulty] || S.DIFFICULTY.normal;
     for (const p of state.players) {
       if (!p.alive) continue;
@@ -684,21 +713,24 @@
       for (const h of S.heroesOf(state, p.id)) {
         if (isWeek) h.bonuses = {};
         h.bonuses.stables = stables;
+        h.bonuses.week = (wk && wk.id === 'wanderer') ? 250 : 0;
         h.move = R.heroMaxMove(h);
         const t = townOfHero(state, h);
         if (t && R.guildLevel(t)) h.mana = R.heroMaxMana(h); else h.mana = Math.min(R.heroMaxMana(h), h.mana + 1 + R.skillVal(h, 'mysticism'));
       }
-      for (const t of S.townsOf(state, p.id)) { t.builtToday = false; if (isWeek) R.newTownWeek(t); }
+      if (isWeek && wk && wk.id === 'harvest') U.addRes(p.res, { gold: 2000, wood: 5, ore: 5 });
+      for (const t of S.townsOf(state, p.id)) { t.builtToday = false; if (isWeek) R.newTownWeek(t, wk); }
       if (!p.towns.length) { p.daysWithoutTown++; if (p.daysWithoutTown >= 7) eliminate(state, p, '7 дней без города'); } else p.daysWithoutTown = 0;
     }
     if (isWeek) {
       for (const id in state.objects) {
         const o = state.objects[id];
-        if (o.type === 'monster') o.n = Math.max(o.n + 1, Math.ceil(o.n * 1.1));
-        if (o.type === 'dwelling') o.avail += C.get(o.cid).growth;
+        const swarm = wk && wk.id === 'swarm';
+        if (o.type === 'monster') o.n = Math.max(o.n + (swarm ? 2 : 1), Math.ceil(o.n * (swarm ? 1.2 : 1.1)));
+        if (o.type === 'dwelling') o.avail += C.get(o.cid).growth * ((wk && wk.id === 'creature' && wk.cid === o.cid) ? 2 : 1);
       }
-      for (const id in state.towns) { const t = state.towns[id]; if (t.owner < 0) R.newTownWeek(t); }
-      S.addLog(state, S.dateStr(state.day) + '. Новая неделя: прирост существ, стражи усилились.', 'day');
+      for (const id in state.towns) { const t = state.towns[id]; if (t.owner < 0) R.newTownWeek(t, wk); }
+      S.addLog(state, S.dateStr(state.day) + '. ' + (wk ? wk.name + (wk.id === 'plain' ? '' : ' — ' + wk.desc) : 'Новая неделя') + ' Прирост существ, стражи усилились.', 'day');
       weeklySpecials(state);
     } else S.addLog(state, S.dateStr(state.day) + '.', 'day');
     for (const p of state.players) if (p.alive) S.computeVisibility(state, p.id);
@@ -891,7 +923,7 @@
     }
   }
 
-  H3.Adventure = { townVisitGift, weeklySpecials, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { townVisitGift, weeklySpecials, WEEK_EVENTS, rollWeek, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, disbandStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);
