@@ -577,7 +577,8 @@
       return '<span' + cls + ' title="' + UI.esc(O.RES_NAMES[r]) + ': +' + (inc[r] || 0) + ' в день">' + UI.resIcon(r) + '<b>' + U.fmt(p.res[r]) + '</b></span>';
     }).join('') + '<span class="muted" title="Доход в день">' + UI.icon('ic_day') + '+' + U.fmt(inc.gold) + '</span>';
     const wx = WEATHER[weatherOf(st)].name;
-    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (wx ? ' · ' + wx : '') + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
+    const wkShort = st.week && st.week.short ? ' · ' + st.week.short : '';
+    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (wx ? ' · ' + wx : '') + wkShort + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
     V.prevRes = { pid: p.id, res: Object.assign({}, p.res) };
     const sel = G.selected();
     const hp = UI.$('#heroPanel');

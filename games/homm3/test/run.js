@@ -1078,5 +1078,46 @@ test('встреча своих героев: подход на клетку с�
   assert.ok(/HV\.open\(hero, stop\.hero\)/.test(main), 'подход к своему герою не открывает встречу');
 });
 
+test('вариативность: событие недели, тема карты и стартовый расклад', () => {
+  const A = H3.Adventure, F = H3.Factions;
+  const st = S.newGame({ size: 'S', seed: 21, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  // 1. за много недель выпадают все события, «обычная» остаётся самой частой
+  const seen = {};
+  for (let i = 0; i < 400; i++) { const w = A.rollWeek(st); seen[w.id] = (seen[w.id] || 0) + 1; }
+  for (const e of A.WEEK_EVENTS) assert.ok(seen[e.id] > 0, 'ни разу не выпало событие ' + e.id);
+  assert.ok(seen.plain > seen.plague, 'обычная неделя должна быть самой частой');
+  // существо недели — только из фракций, которые есть в партии
+  const fids = st.players.map(p => p.faction);
+  for (let i = 0; i < 80; i++) { const w = A.rollWeek(st); if (w.cid) assert.ok(fids.includes(C.get(w.cid).faction), 'существо недели из чужой фракции: ' + w.cid); }
+  // 2. чума режет прирост вдвое, неделя существа удваивает
+  const town = st.towns[st.players[0].towns[0]];
+  town.buildings.dwell_1 = true;
+  const base = R.growthOf(town, 1);
+  const grow = wk => { town.avail[0] = 0; R.newTownWeek(town, wk); return town.avail[0]; };
+  assert.equal(grow(null), base, 'обычный прирост');
+  assert.equal(grow({ id: 'plague' }), Math.max(1, Math.floor(base / 2)), 'чума');
+  assert.equal(grow({ id: 'creature', cid: F.creaturesOf('castle', 1)[0].id }), base * 2, 'неделя существа');
+  assert.equal(grow({ id: 'creature', cid: F.creaturesOf('necropolis', 1)[0].id }), base, 'чужое существо не влияет');
+  // 3. неделя странника добавляет очки движения
+  const hero = S.heroesOf(st, 0)[0];
+  const m0 = R.heroMaxMove(hero);
+  hero.bonuses.week = 250;
+  assert.equal(R.heroMaxMove(hero), m0 + 250, 'неделя странника');
+  hero.bonuses.week = 0;
+  // 4. темы карты: без темы карта прежняя, лесная щедрее пустошей
+  const res = {};
+  for (const theme of ['plain', 'forest', 'wastes']) {
+    const g = S.newGame({ size: 'S', seed: 9, opponents: 1, difficulty: 'normal', faction: 'castle', theme });
+    assert.equal(g.settings.themeId, theme);
+    res[theme] = Object.values(g.objects).filter(o => o.type === 'resource').length;
+  }
+  assert.ok(res.forest > res.wastes, 'лесная должна быть щедрее пустошей: ' + JSON.stringify(res));
+  const noTheme = S.newGame({ size: 'S', seed: 9, opponents: 1, difficulty: 'normal', faction: 'castle' });
+  assert.equal(noTheme.settings.themeId, 'plain', 'без темы карта должна остаться прежней');
+  // 5. стартовый расклад масштабирует запасы
+  const gold = k => S.startRes(S.DIFFICULTY.normal.res, k).gold;
+  assert.ok(gold('rich') > gold('normal') && gold('normal') > gold('harsh'), 'расклад не влияет на запасы');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
