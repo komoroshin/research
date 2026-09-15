@@ -241,6 +241,15 @@
     ctx.imageSmoothingEnabled = false;
     const x0 = Math.max(0, Math.floor(V.cam.x / TILE) - 1), y0 = Math.max(0, Math.floor(V.cam.y / TILE) - 2);
     const x1 = Math.min(m.w - 1, Math.ceil((V.cam.x + V.w / z) / TILE) + 1), y1 = Math.min(m.h - 1, Math.ceil((V.cam.y + V.h / z) / TILE) + 2);
+    // Свет сцены для спрайтов: время суток плюс отсвет местности в центре экрана —
+    // на снегу фигуры получают холодный подбой снизу, в лаве оранжевый. Ставит его только
+    // карта: экран города лежит оверлеем поверх неё и рисуется тем же светом, а бой скрывает
+    // карту целиком и ставит свой. Иначе два экрана дёргали бы свет туда-сюда каждый кадр.
+    {
+      const cx = Math.max(0, Math.min(m.w - 1, Math.round((V.cam.x + V.w / z / 2) / TILE)));
+      const cy = Math.max(0, Math.min(m.h - 1, Math.round((V.cam.y + V.h / z / 2) / TILE)));
+      Sp.setScene(T.sceneLight(st.day, R.TERRAINS[m.terrain[cy * m.w + cx]], V.layer === 1));
+    }
     // местность
     ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
@@ -412,7 +421,7 @@
   }
   /** Покой существа на карте: дыхание, у летающих — парение. */
   function creatureIdle(cid, key, ts) {
-    return { t: ts, phase: An.phaseOf(key + ':' + cid), flying: C.isFlyer(C.get(cid)) };
+    return { t: ts, phase: An.phaseOf(key + ':' + cid), flying: C.isFlyer(C.get(cid)), key: key + ':' + cid, rate: An.rateOf(cid) };
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
@@ -515,13 +524,13 @@
     const color = st.players[h.owner].color;
     const x = px * TILE + 16, y = py * TILE + 30;
     const walking = !!(V.anim && V.anim.hero.id === h.id);
-    const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking };
+    const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking, key: h.id, rate: An.rateOf('hero_' + h.cls) };
     const a = An.state(ao); ao.st = a;
     if (h.boat) {
       // под парусом: герой стоит в лодке, лодка покачивается на волне
       const bob = Math.sin(ts / 520 + An.phaseOf(h.id)) * 1.5;
       Sp.draw(ctx, 'boat', x, y + 4 + bob, 1, h.facing === 'l');
-      const bo = { t: ts, phase: An.phaseOf(h.id), idle: true }; bo.st = An.state(bo);
+      const bo = { t: ts, phase: An.phaseOf(h.id), idle: true, key: h.id + ':boat', rate: An.rateOf('hero_' + h.cls) }; bo.st = An.state(bo);
       An.draw(ctx, 'hero_' + h.cls, x, y - 4 + bob, 1, h.facing === 'l', bo, Sp.teamTint(color));
     } else {
       // мягкое пятно под ногами: падающая тень уже нарисована общим проходом

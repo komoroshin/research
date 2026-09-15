@@ -5,6 +5,7 @@
 <canvas id="c"></canvas>
 <script src="../js/core/util.js"></script>
 <script src="../js/view/sprites.js"></script>
+<script src="../js/view/terrain.js"></script>
 <script>
 // ?files=view/sprites_castle.js,view/sprites_rampart.js&scale=3&filter=prefix&cols=8&names=a,b,c
 const q = new URLSearchParams(location.search);
@@ -18,7 +19,16 @@ let loaded = 0;
 function go() {
   const S = H3.Sprites;
   if (S.setDetail) S.setDetail(q.get('detail') !== '0'); // ?detail=0 — классический рендер без 2×-конвейера
-  if (S.setPaint) S.setPaint(q.get('paint') !== '0');    // ?paint=0 — прежний 2×-конвейер без освещения
+  if (S.setPaint) S.setPaint(q.get('paint') !== '0');
+  if (S.setMaterials) S.setMaterials(q.get('mats') !== '0');
+  // ?scene=dawn|noon|dusk|lava|snow|sub — свет сцены (по умолчанию студийный, без света)
+  if (S.setScene && q.get('scene')) {
+    const T = H3.Terrain, id = q.get('scene');
+    const byDay = { dawn: 1, morn: 2, noon: 3, day: 4, aft: 5, eve: 6, dusk: 7 };
+    if (id === 'sub') S.setScene(T.sceneLight(4, 'subter', true));
+    else if (byDay[id]) S.setScene(T.sceneLight(byDay[id], q.get('ground') || 'grass', false));
+    else S.setScene(T.sceneLight(Number(q.get('day') || 4), id, false));
+  }   // ?mats=0 — без материалов, как до v3.12    // ?paint=0 — прежний 2×-конвейер без освещения
   // ?vol=flat — без процедурного объёма (тона только из рисунка), ?vol=soft — лёгкий объём по силуэту, иначе полный
   if (S.setPaintVolume && q.get('outline')) S.setPaintVolume({ outline: q.get('outline') });   // ?outline=none — без контурной линии
   if (S.setPaintVolume) { const v = q.get('vol'); if (v === 'flat') S.setPaintVolume({ silDome: 0, matDome: 0, spec: 0, rim: 0.12, ao: 0.1, diffuse: 0, ambient: 1 }); else if (v === 'soft') S.setPaintVolume({ silDome: 0.5, matDome: 0, spec: 0.25, rim: 0.18, ao: 0.12, diffuse: 0.3, ambient: 0.82 }); }

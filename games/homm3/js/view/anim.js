@@ -23,9 +23,40 @@
     return (h % 1000) / 1000 * Math.PI * 2;
   }
 
+  /* Темп дыхания по росту существа: крестьянин дышит часто, бегемот редко и глубоко.
+     Раньше период был один на всех — стадо дышало как один человек, только вразнобой по фазе. */
+  const RATE = new Map();
+  function rateOf(name) {
+    let r = RATE.get(name);
+    if (r === undefined) {
+      const sp = Sp.resolve && Sp.resolve(name);
+      const h = sp && sp.rows ? sp.rows.length / (sp.unit || 1) : 28;
+      r = Math.max(0.62, Math.min(1.9, h / 28));   // 28 px — средний рост; выше — медленнее
+      RATE.set(name, r);
+    }
+    return r;
+  }
+
+  /* ---------- второй порядок ----------
+     Живое тело не останавливается вместе с командой: плащ доносит движение, оружие
+     проскакивает за ударом, хвост отстаёт на повороте. На каждое существо держим пружину —
+     она догоняет команду с запаздыванием и слегка перелетает, а разница «команда минус
+     пружина» и есть тот самый хвост движения. */
+  const LAG = new Map();
+  function lagOf(key, drive, t) {
+    let L = LAG.get(key);
+    if (!L) { if (LAG.size > 300) LAG.clear(); L = { s: drive, v: 0, t: t }; LAG.set(key, L); }
+    const dt = Math.max(0, Math.min(64, t - L.t)); L.t = t;
+    const f = dt / 16.7;
+    L.v += ((drive - L.s) * 0.30 - L.v * 0.42) * f;
+    L.s += L.v * f;
+    return drive - L.s;
+  }
+
   /**
    * o: { t мс, phase, flying, moving, lunge 0..1 (замах→удар), hurt 0..1,
-   *      dead 0..1 (1 — жив, 0 — совсем упал), cast 0..1, idle (вкл/выкл) }
+   *      dead 0..1 (1 — жив, 0 — совсем упал), cast 0..1, idle (вкл/выкл),
+   *      rate — темп дыхания (см. rateOf), key — кто это, для пружины запаздывания }
    */
   function state(o) {
     const t = o.t || 0, ph = o.phase || 0, dir = o.dir || 1;
@@ -42,10 +73,26 @@
       dy -= Math.abs(s) * 2.4;
       sy += Math.abs(s) * 0.05; sx -= Math.abs(s) * 0.04;
       skew += dir * 0.05 * s;
+      // вес принимает опорная нога: в момент касания корпус приседает и уходит в её сторону.
+      // Без этого шаг читался как прыжки на месте — тело не переносило вес
+      const contact = 1 - Math.abs(s);
+      dy += contact * 0.7; sy -= contact * 0.035; sx += contact * 0.03;
+      dx += dir * Math.sin(t / 210 + ph) * 0.9;
     } else if (o.idle !== false) {
-      // дыхание
-      const b = Math.sin(t / 720 + ph);
+      // дыхание: период по росту существа
+      const b = Math.sin(t / (720 * (o.rate || 1)) + ph);
       sy += b * 0.028; sx -= b * 0.022;
+    }
+
+    // хвост движения: то, чем тело уже двигает, а придаток ещё догоняет.
+    // Считаем здесь один раз за кадр — drawParts берёт готовое значение из o._trail
+    {
+      const wk = o.moving ? Math.sin(t / 105 + ph) : 0;
+      const fl = o.flying ? Math.sin(t / (o.moving ? 130 : 260) + ph) : 0;
+      const drive = (o.lunge || 0) * 0.85 + wk * 0.30 + fl * 0.35 - (o.hurt || 0) * 0.5;
+      o._trail = o.key !== undefined ? lagOf(o.key, drive, t) : 0;
+      // корпус целиком тоже доносит движение — это видно и без разбора на части
+      skew -= dir * o._trail * 0.18;
     }
 
     if (o.lunge) {
@@ -230,12 +277,13 @@
     const ax = P.anchor[0] * u, ay = P.anchor[1] * u;
     const t = o.t || 0, ph = o.phase || 0, fwd = flip ? -1 : 1;
     const walk = o.moving ? Math.sin(t / 105 + ph) : 0;
-    const breath = Math.sin(t / 720 + ph);
+    const breath = Math.sin(t / (720 * (o.rate || 1)) + ph);
     const lunge = o.lunge || 0, hurt = o.hurt || 0, cast = o.cast || 0;
     const flap = o.flying ? Math.sin(t / (o.moving ? 130 : 260) + ph) : 0;
     // в полёте всё существо держится в воздухе целиком (подъём даёт общий st.dy),
     // поэтому части не расходятся: качается только реквизит-крыло
     const bob = o.flying ? 0 : (o.moving ? -Math.abs(walk) * 1.1 * u : 0);
+    const trail = o._trail || 0;   // посчитан в state(), см. «хвост движения»
     ctx.save();
     ctx.globalAlpha *= st.alpha === undefined ? 1 : st.alpha;
     ctx.translate(Math.round(x + st.dx), Math.round(y + st.dy));
@@ -255,10 +303,11 @@
       } else if (kind === 'head') {
         dy = bob - breath * 0.45 * u * (o.flying ? 0.4 : 1) - cast * 1.5 * u;
         dx = walk * 0.25 * u * fwd + lunge * 0.6 * u * fwd;
-        ang = lunge * 0.1 * fwd - hurt * 0.35 * fwd;
-      } else { // реквизит: крылья машут, оружие замахивается
+        ang = lunge * 0.1 * fwd - hurt * 0.35 * fwd - trail * 0.16 * fwd;
+      } else { // реквизит: крылья машут, оружие замахивается, всё лишнее тянется следом
         if (o.flying) { ang = flap * 0.5 * fwd; dy = bob * 0.6; }
         else { ang = -lunge * 0.3 * fwd + cast * 0.22 * fwd + breath * 0.015; dx = lunge * 0.6 * u * fwd; dy = bob - cast * 1.2 * u; }
+        ang -= trail * 0.55 * fwd; dx -= trail * 1.4 * u * fwd;
       }
       // смещения только целыми пикселями: дробный сдвиг оставлял бы светлый шов на срезе
       dx = Math.round(dx); dy = Math.round(dy);
@@ -297,5 +346,5 @@
     ctx.restore();
   }
 
-  H3.Anim = { state, draw, phaseOf, parts, setParts, PARTS };
+  H3.Anim = { state, draw, phaseOf, rateOf, parts, setParts, PARTS };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -477,7 +477,7 @@
     if (!Sp.has(name)) return;
     const [x, y] = heroPos(side);
     const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / 600 : 0;
-    const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast };
+    const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast, key: 'bh' + side, rate: An.rateOf(name) };
     const st = An.state(ao); ao.st = st;
     ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
     const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
@@ -616,6 +616,9 @@
   }
   function draw(ts) {
     const b = V.b, ctx = V.ctx, size = V.size;
+    // свет поля боя: небо по времени суток, отсвет земли по местности —
+    // на лаве отряды снизу горят оранжевым, на снегу получают холодный подбой
+    Sp.setScene(T.sceneLight(V.day || 4, b.terrain, b.terrain === 'subter'));
     ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
     // параллакс: небо и дальний план отстают от земли, поле получает глубину при панораме
@@ -701,6 +704,7 @@
     // опции нужны целиком: по ним же двигаются отдельные части спрайта
     const ao = {
       t: ts, phase: p.phase, dir: u.side === 0 ? 1 : -1, flying: C.isFlyer(c),
+      key: 'u' + u.id, rate: An.rateOf(u.cid),
       moving: !!p.moving, lunge: p.lunge, cast: p.cast,
       hurt: p.shake > 0 ? Math.min(1, p.shake / 180) : 0,
       dead: !u.alive && p.fade !== undefined ? p.fade : undefined,

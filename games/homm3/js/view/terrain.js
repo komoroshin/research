@@ -321,6 +321,31 @@
     { dx: 0.15, k: 0.28, a: 0.32 }, { dx: 0.65, k: 0.38, a: 0.30 }, { dx: 1.15, k: 0.52, a: 0.24 }, { dx: 1.60, k: 0.62, a: 0.16 },
   ];
   function sun(day) { return SUN[((day - 1) % 7 + 7) % 7]; }
+  /* Свет сцены для спрайтов: откуда светит, каким цветом, и чем подсвечивает земля снизу.
+     lx/ly — направление на источник в координатах экрана (y вниз), поэтому утреннее солнце
+     на востоке это lx>0. Отсвет земли берём у местности: снег отдаёт холодный белый,
+     лава — оранжевый, трава — зелёный. Так фигура принадлежит месту, а не наклеена на него. */
+  const SKY = [
+    { id: 'dawn', warm: '#ffd9a8', cool: '#3b4f86', lx: 0.9, ly: -0.45, wk: 0.26, ck: 0.22 },
+    { id: 'morn', warm: '#fff0cc', cool: '#43578a', lx: 0.6, ly: -0.7, wk: 0.20, ck: 0.16 },
+    { id: 'noon', warm: '#fffbe8', cool: '#4d5f8c', lx: 0.2, ly: -0.95, wk: 0.16, ck: 0.12 },
+    { id: 'day', warm: '#ffffff', cool: '#55648e', lx: -0.1, ly: -1.0, wk: 0.13, ck: 0.10 },
+    { id: 'aft', warm: '#ffeec0', cool: '#4a5b8a', lx: -0.5, ly: -0.8, wk: 0.20, ck: 0.16 },
+    { id: 'eve', warm: '#ffc487', cool: '#3d4d84', lx: -0.8, ly: -0.55, wk: 0.26, ck: 0.22 },
+    { id: 'dusk', warm: '#ff9f62', cool: '#33407a', lx: -1.0, ly: -0.3, wk: 0.30, ck: 0.26 },
+  ];
+  const BOUNCE = {
+    grass: ['#6f9a45', 0.09], dirt: ['#8a6a44', 0.08], sand: ['#d8c58a', 0.12], snow: ['#dfeaff', 0.16],
+    swamp: ['#5d7048', 0.09], rough: ['#8d7c5e', 0.08], lava: ['#ff7a2a', 0.22], subter: ['#5a4a58', 0.07],
+    water: ['#4f97b8', 0.12], rock: ['#6b6b74', 0.07],
+  };
+  /** Свет сцены для карты приключений: небо по времени суток, отсвет — по местности под ногами. */
+  function sceneLight(day, terrain, under) {
+    const sk = SKY[((day - 1) % 7 + 7) % 7];
+    if (under) return { id: 'sub', warm: '#c8a0ff', cool: '#241c30', lx: 0, ly: -1, wk: 0.14, ck: 0.26, bounce: '#5a4a58', bk: 0.08 };
+    const b = BOUNCE[terrain] || BOUNCE.grass;
+    return { id: sk.id + ':' + (terrain || 'grass'), warm: sk.warm, cool: sk.cool, lx: sk.lx, ly: sk.ly, wk: sk.wk, ck: sk.ck, bounce: b[0], bk: b[1] };
+  }
   /** Падающая тень: чёрный силуэт спрайта, наклонённый и сплющенный по солнцу. */
   function castShadow(ctx, name, x, y, scale, flip, day, mul, squash) {
     const s = sun(day); if (!s) return;
@@ -374,5 +399,5 @@
     for (const id in state.heroes) { const h = state.heroes[id]; if (h.dead || (h.z || 0) !== z || !vis[h.y * map.w + h.x]) continue; ctx.fillStyle = state.players[h.owner].color; ctx.fillRect(h.x - 1, h.y - 1, 3, 3); ctx.fillStyle = '#fff'; ctx.fillRect(h.x, h.y, 1, 1); }
   }
 
-  H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, sun, castShadow, applyDaylight };
+  H3.Terrain = { TILE, STYLE, PRIO, DAYLIGHT, tile, overlay, maskFor, renderMap, renderMini, obstacleSprite, daylight, sun, sceneLight, SKY, BOUNCE, castShadow, applyDaylight };
 })(typeof window !== 'undefined' ? window : globalThis);
