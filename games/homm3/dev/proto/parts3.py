@@ -233,36 +233,49 @@ class Fig(Canvas):
                          light if i % 2 else mid)
 
     def wing_bat(self, x, y, span, rise, skin, skind, bone, n=4, flip=False, a0=108, a1=18):
-        """Перепончатое крыло: пальцы веером, перепонка между ними провисает фестонами.
+        """Перепончатое крыло: сплошной сектор, из которого по краю вырезаны фестоны.
 
-        Плоский многоугольник без фестонов читался зелёной доской, поэтому край
-        строится по точкам «кончик пальца — провис — кончик пальца».
+        Строить контур по точкам «палец — провис — палец» оказалось ошибкой: многоугольник
+        самопересекался и давал колючки. Теперь сектор заливается целиком, а полукруглые
+        вырезы между пальцами делаются прозрачностью — так перепонка и провисает.
         """
         s = -1 if flip else 1
         tips = []
         for i in range(n + 1):
             t = i / n
             ang = math.radians(a0 + (a1 - a0) * t)
-            L = span * (0.62 + 0.38 * math.sin(math.pi * (0.35 + t * 0.65)))
+            L = span * (0.66 + 0.34 * math.sin(math.pi * (0.35 + t * 0.65)))
             tips.append((x + s * math.cos(ang) * L, y - math.sin(ang) * L))
-        edge = [(x, y - rise * 0.1)]
-        for i, (tx, ty) in enumerate(tips):
-            edge.append((tx, ty))
-            if i < n:                                                   # провис перепонки к следующему пальцу
-                nx, ny = tips[i + 1]
-                edge.append(((tx + nx) / 2 - s * span * 0.06, (ty + ny) / 2 + rise * 0.16))
-        edge.append((x, y + rise * 0.12))
-        self.poly(edge, skind)
-        inner = [(x, y - rise * 0.06)] + [((x + tx) / 2 + s * 1, (y + ty) / 2) for tx, ty in tips] + [(x, y + rise * 0.06)]
-        self.poly(inner, skin)                                          # прикорневая часть светлее
-        for tx, ty in tips:                                             # кости пальцев
-            self.line(x + s * 2, y - rise * 0.05, tx, ty, bone, 2)
-        self.ellipse(x, y, rise * 0.16, rise * 0.14, bone)              # сустав плеча
+        self.poly([(x, y + rise * 0.14)] + tips + [(x, y - rise * 0.12)], skind)
+        self.poly([(x, y + rise * 0.06)] + [(x + (tx - x) * 0.62, y + (ty - y) * 0.62) for tx, ty in tips]
+                  + [(x, y - rise * 0.06)], skin)
+        for i in range(n):                                              # фестоны между пальцами
+            (ax, ay), (bx, by) = tips[i], tips[i + 1]
+            mx, my = (ax + bx) / 2, (ay + by) / 2
+            d = math.hypot(bx - ax, by - ay)
+            ox, oy = (mx - x), (my - y)
+            L = math.hypot(ox, oy) or 1
+            cxx, cyy = mx + ox / L * d * 0.42, my + oy / L * d * 0.42
+            self.ellipse(cxx, cyy, d * 0.56, d * 0.56, '.')
+        for tx, ty in tips:
+            self.line(x + s * 2, y, tx, ty, bone, 2 if rise > 26 else 1)
+        self.ellipse(x, y, rise * 0.15, rise * 0.13, bone)
 
     def horns(self, cx, cy, size, mid, light, spread=6, curve=3):
+        """Рога: конус из сужающихся кружков по дуге, свет по верхней кромке.
+
+        Два плоских треугольника читались лезвиями топора, поэтому рог набирается
+        кружками — у основания толстый, к концу сходит на нет и заворачивается.
+        """
+        n = max(4, int(size * 0.7))
         for s in (-1, 1):
-            self.poly([(cx + s * spread, cy), (cx + s * (spread + curve), cy - size), (cx + s * (spread + curve * 2.4), cy - size * 0.2)], mid)
-            self.poly([(cx + s * (spread + 1), cy), (cx + s * (spread + curve), cy - size * 0.8), (cx + s * (spread + curve * 1.6), cy - size * 0.25)], light)
+            for i in range(n):
+                t = i / (n - 1)
+                r = size * 0.22 * (1 - t * 0.8)
+                x = cx + s * (spread + curve * t * 2.2 + t * t * curve * 0.8)
+                y = cy - size * t * 0.95 + t * t * size * 0.18
+                self.ellipse(x, y, r, r, mid)
+                self.ellipse(x - s * r * 0.3, y - r * 0.35, r * 0.55, r * 0.5, light)
 
     def claws(self, x0, y, n, ch, step=4, length=3):
         for i in range(n): self.rect(x0 + i * step, y, x0 + i * step + 1, y + length, ch)
@@ -343,3 +356,45 @@ class Fig(Canvas):
         for s in (-1, 1):                                                                # рога назад
             self.poly([(cx + r * 0.3, cy - r * 0.5 + s * 3), (cx + r * 1.3, cy - r * (0.9 + s * 0.2)),
                        (cx + r * 0.4, cy - r * 0.3 + s * 3)], dark if s < 0 else mid)
+
+    def skull(self, cx, cy, r, bone, light, dark, horns=False, jaw=True):
+        """Череп: свод, глазницы, носовое отверстие, зубы. Глазница обязана быть
+        крупнее двух клеток, иначе конвейер сведёт её в точку."""
+        self.ellipse(cx, cy, r, r * 0.95, bone)
+        self.ellipse(cx - r * 0.25, cy - r * 0.3, r * 0.62, r * 0.55, light)
+        self.ellipse(cx - r * 0.42, cy + r * 0.05, r * 0.3, r * 0.26, 'k')
+        self.ellipse(cx + r * 0.42, cy + r * 0.05, r * 0.3, r * 0.26, 'k')
+        self.poly([(cx, cy + r * 0.25), (cx - r * 0.16, cy + r * 0.55), (cx + r * 0.16, cy + r * 0.55)], dark)
+        if jaw:
+            self.ellipse(cx, cy + r * 0.78, r * 0.72, r * 0.3, bone)
+            for i in range(-3, 4):
+                self.rect(cx + i * r * 0.2 - 0.5, cy + r * 0.62, cx + i * r * 0.2 + 0.5, cy + r * 0.82, dark)
+        if horns: self.horns(cx, cy - r * 0.7, r * 1.1, bone, light, spread=int(r * 0.8), curve=int(r * 0.4))
+
+    def ribcage(self, cx, cy, w, h, bone, dark, n=5):
+        """Грудная клетка: позвоночник и рёбра дугами, между ними темно."""
+        self.rect(cx - 1.5, cy - h / 2, cx + 1.5, cy + h / 2, bone)
+        for i in range(n):
+            y = cy - h / 2 + h * (i + 0.5) / n
+            for s in (-1, 1):
+                self.line(cx + s * 2, y, cx + s * w * 0.5, y + h * 0.06, bone, 2)
+                self.line(cx + s * w * 0.5, y + h * 0.06, cx + s * w * 0.4, y + h * 0.16, bone, 2)
+            self.line(cx - w * 0.44, y + h * 0.12, cx + w * 0.44, y + h * 0.12, dark)
+
+    def flame(self, cx, cy, w, h, hot, mid, cool, n=5):
+        """Язык пламени: изогнутые языки разной высоты плюс горячий сгусток у основания.
+
+        Симметричные треугольники одной высоты читались короной свечей, поэтому
+        языки уводятся в стороны и различаются по росту.
+        """
+        self.ellipse(cx, cy - h * 0.08, w * 0.5, h * 0.2, hot)
+        for i in range(n):
+            t = (i - (n - 1) / 2) / max(1, (n - 1) / 2)
+            hh = h * (0.45 + 0.55 * (1 - abs(t))) * (0.7 + 0.3 * ((i * 5) % 4) / 3)
+            x0 = cx + t * w * 0.4
+            bend = -t * w * 0.22
+            self.poly([(x0 - w * 0.14, cy), (x0 - w * 0.06 + bend * 0.6, cy - hh * 0.6),
+                       (x0 + bend, cy - hh), (x0 + w * 0.07 + bend * 0.55, cy - hh * 0.5),
+                       (x0 + w * 0.14, cy)], mid if abs(t) < 0.7 else cool)
+        self.ellipse(cx, cy - h * 0.22, w * 0.3, h * 0.3, mid)
+        self.ellipse(cx, cy - h * 0.04, w * 0.2, h * 0.14, hot)   # ядро мелкое и у самого основания
