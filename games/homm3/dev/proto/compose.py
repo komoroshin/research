@@ -10,6 +10,7 @@ class Canvas:
     def put(self, x, y, c):
         if 0 <= x < self.w and 0 <= y < self.h: self.g[int(y)][int(x)] = c
     def get(self, x, y):
+        x, y = int(x), int(y)
         return self.g[y][x] if 0 <= x < self.w and 0 <= y < self.h else '.'
     def ellipse(self, cx, cy, rx, ry, c, rot=0.0):
         cr, sr = math.cos(rot), math.sin(rot)
@@ -70,3 +71,38 @@ def emit(name, cv, comment=''):
     out = "    /* %s */\n    %s: {\n      rows: [\n" % (comment, name)
     out += '\n'.join("        '%s'," % r for r in cv.rows())
     return out + "\n      ],\n    },\n"
+
+class Scaled:
+    """Тот же холст, но все координаты умножаются на k.
+
+    Нужен для сетки unit 3: рисовать удобно в прежних числах, а существо должно занимать
+    столько же места на экране, сколько занимало в unit 2. Иначе «стало детальнее»
+    читается как «стало мельче» — на этом уже один раз обожглись.
+    """
+    def __init__(self, w, h, k):
+        self.k = k
+        self.c = Canvas(int(round(w * k)), int(round(h * k)))
+        self.w, self.h = self.c.w, self.c.h
+    def put(self, x, y, ch):
+        k = self.k
+        for dy in range(int(k + 0.999)):
+            for dx in range(int(k + 0.999)): self.c.put(int(x * k) + dx, int(y * k) + dy, ch)
+    def rect(self, x0, y0, x1, y1, ch):
+        k = self.k
+        for y in range(int(y0 * k), int((y1 + 1) * k)):
+            for x in range(int(x0 * k), int((x1 + 1) * k)): self.c.put(x, y, ch)
+    def ellipse(self, cx, cy, rx, ry, ch, rot=0.0):
+        self.c.ellipse(cx * self.k, cy * self.k, rx * self.k, ry * self.k, ch, rot)
+    def poly(self, pts, ch):
+        self.c.poly([(x * self.k, y * self.k) for x, y in pts], ch)
+    def line(self, x0, y0, x1, y1, ch, th=1):
+        k = self.k
+        self.c.line(x0 * k, y0 * k, x1 * k, y1 * k, ch, max(1, round(th * k)))
+    def feathers(self, pts, ch, size, along, tip_c=None):
+        k = self.k
+        self.c.feathers([(x * k, y * k) for x, y in pts], ch, size * k, along, tip_c)
+    def get(self, x, y): return self.c.get(int(x * self.k), int(y * self.k))
+    def outline(self, between=None): self.c.outline(between)
+    def rows(self): return self.c.rows()
+    @property
+    def g(self): return self.c.g
