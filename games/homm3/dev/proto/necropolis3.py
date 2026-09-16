@@ -126,7 +126,7 @@ c.helm(RX, 10, 9, 'u', 'E', 'z', kind='great', crest='R')
 c.sword(RX + 22, -2, 32, 'e', 'l', 'E', 'z', 'z', 'u')
 c.shield_round(RX - 18, 30, 9, 'u', 'z', 'E', 'i', 'L')
 c.skull(RX - 18, 30, 5, 'i', 'L', 'I', jaw=False)                                # череп на щите
-B.append(emit('black_knight', c, 'чёрный рыцарь: вороной конь с алыми глазами, чёрные латы, щит с черепом'))
+B.append(emit('black_knight', c, 'чёрный рыцарь: вороной конь с алыми глазами, чёрные латы, щит с черепом', flipx=True))
 B.append(upg('dread_knight', 'рыцарь смерти: багровый плюмаж и чепрак, кроваво-красный клинок', 'black_knight',
              {'R': 'r', 'z': 'P', 'e': 'r', 'l': 'o'}))
 
@@ -147,7 +147,7 @@ c.rect(BX - 26, BY - 16, BX - 20, BY - 6, 'i')                                  
 c.ellipse(BX - 24, BY - 20, 4, 3.2, 'I')
 c.skull(BX - 32, BY - 28, 12, 'i', 'L', 'I', horns=True)
 c.ellipse(BX - 37, BY - 26, 3.2, 2.6, 'h'); c.ellipse(BX - 27, BY - 26, 3.2, 2.6, 'h')
-B.append(emit('bone_dragon', c, 'костяной дракон: череп с рогами, рёбра, крыло-спицы с обрывками перепонки, хвост позвонками'))
+B.append(emit('bone_dragon', c, 'костяной дракон: череп с рогами, рёбра, крыло-спицы с обрывками перепонки, хвост позвонками', flipx=True))
 B.append(upg('ghost_dragon', 'призрачный дракон: полупрозрачная зелень, туман вместо перепонки', 'bone_dragon',
              {'i': 'v', 'L': 'w', 'I': 'q', 'E': 'Q', 'u': 'q', 'h': 'w'}))
 

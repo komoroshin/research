@@ -56,7 +56,7 @@ c.rect(CX - 14, 24, CX - 2, 26, 'j')
 for x in range(CX - 13, CX - 2, 3): c.rect(x, 22, x + 1, 24, 'i')
 c.ellipse(CX - 2, 17, 2.6, 2.2, 'y'); c.ellipse(CX - 2, 17, 1.3, 1.3, 'k')
 c.bow(CX + 20, 12, 60, 'n', 'N', 'l')
-B.append(emit('lizardman', c, 'ящер: чешуя, тёмный гребень, светлая челюсть с клыками, хвост, лук'))
+B.append(emit('lizardman', c, 'ящер: чешуя, тёмный гребень, светлая челюсть с клыками, хвост, лук', flipx=True))
 B.append(upg('lizard_warrior', 'воин-ящер: бирюзовая чешуя, стальной наплечник', 'lizardman',
              {'G': 'q', 'g': 'v', 'h': 'w', 'j': 'Q'}, extra=[(10, 32, 'e'), (12, 32, 'l'), (14, 33, 'e')]))
 
@@ -101,7 +101,7 @@ c.ellipse(BX - 28, BY - 4, 10, 8, 'H'); c.ellipse(BX - 32, BY - 1, 7, 5, 'h')
 c.rect(BX - 39, BY, BX - 30, BY + 3, 'j')
 for x in range(int(BX - 38), int(BX - 30), 3): c.rect(x, BY, x + 1, BY + 2, 'i')
 c.ellipse(BX - 30, BY - 7, 3.2, 2.8, 'r'); c.ellipse(BX - 30, BY - 7, 1.6, 1.6, 'k')
-B.append(emit('basilisk', c, 'василиск: шесть лап, ржавый гребень, чешуя, красный глаз'))
+B.append(emit('basilisk', c, 'василиск: шесть лап, ржавый гребень, чешуя, красный глаз', flipx=True))
 B.append(upg('greater_basilisk', 'великий василиск: тёмно-оливковая чешуя, золотой гребень', 'basilisk',
              {'H': 'j', 'h': 'H', 'O': 'y', 'o': 'f'}))
 
@@ -120,7 +120,7 @@ c.ellipse(BX - 28, BY - 6, 11, 10, 'O'); c.ellipse(BX - 32, BY - 2, 8, 6, 'o')
 c.rect(BX - 39, BY - 3, BX - 37, BY - 1, 'N')
 c.ellipse(BX - 30, BY - 10, 3, 2.6, 'f'); c.ellipse(BX - 30, BY - 10, 1.5, 1.5, 'k')
 c.horns(BX - 28, BY - 14, 14, 'I', 'i', spread=7, curve=5)                        # костяные рога
-B.append(emit('gorgon', c, 'горгона: бронзовая чешуя, горб, костяные рога, тёмные ноги с копытами'))
+B.append(emit('gorgon', c, 'горгона: бронзовая чешуя, горб, костяные рога, тёмные ноги с копытами', flipx=True))
 B.append(upg('mighty_gorgon', 'могучая горгона: тёмная бронза, золотые рога', 'gorgon',
              {'O': 'N', 'o': 'O', 'I': 'y', 'i': 'f'}))
 
@@ -138,7 +138,7 @@ for i in range(6):                                                              
 c.poly([(BX + 50, BY + 24), (BX + 60, BY + 32), (BX + 50, BY + 30)], 'i')
 c.ellipse(BX - 24, BY - 12, 10, 9, 'q')
 c.dragon_head(BX - 30, BY - 20, 10, 'q', 'v', 'Q', eye='y')
-B.append(emit('wyvern', c, 'виверна: две лапы, перепончатые крылья, хвост с жалом, раскрытая пасть'))
+B.append(emit('wyvern', c, 'виверна: две лапы, перепончатые крылья, хвост с жалом, раскрытая пасть', flipx=True))
 B.append(upg('wyvern_monarch', 'виверна-владыка: изумрудная чешуя, золотое жало', 'wyvern',
              {'q': 'G', 'v': 'g', 'Q': 'j', 'i': 'y'}))
 
@@ -160,7 +160,7 @@ for i, (ax, ay) in enumerate(((-34, -40), (-20, -48), (-4, -50), (10, -46), (24,
     c.rect(hx - 11, hy + 2, hx - 2, hy + 4, 'R')
     for x in range(int(hx - 10), int(hx - 2), 3): c.rect(x, hy + 1, x + 1, hy + 3, 'i')
     c.ellipse(hx - 3, hy - 3, 2.4, 2, 'y'); c.ellipse(hx - 3, hy - 3, 1.2, 1.2, 'k')
-B.append(emit('hydra', c, 'гидра: пять голов на шеях веером, чешуя, светлое брюхо, тёмные лапы'))
+B.append(emit('hydra', c, 'гидра: пять голов на шеях веером, чешуя, светлое брюхо, тёмные лапы', flipx=True))
 B.append(upg('chaos_hydra', 'хаос-гидра: багровая чешуя, чёрные лапы, жёлтые глаза', 'hydra',
              {'N': 'R', 'n': 'r', 'T': 'o', 'D': 'z'}))
 

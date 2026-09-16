@@ -2,7 +2,7 @@
 """Сборка js-файла фракции из готовых фигур. Общая для всех генераторов unit 3."""
 import io, os
 
-def emit(name, fig, comment, unit=3, anchor=None, paint=None, tight=False):
+def emit(name, fig, comment, unit=3, anchor=None, paint=None, tight=False, flipx=False):
     """Обрезает холст до содержимого и выдаёт якорь.
 
     Рамка итогового спрайта — объединение заявленной сетки и того, что за неё вылезло,
@@ -28,6 +28,9 @@ def emit(name, fig, comment, unit=3, anchor=None, paint=None, tight=False):
     rows = [r[x0:x1 + 1] for r in rows[y0:y1 + 1]]
     ax = M + W0 / 2 - x0
     ay = M + H0 - y0
+    if flipx:                      # спрайт обязан смотреть вправо: бой зеркалит правую сторону,
+        rows = [r[::-1] for r in rows]   # карта — героя, идущего влево. Рисовать удобнее головой влево
+        ax = len(rows[0]) - ax
     an = ' anchor: [%d, %d],' % (round(anchor[0]) if anchor else round(ax),
                                  round(anchor[1]) if anchor else round(ay))
     if paint: an = (' paint: { ' + ', '.join('%s: %s' % kv for kv in paint.items()) + ' },') + an

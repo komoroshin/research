@@ -149,7 +149,7 @@ for x in range(int(CX - 36), int(CX - 22), 3):
 c.ellipse(CX - 22, 18, 3.2, 2.8, 'y'); c.ellipse(CX - 22, 18, 1.6, 1.6, 'k')
 for i in range(6):                                                                 # гребень
     c.poly([(CX - 14 + i * 4, 12), (CX - 12 + i * 4, 2), (CX - 10 + i * 4, 12)], 'C')
-B.append(emit('sea_serpent', c, 'морской змей: тело кольцами чешуёй, гребень, раскрытая пасть с зубами'))
+B.append(emit('sea_serpent', c, 'морской змей: тело кольцами чешуёй, гребень, раскрытая пасть с зубами', flipx=True))
 B.append(upg('haspid', 'хаспид: багровая чешуя, золотой гребень', 'sea_serpent',
              {'q': 'R', 'v': 'r', 'Q': 'D', 'C': 'y'}))
 

@@ -45,7 +45,7 @@ c.ellipse(RX, 10, 8, 8, 'g'); c.ellipse(RX - 2, 8, 5, 5, 'h')
 c.poly([(RX - 7, 9), (RX - 16, 2), (RX - 4, 6)], 'g'); c.poly([(RX + 7, 9), (RX + 16, 2), (RX + 4, 6)], 'g')
 c.ellipse(RX - 3, 10, 2.2, 2, 'y'); c.ellipse(RX + 3, 10, 2.2, 2, 'y')
 c.spear(RX + 16, 0, 46, 'n', 'N', 'l', 'e', blade_len=11)
-B.append(emit('wolf_rider', c, 'наездник на волке: волк с шерстью прядями, гоблин с копьём'))
+B.append(emit('wolf_rider', c, 'наездник на волке: волк с шерстью прядями, гоблин с копьём', flipx=True))
 B.append(upg('wolf_raider', 'волчий налётчик: бурый волк, два копья, шлем', 'wolf_rider',
              {'e': 'n', 'l': 'T', 'E': 'N'}, extra=[(52, 4, 'l'), (53, 3, 'l'), (54, 5, 'e')]))
 
