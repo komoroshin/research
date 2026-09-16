@@ -2,7 +2,7 @@
 """Сборка js-файла фракции из готовых фигур. Общая для всех генераторов unit 3."""
 import io, os
 
-def emit(name, fig, comment, unit=3, anchor=None):
+def emit(name, fig, comment, unit=3, anchor=None, paint=None, tight=False):
     """Обрезает холст до содержимого и выдаёт якорь.
 
     Рамка итогового спрайта — объединение заявленной сетки и того, что за неё вылезло,
@@ -20,13 +20,17 @@ def emit(name, fig, comment, unit=3, anchor=None):
         cx1 = max(len(r.rstrip('.')) - 1 for r in rows if r.strip('.'))
     else:
         cx0, cy0, cx1, cy1 = M, M, M + W0 - 1, M + H0 - 1
-    x0 = max(0, min(cx0, M) - 1); x1 = min(W - 1, max(cx1, M + W0 - 1) + 1)
-    y0 = max(0, min(cy0, M) - 1); y1 = min(len(rows) - 1, max(cy1, M + H0 - 1) + 1)
+    if tight:                       # портрет залит фоном до краёв: прозрачная кайма тут лишняя
+        x0, x1, y0, y1 = cx0, cx1, cy0, cy1
+    else:
+        x0 = max(0, min(cx0, M) - 1); x1 = min(W - 1, max(cx1, M + W0 - 1) + 1)
+        y0 = max(0, min(cy0, M) - 1); y1 = min(len(rows) - 1, max(cy1, M + H0 - 1) + 1)
     rows = [r[x0:x1 + 1] for r in rows[y0:y1 + 1]]
     ax = M + W0 / 2 - x0
     ay = M + H0 - y0
     an = ' anchor: [%d, %d],' % (round(anchor[0]) if anchor else round(ax),
                                  round(anchor[1]) if anchor else round(ay))
+    if paint: an = (' paint: { ' + ', '.join('%s: %s' % kv for kv in paint.items()) + ' },') + an
     body = '\n'.join("        '%s'," % r for r in rows)
     return ("    /* %s (%d×%d) */\n    %s: {\n      hd: true, unit: %d,%s\n      rows: [\n%s\n      ],\n    },\n"
             % (comment, len(rows[0]), len(rows), name, unit, an, body))
