@@ -10,6 +10,7 @@ class Canvas:
     def put(self, x, y, c):
         if 0 <= x < self.w and 0 <= y < self.h: self.g[int(y)][int(x)] = c
     def get(self, x, y):
+        x, y = int(x), int(y)
         return self.g[y][x] if 0 <= x < self.w and 0 <= y < self.h else '.'
     def ellipse(self, cx, cy, rx, ry, c, rot=0.0):
         cr, sr = math.cos(rot), math.sin(rot)

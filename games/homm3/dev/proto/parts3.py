@@ -26,6 +26,7 @@ class Fig(Canvas):
     # ---------- фактуры: кладутся поверх уже залитой области ----------
     def mail(self, x0, y0, x1, y1, light, only=None):
         """Кольчуга: звенья в шахматку через одно. Читается как плетение, а не как шум."""
+        x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
         for y in range(int(y0), int(y1) + 1):
             for x in range(int(x0), int(x1) + 1):
                 if only and self.get(x, y) not in only: continue
@@ -34,6 +35,7 @@ class Fig(Canvas):
 
     def scales(self, x0, y0, x1, y1, light, step=4, only=None):
         """Чешуя: дуги рядами со сдвигом."""
+        x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
         for y in range(int(y0), int(y1) + 1, step):
             for x in range(int(x0), int(x1) + 1, step):
                 ox = (y // step % 2) * (step // 2)
@@ -44,6 +46,7 @@ class Fig(Canvas):
 
     def fur(self, x0, y0, x1, y1, dark, step=4, length=5, only=None):
         """Мех: короткие штрихи вниз-влево, как ложится шерсть."""
+        x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
         for x in range(int(x0), int(x1) + 1, step):
             for i in range(length):
                 xx, yy = x - i // 2, y0 + i
@@ -59,11 +62,13 @@ class Fig(Canvas):
 
     def planks(self, x0, y0, x1, y1, dark, step=5):
         """Доски: горизонтальные швы."""
+        y0, y1 = int(y0), int(y1)
         for y in range(int(y0), int(y1) + 1, step):
             self.rect(x0, y, x1, y, dark)
 
     def rivets(self, x0, y, x1, ch, step=6):
         """Ряд заклёпок."""
+        x0, x1 = int(x0), int(x1)
         for x in range(int(x0), int(x1) + 1, step): self.ellipse(x, y, 1.4, 1.4, ch)
 
     # ---------- части ----------
@@ -227,13 +232,32 @@ class Fig(Canvas):
             self.ellipse(x + s * math.cos(ang) * r, y - math.sin(ang) * r, 3.2, 2.4,
                          light if i % 2 else mid)
 
-    def wing_bat(self, x, y, span, rise, skin, skind, bone, n=4, flip=False):
+    def wing_bat(self, x, y, span, rise, skin, skind, bone, n=4, flip=False, a0=108, a1=18):
+        """Перепончатое крыло: пальцы веером, перепонка между ними провисает фестонами.
+
+        Плоский многоугольник без фестонов читался зелёной доской, поэтому край
+        строится по точкам «кончик пальца — провис — кончик пальца».
+        """
         s = -1 if flip else 1
-        self.poly([(x, y), (x + s * span * 0.3, y - rise), (x + s * span, y - rise * 0.55), (x + s * span * 0.7, y + rise * 0.4)], skind)
-        self.poly([(x + s * 2, y - 2), (x + s * span * 0.32, y - rise * 0.9), (x + s * span * 0.88, y - rise * 0.5), (x + s * span * 0.62, y + rise * 0.28)], skin)
-        for i in range(n):
-            t = (i + 1) / (n + 1)
-            self.line(x + s * 3, y - rise * 0.2, x + s * span * (0.35 + t * 0.6), y - rise * (0.85 - t * 0.7), bone, 2)
+        tips = []
+        for i in range(n + 1):
+            t = i / n
+            ang = math.radians(a0 + (a1 - a0) * t)
+            L = span * (0.62 + 0.38 * math.sin(math.pi * (0.35 + t * 0.65)))
+            tips.append((x + s * math.cos(ang) * L, y - math.sin(ang) * L))
+        edge = [(x, y - rise * 0.1)]
+        for i, (tx, ty) in enumerate(tips):
+            edge.append((tx, ty))
+            if i < n:                                                   # провис перепонки к следующему пальцу
+                nx, ny = tips[i + 1]
+                edge.append(((tx + nx) / 2 - s * span * 0.06, (ty + ny) / 2 + rise * 0.16))
+        edge.append((x, y + rise * 0.12))
+        self.poly(edge, skind)
+        inner = [(x, y - rise * 0.06)] + [((x + tx) / 2 + s * 1, (y + ty) / 2) for tx, ty in tips] + [(x, y + rise * 0.06)]
+        self.poly(inner, skin)                                          # прикорневая часть светлее
+        for tx, ty in tips:                                             # кости пальцев
+            self.line(x + s * 2, y - rise * 0.05, tx, ty, bone, 2)
+        self.ellipse(x, y, rise * 0.16, rise * 0.14, bone)              # сустав плеча
 
     def horns(self, cx, cy, size, mid, light, spread=6, curve=3):
         for s in (-1, 1):
@@ -247,3 +271,75 @@ class Fig(Canvas):
         self.rect(cx - w, y, cx + w, y + 4, mid)
         self.rect(cx - w, y, cx + w, y + 1, light)
         self.claws(cx - w + 1, y + 4, n, claw, max(3, int(2 * w / n)), 3)
+
+    # ---------- крупные формы, общие для многих фракций ----------
+    def horse(self, cx, cy, L, H, mid, light, dark, mane=None, head_left=True, legs=True):
+        """Конское тело: круп, грудь, шея, голова с мордой, четыре ноги, хвост.
+        Одна форма на кавалериста, кентавра, пегаса и единорога — меняются только тона."""
+        s = -1 if head_left else 1
+        self.ellipse(cx, cy, L * 0.52, H * 0.5, mid)
+        self.ellipse(cx - s * L * 0.1, cy - H * 0.2, L * 0.42, H * 0.32, light)
+        self.ellipse(cx + s * L * 0.06, cy + H * 0.28, L * 0.44, H * 0.28, dark)
+        self.line(cx - s * L * 0.52, cy - H * 0.24, cx - s * L * 0.76, cy + H * 0.4, dark, 5)   # хвост
+        nx, ny = cx + s * L * 0.5, cy - H * 0.45
+        self.ellipse(nx, ny, L * 0.16, H * 0.42, mid)                                           # шея
+        hx, hy = nx + s * L * 0.14, ny - H * 0.36
+        self.ellipse(hx, hy, L * 0.16, H * 0.26, mid)                                           # голова
+        self.ellipse(hx + s * L * 0.1, hy + H * 0.12, L * 0.1, H * 0.16, light)                 # морда
+        self.rect(hx + s * L * 0.16, hy + H * 0.1, hx + s * L * 0.2, hy + H * 0.16, dark)       # ноздря
+        self.ellipse(hx + s * L * 0.02, hy - H * 0.04, 2.2, 2.0, 'k')                           # глаз
+        for o in (-0.06, 0.04):                                                                 # уши
+            self.poly([(hx + s * L * o, hy - H * 0.22), (hx + s * L * (o + 0.02), hy - H * 0.42),
+                       (hx + s * L * (o + 0.06), hy - H * 0.2)], mid)
+        if mane:
+            self.fur(min(nx, nx - s * L * 0.2), ny - H * 0.5, max(nx, nx - s * L * 0.2) + 8, cy - H * 0.1,
+                     mane, step=3, length=int(H * 0.5))
+        if legs:
+            for i, t in enumerate((-0.38, -0.2, 0.22, 0.4)):
+                fx = cx + t * L
+                front = i >= 2 if head_left is False else i < 2
+                self.rect(fx - L * 0.05, cy + H * 0.36, fx + L * 0.05, cy + H * 0.86, mid if front else dark)
+                self.rect(fx - L * 0.05, cy + H * 0.36, fx - L * 0.02, cy + H * 0.86, light if front else mid)
+                self.ellipse(fx, cy + H * 0.5, L * 0.07, H * 0.2, mid if front else dark)
+                self.rect(fx - L * 0.07, cy + H * 0.87, fx + L * 0.07, cy + H * 1.0, 'D')       # копыто
+
+    def serpent(self, cx, cy, coils, r, mid, light, dark, step=9):
+        """Кольца змеиного хвоста: каждое следующее ниже и шире, свет по верхнему краю."""
+        for i in range(coils):
+            w = r * (1 + i * 0.22)
+            y = cy + i * step
+            self.ellipse(cx + (i % 2 * 2 - 1) * r * 0.25, y, w, r * 0.52, mid)
+            self.ellipse(cx + (i % 2 * 2 - 1) * r * 0.25, y - r * 0.16, w * 0.8, r * 0.26, light)
+            self.ellipse(cx + (i % 2 * 2 - 1) * r * 0.25, y + r * 0.3, w * 0.86, r * 0.18, dark)
+
+    def tree_crown(self, cx, cy, r, mid, light, dark):
+        """Крона: комья листвы разного размера, тень по нижнему краю — иначе выходит пудель."""
+        for dx, dy, k, ch in ((-0.6, 0.1, 0.62, mid), (0.55, 0.05, 0.6, mid), (0, -0.45, 0.66, light),
+                              (-0.3, 0.45, 0.5, dark), (0.35, 0.5, 0.48, dark), (0, 0.1, 0.7, mid)):
+            self.ellipse(cx + r * dx, cy + r * dy, r * k, r * k * 0.85, ch)
+        for dx in (-0.55, 0, 0.5):
+            self.ellipse(cx + r * dx, cy + r * 0.62, r * 0.4, r * 0.24, dark)
+
+    def bark(self, x0, y0, x1, y1, mid, light, dark):
+        """Кора: вертикальные борозды разной длины."""
+        self.rect(x0, y0, x1, y1, mid)
+        for i, x in enumerate(range(int(x0), int(x1) + 1, 4)):
+            self.line(x, y0 + (i % 3) * 3, x + 1, y1 - (i % 2) * 4, dark if i % 2 else light)
+
+    def dragon_head(self, cx, cy, r, mid, light, dark, eye='f', teeth='i', jaw_open=True):
+        self.ellipse(cx, cy, r, r * 0.78, mid)
+        self.ellipse(cx - r * 0.2, cy - r * 0.25, r * 0.66, r * 0.5, light)
+        self.poly([(cx - r * 0.2, cy - r * 0.3), (cx - r * 1.5, cy - r * 0.1), (cx - r * 0.2, cy + r * 0.3)], mid)   # морда
+        self.poly([(cx - r * 0.2, cy - r * 0.25), (cx - r * 1.45, cy - r * 0.12), (cx - r * 0.2, cy + r * 0.05)], light)
+        if jaw_open:
+            self.poly([(cx - r * 0.2, cy + r * 0.12), (cx - r * 1.35, cy + r * 0.4), (cx - r * 0.2, cy + r * 0.5)], 'R')
+            for i in range(4):
+                x = cx - r * (0.35 + i * 0.25)
+                self.rect(x, cy + r * 0.1, x + 1, cy + r * 0.28, teeth)
+                self.rect(x, cy + r * 0.34, x + 1, cy + r * 0.5, teeth)
+        self.rect(cx - r * 1.3, cy - r * 0.18, cx - r * 1.15, cy - r * 0.08, dark)       # ноздря
+        self.ellipse(cx - r * 0.35, cy - r * 0.32, r * 0.16, r * 0.14, eye)
+        self.ellipse(cx - r * 0.35, cy - r * 0.32, r * 0.07, r * 0.1, 'k')
+        for s in (-1, 1):                                                                # рога назад
+            self.poly([(cx + r * 0.3, cy - r * 0.5 + s * 3), (cx + r * 1.3, cy - r * (0.9 + s * 0.2)),
+                       (cx + r * 0.4, cy - r * 0.3 + s * 3)], dark if s < 0 else mid)
