@@ -155,5 +155,5 @@ for g in (1, 2, 3):
         c = Fig(70, 78)
         mount(c, mnt[0], mnt[1], mnt[2], mnt[3], mane=mnt[4])
         rider(c, **rd)
-        blocks.append(emit(name, c, comment))
+        blocks.append(emit(name, c, comment, flipx=True))
     write('heroes_%d' % g, TITLES[g], blocks, 'riders3.py')
