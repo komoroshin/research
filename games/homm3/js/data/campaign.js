@@ -12,6 +12,9 @@
    Умолчание, если поле не задано: герой, половина армии, артефакты.
    hero — стартовый герой игрока (id), foes — фракции противников по порядку
    (кого не хватило — случайные из оставшихся).
+   sea — сколько на карте воды: 'wide' — море обязательно и вдоль двух краёв,
+   'none' — без морской полосы (озёра по шуму остаются, но лодок и верфей нет),
+   по умолчанию как в обычной партии: четверть карт без моря.
    ========================================================================== */
 (function (root) {
   'use strict';
@@ -98,6 +101,49 @@
           carry: { army: 'part' },
           size: 'L', seed: 1205, faction: 'necropolis', hero: 'vidomina', foes: ['castle', 'rampart', 'tower'], opponents: 3, difficulty: 'hard',
           goals: { win: [{ type: 'kill_all' }], lose: [{ type: 'lose_all' }] },
+        },
+      ],
+    },
+    {
+      id: 'cove',
+      name: 'Флаг над бухтой',
+      desc: 'Пять сценариев за Бухту: от краденой стоянки до архипелага под одним флагом. Море на всех картах, и половина дороги идёт по воде.',
+      scenarios: [
+        {
+          id: 'c1', name: 'Своя стоянка',
+          brief: 'У вас один корабль и бухта, которую вы ни у кого не спрашивали. Береговой барон пришёл вешать — объясните ему, что бухта уже занята.',
+          size: 'S', seed: 1301, faction: 'cove', hero: 'corkes', foes: ['castle'], opponents: 1, difficulty: 'easy', sea: 'wide',
+          goals: { win: [{ type: 'kill_all' }], lose: [{ type: 'lose_all' }] },
+        },
+        {
+          id: 'c2', name: 'Чужой порт',
+          brief: 'Соседний капитан сдаёт вашу бухту за долю. Возьмите его порт, пока он не привёл покупателей: четыре недели — и вас тут не ждут. С прошлой стоянки ушла половина команды.',
+          carry: { army: 'part' },
+          size: 'S', seed: 1321, faction: 'cove', hero: 'corkes', foes: ['cove'], opponents: 1, difficulty: 'normal', sea: 'wide',
+          goals: { win: [{ type: 'capture_town', of: 'enemy' }], lose: [{ type: 'lose_all' }, { type: 'timeout', days: 28 }] },
+        },
+        {
+          id: 'c3', name: 'Доля команды',
+          brief: 'Команда ходит за долей, а не за идею. Наберите казну и кристаллы на новые корабли — и вас будут слушать. С вами половина команды.',
+          carry: { army: 'part' },
+          size: 'M', seed: 1303, faction: 'cove', hero: 'corkes', foes: ['dungeon', 'tower'], opponents: 2, difficulty: 'normal', sea: 'wide',
+          goals: { win: [{ type: 'gather', res: 'gold', amount: 50000 }, { type: 'gather', res: 'crystal', amount: 40 }],
+            lose: [{ type: 'lose_all' }] },
+        },
+        {
+          id: 'c4', name: 'Компас на дне',
+          brief: 'Адмирал, что знал все проходы архипелага, лежит на дне затопленных гротов вместе со своим компасом. За ним идут налегке: команда и добыча остаются в бухте. Утонете — искать будет некому.',
+          carry: { army: 'none', arts: false },
+          size: 'M', seed: 1306, faction: 'cove', hero: 'corkes', foes: ['fortress', 'necropolis'], opponents: 2, difficulty: 'hard', sea: 'wide',
+          goals: { win: [{ type: 'find_artifact', art: 'drowned_compass' }, { type: 'kill_all' }],
+            lose: [{ type: 'lose_all' }, { type: 'lose_hero', of: 'mine' }] },
+        },
+        {
+          id: 'c5', name: 'Флаг над архипелагом',
+          brief: 'С компасом проходы знаете только вы. Три державы держат острова — заберите все города, чтобы над архипелагом остался один флаг. С вами половина команды.',
+          carry: { army: 'part' },
+          size: 'L', seed: 1305, faction: 'cove', hero: 'corkes', foes: ['castle', 'tower', 'fortress'], opponents: 3, difficulty: 'hard', sea: 'wide',
+          goals: { win: [{ type: 'capture_all_towns' }], lose: [{ type: 'lose_all' }] },
         },
       ],
     },

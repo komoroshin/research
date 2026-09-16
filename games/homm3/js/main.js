@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.14.2';
+  const VERSION = '3.15';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -102,7 +102,7 @@
       + btn('btnLoad', 'ic_save', 'Загрузить')
       + btn('btnSet', 'ic_sound', 'Настройки')
       + btn('btnHelp', 'ic_spellbook', 'Как играть')
-      + '<div class="mver small muted">Версия ' + VERSION + ' · 11 фракций · 154 существа · гексовые бои · кампания · квесты · редактор карт</div>';
+      + '<div class="mver small muted">Версия ' + VERSION + ' · 11 фракций · 154 существа · гексовые бои · три кампании · квесты · редактор карт</div>';
     const on = (id, fn) => { const b = sh.body.querySelector('#' + id); if (b) b.onclick = () => { H3.Audio.play('click'); fn(); }; };
     on('btnCont', () => { const st = load('auto'); if (st) start(st); else { UI.toast('Автосохранение не прочиталось', 'warn'); menu(); } });
     on('btnNew', newGameForm); on('btnCamp', campaignForm); on('btnMaps', mapsForm); on('btnLoad', loadDialog); on('btnSet', settingsDialog); on('btnHelp', help);

@@ -58,7 +58,9 @@
     const nPlayers = doc ? doc.players.length : 1 + U.clamp(settings.opponents || 1, 1, size.maxPlayers - 1);
     const diff = DIFFICULTY[settings.difficulty] || DIFFICULTY.normal;
     // фракции противников: заданные сценарием (foes) — по порядку, остальные — случайные без повторов
-    const foes = (settings.foes || []).filter(f => F.get(f) && f !== settings.faction);
+    // сценарий вправе поставить против игрока его же фракцию (зеркальный бой: пират против пирата) —
+    // раз она названа в foes явно, это выбор автора сценария; случайные противники фракцию игрока не берут
+    const foes = (settings.foes || []).filter(f => !!F.get(f));
     const factions = F.LIST.map(f => f.id).filter(f => f !== settings.faction && !foes.includes(f));
     rng.shuffle(factions);
     for (let i = 0; i < nPlayers; i++) {
