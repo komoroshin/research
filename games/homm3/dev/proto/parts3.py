@@ -439,3 +439,104 @@ class Fig(Canvas):
                        (x0 + w * 0.14, cy)], mid if abs(t) < 0.7 else cool)
         self.ellipse(cx, cy - h * 0.22, w * 0.3, h * 0.3, mid)
         self.ellipse(cx, cy - h * 0.04, w * 0.2, h * 0.14, hot)   # ядро мелкое и у самого основания
+
+    def portrait(self, bg, skin, shade, hair=None, eye='b', gear=None, gcol=None, gdark=None,
+                 beard=None, brow=None, cloth='e', clothd='E', collar=None, extras=None):
+        """Портрет героя 72×72: фон фракции, плечи, шея, лицо, причёска, головной убор.
+
+        Сетка втрое крупнее даёт место под то, чего в портрете не было: радужку со зрачком
+        и бликом, брови, тень скулы, ноздри, губы, пряди волос, заклёпки на шлеме.
+        Освещение в конвейере плоское (paint: silDome 0, rim 0) — портрет не шар.
+        """
+        W, H = self.W0, self.H0
+        CX, CY = W / 2, H * 0.50
+        self.rect(0, 0, W - 1, H - 1, bg)
+        # плечи и грудь
+        self.ellipse(CX, H * 1.06, W * 0.46, H * 0.36, clothd)
+        self.ellipse(CX, H * 1.04, W * 0.40, H * 0.32, cloth)
+        self.rect(CX - W * 0.1, H * 0.66, CX + W * 0.1, H * 0.82, shade)        # шея
+        self.rect(CX - W * 0.1, H * 0.66, CX - W * 0.04, H * 0.82, skin)
+        if collar:
+            self.ellipse(CX, H * 0.84, W * 0.28, H * 0.09, collar)
+        r = W * 0.25
+        g, gd = gcol or 'e', gdark or 'E'
+
+        # убор рисуется в два захода: то, что позади головы, — до лица, то, что поверх, — после.
+        # Иначе капюшон, нарисованный последним, затирал глаза и оставлял пустой овал.
+        if gear == 'hood':
+            self.poly([(CX - r * 1.32, CY + r * 1.0), (CX - r * 0.78, CY - r * 1.4),
+                       (CX + r * 0.82, CY - r * 1.35), (CX + r * 1.32, CY + r * 1.0)], g)
+            self.ellipse(CX, CY - r * 0.5, r * 1.3, r * 1.0, g)
+            self.ellipse(CX, CY - r * 0.1, r * 1.06, r * 1.1, gd)
+        elif gear == 'hat':
+            self.poly([(CX - r * 1.28, CY - r * 0.9), (CX + r * 1.28, CY - r * 0.9), (CX + r * 0.2, CY - r * 2.2)], gd)
+            self.poly([(CX - r * 1.08, CY - r * 0.95), (CX + r * 0.9, CY - r * 0.95), (CX + r * 0.2, CY - r * 2.0)], g)
+        elif gear in ('wide', 'tricorn'):
+            self.poly([(CX - r * 1.05, CY - r * 1.0), (CX + r * 1.05, CY - r * 1.0),
+                       (CX + r * 0.8, CY - r * 1.7), (CX - r * 0.8, CY - r * 1.7)], g)
+
+        # голова
+        self.ellipse(CX, CY, r, r * 1.2, skin)
+        self.ellipse(CX - r * 0.28, CY - r * 0.28, r * 0.66, r * 0.7, skin)
+        self.ellipse(CX + r * 0.52, CY + r * 0.1, r * 0.5, r * 0.8, shade)      # теневая щека
+        self.ellipse(CX - r * 1.02, CY + r * 0.1, r * 0.2, r * 0.3, skin)       # уши
+        self.ellipse(CX + r * 1.02, CY + r * 0.1, r * 0.2, r * 0.3, shade)
+        if hair:
+            self.ellipse(CX, CY - r * 0.76, r * 1.08, r * 0.62, hair)
+            self.rect(CX - r * 1.1, CY - r * 0.74, CX - r * 0.76, CY + r * 0.7, hair)
+            self.rect(CX + r * 0.76, CY - r * 0.74, CX + r * 1.1, CY + r * 0.7, hair)
+            self.fur(CX - r * 1.08, CY - r * 1.1, CX + r * 1.08, CY + r * 0.6, shade, step=4, length=int(r * 0.9), only=hair)
+        # глаза: белок, радужка, зрачок, блик
+        for sgn in (-1, 1):
+            ex = CX + sgn * r * 0.42
+            self.ellipse(ex, CY - r * 0.02, r * 0.26, r * 0.19, 'w')
+            self.ellipse(ex, CY - r * 0.02, r * 0.15, r * 0.15, eye)
+            self.ellipse(ex, CY - r * 0.02, r * 0.08, r * 0.08, 'k')
+            self.put(int(ex - r * 0.07), int(CY - r * 0.1), 'w')
+            self.rect(ex - r * 0.28, CY - r * 0.3, ex + r * 0.28, CY - r * 0.22, brow or shade)
+        self.rect(CX - r * 0.09, CY + r * 0.1, CX + r * 0.06, CY + r * 0.42, shade)   # нос
+        self.rect(CX - r * 0.16, CY + r * 0.42, CX + r * 0.14, CY + r * 0.46, shade)  # ноздри
+        self.rect(CX - r * 0.26, CY + r * 0.64, CX + r * 0.24, CY + r * 0.7, 'R')     # губы
+        if beard:
+            self.ellipse(CX, CY + r * 0.94, r * 0.84, r * 0.58, beard)
+            self.rect(CX - r * 0.4, CY + r * 0.5, CX + r * 0.38, CY + r * 0.6, beard)
+            self.fur(CX - r * 0.8, CY + r * 0.7, CX + r * 0.8, CY + r * 1.5, shade, step=3, length=int(r * 0.7))
+
+        # убор поверх лица
+        if gear == 'helm':
+            self.ellipse(CX, CY - r * 0.66, r * 1.16, r * 0.98, g)
+            self.ellipse(CX - r * 0.3, CY - r * 0.9, r * 0.7, r * 0.5, gcol or 'l')
+            self.rect(CX - r * 1.16, CY - r * 0.42, CX + r * 1.16, CY - r * 0.22, gd)
+            self.rivets(CX - r * 0.9, CY - r * 0.32, CX + r * 0.9, gcol or 'l', max(3, int(r * 0.4)))
+            self.rect(CX - r * 1.16, CY - r * 0.2, CX - r * 0.86, CY + r * 0.7, g)   # нащёчники
+            self.rect(CX + r * 0.86, CY - r * 0.2, CX + r * 1.16, CY + r * 0.7, gd)
+        elif gear == 'hood':
+            for sgn in (-1, 1):                                                       # край капюшона у щеки
+                self.ellipse(CX + sgn * r * 1.06, CY + r * 0.1, r * 0.22, r * 0.9, gd)
+            self.ellipse(CX, CY - r * 0.92, r * 0.98, r * 0.34, gd)                   # край надо лбом
+            self.rect(CX - r * 1.4, CY + r * 1.05, CX + r * 1.4, CY + r * 1.6, gd)    # пелерина
+        elif gear == 'hat':
+            self.rect(CX - r * 1.36, CY - r * 1.02, CX + r * 1.36, CY - r * 0.82, gd)
+        elif gear == 'wide':
+            self.rect(CX - r * 1.6, CY - r * 1.06, CX + r * 1.6, CY - r * 0.86, gd)
+            self.rect(CX - r * 1.05, CY - r * 1.2, CX + r * 1.05, CY - r * 1.08, gd)
+        elif gear == 'tricorn':
+            self.poly([(CX - r * 1.7, CY - r * 0.8), (CX + r * 1.7, CY - r * 0.8),
+                       (CX + r * 0.9, CY - r * 1.7), (CX - r * 0.9, CY - r * 1.7)], g)
+            self.poly([(CX - r * 1.5, CY - r * 0.86), (CX + r * 1.5, CY - r * 0.86),
+                       (CX + r * 0.8, CY - r * 1.55), (CX - r * 0.8, CY - r * 1.55)], gd)
+            self.rect(CX - r * 1.7, CY - r * 0.84, CX + r * 1.7, CY - r * 0.7, g)
+        elif gear == 'circlet':
+            self.rect(CX - r * 1.1, CY - r * 0.84, CX + r * 1.1, CY - r * 0.66, g)
+            for i in range(-2, 3):
+                self.poly([(CX + i * r * 0.4 - r * 0.12, CY - r * 0.84),
+                           (CX + i * r * 0.4, CY - r * (1.2 if i == 0 else 1.0)),
+                           (CX + i * r * 0.4 + r * 0.12, CY - r * 0.84)], gcol or 'y')
+        elif gear == 'bandana':
+            self.rect(CX - r * 1.12, CY - r * 0.92, CX + r * 1.12, CY - r * 0.56, g)
+            self.rect(CX - r * 1.12, CY - r * 0.92, CX + r * 1.12, CY - r * 0.84, gcol or 'l')
+            self.poly([(CX + r * 1.0, CY - r * 0.7), (CX + r * 1.7, CY - r * 0.2), (CX + r * 1.0, CY - r * 0.1)], gd)
+        elif gear == 'horns':
+            self.horns(CX, CY - r * 0.9, r * 1.2, gd, g, spread=int(r * 0.9), curve=int(r * 0.4))
+        if extras:
+            for fn in extras: fn(self, CX, CY, r)
