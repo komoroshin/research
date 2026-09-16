@@ -1,5 +1,5 @@
 /* ============================================================================
-   data/artifacts.js — 36 артефактов (ТЗ §6.3).
+   data/artifacts.js — 37 артефактов (ТЗ §6.3).
    slot: helm|cape|neck|weapon|shield|armor|ring|boots|misc
    fx: {att, def, pow, kno, morale, luck, move, hp, speed, resist, spellDur, enemyMorale, fly}
    ========================================================================== */
@@ -45,6 +45,7 @@
     a('titan_cuirass', 'Кираса титана', 'relic', 'armor', { pow: 10, kno: -2 }, '+10 к силе магии, −2 к знанию'),
     a('necklace_bliss', 'Небесное ожерелье блаженства', 'relic', 'neck', { att: 3, def: 3, pow: 3, kno: 3 }, '+3 ко всем навыкам'),
     a('angel_wings', 'Крылья ангела', 'relic', 'cape', { fly: 1 }, 'Герой летает: препятствия не мешают, любая местность стоит 100'),
+    a('drowned_compass', 'Компас утонувшего адмирала', 'relic', 'misc', { move: 900, luck: 1 }, '+900 очков движения, +1 к удаче'),
   ];
   const BY_ID = Object.create(null);
   LIST.forEach(x => { BY_ID[x.id] = x; });

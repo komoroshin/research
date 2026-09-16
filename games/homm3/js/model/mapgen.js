@@ -607,21 +607,33 @@
      чтобы город не оказался на дне. */
   function carveSea(ctx, zones) {
     const { map, rng, w, h } = ctx;
-    if (rng.chance(0.25)) return;              // четверть карт — без моря
+    // сценарий может потребовать море: 'none' — сухая карта, 'wide' — море
+    // обязательно и вдоль двух краёв (морская кампания без моря бессмысленна)
+    const want = (ctx.state.settings && ctx.state.settings.sea) || 'normal';
+    if (want === 'none') return;
+    if (want !== 'wide' && rng.chance(0.25)) return;   // четверть обычных карт — без моря
     const side = rng.int(0, 3);                // 0 север, 1 восток, 2 юг, 3 запад
     const noise = makeNoise(rng, 64);
     const WATER = R.TERRAIN_INDEX.water;
+    // на маленькой карте второй берег и широкая полоса режут её пополам: стартовые зоны
+    // оказываются по разные стороны залива, и первый же сценарий кампании становится неигровым
+    const big = w >= 48;
+    const sides = want === 'wide' && big ? [[side, 1], [(side + 1) % 4, 0.6]] : [[side, 1]];
     let cells = 0;
-    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
-      const d = side === 0 ? y : side === 1 ? w - 1 - x : side === 2 ? h - 1 - y : x;
-      const band = 2.5 + noise(x / 7, y / 7) * 9;
-      if (d > band) continue;
-      let dry = false;
-      for (const z of zones) { const r = z.kind === 'start' ? 9 : 5; if (Math.hypot(x - z.cx, y - z.cy) < r) { dry = true; break; } }
-      if (dry) continue;
-      map.terrain[y * w + x] = WATER; cells++;
+    for (const [sd, k] of sides) {
+      const base = want === 'wide' ? (big ? 5.5 : 3) * k : 2.5, amp = want === 'wide' ? (big ? 15 : 10) * k : 9;
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+        const i = y * w + x;
+        if (map.terrain[i] === WATER) continue;
+        const d = sd === 0 ? y : sd === 1 ? w - 1 - x : sd === 2 ? h - 1 - y : x;
+        if (d > base + noise(x / 7, y / 7) * amp) continue;
+        let dry = false;
+        for (const z of zones) { const r = z.kind === 'start' ? 9 : 5; if (Math.hypot(x - z.cx, y - z.cy) < r) { dry = true; break; } }
+        if (dry) continue;
+        map.terrain[i] = WATER; cells++;
+      }
     }
-    if (cells >= 40) ctx.sea = { side, cells };
+    if (cells >= 40) ctx.sea = { side, cells, wide: want === 'wide' };
   }
   /** Что стоит в море и на его берегу: лодки, верфи и морская добыча.
       Всё сажаем только в САМЫЙ БОЛЬШОЙ водоём — иначе лодка окажется
@@ -668,7 +680,15 @@
       const spot = shoreWater.find(([x, y]) => Math.abs(x - yard[0]) <= 2 && Math.abs(y - yard[1]) <= 2);
       if (spot) { addObject(ctx, { type: 'boat', x: spot[0], y: spot[1], owner: -1 }); shoreWater.splice(shoreWater.indexOf(spot), 1); }
     }
-    if (shoreWater.length) { const b = shoreWater.pop(); addObject(ctx, { type: 'boat', x: b[0], y: b[1], owner: -1 }); }
+    // лодок тем больше, чем больше воды: на широком море двух ничейных лодок
+    // на всю карту не хватает, чтобы вообще выйти в плавание
+    const boats = U.clamp(1 + Math.round(bestSize / 160), 1, 4);
+    for (let i = 0; i < boats && shoreWater.length; i++) {
+      const b = shoreWater.pop(); addObject(ctx, { type: 'boat', x: b[0], y: b[1], owner: -1 });
+    }
+    if (bestSize >= 220 && shoreLand.length) {
+      const y2 = shoreLand.pop(); addObject(ctx, { type: 'shipyard', x: y2[0], y: y2[1], owner: -1 });
+    }
     // морская добыча в глубине
     const loot = Math.min(deepWater.length, 3 + Math.round(bestSize / 120));
     for (let i = 0; i < loot; i++) {

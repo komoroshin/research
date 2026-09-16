@@ -809,13 +809,22 @@ test('кампании: каждый сценарий генерируется, 
   const CP = H3.Campaign, B = H3.Buildings, AR = H3.Artifacts;
   assert.ok(CP.LIST.length >= 2, 'две кампании');
   for (const c of CP.LIST) for (const sc of c.scenarios) {
-    const st = S.newGame({ size: sc.size, seed: sc.seed, opponents: sc.opponents, difficulty: sc.difficulty, faction: sc.faction, hero: sc.hero || null, foes: sc.foes || null, goals: U.clone(sc.goals) });
+    const st = S.newGame({ size: sc.size, seed: sc.seed, opponents: sc.opponents, difficulty: sc.difficulty, faction: sc.faction, hero: sc.hero || null, foes: sc.foes || null, sea: sc.sea || null, goals: U.clone(sc.goals) });
     const tag = c.id + '/' + sc.id + ': ';
     assert.equal(st.players.length, sc.opponents + 1, tag + 'число игроков');
     assert.equal(st.players[0].faction, sc.faction, tag + 'фракция игрока');
     if (sc.hero) assert.equal(S.heroesOf(st, 0)[0].tid, sc.hero, tag + 'стартовый герой');
     if (sc.foes) sc.foes.forEach((f, i) => assert.equal(st.players[i + 1].faction, f, tag + 'фракция противника ' + (i + 1)));
-    const fs = st.players.map(p => p.faction); assert.equal(new Set(fs).size, fs.length, tag + 'фракции не повторяются');
+    // фракции не повторяются — кроме тех, что сценарий назвал в foes сам (зеркальный бой)
+    const fs = st.players.map(p => p.faction), named = (sc.foes || []).concat(sc.faction);
+    const extra = fs.length - new Set(fs).size, allowed = named.length - new Set(named).size;
+    assert.equal(extra, allowed, tag + 'случайные противники фракцию не повторяют');
+    if (sc.sea === 'wide') {                      // морской сценарий обязан получить море
+      const m = st.levels[0], W = H3.Rules.TERRAIN_INDEX.water;
+      let water = 0; for (let i = 0; i < m.terrain.length; i++) if (m.terrain[i] === W) water++;
+      assert.ok(water >= m.terrain.length * 0.08, tag + 'моря на карте достаточно (' + water + ')');
+      assert.ok(Object.values(st.objects).some(o => o.type === 'boat'), tag + 'на воде есть лодка');
+    }
     for (const g of st.goals.win.concat(st.goals.lose)) {
       if (g.type === 'capture_town' || g.type === 'lose_town') assert.ok(g.townId != null && st.towns[g.townId], tag + g.type + ' привязан к городу');
       if (g.type === 'defeat_hero' || g.type === 'lose_hero') { assert.ok(g.heroId != null && st.heroes[g.heroId], tag + g.type + ' привязан к герою'); assert.equal(st.heroes[g.heroId].owner > 0, g.type === 'defeat_hero', tag + g.type + ' — герой нужной стороны'); }
@@ -824,6 +833,30 @@ test('кампании: каждый сценарий генерируется, 
     }
     assert.equal(st.winner, null, tag + 'на старте победителя нет');
     H3.Adventure.checkGoals(st); assert.equal(st.winner, null, tag + 'цели не выполнены на старте');
+  }
+});
+
+test('море по заказу сценария: sea=none осушает карту, sea=wide гарантирует берег и лодки', () => {
+  const R = H3.Rules, W = R.TERRAIN_INDEX.water;
+  const waterOf = (st) => { const m = st.levels[0]; let n = 0; for (let i = 0; i < m.terrain.length; i++) if (m.terrain[i] === W) n++; return n / m.terrain.length; };
+  const mk = (sea, seed) => S.newGame({ size: 'M', seed, opponents: 2, difficulty: 'normal', faction: 'cove', sea });
+  // 'none' — морской полосы нет: озёра по шуму остаются, но плавать негде, лодок и верфей не ставится
+  for (const seed of [1401, 1402, 1403]) {
+    const dry = mk('none', seed);
+    assert.equal(Object.values(dry.objects).filter(o => o.type === 'boat' || o.type === 'shipyard').length, 0,
+      'sea=none: ни лодок, ни верфей, сид ' + seed);
+    assert.ok(waterOf(dry) < waterOf(mk('wide', seed)), 'sea=none: воды меньше, чем при wide, сид ' + seed);
+  }
+  // 'wide' — море есть всегда, без обычного броска «четверть карт без моря», и по нему есть на чём плыть
+  for (const seed of [1401, 1402, 1403]) {
+    const st = mk('wide', seed);
+    assert.ok(waterOf(st) > 0.12, 'sea=wide: моря много, сид ' + seed);
+    assert.ok(Object.values(st.objects).filter(o => o.type === 'boat').length >= 2, 'sea=wide: лодок хотя бы две, сид ' + seed);
+    assert.ok(Object.values(st.objects).some(o => o.type === 'shipyard'), 'sea=wide: есть верфь, сид ' + seed);
+    // города остаются достижимы пешком: «захватить все города» не должно упираться в корабль
+    const m = st.levels[0], home = st.towns[st.players[0].towns[0]];
+    const seen = H3.Pathfind.reachable(m.w, m.h, home.x, home.y + 1, (x, y) => !m.block[y * m.w + x] || m.objAt[y * m.w + x] >= 0);
+    for (const t of Object.values(st.towns)) if ((t.z || 0) === 0) assert.ok(seen[(t.y + 1) * m.w + t.x], 'город ' + t.name + ' достижим по суше, сид ' + seed);
   }
 });
 
