@@ -14,7 +14,27 @@ from compose import Canvas
 
 
 class Fig(Canvas):
-    """Холст с прямоугольниками и фактурами поверх примитивов композитора."""
+    """Холст с прямоугольниками и фактурами поверх примитивов композитора.
+
+    Вокруг заявленной сетки добавляется поле: крыло, копьё или рог легко выходят за
+    рамку, и без поля их просто срезало бы краем холста (так и случилось на первом
+    проходе — половина существ упиралась в край). Рисование идёт в координатах
+    заявленной сетки, поле прибавляется незаметно, а emit() потом обрезает лишнее
+    и выдаёт якорь, чтобы существо осталось на прежнем месте гекса.
+    """
+
+    MARGIN = 16
+
+    def __init__(self, w, h, margin=None):
+        self.W0, self.H0 = w, h
+        self.M = self.MARGIN if margin is None else margin
+        Canvas.__init__(self, w + self.M * 2, h + self.M * 2)
+
+    def put(self, x, y, c):
+        Canvas.put(self, x + self.M, y + self.M, c)
+
+    def get(self, x, y):
+        return Canvas.get(self, x + self.M, y + self.M)
 
     def rect(self, x0, y0, x1, y1, ch):
         for y in range(int(y0), int(y1) + 1):
@@ -198,39 +218,60 @@ class Fig(Canvas):
         self.ellipse(cx, cy - 1, r * 0.22, r * 0.22, bossl)
 
     def wing_feather(self, x, y, span, rise, base, mid, light, dark, n=9, flip=False,
-                     a0=104, a1=22):
-        """Крыло веером: перья расходятся из одной точки, как маховые от плеча.
+                     a0=None, a1=None, droop=1.0):
+        """Перьевое крыло: передняя кромка дугой, перья растут вдоль неё.
 
-        Первая версия рисовала параллельные полосы одной ширины — выходила гребёнка
-        радиатора, а не крыло. Здесь перья поворачиваются вокруг плеча, длина растёт
-        к середине веера, каждое отделено тёмной прорисью по нижнему краю.
+        Две прежние попытки расходились из одной точки — это веер, а не крыло. У крыла
+        есть рука (передняя кромка), и маховые сидят по всей её длине: у плеча короткие,
+        к концу длинные. Кроющие перья мелкой чешуёй прикрывают место посадки.
+        a0/a1 оставлены ради совместимости со старыми вызовами и не используются.
         """
         s = -1 if flip else 1
-        pts, tips = [], []
+        # кромка — квадратичная кривая от плеча к концу крыла, выгнутая вверх
+        P0 = (x, y)
+        P1 = (x + s * span * 0.40, y - rise * 0.98)
+        P2 = (x + s * span, y - rise * 0.66)
+        def edge(t):
+            u = 1 - t
+            return (u * u * P0[0] + 2 * u * t * P1[0] + t * t * P2[0],
+                    u * u * P0[1] + 2 * u * t * P1[1] + t * t * P2[1])
+
+        feathers = []
         for i in range(n):
-            t = i / max(1, n - 1)
-            ang = math.radians(a0 + (a1 - a0) * t)
-            L = span * (0.6 + 0.4 * math.sin(math.pi * (0.3 + t * 0.7)))
-            tips.append((ang, L, x + s * math.cos(ang) * L, y - math.sin(ang) * L))
-        # 1. сплошная подложка по всему вееру: без неё между перьями просвечивает фон
-        #    и крыло читается пальмовой ветвью, а не крылом
-        self.poly([(x, y + rise * 0.1)] + [(tx, ty) for _, _, tx, ty in tips] + [(x, y - rise * 0.1)], dark)
-        # 2. перья поверх подложки, через одно светлее, с прорезью по нижнему краю
-        for i, (ang, L, tx, ty) in enumerate(tips):
-            px, py = -math.sin(ang), -math.cos(ang)
-            w0, w1 = rise * 0.2, rise * 0.1
-            self.poly([(x + s * px * w0, y + py * w0), (x - s * px * w0, y - py * w0),
-                       (tx - s * px * w1, ty - py * w1), (tx + s * px * w1, ty + py * w1)],
+            t = (i + 0.5) / n
+            px, py = edge(t)
+            qx, qy = edge(min(1.0, t + 0.04))                      # касательная к кромке
+            tx, ty = qx - px, qy - py
+            tl = math.hypot(tx, ty) or 1
+            # перо смотрит назад-вниз: нормаль к кромке, довёрнутая к корню
+            nx, ny = (ty / tl) * s, -(tx / tl) * s
+            nx, ny = -nx, -ny
+            nx -= s * 0.62 * droop                                  # концы уводим назад — размах, а не веер
+            ny += 0.20 * droop
+            nl = math.hypot(nx, ny) or 1
+            nx, ny = nx / nl, ny / nl
+            L = rise * (0.5 + 1.05 * t)
+            feathers.append((px, py, px + nx * L, py + ny * L, t))
+
+        # подложка по всему крылу: без неё между перьями просвечивает фон
+        self.poly([(x, y + rise * 0.1)] + [(fx, fy) for _, _, fx, fy, _ in feathers]
+                  + [(px, py) for px, py, _, _, _ in reversed(feathers)], dark)
+        for i, (px, py, fx, fy, t) in enumerate(feathers):
+            w0, w1 = rise * 0.12, rise * 0.055
+            dx, dy = fx - px, fy - py
+            dl = math.hypot(dx, dy) or 1
+            ox, oy = -dy / dl, dx / dl                              # поперёк пера
+            self.poly([(px + ox * w0, py + oy * w0), (px - ox * w0, py - oy * w0),
+                       (fx - ox * w1, fy - oy * w1), (fx + ox * w1, fy + oy * w1)],
                       light if i % 2 == 0 else mid)
-            self.line(x - s * px * w0 * 0.85, y - py * w0 * 0.85,
-                      tx - s * px * w1 * 0.95, ty - py * w1 * 0.95, dark)
-        # 3. плечо крыла: кроющие перья мелкой чешуёй прикрывают сходящиеся основания
-        self.ellipse(x, y - rise * 0.05, rise * 0.32, rise * 0.26, base)
-        for i in range(5):
-            ang = math.radians(a0 + (a1 - a0) * (0.1 + i * 0.2))
-            r = rise * 0.36
-            self.ellipse(x + s * math.cos(ang) * r, y - math.sin(ang) * r, 3.2, 2.4,
-                         light if i % 2 else mid)
+            self.line(px - ox * w0 * 0.85, py - oy * w0 * 0.85,
+                      fx - ox * w1 * 0.9, fy - oy * w1 * 0.9, dark)  # прорезь между перьями
+        # кроющие перья по кромке — прикрывают посадку маховых
+        for i in range(n + 2):
+            t = i / (n + 1)
+            px, py = edge(t)
+            self.ellipse(px, py + rise * 0.05, rise * 0.1, rise * 0.075, base if i % 3 == 2 else (light if i % 2 else mid))
+        self.ellipse(x, y - rise * 0.04, rise * 0.17, rise * 0.15, base)   # плечо крыла
 
     def wing_bat(self, x, y, span, rise, skin, skind, bone, n=4, flip=False, a0=108, a1=18):
         """Перепончатое крыло: сплошной сектор, из которого по краю вырезаны фестоны.
