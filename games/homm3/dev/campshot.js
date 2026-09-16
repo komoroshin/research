@@ -11,6 +11,8 @@ const path = require('path');
   await page.goto('file://' + path.resolve('index.html'), { waitUntil: 'load' });
   await page.waitForTimeout(700);
   await page.click('#btnCamp'); await page.waitForTimeout(400);
+  console.log('кампаний на экране:', await page.evaluate(() => document.querySelectorAll('[data-camp]').length));
+  await page.click('[data-camp]'); await page.waitForTimeout(400);   // экран в два уровня: сначала кампания, потом её сценарии
   await page.screenshot({ path: out });
   console.log('сценариев на экране:', await page.evaluate(() => document.querySelectorAll('.campsc').length));
   // играем первый сценарий

@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.15';
+  const VERSION = '3.15.1';
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -105,7 +105,7 @@
       + '<div class="mver small muted">Версия ' + VERSION + ' · 11 фракций · 154 существа · гексовые бои · три кампании · квесты · редактор карт</div>';
     const on = (id, fn) => { const b = sh.body.querySelector('#' + id); if (b) b.onclick = () => { H3.Audio.play('click'); fn(); }; };
     on('btnCont', () => { const st = load('auto'); if (st) start(st); else { UI.toast('Автосохранение не прочиталось', 'warn'); menu(); } });
-    on('btnNew', newGameForm); on('btnCamp', campaignForm); on('btnMaps', mapsForm); on('btnLoad', loadDialog); on('btnSet', settingsDialog); on('btnHelp', help);
+    on('btnNew', newGameForm); on('btnCamp', () => campaignForm()); on('btnMaps', mapsForm); on('btnLoad', loadDialog); on('btnSet', settingsDialog); on('btnHelp', help);
     startMenuArt(art);
   }
 
@@ -140,39 +140,68 @@
   }
   function saveCampProgress(pr) { try { localStorage.setItem(CAMP_KEY, JSON.stringify(pr)); } catch (e) { /* приватный режим */ } }
 
-  function campaignForm() {
-    const sh = shell('Кампания', { back: menu, backId: 'campBack' });
-    const render = () => {
-      const pr = campProgress();
-      let html = '', foot = '';
-      for (const c of H3.Campaign.LIST) {
-        const st = pr[c.id] || { done: [], carry: null };
-        const n = c.scenarios.length, d = c.scenarios.filter(sc => st.done.includes(sc.id)).length;
-        html += '<h3>' + UI.esc(c.name) + '</h3><div class="small muted">' + UI.esc(c.desc) + '</div>'
-          + '<div class="mprog"><div class="dots">' + c.scenarios.map(sc => '<i class="' + (st.done.includes(sc.id) ? 'done' : '') + '"></i>').join('') + '</div><span class="small muted">' + (d >= n ? 'кампания пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев') + '</span></div>';
-        html += '<div class="camp">';
-        let next = null;
-        c.scenarios.forEach((sc, i) => {
-          const done = st.done.includes(sc.id);
-          const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
-          if (open && !done && !next) next = { i, sc };
-          html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
-            + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? '✔ пройден' : open ? '' : 'закрыт') + '</span></div>'
-            + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
-            + (i ? '<div class="small muted">Переходит из прошлого: ' + UI.esc(H3.Campaign.carryText(sc)) + '</div>' : '')
-            + (open ? '<button class="' + (done ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
-            + '</div>';
-        });
-        html += '</div>';
-        if (st.done.length) html += '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
-        if (next && !foot) foot = '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>';
-      }
-      if (!foot) foot = '<button class="big" data-sc="' + H3.Campaign.LIST[0].id + '|' + H3.Campaign.LIST[0].scenarios[0].id + '">Все кампании пройдены — начать заново</button>';
-      sh.body.innerHTML = html; sh.setFoot(foot);
-      sh.scr.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { H3.Audio.unlock(); const [cid, sid] = b.dataset.sc.split('|'); startScenario(cid, sid); }; });
-      sh.scr.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { delete pr[b.dataset.reset]; saveCampProgress(pr); render(); } }; });
+  /* Экран кампаний в два уровня: сначала список кампаний, потом сценарии выбранной.
+     Одним списком подряд третья кампания уезжала на 2,5 экрана вниз и её просто не видели. */
+  function campaignForm(cid) {
+    const pr = campProgress();
+    const progressOf = (c) => {
+      const st = pr[c.id] || { done: [], carry: null };
+      const n = c.scenarios.length, d = c.scenarios.filter(sc => st.done.includes(sc.id)).length;
+      let next = null;
+      c.scenarios.forEach((sc, i) => {
+        const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
+        if (open && !st.done.includes(sc.id) && !next) next = { i, sc };
+      });
+      return { st, n, d, next };
     };
-    render();
+    const dotsOf = (c, st) => '<div class="mprog"><div class="dots">'
+      + c.scenarios.map(sc => '<i class="' + (st.done.includes(sc.id) ? 'done' : '') + '"></i>').join('')
+      + '</div></div>';
+    const c = cid ? H3.Campaign.get(cid) : null;
+    const sh = c ? shell(c.name, { back: () => campaignForm(), backId: 'campBack' })
+                 : shell('Кампания', { back: menu, backId: 'campBack' });
+    const wire = () => {
+      sh.scr.querySelectorAll('[data-camp]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); campaignForm(b.dataset.camp); }; });
+      sh.scr.querySelectorAll('[data-sc]').forEach(b => { b.onclick = () => { H3.Audio.unlock(); const [ci, si] = b.dataset.sc.split('|'); startScenario(ci, si); }; });
+      sh.scr.querySelectorAll('[data-reset]').forEach(b => { b.onclick = async () => { if (await UI.confirm('Сброс', 'Начать кампанию заново? Прогресс и перенесённый герой будут потеряны.')) { const q = campProgress(); delete q[b.dataset.reset]; saveCampProgress(q); campaignForm(b.dataset.reset); } }; });
+    };
+    if (!c) {                                            // уровень 1 — список кампаний
+      let html = '<div class="camp">', foot = '';
+      for (const camp of H3.Campaign.LIST) {
+        const { st, n, d, next } = progressOf(camp);
+        const label = d >= n ? '✔ пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев';
+        html += '<div class="campsc ' + (d >= n ? 'done' : 'open') + '">'
+          + '<div class="row sp"><b>' + UI.esc(camp.name) + '</b><span class="small ' + (d >= n ? 'green' : 'muted') + '">' + label + '</span></div>'
+          + '<div class="small muted">' + UI.esc(camp.desc) + '</div>' + dotsOf(camp, st)
+          + '<button class="' + (next && d ? 'primary' : '') + '" data-camp="' + camp.id + '">'
+          + (d >= n ? 'Пройти заново' : d ? 'Продолжить' : 'Открыть') + '</button></div>';
+        if (next && !foot) foot = '<button class="big primary" data-sc="' + camp.id + '|' + next.sc.id + '">'
+          + (d ? 'Продолжить: ' : 'Начать: ') + UI.esc(camp.name) + ' — ' + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>';
+      }
+      html += '</div>';
+      if (!foot) foot = '<button class="big" data-camp="' + H3.Campaign.LIST[0].id + '">Все кампании пройдены — начать заново</button>';
+      sh.body.innerHTML = html; sh.setFoot(foot); wire();
+      return;
+    }
+    const { st, n, d, next } = progressOf(c);            // уровень 2 — сценарии кампании
+    let html = '<div class="small muted">' + UI.esc(c.desc) + '</div>' + dotsOf(c, st)
+      + '<div class="small muted">' + (d >= n ? 'кампания пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев') + '</div><div class="camp">';
+    c.scenarios.forEach((sc, i) => {
+      const done = st.done.includes(sc.id);
+      const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
+      html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
+        + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? '✔ пройден' : open ? '' : 'закрыт') + '</span></div>'
+        + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
+        + (i ? '<div class="small muted">Переходит из прошлого: ' + UI.esc(H3.Campaign.carryText(sc)) + '</div>' : '')
+        + (open ? '<button class="' + (done ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
+        + '</div>';
+    });
+    html += '</div>';
+    if (st.done.length) html += '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
+    sh.body.innerHTML = html;
+    sh.setFoot(next ? '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>'
+      : '<button class="big" data-sc="' + c.id + '|' + c.scenarios[0].id + '">Пройти заново с первого</button>');
+    wire();
   }
   function startScenario(cid, sid) {
     const c = H3.Campaign.get(cid); if (!c) return;
