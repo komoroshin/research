@@ -41,17 +41,64 @@ def house(c, x0, y0, x1, y1, wall, walld, roof, roofd, win='y', door='D', planks
         c.rect(wx - 1, y0 + 8, wx - 1, y0 + 16, walld); c.rect(wx - 4, y0 + 11, wx + 3, y0 + 12, walld)
 
 def hill(c, cx, ybase, w, h, mid, light, dark):
+    """Склон у шахты: сплошной овал читался серым пятном — держат форму грани и осыпь."""
     c.ellipse(cx, ybase, w, h, mid)
     c.ellipse(cx - w * 0.2, ybase - h * 0.35, w * 0.7, h * 0.6, light)
     c.ellipse(cx + w * 0.3, ybase + h * 0.2, w * 0.6, h * 0.5, dark)
+    for i, (fx, fy, fw, fh) in enumerate(((-0.66, -0.34, 0.24, 0.26), (-0.14, -0.62, 0.28, 0.24),
+                                          (0.40, -0.40, 0.26, 0.28), (0.10, -0.22, 0.22, 0.20))):
+        c.poly([(cx + w * fx, ybase + h * fy),
+                (cx + w * (fx + fw), ybase + h * (fy + fh * 0.35)),
+                (cx + w * (fx + fw * 0.45), ybase + h * (fy + fh))], dark if i % 2 else light)
+    for i in range(7):                                                  # осыпь по подошве
+        a = -0.92 + i * 0.31
+        c.ellipse(cx + w * a * 0.92, ybase + h * 0.40, w * 0.05, h * 0.055, dark)
 
 def adit(c, cx, ybase, w, h, frame='N', framed='D'):
-    """Штольня: тёмный проём с деревянной крепью."""
-    c.rect(cx - w, ybase - h, cx + w, ybase, 'z')
-    c.ellipse(cx, ybase - h, w, w * 0.8, 'z')
-    c.rect(cx - w - 3, ybase - h - 2, cx - w, ybase, frame)
-    c.rect(cx + w, ybase - h - 2, cx + w + 3, ybase, framed)
-    c.rect(cx - w - 3, ybase - h - 4, cx + w + 3, ybase - h - 1, frame)
+    """Штольня: арочный проём, уходящий в темноту, деревянная крепь, распорка и фонарь.
+
+    Глубина — три вложенные арки от светлого к чёрному: без них проём читался просто
+    как тёмный прямоугольник, наклеенный на холм.
+    """
+    def arch(half, top, ch):
+        c.rect(cx - half, top, cx + half, ybase, ch)
+        c.ellipse(cx, top, half, half * 0.85, ch)
+    arch(w, ybase - h, 'E')                                            # обтёсанный камень устья
+    arch(w - 3, ybase - h + 4, 'u')                                    # первые метры штрека
+    arch(w - 7, ybase - h + 10, 'z')                                   # дальше не видно ничего
+    c.rect(cx - w + 3, ybase - 3, cx + w - 3, ybase, 'u')              # пол у входа ловит свет
+    c.rect(cx - w + 2, ybase - h + 11, cx + w - 2, ybase - h + 14, framed)   # распорка в глубине
+    c.rect(cx - w - 5, ybase - h - 2, cx - w, ybase, frame)            # стойки крепи
+    c.rect(cx + w, ybase - h - 2, cx + w + 5, ybase, framed)
+    c.planks(cx - w - 5, ybase - h - 2, cx - w, ybase, framed, 8)
+    c.rect(cx - w - 8, ybase - h - 8, cx + w + 8, ybase - h - 2, frame)      # перемычка
+    c.rect(cx - w - 8, ybase - h - 8, cx + w + 8, ybase - h - 6, 'n')        # светлая кромка бруса
+    c.rivets(cx - w - 5, ybase - h - 4, cx + w + 5, 'l', 9)
+    c.rect(cx + w + 2, ybase - h - 6, cx + w + 4, ybase - h, framed)         # крюк фонаря
+    c.ellipse(cx + w + 3, ybase - h + 3, 3, 3.5, 'f')                        # фонарь у входа
+    c.ellipse(cx + w + 3, ybase - h + 2.5, 1.4, 1.8, 'w')
+
+
+def cart(c, cx, ybase, mid, light, dark):
+    """Вагонетка на рельсах: короб досками, светлый верхний борт, колёса, горка руды."""
+    c.rect(cx - 13, ybase - 19, cx + 13, ybase - 3, 'N')
+    c.planks(cx - 13, ybase - 19, cx + 13, ybase - 3, 'D', 6)
+    c.rect(cx - 13, ybase - 19, cx + 13, ybase - 16, 'n')
+    c.rect(cx - 13, ybase - 19, cx - 10, ybase - 3, 'n')
+    c.rect(cx - 9, ybase - 23, cx + 9, ybase - 17, mid)                      # руда с горкой
+    c.ellipse(cx - 4, ybase - 23, 6, 3.5, light)
+    c.ellipse(cx + 6, ybase - 22, 5, 3, dark)
+    c.rect(cx - 9, ybase - 17, cx + 9, ybase - 17, 'D')                      # шов: груз не сливается с бортом
+    for s in (-1, 1):
+        c.ellipse(cx + s * 8, ybase, 5, 5, 'E')
+        c.ellipse(cx + s * 8, ybase, 2, 2, 'e')
+
+
+def rails(c, x0, x1, y):
+    """Рельсы: шпалы и две нити — они и связывают штольню с вагонеткой."""
+    for x in range(int(x0), int(x1), 8): c.rect(x, y - 2, x + 4, y + 1, 'N')
+    c.rect(x0, y - 3, x1, y - 2, 'e')
+    c.rect(x0, y + 2, x1, y + 3, 'e')
 
 def pile(c, cx, ybase, n, r, mid, light, dark, shape='round'):
     for i in range(n):
@@ -104,12 +151,11 @@ RES = [('gold', 'y', 'f', 'Y', 'bar'), ('wood', 'n', 'T', 'N', 'bar'), ('ore', '
        ('crystal', 'c', 'w', 'C', 'crystal'), ('gems', 'g', 'h', 'G', 'crystal')]
 for rid, mid, light, dark, shape in RES:
     def mk(c, mid=mid, light=light, dark=dark, shape=shape):
-        hill(c, 46, 62, 40, 26, 'e', 'l', 'E')
+        hill(c, 46, 56, 42, 30, 'e', 'l', 'E')
+        rails(c, 26, 92, 66)
         adit(c, 34, 66, 12, 22)
-        pile(c, 74, 64, 4, 9, mid, light, dark, shape)
-        c.rect(58, 56, 86, 58, 'N')                                        # рельсы вагонетки
-        c.rect(60, 50, 76, 58, 'N'); c.rect(60, 50, 76, 52, 'n')
-        c.ellipse(64, 60, 3, 3, 'E'); c.ellipse(72, 60, 3, 3, 'E')
+        cart(c, 70, 66, mid, light, dark)
+        pile(c, 14, 74, 3, 8, mid, light, dark, shape)
     add(1, 'mine_' + rid, 96, 84, 'шахта (%s): холм, штольня с крепью, вагонетка, куча ресурса' % rid, mk)
 for rid, mid, light, dark, shape in RES:
     def mk(c, mid=mid, light=light, dark=dark, shape=shape):
@@ -400,11 +446,28 @@ add(5, 'siege_tower', 88, 158, 'осадная башня: ярусы на ко�
 add(5, 'moat', 90, 46, 'ров: тёмная вода с кольями', lambda c: (
     c.ellipse(44, 30, 42, 14, 'Q'), c.ellipse(44, 26, 36, 10, 'q'),
     [c.poly([(10 + i * 11, 34), (13 + i * 11, 16), (16 + i * 11, 34)], 'N') for i in range(7)]))
-add(5, 'boat', 62, 50, 'лодка: корпус досками, мачта, парус, флажок', lambda c: (
-    c.ellipse(30, 40, 28, 9, 'N'), c.ellipse(30, 37, 24, 6, 'n'),
-    c.planks(6, 34, 54, 44, 'D', 5),
-    c.rect(28, 4, 31, 36, 'N'), c.poly([(31, 8), (50, 22), (31, 32)], 'w'),
-    c.poly([(31, 4), (42, 7), (31, 10)], 'r')))
+def boat(c):
+    """Лодка носом вправо: корпус со скулой, грот за мачтой, кливер на носу.
+
+    Прежний парус был треугольничком в четверть корпуса и читался как флажок —
+    у лодки силуэт держит именно парус, он должен быть выше и шире борта.
+    """
+    c.poly([(5, 38), (72, 32), (70, 44), (59, 54), (18, 54), (5, 44)], 'N')     # корпус
+    c.poly([(5, 38), (72, 32), (72, 36), (5, 42)], 'n')                         # планширь
+    c.planks(9, 43, 64, 54, 'D', 5)
+    c.rect(66, 34, 70, 46, 'D')                                                 # тень под скулой
+    c.rect(3, 28, 8, 40, 'N')                                                   # ахтерштевень
+    c.rect(43, 4, 46, 44, 'N'); c.rect(43, 4, 43, 44, 'n')                      # мачта
+    c.rect(13, 43, 45, 45, 'N')                                                 # гик
+    c.line(45, 7, 71, 31, 'D', 1)                                               # штаг
+    c.poly([(45, 9), (70, 31), (61, 34), (45, 22)], 'L')                        # кливер
+    c.poly([(45, 18), (57, 28), (61, 34), (45, 22)], 'e')
+    c.poly([(43, 6), (33, 13), (24, 25), (17, 37), (15, 43), (43, 43)], 'w')    # грот с пузом
+    c.poly([(19, 35), (16, 42), (43, 43), (43, 36)], 'l')                       # тень по нижней шкаторине
+    c.line(43, 14, 31, 17, 'l'); c.line(43, 24, 24, 28, 'l')                    # швы полотнищ
+    c.line(43, 33, 18, 38, 'l')
+    c.poly([(43, 2), (30, 5), (43, 8)], 'r')                                    # вымпел сносит назад
+add(5, 'boat', 78, 56, 'лодка: корпус со скулой, грот и кливер, вымпел', boat)
 add(5, 'shipyard', 64, 50, 'верфь: помост, каркас лодки, брёвна', lambda c: (
     c.rect(2, 36, 62, 44, 'N'), c.planks(2, 36, 62, 44, 'D', 5),
     [c.line(12 + i * 9, 34, 14 + i * 9, 18, 'n', 2) for i in range(5)],
@@ -475,16 +538,70 @@ for nm, w, h, comment, wl, wld, rf, rfd in SIMPLE_BLD:
         if nm == 'bld_special':
             c.ellipse(w / 2, h * 0.34, w * 0.3, h * 0.2, rf); c.ellipse(w / 2, h * 0.3, w * 0.12, h * 0.1, 'A')
     bld(nm, w, h, comment, mk)
+def wiz_tower(c, w, h, lv):
+    """Башня гильдии магов: круглая шахта, арочные окна со светом, конус кровли, сфера.
+
+    Плоский прямоугольник с треугольной крышей читался амбаром. Объём даёт не рисунок
+    стены, а тон по расстоянию от оси цилиндра: свет слева, тень справа, ряды кладки
+    провисают дугой — глаз сразу видит круглую башню.
+    """
+    cx, base_y = w / 2, h - 4
+    top_y = h * 0.34                                              # где шахта переходит в кровлю
+    rb, rt = w * 0.34, w * 0.26                                   # радиус у основания и у верха
+    for y in range(int(top_y) - 2, int(base_y) + 1):
+        t = max(0.0, (y - top_y) / max(1.0, base_y - top_y))
+        r = rt + (rb - rt) * t
+        for x in range(int(cx - r), int(cx + r) + 1):
+            u = (x - cx) / r
+            c.put(x, y, 'L' if u < -0.62 else 'l' if u < 0.22 else 'e' if u < 0.72 else 'E')
+    y = base_y - 7                                                # ряды кладки дугой по цилиндру
+    while y > top_y:
+        t = (y - top_y) / max(1.0, base_y - top_y)
+        c.ellipse(cx, y, rt + (rb - rt) * t, 1.5, 'E')
+        y -= 11
+    for k in range(lv):                                           # окна поднимаются по спирали
+        wy = top_y + (base_y - top_y) * (0.14 + k * (0.64 / lv))
+        s = 0 if lv == 1 else (-1, 1, -1, 1)[k % 4] * (0.5 if k % 2 else 1.0)
+        wx = cx + s * w * 0.15
+        ww, wh = w * 0.085, h * 0.05
+        c.rect(wx - ww - 1, wy - 2, wx + ww + 1, wy + wh, 'E')                  # наличник
+        c.ellipse(wx, wy - 2, ww + 1, (ww + 1) * 1.2, 'E')
+        c.rect(wx - ww, wy, wx + ww, wy + wh, 'P')                              # проём
+        c.ellipse(wx, wy, ww, ww * 1.2, 'P')
+        c.rect(wx - ww + 1, wy + 1, wx + ww - 1, wy + wh - 1, 'c')              # свет из окна
+        c.ellipse(wx, wy + 1, ww - 1, ww * 0.95, 'c')
+    c.ellipse(cx, top_y - 1, rt + 5, 4, 'e')                                    # карниз под кровлей
+    c.ellipse(cx, top_y - 3, rt + 5, 3.4, 'l')
+    for i in range(5):                                                          # зубцы по карнизу
+        bx = cx - (rt + 3) + i * (rt + 3) * 0.5
+        c.rect(bx - 1.5, top_y - 8, bx + 1.5, top_y - 3, 'l')
+    apex = h * 0.04
+    c.poly([(cx - rt - 6, top_y - 6), (cx + rt + 6, top_y - 6), (cx, apex)], 'P')       # кровля
+    c.poly([(cx - rt - 6, top_y - 7), (cx + 1, top_y - 7), (cx, apex + 3)], 'p')
+    yy = top_y - 11
+    while yy > apex + 5:                                                        # черепица рядами
+        t2 = (top_y - 6 - yy) / max(1.0, top_y - 6 - apex)
+        c.ellipse(cx, yy, (rt + 6) * (1 - t2), 1.3, 'P')
+        yy -= 8
+    c.ellipse(cx, top_y - 6, rt + 6, 2.2, 'r')                                  # кант в цвете фракции
+    c.rect(cx - 1, apex - h * 0.06, cx + 1, apex + 2, 'Y')                      # шпиль
+    c.ellipse(cx, apex - h * 0.07, w * 0.06, w * 0.06, 'A')                     # сфера гильдии
+    c.ellipse(cx - w * 0.02, apex - h * 0.078, w * 0.022, w * 0.022, 'w')
+    for s in (-1, 1):                                                           # контрфорсы
+        c.poly([(cx + s * rb, base_y), (cx + s * (rb + 6), base_y),
+                (cx + s * rb, base_y - h * 0.2)], 'e' if s < 0 else 'E')
+    dw, dh = w * 0.15, h * 0.13                                                 # арочная дверь
+    c.rect(cx - dw - 2, base_y - dh - 2, cx + dw + 2, base_y, 'E')
+    c.ellipse(cx, base_y - dh - 2, dw + 2, (dw + 2) * 1.2, 'E')
+    c.rect(cx - dw, base_y - dh, cx + dw, base_y, 'D')
+    c.ellipse(cx, base_y - dh, dw, dw * 1.2, 'D')
+    c.planks(cx - dw, base_y - dh, cx + dw, base_y, 'N', 7)
+    c.rect(cx - dw - 6, base_y - 2, cx + dw + 6, base_y, 'l')                   # ступень
+
 for i, (w, h) in enumerate(((64, 122), (70, 152), (76, 182), (82, 212)), 1):
     def mk(c, i=i, w=w, h=h):
-        c.rect(10, h * 0.2, w - 11, h - 4, 'l'); c.rect(10, h * 0.2, 16, h - 4, 'w')
-        for y in range(int(h * 0.26), h - 4, 12): c.rect(10, y, w - 11, y, 'e')
-        for k in range(i):
-            y = h * 0.28 + k * (h * 0.62 / i)
-            c.rect(w / 2 - 6, y, w / 2 + 5, y + 10, 'c')
-        c.poly([(4, h * 0.2), (w - 5, h * 0.2), (w / 2, h * 0.02)], 'p')
-        c.rect(w / 2 - 9, h - 26, w / 2 + 8, h - 4, 'D')
-    bld('bld_guild_%d' % i, w, h, 'гильдия магов %d уровня: окна по уровню, лиловая кровля' % i, mk)
+        wiz_tower(c, w, h, i)
+    bld('bld_guild_%d' % i, w, h, 'гильдия магов %d уровня: круглая башня, окна по уровню, сфера' % i, mk)
 for i, (w, h) in enumerate(((76, 74), (92, 82), (104, 86), (100, 88), (118, 118), (130, 130), (160, 148)), 1):
     def mk(c, i=i, w=w, h=h):
         house(c, 8, h * 0.4, w - 9, h - 4, 'T', 'N', 'r' if i < 4 else 'b', 'R' if i < 4 else 'B', 'f', 'D')
