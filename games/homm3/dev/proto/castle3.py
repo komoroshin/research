@@ -9,19 +9,7 @@ import io, os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from parts3 import Fig
 
-def emit(name, fig, comment, unit=3, anchor=None):
-    rows = fig.rows_out()
-    W = max(len(r) for r in rows)
-    rows = [(r + '.' * W)[:W] for r in rows]
-    body = '\n'.join("        '%s'," % r for r in rows)
-    an = (' anchor: [%d, %d],' % tuple(anchor)) if anchor else ''
-    return ("    /* %s (%d×%d) */\n    %s: {\n      hd: true, unit: %d,%s\n      rows: [\n%s\n      ],\n    },\n"
-            % (comment, W, len(rows), name, unit, an, body))
-
-def upg(name, comment, base, tint, extra=None):
-    parts = ["base: '%s'" % base, 'tint: { ' + ', '.join("%s: '%s'" % kv for kv in tint.items()) + ' }']
-    if extra: parts.append('extra: [' + ', '.join("[%d, %d, '%s']" % e for e in extra) + ']')
-    return "    /* %s */\n    %s: { %s },\n" % (comment, name, ', '.join(parts))
+from emit3 import emit, upg
 
 # ============================ копейщик 54×72 ============================
 c = Fig(54, 72)

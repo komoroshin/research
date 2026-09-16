@@ -77,7 +77,7 @@ c.rect(CX - 9, 38, CX + 9, 41, 'Y')
 c.rect(CX - 16, 26, CX - 9, 34, 'S'); c.rect(CX + 9, 30, CX + 16, 38, 'S')        # руки
 c.ellipse(CX - 17, 35, 3.4, 3, 'S'); c.ellipse(CX + 17, 39, 3.4, 3, 'S')
 c.face(CX, 14, 8, 'S', 'T', eye='y')
-for i, (dx, dy) in enumerate(((-15, -4), (-9, -13), (0, -17), (9, -13), (15, -4))):  # волосы-змеи
+for i, (dx, dy) in enumerate(((-15, -2), (-9, -10), (0, -13), (9, -10), (15, -2))):  # волосы-змеи
     c.line(CX + dx * 0.35, 11, CX + dx, 7 + dy, 'G', 3)
     c.ellipse(CX + dx, 4 + dy, 4.2, 3.4, 'g')               # голова змеи
     c.ellipse(CX + dx - 1, 3 + dy, 1.8, 1.6, 'r')           # глаз
