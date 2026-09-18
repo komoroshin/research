@@ -7,7 +7,7 @@ const path = require('path');
   const page = await br.newPage({ viewport: { width: 1280, height: 800 } });
   const errs = []; page.on('pageerror', e => errs.push(e.message));
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=3', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=3', { waitUntil: 'load' });
   await page.waitForTimeout(1000);
   const before = await page.evaluate(() => {
     const G = H3.Game, U = H3.U, h = G.selected();

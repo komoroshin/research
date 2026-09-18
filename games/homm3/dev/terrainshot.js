@@ -9,7 +9,7 @@ const path = require('path');
   const errors = [];
   page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed + '&size=' + size + '&opp=' + opp, { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=' + seed + '&size=' + size + '&opp=' + opp, { waitUntil: 'load' });
   await page.waitForTimeout(1200);
   const info = await page.evaluate(() => {
     const st = H3.Game.state, cv = H3.Terrain.renderMap(st, 0);

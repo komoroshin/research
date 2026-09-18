@@ -8,7 +8,7 @@ const path = require('path');
   const errs = []; page.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_FAILED|fonts/.test(m.text())) errs.push(m.text()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed + '&size=M&opp=1', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=' + seed + '&size=M&opp=1', { waitUntil: 'load' });
   await page.waitForTimeout(1200);
   const info = await page.evaluate(async () => {
     const G = H3.Game, S = H3.State, PF = H3.Pathfind, st = G.state, h = G.selected();

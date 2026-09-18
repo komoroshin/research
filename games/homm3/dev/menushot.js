@@ -6,7 +6,7 @@ const path = require('path');
   const br = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const errs = [];
   const mk = async (opts, tag) => { const ctx = await br.newContext({ ...opts, locale: 'ru-RU' }); const page = await ctx.newPage(); page.on('pageerror', e => errs.push(tag + ': ' + e.message)); await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort()); return page; };
-  const root = 'file://' + path.resolve(__dirname, '..', 'index.html');
+  const root = 'file://' + path.resolve(__dirname, '..', 'index.html') + '?dev=1';   // ?dev=1 — меню открыто, пока игра на паузе
   const page = await mk(devices['iPhone 13'], 'phone');
   const shot = async name => { console.log('shot', name); await page.screenshot({ path: path.join(dir, 'm_' + name + '.png') }); };
   await page.goto(root, { waitUntil: 'load' }); await page.waitForTimeout(600); await shot('menu');

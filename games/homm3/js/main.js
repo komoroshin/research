@@ -6,7 +6,14 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.15.1';
+  const VERSION = '3.15.2';
+  /* Пауза по просьбе автора: на первой странице нет кнопок, партию из интерфейса не запустить.
+     Снять — поставить PAUSED = false и поднять версию (иначе телефон отдаст старый кеш).
+     Отладочные прогоны не ломаются: ?dev=1 открывает обычное меню (скрипты в dev/ его уже дописывают). */
+  const PAUSED = true;
+  function devMode() {
+    try { return !!new URLSearchParams(location.search).get('dev'); } catch (e) { return false; }
+  }
   const G = { state: null, selHero: null, busy: false, screen: 'menu', settingsObj: null };
   const SAVE_KEY = 'homm3.save.', SET_KEY = 'homm3.settings';
 
@@ -89,6 +96,15 @@
   function menu() {
     showScreen('menu');
     const sh = shell(undefined, { cls: 'main' });
+    if (PAUSED && !devMode()) {                       // пауза: ни одной кнопки, ведущей в партию
+      sh.scr.classList.add('paused');                 // без картины города заголовок не наезжает на неё
+      sh.scr.insertBefore(UI.el('div', 'mtitle', '<h1>Герои Эрафии</h1><div class="sub">Игра на паузе</div>'), sh.body);
+      sh.body.classList.add('mmenu');
+      sh.body.innerHTML = '<div class="parch"><p>Интерфейс скрыт по просьбе автора: сейчас есть дела поважнее.</p>'
+        + '<p class="small muted">Сохранения, кампании и прогресс на месте, ничего не потеряно.</p></div>'
+        + '<div class="mver small muted">Версия ' + VERSION + ' · на паузе</div>';
+      return;
+    }
     const auto = slotInfo('auto');
     const art = UI.el('canvas', 'px'); art.id = 'menuArt';
     sh.scr.insertBefore(art, sh.body);
@@ -731,7 +747,7 @@
     window.addEventListener('pagehide', onHide);
     menu();
     const q = new URLSearchParams(location.search);
-    if (q.get('autostart')) newGame({ size: q.get('size') || 'S', opponents: +(q.get('opp') || 1), difficulty: q.get('diff') || 'normal', faction: q.get('faction') || 'castle', hero: null, seed: +(q.get('seed') || 1), name: 'Игрок' });
+    if (q.get('autostart') && (!PAUSED || devMode())) newGame({ size: q.get('size') || 'S', opponents: +(q.get('opp') || 1), difficulty: q.get('diff') || 'normal', faction: q.get('faction') || 'castle', hero: null, seed: +(q.get('seed') || 1), name: 'Игрок' });
   }
 
   /** Герой мог сменить слой (врата) — подстроить вид. */
