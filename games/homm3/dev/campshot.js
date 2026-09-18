@@ -8,7 +8,7 @@ const path = require('path');
   const errs = []; page.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_FAILED|fonts/.test(m.text())) errs.push(m.text()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto('file://' + path.resolve('index.html'), { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1', { waitUntil: 'load' });   // ?dev=1 — меню открыто, пока игра на паузе
   await page.waitForTimeout(700);
   await page.click('#btnCamp'); await page.waitForTimeout(400);
   console.log('кампаний на экране:', await page.evaluate(() => document.querySelectorAll('[data-camp]').length));

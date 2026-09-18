@@ -8,7 +8,7 @@ const path = require('path');
   const errs = []; page.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|ERR_FAILED|fonts/.test(m.text())) errs.push(m.text()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed + '&size=M&opp=1', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=' + seed + '&size=M&opp=1', { waitUntil: 'load' });
   await page.waitForTimeout(1200);
   console.log('слои:', await page.evaluate(() => {
     const st = H3.Game.state, T = H3.Rules.TERRAINS;

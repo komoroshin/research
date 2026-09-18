@@ -10,7 +10,7 @@ const path = require('path');
   page.on('console', m => { if (m.type() === 'error' && !/ERR_|fonts/.test(m.text())) errs.push(m.text()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   const shot = async name => { console.log('shot', name); await page.screenshot({ path: path.join(dir, 'm_' + name + '.png') }); };
-  await page.goto('file://' + path.resolve('index.html'), { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1', { waitUntil: 'load' });   // ?dev=1 — меню открыто, пока игра на паузе
   await page.waitForTimeout(700); await shot('menu');
   await page.tap('#btnNew', { timeout: 4000 }); await page.waitForTimeout(400); await shot('newgame');
   await page.tap('#btnBack', { timeout: 4000 }); await page.tap('#btnCamp', { timeout: 4000 }); await page.waitForTimeout(400); await shot('campaign');
@@ -18,7 +18,7 @@ const path = require('path');
   await page.tap('.choice button', { timeout: 4000 }); await page.waitForTimeout(300); await page.tap('.choice button', { timeout: 4000 }); await page.waitForTimeout(600); await shot('editor');
   await page.evaluate(() => H3.Game.menu());
   // партия
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=3', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=3', { waitUntil: 'load' });
   await page.waitForTimeout(900); await shot('map');
   // тап по клетке рядом с героем: первый тап — путь
   const pos = await page.evaluate(() => { const V = H3.AdvView.V, h = H3.Game.selected(); const r = V.canvas.getBoundingClientRect(); return [r.left + ((h.x + 3 + 0.5) * 32 - V.cam.x) * V.cam.z, r.top + ((h.y + 0.5) * 32 - V.cam.y) * V.cam.z]; });

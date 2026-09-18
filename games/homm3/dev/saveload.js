@@ -11,7 +11,7 @@ const path = require('path');
   const ev = (fn, ...a) => page.evaluate(fn, ...a);
   const url = 'file://' + path.resolve('index.html');
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
-  await page.goto(url + '?autostart=1&seed=5', { waitUntil: 'load' }); await page.waitForTimeout(900);
+  await page.goto(url + '?dev=1&autostart=1&seed=5', { waitUntil: 'load' }); await page.waitForTimeout(900);
   // походить, закончить ход, чтобы состояние отличалось от стартового
   await ev(() => { const G=H3.Game,S=H3.State,st=G.state,h=G.selected(); const pf=S.pathfield(st,h);
     const o=Object.values(st.objects).filter(o=>!o.z&&o.type==='resource'&&pf.dist[o.y*st.levels[0].w+o.x]<Infinity).sort((a,b)=>pf.dist[a.y*st.levels[0].w+a.x]-pf.dist[b.y*st.levels[0].w+b.x])[0];

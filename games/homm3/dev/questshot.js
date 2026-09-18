@@ -8,7 +8,7 @@ const path = require('path');
   const errs = []; page.on('pageerror', e => errs.push(e.message));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_|fonts/.test(m.text())) errs.push(m.text()); });
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=7&size=M&opp=2', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=7&size=M&opp=2', { waitUntil: 'load' });
   await page.waitForTimeout(900);
   // ставим все пять объектов рядом с героем, открываем карту вокруг
   await page.evaluate(() => {

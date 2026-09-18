@@ -11,7 +11,7 @@ const path = require('path');
   const shot = async name => { await page.screenshot({ path: path.join(out, 'p_' + name + '.png') }); console.log('shot', name); };
   const ev = (fn, ...args) => page.evaluate(fn, ...args);
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());   // не ждём внешние шрифты: недоступный CDN вешал прогон
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=' + seed, { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=' + seed, { waitUntil: 'load' });
   await page.waitForTimeout(800);
   // 1. движение к ближайшему ресурсу
   const r1 = await ev(() => { const G = H3.Game, S = H3.State, st = G.state; const h = G.selected(); const pf = S.pathfield(st, h);

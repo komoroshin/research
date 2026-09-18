@@ -10,7 +10,7 @@ const path = require('path');
   page.on('console', m => { if (m.type() === 'error' && !/ERR_CONNECTION|fonts/.test(m.text())) errors.push('console: ' + m.text()); });
   const shot = async name => { await page.screenshot({ path: path.join(out, 'q_' + name + '.png') }); console.log('shot', name); };
   const ev = (fn, ...args) => page.evaluate(fn, ...args);
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=5&faction=tower', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=5&faction=tower', { waitUntil: 'load' });
   await page.waitForTimeout(800);
   // 1. осада вражеского города игроком: телепортируем героя к городу ИИ и даём армию
   await ev(() => { const G = H3.Game, S = H3.State, st = G.state; const h = G.selected(); const tw = S.townsOf(st, 1)[0]; tw.buildings.citadel = true; tw.buildings.castle = true; H3.Rules.addToArmy(tw.garrison, 'pikeman', 30); H3.Rules.addToArmy(tw.garrison, 'archer', 12);

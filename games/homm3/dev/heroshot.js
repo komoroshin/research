@@ -11,7 +11,7 @@ const path = require('path');
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   const shot = async name => { console.log('shot', name); await page.screenshot({ path: path.join(dir, 'h_' + name + '.png') }); };
   const bottom = async () => { await page.evaluate(() => { const ms = document.querySelectorAll('.modal .body'); ms[ms.length - 1].scrollTop = 99999; }); await page.waitForTimeout(150); };
-  await page.goto('file://' + path.resolve(__dirname, '..', 'index.html') + '?autostart=1&seed=3', { waitUntil: 'load' }); await page.waitForTimeout(900);
+  await page.goto('file://' + path.resolve(__dirname, '..', 'index.html') + '?dev=1&autostart=1&seed=3', { waitUntil: 'load' }); await page.waitForTimeout(900);
   await page.evaluate(() => { document.querySelectorAll('.toast').forEach(t => t.remove()); });
   // герой с артефактами, рюкзаком, машинами, навыками
   await page.evaluate(() => { const h = H3.Game.selected(); const ids = Object.keys(H3.Artifacts.BY_ID); h.arts.helm = ids[0]; h.backpack.push(ids[1], ids[2], ids[3]); h.machines = { ballista: true, first_aid_tent: true }; h.skills.logistics = 2; h.skills.wisdom = 1; h.spells.push('magic_arrow', 'haste', 'town_portal'); h.hasBook = true; H3.Game.openHero(h); });

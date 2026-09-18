@@ -11,7 +11,7 @@ const path = require('path');
   const factions = ['castle', 'rampart', 'tower', 'inferno', 'necropolis', 'dungeon', 'stronghold', 'fortress'];
   for (let i = 0; i < factions.length; i++) {
     const f = factions[i];
-    await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=3&faction=' + f, { waitUntil: 'load' });
+    await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=3&faction=' + f, { waitUntil: 'load' });
     await page.waitForTimeout(700);
     const full = i % 2 === 0;
     await page.evaluate(([full, day]) => {
@@ -33,7 +33,7 @@ const path = require('path');
     console.log(f, JSON.stringify(info));
   }
   // клик по призраку строит
-  await page.goto('file://' + path.resolve('index.html') + '?autostart=1&seed=3&faction=castle', { waitUntil: 'load' });
+  await page.goto('file://' + path.resolve('index.html') + '?dev=1&autostart=1&seed=3&faction=castle', { waitUntil: 'load' });
   await page.waitForTimeout(700);
   await page.evaluate(() => { const st = H3.Game.state; const t = H3.State.townsOf(st, 0)[0]; st.players[0].res.gold = 30000; st.players[0].res.wood = 50; H3.Game.openTown(t); });
   await page.waitForTimeout(600);
