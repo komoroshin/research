@@ -1,0 +1,529 @@
+<title>Карта офферов Океан Тех</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --card:#F7F7F7; --ink:#141A22; --text:#333333; --muted:rgba(20,26,34,.6); --faint:rgba(20,26,34,.12);
+  --line:rgba(20,26,34,.10); --blue:#0460F5; --lime:#D5F774; --lime-ink:#2C3A06; --purple:#60419E; --lav:#EFE7FD;
+  --orange:#E3592E; --orange-bg:#FFF1EC; --green:#2E8B32; --green-bg:#EAF6EA; --amber:#9A6A00; --amber-bg:#FFF6DC;
+  --quote:#FFFFFF; --shadow:0 1px 0 rgba(20,26,34,.04);
+  --sans:"Onest","Helvetica Neue",Arial,system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E1116; --card:#171B22; --ink:#F2F4F7; --text:#D6DAE0; --muted:rgba(242,244,247,.6); --faint:rgba(242,244,247,.14);
+    --line:rgba(242,244,247,.10); --blue:#5B97FF; --lime:#D5F774; --lime-ink:#1C2504; --purple:#B79BF0; --lav:#251E36;
+    --orange:#FF8A65; --orange-bg:#2E1A14; --green:#7CCB7F; --green-bg:#16251A; --amber:#F0C35A; --amber-bg:#2A2310; --quote:#10141A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E1116; --card:#171B22; --ink:#F2F4F7; --text:#D6DAE0; --muted:rgba(242,244,247,.6); --faint:rgba(242,244,247,.14);
+  --line:rgba(242,244,247,.10); --blue:#5B97FF; --lime:#D5F774; --lime-ink:#1C2504; --purple:#B79BF0; --lav:#251E36;
+  --orange:#FF8A65; --orange-bg:#2E1A14; --green:#7CCB7F; --green-bg:#16251A; --amber:#F0C35A; --amber-bg:#2A2310; --quote:#10141A;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.5;padding-inline:20px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:var(--blue)}
+h1,h2,h3{color:var(--ink);font-weight:600;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,6vw,60px);line-height:.95}
+h2{font-size:clamp(24px,3.4vw,34px);line-height:1.05}
+h3{font-size:20px;line-height:1.2}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+header{padding-block:48px 28px;display:grid;gap:18px;border-bottom:1px solid var(--line)}
+.lede{font-size:19px;max-width:62ch;color:var(--text)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px}
+
+section{padding-block:44px 8px;display:grid;gap:22px}
+.sechead{display:grid;gap:8px}
+.sechead p{max-width:64ch;color:var(--muted)}
+
+.takeaways{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.take{background:var(--card);border-radius:16px;padding:20px;display:grid;gap:8px;align-content:start}
+.take b{color:var(--ink);font-weight:600;font-size:17px;line-height:1.25}
+.take span{font-size:15px}
+
+.engines{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.engine{border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;gap:14px}
+.engine .flow{font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.engine .flow i{font-style:normal;color:var(--muted)}
+.engine .flow span{background:var(--card);border-radius:8px;padding:4px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:12px;border-radius:999px;padding:4px 10px;border:1px solid var(--faint);color:var(--ink)}
+.chip.eu{border-color:var(--blue);color:var(--blue)}
+.chip.ru{border-color:var(--purple);color:var(--purple)}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;background:var(--card);padding:4px;border-radius:14px;width:max-content;max-width:100%}
+.tabs button{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;border:0;background:transparent;color:var(--muted);padding:9px 14px;border-radius:10px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 0 0 1px var(--faint)}
+.tabs button:focus-visible,summary:focus-visible,.copy:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.offers{display:grid;gap:14px}
+.offer{border:1px solid var(--line);border-radius:24px;background:var(--bg);overflow:hidden}
+.offer summary{list-style:none;cursor:pointer;padding:22px;display:grid;grid-template-columns:1fr auto;gap:10px 20px;align-items:start}
+.offer summary::-webkit-details-marker{display:none}
+.otop{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.market{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;border-radius:6px;padding:3px 7px;color:#fff}
+.market.eu{background:var(--blue)}
+.market.ru{background:var(--purple)}
+:root[data-theme="dark"] .market{color:#0E1116}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .market{color:#0E1116}}
+.status{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:3px 7px}
+.status.main{background:var(--lime);color:var(--lime-ink)}
+.status.side{background:var(--amber-bg);color:var(--amber)}
+.status.second{background:var(--card);color:var(--muted)}
+.oname{grid-column:1/2;display:grid;gap:8px}
+.oname p{font-size:16px;max-width:70ch}
+.score{grid-row:1/3;grid-column:2;text-align:right;display:grid;gap:2px;justify-items:end}
+.score b{font-size:40px;line-height:1;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.score small{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.score s{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.more{grid-column:1/-1;font-family:var(--mono);font-size:12px;color:var(--blue);text-transform:uppercase;letter-spacing:.06em}
+.offer[open] .more::after{content:" — свернуть"}
+.offer:not([open]) .more::after{content:" — подробнее"}
+.obody{padding:0 22px 24px;display:grid;gap:18px;border-top:1px solid var(--line);padding-top:20px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px 28px}
+.fact{display:grid;gap:4px;align-content:start}
+.fact .mono{font-size:11.5px}
+.fact div{font-size:15px}
+.fact ul{margin:0;padding-left:18px;font-size:15px;display:grid;gap:4px}
+.gap{background:var(--lav);border-radius:14px;padding:14px 16px;font-size:15px;color:var(--ink)}
+.gap b{color:var(--purple)}
+.risk{background:var(--orange-bg);border-radius:14px;padding:14px 16px;font-size:15px}
+.risk b{color:var(--orange)}
+.letter{background:var(--card);border-radius:16px;padding:16px 18px;display:grid;gap:10px}
+.letter pre{margin:0;white-space:pre-wrap;font-family:var(--sans);font-size:15px;color:var(--ink);line-height:1.5}
+.lhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.copy{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--faint);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.src{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14.5px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+td.sc{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;white-space:nowrap}
+.dead{color:var(--orange);font-weight:600}
+
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.step{background:var(--card);border-radius:16px;padding:20px;display:grid;gap:10px;align-content:start}
+.step ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
+.thresholds{display:flex;flex-wrap:wrap;gap:8px}
+.th{font-size:14px;border-radius:10px;padding:8px 12px}
+.th.g{background:var(--green-bg);color:var(--green)}
+.th.a{background:var(--amber-bg);color:var(--amber)}
+.th.r{background:var(--orange-bg);color:var(--orange)}
+
+.honest{display:grid;gap:10px;max-width:78ch}
+.honest li{font-size:15px}
+.honest ul{margin:0;padding-left:18px;display:grid;gap:8px}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);display:grid;gap:6px}
+
+@media (max-width:560px){
+  .offer summary{grid-template-columns:1fr}
+  .score{grid-row:auto;grid-column:1;justify-items:start;text-align:left;display:flex;gap:10px;align-items:baseline}
+  .score b{font-size:32px}
+}
+@media (prefers-reduced-motion:no-preference){.offer{transition:border-color .15s}.offer:hover{border-color:var(--faint)}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="mono">Исследование ниш · Океан Тех · 23.09.2026</div>
+  <h1>Карта офферов для холодного выхода</h1>
+  <p class="lede">Восемь проверенных гипотез для Европы и РФ: кому писать, что предлагать, за сколько и почему сейчас. Каждая прошла сбор, глубокий разбор и проверку «адвокатом дьявола», который пытался её убить.</p>
+  <div class="meta">
+    <span class="mono num">86 карточек → 42 кластера → 20 разборов → 14 проверок → 8 офферов</span>
+  </div>
+</header>
+
+<section aria-labelledby="t-key">
+  <div class="sechead"><div class="mono">Главное</div><h2 id="t-key">Что показало исследование</h2></div>
+  <div class="takeaways">
+    <div class="take"><b>Оба рынка запускаются параллельно</b><span>Европа — через ЕС-юрлицо, РФ — через российское. Граждан ЕС в команде нет, ЕС-юрлицо в российских сделках не участвует.</span></div>
+    <div class="take"><b>Главная ставка — разбор заказов из почты</b><span>Один движок прошёл в топ на обоих рынках: оптовики и экспедиторы в Европе, дистрибьюторы на 1С в РФ.</span></div>
+    <div class="take"><b>Опасен не конкурент, а система клиента</b><span>Все гипотезы потеряли баллы на проверке, две убиты. Почти всегда потому, что ERP, телефония или CRM уже встраивает ту же функцию. Живые офферы — в их дырах.</span></div>
+    <div class="take"><b>$5k фиксом выглядит дорого</b><span>Коробки в 3–9 раз дешевле. Рабочая упаковка: «внедрение + 3 месяца работы» или пилот с возвратом. Первые 2–3 пилота — со скидкой за именной кейс.</span></div>
+    <div class="take"><b>Кейсы заменяют механики</b><span>Бесплатный прогон на данных клиента до оплаты, гарантия с возвратом, открытая методика замера «до и после».</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="t-eng">
+  <div class="sechead"><div class="mono">Производство</div><h2 id="t-eng">Два ядра на восемь офферов</h2><p>Строим ядро один раз, под каждый оффер меняется только подключение к системе клиента. Это и делает пилоты посильными для 1–2 человек.</p></div>
+  <div class="engines">
+    <div class="engine">
+      <h3>Разбор заказов</h3>
+      <div class="flow"><span>письмо · PDF · Excel</span><i>→</i><span>извлечение</span><i>→</i><span>сверка с каталогом</span><i>→</i><span>черновик в системе</span><i>→</i><span>человек подтверждает</span></div>
+      <div class="chips"><span class="chip eu">Order Intake · оптовики</span><span class="chip eu">Order Intake · экспедиторы</span><span class="chip ru">Оператор заказов 1С</span></div>
+    </div>
+    <div class="engine">
+      <h3>Голосовой агент</h3>
+      <div class="flow"><span>звонок</span><i>→</i><span>распознавание</span><i>→</i><span>правила клиента</span><i>→</i><span>запись в систему</span><i>→</i><span>эскалация человеку</span></div>
+      <div class="chips"><span class="chip eu">Диспетчер UK-подрядчиков</span><span class="chip ru">Агент для сетей клиник</span></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="t-off">
+  <div class="sechead"><div class="mono">Офферы</div><h2 id="t-off">Восемь гипотез</h2><p>Балл — по матрице из 11 критериев (максимум 100), после проверки «адвокатом дьявола». Нажмите на карточку, чтобы раскрыть детали и первое письмо.</p></div>
+  <div class="tabs" role="group" aria-label="Фильтр по рынку">
+    <button type="button" id="f-all" data-f="all" aria-pressed="true">Все · 8</button>
+    <button type="button" id="f-eu" data-f="eu" aria-pressed="false">Европа · 4</button>
+    <button type="button" id="f-ru" data-f="ru" aria-pressed="false">РФ · 4</button>
+  </div>
+
+  <div class="offers">
+
+  <!-- EU 1 -->
+  <details class="offer" data-m="eu">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market eu">Европа</span><span class="status main">Основной тест</span></div>
+        <h3>Order Intake: заказы из почты в ERP и транспортную систему</h3>
+        <p>За 3 недели заказы из писем, PDF и Excel сами становятся черновиками в ERP оптовика или файлом импорта для транспортной системы экспедитора. Человек только подтверждает.</p>
+      </div>
+      <div class="score"><b class="num">69</b><small>оптовики</small><s class="num">67 · экспедиторы</s></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><ul><li><b>Оптовики</b> 50–500 чел., от 40 заказов по почте в день. Швеция, Норвегия, Финляндия, UK, Ирландия. ERP: Visma, Sage 200, старый Business Central (NAV)</li><li><b>Экспедиторы и перевозчики</b> 50–249 чел. Нидерланды, Бельгия, Дания, Швеция. Транспортные системы без своего AI-разбора</li></ul></div>
+        <div class="fact"><div class="mono">Кого не берём</div><div>Облачный Business Central — там бесплатный агент Microsoft. Нидерланды и Бельгия у оптовиков — там плотно (Hyperfox, Lleverage). Клиентов Sinari и Qargo у экспедиторов.</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>Даты нет. Продаём окупаемостью и сигналом компании: вакансия на ввод заказов, адрес orders@ на сайте. Microsoft 02.09.2026 выпустил агента заказов — категория стала нормой, но он не читает Excel и не знает шведского, норвежского, финского.</div></div>
+        <div class="fact"><div class="mono">Боль</div><div class="num">Ручной ввод — $25–120k в год на компанию. Реально снимаем $25–44k. Ниже 40 заказов в день подписка съедает половину экономии — это порог отбора.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">Пилот $5 000 + $2 500 только при достижении порога. Не достигли — возврат 100%. Без годового контракта, код остаётся у клиента. Дальше €500–800 в месяц.</div></div>
+        <div class="fact"><div class="mono">Список</div><div class="num">~1–2 тыс. оптовиков после исключений (оценка); ~1 050 экспедиторов и ~7 950 перевозчиков на 20–249 чел. (Eurostat 2023).</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> Конкуренты требуют контракт на 12 месяцев, агент Microsoft не работает с Excel, северными языками и старыми версиями ERP. Встроенный разбор у транспортных систем есть не у всех — отдаём заказ в формате их штатного импорта.</div>
+      <div class="risk"><b>Проверить до старта.</b> Можно ли создавать заказы через API Visma (иначе сегмент сужается до Sage 200 и старого BC). Импорт у Transpas. Реальное число заказов в день — на первых звонках.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо · оптовики</div><button class="copy" type="button">Копировать</button></div>
+<pre>Subject: Customer orders into {Visma / Sage 200} without retyping
+
+Hi {Name}, I noticed {Company} asks customers to email orders to {orders@…} and is hiring an {order entry} role.
+We set up a flow that reads those emails, PDFs and Excel files, matches customer part numbers to your SKUs and creates draft sales orders in {ERP}. Your team approves each one.
+Fixed 3-week pilot, no annual contract, runs in your own tenant. The second half of the fee is due only if we hit the target we agree on together.
+Roughly how many orders a day come in by email?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/eu-order-intake.md · тест: 180 контактов, 2 недели</div>
+    </div>
+  </details>
+
+  <!-- EU 2 -->
+  <details class="offer" data-m="eu">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market eu">Европа · UK</span><span class="status main">Основной тест · окно до 15.12</span></div>
+        <h3>PRS Ready: реестр арендного жилья для агентств Англии</h3>
+        <p>За 5 дней находим пробелы в сертификатах по всем объектам агентства, затем 2 недели ведём кампанию по арендодателям с трекером «кто начал регистрацию».</p>
+      </div>
+      <div class="score"><b class="num">71</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Почему сейчас</div><div>15.12.2026 в West Midlands открывается государственный реестр арендного жилья. Дальше каждый месяц новый регион, у каждого 3 месяца, все объекты — до 14.11.2027. Взнос £65 за объект в год, к записи прикладываются копии сертификатов на газ, электрику и энергоэффективность.</div></div>
+        <div class="fact"><div class="mono">Тонкость</div><div>Регистрацию начинает арендодатель, агентство только дозаполняет. Агентству с 800 объектами нужно заставить сотни арендодателей, а сертификаты разбросаны по CRM и почте.</div></div>
+        <div class="fact"><div class="mono">Кому</div><div class="num">Агентства с 800+ объектами в полном управлении, регионы первых волн, не на CRM Street. ~500–900 агентств после фильтров (оценка).</div></div>
+        <div class="fact"><div class="mono">Окупаемость</div><div class="num">Агентство продаёт регистрацию как платную услугу: 1 000 объектов × £50 × 50% купивших = £25k против £4 500 за пилот. Цена услуги — допущение, проверить на звонках.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">£4 500 + VAT, оплата 50/50. Точность полей ≥98% на выборке из 100 объектов, иначе вторую половину не платят. Дальше журнал сертификатов £0,30 за объект в месяц.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> Функции под реестр пока нет ни у Reapit, ни у Alto, ни у Goodlord. Street уже читает сертификаты — его клиентов исключаем. Наша связка: CRM, почта, публичный реестр сертификатов и сами арендодатели.</div>
+      <div class="risk"><b>Риск.</b> Любая CRM может добавить статус регистрации до декабря — окно 6–12 месяцев. Если арендодатели не платят агентству за регистрацию, пилот не окупается.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо</div><button class="copy" type="button">Копировать</button></div>
+<pre>Subject: {Region} landlords start registering on {date}
+
+Hi {Name}, from {date} every {Region} landlord has 3 months to register each let property on the PRS Database, with copies of gas, EICR and EPC attached, and the landlord has to start the registration, not you.
+In 5 days we check {CRM} and your compliance inbox against the EPC register and show which of your ~{N} properties have gaps. Then we run the landlord campaign for you: personal emails, reminders and a tracker of who has registered, with your registration service offered at your own fee.
+Fixed £4,500, 50/50, with a field accuracy guarantee. Send 20 certificates and we'll return the extracted data in 48 hours?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/eu-uk-lettings-prs.md · тест: 150 агентств, 2 недели</div>
+    </div>
+  </details>
+
+  <!-- EU 3 -->
+  <details class="offer" data-m="eu">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market eu">Европа · UK</span><span class="status main">Основной тест · отопительный сезон</span></div>
+        <h3>Диспетчер для подрядчиков по отоплению и сантехнике</h3>
+        <p>Агент поверх BigChange или Joblogic берёт звонок или WhatsApp, ставит слот конкретному инженеру по зоне, соблюдает сроки сервисных договоров и будит дежурного ночью только при аварии.</p>
+      </div>
+      <div class="score"><b class="num">70</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div>Компании от ~30 инженеров или с сервисными договорами (арендодатели, жилищные ассоциации). Север Англии и Шотландия. Первая волна — клиенты BigChange и Joblogic. 560 компаний на 50–249 чел. по ONS, плюс часть из 5 150 на 10–49.</div></div>
+        <div class="fact"><div class="mono">Почему не «AI-ресепшн»</div><div>Ресепшн уже в коробках за £29–100 в месяц, у Jobber — за $29. Работу в Commusoft создаёт даже Zapier. Продаём диспетчерскую логику: какой инженер, в какой слот, в рамках какого договора и кого будить ночью.</div></div>
+        <div class="fact"><div class="mono">Боль</div><div class="num">~$25–34k валовой прибыли в год на компанию из 19 человек: пропущенные звонки уходят к конкурентам. $100k+ не обещаем.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">$5 000 = внедрение + 3 месяца работы. Если за первые 30 дней агент создаст меньше N работ вне рабочего времени — последний месяц бесплатно. Дальше £495–695 в месяц, как у OperAi.</div></div>
+        <div class="fact"><div class="mono">Вместо кейса</div><div>Контрольный звонок вечером («звонил вам во вторник в 19:40 — попал на автоответчик») и демо-агент по их сайту за 48 часов.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> OperAi и Softomate уже пишут в системы выездов, но слот конкретного инженера по зоне и договорам не ставят. Голосового приёма у самих Joblogic, BigChange и Commusoft пока нет.</div>
+      <div class="risk"><b>Риск.</b> Вендоры систем выездов уже продают AI-агентов, голос появится через 6–18 месяцев. Прод выйдет во второй половине ноября — в разгар сезона.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо</div><button class="copy" type="button">Копировать</button></div>
+<pre>Subject: Called {{Company}} at {{7:40pm on Tuesday}}
+
+Hi {{FirstName}}, I rang {{Company}} {{last Tuesday at 7:40pm}} as a customer with a dead boiler and got {{voicemail}}.
+We build a dispatch layer on top of {{BigChange/Joblogic}}: it answers out of hours, checks whether the caller is on a service contract, books the right engineer's slot by postcode and SLA, and wakes the on-call engineer only for real emergencies.
+Fixed fee, setup plus 3 months of running included, live in 3 weeks.
+Want a number to call and hear it handle a {{City}} breakdown?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/eu-uk-trades-dispatch.md · тест: 150 компаний, контрольный звонок в каждую до письма</div>
+    </div>
+  </details>
+
+  <!-- EU 4 -->
+  <details class="offer" data-m="eu">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market eu">Европа</span><span class="status side">Параллельный дешёвый тест</span></div>
+        <h3>EAA Fix Sprint: доступность интернет-магазинов</h3>
+        <p>Исправляем доступность (WCAG 2.1 AA) прямо в коде магазина: 4 шаблона за 3 недели, правки в репозиторий и автотесты, чтобы релизы ничего не ломали. Продаём в основном через веб-агентства под их брендом.</p>
+      </div>
+      <div class="score"><b class="num">74</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div class="num">Веб-агентства (5–100 чел.) и магазины на 10–249 сотрудников в Нидерландах, Ирландии, Швеции, Дании, Финляндии — ~9 200 ритейлеров с онлайн-продажами (Eurostat).</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>European Accessibility Act действует с 28.06.2025. Регулятор Нидерландов признал недоступными 61% крупных магазинов, в Швеции 28 дел, суд во Франции обязал Carrefour исправить сайт под угрозой €500 в день.</div></div>
+        <div class="fact"><div class="mono">Цена</div><div class="num">Magento, WooCommerce, самописные — €4 900. Shopify — только аудит приложений, €2 900–3 900 (входной продукт ниже $5k). Агентству скидка 20–25%. Работы с января 2027.</div></div>
+        <div class="fact"><div class="mono">Гарантия</div><div>На наших шаблонах автотест не находит критичных нарушений, иначе дорабатываем бесплатно. Сторонние виджеты и чекауты Shopify, Stripe, Klarna — вне гарантии.</div></div>
+      </div>
+      <div class="risk"><b>Почему только параллельно.</b> Денежных штрафов по EAA пока нет, ожидаемый ущерб магазина ~€250–500 в год. Скан и AI-описания картинок уже стоят копейки. Отличаемся только тем, что правим код по фиксированной цене.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо · агентству</div><button class="copy" type="button">Копировать</button></div>
+<pre>Subject: EAA fixes for your {Magento} clients, under your brand
+
+Hi {Name}, we scanned two stores from your portfolio: {client1} has {N} critical accessibility issues on product pages (e.g. {size selector not reachable by keyboard}), {client2} has {M}.
+Clients will keep asking about the European Accessibility Act. We work as a white-label back office: audit, fixes as pull requests to your repo, axe tests in your CI. Fixed €900 per template, you keep the client.
+Booking January slots now, after your holiday freeze. Want the two scan reports?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/eu-eaa-fix-sprint.md · тест: 60 агентств + 120 магазинов</div>
+    </div>
+  </details>
+
+  <!-- RU 1 -->
+  <details class="offer" data-m="ru">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market ru">РФ</span><span class="status main">Основной тест</span></div>
+        <h3>Контроль потерь селлера WB и Ozon</h3>
+        <p>Бесплатно прогоняем кабинет за 12 месяцев. Дальше 3 месяца каждый день сверяем приёмку, остатки, возвраты и компенсации и готовим досудебные претензии, пока открыто окно.</p>
+      </div>
+      <div class="score"><b class="num">72</b><small>балла</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div>Бренды и дистрибьюторы на FBO с оборотом от 500–600 млн ₽ в год. Ниже этого юрфирма за процент оставляет клиенту больше денег. Сотни компаний — пересчитать по MPStats.</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>У WB 7 дней на возражение по акту приёмки — пропущенное досудебно не вернуть. С 24.09 Ozon считает возмещение по новой формуле, с 28.09 вводит объявленную стоимость.</div></div>
+        <div class="fact"><div class="mono">Боль</div><div class="num">Оборот × 1% оспоримых потерь × 60% возврата ≈ $42,8k в год на клиента с 600 млн ₽. Обе доли — допущения, при худшем сценарии ~$11k.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">180 тыс. ₽ в месяц × 3 = 540 тыс. ₽ + 12,5% от возвращённого. Если поданных претензий меньше чем на 540 тыс. ₽ — третий месяц возвращаем.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> «Точка сверки» бесплатна до результата и уже продаёт абонемент, но сверяет раз в неделю или месяц. Мы — каждый день, и доказываем это на кабинете клиента: сколько эпизодов уже сгорело из-за 7-дневного окна.</div>
+      <div class="risk"><b>Риск.</b> Доля потерь не подтверждена независимо. Акты приёмки могут быть доступны только в кабинете, а не через API. Для суда нужен партнёр-юрист.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо</div><button class="copy" type="button">Копировать</button></div>
+<pre>Тема: {Бренд}: 7 дней на акт приёмки WB
+
+{Имя}, добрый день. У {Бренд} по MPStats около {N} млн ₽ в месяц на {WB/Ozon} и {K} SKU на складах маркетплейса.
+На возражение по акту приёмки у WB 7 дней (п. 11.1.5 оферты), дальше акт считается принятым. Вы успеваете сверять каждую поставку?
+Бесплатно прогоним ваш кабинет за 12 месяцев по токену «только чтение» и покажем, сколько эпизодов ещё можно оспорить, а сколько уже сгорело.
+Прислать пример такого реестра?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/ru-marketplace-loss-audit.md · тест: 100–150 компаний + 10–15 юрфирм как партнёры</div>
+    </div>
+  </details>
+
+  <!-- RU 2 -->
+  <details class="offer" data-m="ru">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market ru">РФ</span><span class="status main">Основной тест</span></div>
+        <h3>ИИ-оператор заказов для 1С</h3>
+        <p>Заказы, которые клиенты шлют на почту в письмах, Excel и PDF мимо B2B-кабинета, за 3 недели сами встают в 1С черновиками «Заказа клиента» с позициями из каталога.</p>
+      </div>
+      <div class="score"><b class="num">69</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div class="num">Оптовики стройматериалов, электротехники, FMCG на 50–500 чел., от 60–80 заказов в день, 1С УТ, КА или ERP. 3 575 средних компаний в этих ОКВЭД (реестр МСП ФНС).</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>С 01.01.2026 опт лишился льготного тарифа взносов МСП — каждый новый координатор дороже. 02.09.2026 на Инфостарте вышло первое ИИ-расширение под задачу: рынок проснулся.</div></div>
+        <div class="fact"><div class="mono">Боль</div><div class="num">80 заказов × 12,5 мин ≈ 2 ставки координатора. Снимаем ≈ $31k в год, в пессимистичном варианте ≈ $15k.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">Пилот 490 тыс. ₽ (~$5 800). Порог точности — по бесплатному замеру на 200 прошлых заявках; не дотянули — вторую половину не платят. Дальше 60–110 тыс. ₽ в месяц.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> 1С:Распознавание, Saby и Entera разбирают только документы поставщиков, заказы покупателей — нет. Расширение с Инфостарта заставляет открывать каждое письмо руками. B2B-порталы работают, только если клиенты сменят привычку — мы забираем остальных.</div>
+      <div class="risk"><b>Риск.</b> Если на данных клиента мы не лучше расширения за 5 тыс. ₽ в месяц — сделки нет. Окно до того, как Saby, Контур или 1С добавят заказы покупателей, — 12–18 месяцев.</div>
+      <div class="letter">
+        <div class="lhead"><div class="mono">Первое письмо</div><button class="copy" type="button">Копировать</button></div>
+<pre>Тема: Заказы, которые не дошли до кабинета
+
+{Имя}, на {сайт} вижу «{фраза_с_сайта}», и у вас открыта вакансия {вакансия}. Похоже, часть заявок клиентов по-прежнему перебивают в 1С руками.
+Мы делаем так, чтобы письмо или Excel с «{пример_позиции}» сам становился черновиком «Заказа клиента» с позициями из вашего каталога. Менеджер правит только то, в чём система не уверена.
+До любого договора прогоним 200 ваших прошлых заявок нашим движком и коробочным расширением для 1С и покажем оба результата рядом.
+Прислать пример такого отчёта?</pre>
+      </div>
+      <div class="src">Паспорт: offer-research/04-offers/ru-order-intake-1c.md · то же ядро, что Order Intake в Европе</div>
+    </div>
+  </details>
+
+  <!-- RU 3 -->
+  <details class="offer" data-m="ru">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market ru">РФ</span><span class="status second">Второй эшелон</span></div>
+        <h3>Ревизия маркировки «Честный знак» за 90 дней</h3>
+        <p>Сверяем остатки 1С со статусами всех кодов в «Честном знаке» и с документами в ЭДО. По каждому расхождению — причина, сумма в рублях и черновик исправления.</p>
+      </div>
+      <div class="score"><b class="num">68</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div class="num">Дистрибьюторы электроники и медизделий с импортом, 30–500 чел. ~1–2 тыс. компаний из 19 тыс. участников оборота электроники (оценка).</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>Электроника: с 01.12.2026 каждый код нужен в документах, с 01.03.2027 — на кассе. Медизделия: маркировка с 01.09.2026, поэкземплярный учёт с 01.09.2027.</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">250 тыс. ₽ (~$3k, входной продукт). Если расхождений меньше чем на 400 тыс. ₽ — вторую половину не берём. Дальше ежедневная сверка 15–25 тыс. ₽ в месяц.</div></div>
+        <div class="fact"><div class="mono">Канал</div><div>Франчайзи 1С и партнёры Контура под их брендом, им 20–30% с каждой ревизии.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> Контур сверяет коды по одному документу при приёмке и хранит историю кода 3 недели. Сверки остатков по всей базе с причинами и ретроспективы за 90 дней нет ни у кого из проверенных.</div>
+      <div class="risk"><b>Проверить первым.</b> Есть ли штатная сверка остатков в 1С и Saby. Если есть — балл падает до ~60. Спрос на такой аудит деньгами пока не доказан.</div>
+      <div class="src">Паспорт: offer-research/04-offers/ru-marking-revision.md · тест: 110 компаний + 40 партнёров, до 01.12</div>
+    </div>
+  </details>
+
+  <!-- RU 4 -->
+  <details class="offer" data-m="ru">
+    <summary>
+      <div class="oname">
+        <div class="otop"><span class="market ru">РФ</span><span class="status second">Второй эшелон</span></div>
+        <h3>Голосовой агент для сетей клиник</h3>
+        <p>Агент поверх телефонии клиники берёт звонки вечером, в выходные и при переполненной линии и сам записывает пациента в медицинскую систему по правилам слота. Днём всё как раньше.</p>
+      </div>
+      <div class="score"><b class="num">67</b><small>баллов</small></div>
+      <div class="more">Детали</div>
+    </summary>
+    <div class="obody">
+      <div class="facts">
+        <div class="fact"><div class="mono">Кому</div><div class="num">Сети от 3 филиалов на Medods или на медсистемах через хаб МедФлекс. 600–1 500 компаний (оценка).</div></div>
+        <div class="fact"><div class="mono">Почему сейчас</div><div>Сезон ОРВИ, октябрь–февраль, линии переполнены. С 01.07.2025 данные пациентов нельзя собирать через зарубежные сервисы — работаем только на российских моделях.</div></div>
+        <div class="fact"><div class="mono">Боль</div><div class="num">≈ $42k в год на сеть из 3 филиалов: потерянные записи вне часов плюс одна смена оператора (оценка).</div></div>
+        <div class="fact"><div class="mono">Цена и гарантия</div><div class="num">$5 000 = настройка + 3 месяца работы. Меньше 40% обращений довели до записи — дорабатываем бесплатно или возвращаем 50%. Дальше $500 в месяц за филиал.</div></div>
+      </div>
+      <div class="gap"><b>Наша дыра.</b> Робот Mango (6,5 ₽ в минуту) уже стоит в клиниках, но в его интеграциях есть CRM и нет медсистем — нет записи прямо в расписание врача. Проверить на демо до того, как на этом строить.</div>
+      <div class="risk"><b>Риск.</b> Mango или МедФлекс выпустят свою запись в расписание. Боль держится на допущениях — подтвердить журналом звонков клиники.</div>
+      <div class="src">Паспорт: offer-research/04-offers/ru-clinic-voice-agent.md · то же голосовое ядро, что диспетчер для UK</div>
+    </div>
+  </details>
+
+  </div>
+</section>
+
+<section aria-labelledby="t-res">
+  <div class="sechead"><div class="mono">Резерв и отсев</div><h2 id="t-res">Что не вошло и почему</h2></div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Гипотеза</th><th>Рынок</th><th>Балл</th><th>Почему не в тесте</th></tr></thead>
+      <tbody>
+        <tr><td>AML-досье для финтехов, через кипрских аудиторов</td><td>Европа</td><td class="sc">70</td><td>Срочности к 2027 нет; офицеры AML требуют ISO и SOC 2; список 300–350, на грани</td></tr>
+        <tr><td>Разбор входящих электронных инвойсов, Бельгия и Германия</td><td>Европа</td><td class="sc">71</td><td>Отправка стала товаром за €0,2 за счёт; боль по входящим снаружи не видна; не проверялся «адвокатом»</td></tr>
+        <tr><td>Подключение AI-поддержки магазинов к местным складам</td><td>Европа</td><td class="sc">66</td><td>Фикс-цена окупается только от ~6 000 обращений в месяц</td></tr>
+        <tr><td>Приём документов для бухгалтерских практик UK</td><td>Европа</td><td class="sc">65</td><td>Ядро закрыто коробками за £10 в месяц; деньги не раньше февраля 2027</td></tr>
+        <tr><td>AI-бэкофис для бухгалтерских аутсорсеров</td><td>РФ</td><td class="sc">74</td><td>Не проверялся «адвокатом», балл завышен; ядро уже продают Entera и 1С</td></tr>
+        <tr><td>Массовый подбор персонала</td><td>РФ</td><td class="sc">68</td><td>В hh.ru уже встроен AI-ассистент; роботы стоят 6–12 ₽ в минуту</td></tr>
+        <tr><td>Входящие заявки застройщиков</td><td>РФ</td><td class="sc">65</td><td>Голос у Mango и Calltouch уже есть; боль ~$30k, а не $100k</td></tr>
+        <tr><td>AI-ресепшн для групп клиник</td><td>UK</td><td class="sc dead">убита</td><td>Бесплатный пилот у ViveoAI, наш кейс уже есть у Implement AI, 50–110 групп при пороге 300</td></tr>
+        <tr><td>Голосовой робот для взыскания долгов</td><td>РФ</td><td class="sc dead">убита</td><td>On-prem уже продают Fromtech и KVINT тем же МФО; сегмент 40–60 компаний</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="t-plan">
+  <div class="sechead"><div class="mono">Запуск</div><h2 id="t-plan">План на три недели</h2></div>
+  <div class="plan">
+    <div class="step">
+      <div class="mono">Неделя 1 · подготовка, без писем</div>
+      <ul>
+        <li>Демо разбора заказов на 2–3 открытых каталогах — одно на Европу и РФ</li>
+        <li>Проверить API Visma и Sage 200</li>
+        <li>Выгрузить агентства 800+ объектов из регионов первых волн</li>
+        <li>Контрольные звонки в 150 подрядчиков вечером</li>
+        <li>Пересчитать селлеров от 600 млн ₽ по MPStats</li>
+        <li>Купить источник контактов — бесплатный Apollo поиск не отдаёт</li>
+      </ul>
+    </div>
+    <div class="step">
+      <div class="mono">Недели 2–3 · холодный тест</div>
+      <ul>
+        <li>По 150 адресатов на оффер, 2–3 касания</li>
+        <li>Европа: email и LinkedIn</li>
+        <li>РФ: email, Telegram, звонок</li>
+        <li>Параллельно: 20–30 веб-агентств по доступности</li>
+      </ul>
+    </div>
+    <div class="step">
+      <div class="mono">Решение по каждому офферу</div>
+      <div class="thresholds">
+        <span class="th g num">≥3% позитивных — развиваем</span>
+        <span class="th a num">1–3% — меняем угол или сегмент</span>
+        <span class="th r num">&lt;1% — закрываем</span>
+      </div>
+      <p style="font-size:15px">Опережающий сигнал: сколько компаний прислали свои данные на бесплатный прогон.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="t-hon">
+  <div class="sechead"><div class="mono">Ограничения</div><h2 id="t-hon">Чего исследование не знает</h2></div>
+  <div class="honest">
+    <ul>
+      <li>Стоимость боли во многих офферах держится на допущениях: заказов в день, пропущенных звонков, доли потерь. Первые 5–10 разговоров нужны, чтобы проверить эти цифры.</li>
+      <li>Размеры сегментов посчитаны по открытой статистике (Eurostat, ONS, реестры, ФНС), а не выгрузкой. После фильтров реальный список может быть меньше.</li>
+      <li>Веб-поиск закончился на середине глубокого разбора, дальше агенты читали только конкретные страницы. Что проверить руками, указано в каждом паспорте.</li>
+      <li>Для российского трека вывод о санкционном регламенте ЕС сделан агентами по тексту закона, а не юристом. Если поменяются состав команды или схема договоров — пересмотреть.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="mono">Материалы</div>
+  <div class="src">Репозиторий research · папка offer-research/ · сводка 05-summary.md · паспорта 04-offers/ · разборы 03-deepdive/ · ТЗ tz.md</div>
+</footer>
+</div>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.tabs button');
+  var cards=document.querySelectorAll('.offer');
+  function apply(f){
+    btns.forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.f===f));});
+    cards.forEach(function(c){c.hidden=!(f==='all'||c.dataset.m===f);});
+    try{localStorage.setItem('offers-filter',f);}catch(e){}
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){apply(b.dataset.f);});});
+  var saved='all';try{saved=localStorage.getItem('offers-filter')||'all';}catch(e){}
+  if(['all','eu','ru'].indexOf(saved)<0)saved='all';
+  apply(saved);
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.closest('.letter').querySelector('pre');
+      var text=pre.textContent;
+      var done=function(){btn.textContent='Скопировано';setTimeout(function(){btn.textContent='Копировать';},1600);};
+      var fallback=function(){var r=document.createRange();r.selectNodeContents(pre);var s=window.getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Выделено — Ctrl+C';};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback);}else{fallback();}
+    });
+  });
+})();
+</script>
