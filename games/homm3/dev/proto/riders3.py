@@ -25,6 +25,15 @@ def mount(c, kind, mid, light, dark, mane=None):
             c.poly([(16 + i * 5, 34), (18 + i * 5, 27), (20 + i * 5, 34)], dark)
         c.rect(6, 36, 14, 38, dark)
         for x in range(7, 14, 2): c.rect(x, 36, x + 1, 38, 'i')
+    elif kind == 'beetle':                                 # ездовой жук: панцирь, шесть лап, жвалы
+        c.chitin(34, 50, 30, 17, mid, light, dark, seg=4)  # панцирь во всю длину скакуна
+        c.line(34, 34, 34, 66, dark, 2)                    # шов надкрылий
+        c.insect_legs(34, 50, 68, mid, dark, pairs=3, span=38)
+        c.chitin(10, 44, 11, 10, dark, mid, 'D', seg=2)    # голова впереди (скакун смотрит влево)
+        c.compound_eye(5, 41, 3.4, 3, 'k', 'y')
+        for sgn in (-1, 1):                                # жвалы
+            c.line(4, 46 + sgn * 3, 0, 46 + sgn * 6, 'D', 2)
+        c.poly([(9, 35), (2, 24), (13, 34)], 'i')          # рог
     elif kind == 'mech':                                   # механический конь: трубa, пар, поршни
         c.horse(33, 46, 46, 24, mid, light, dark, mane=None)
         for x in range(16, 50, 6): c.rect(x, 38, x + 1, 54, dark)
@@ -145,6 +154,10 @@ R = [
   ('horse', 'N', 'n', 'D', 'D'), dict(body='i', bodyd='I', gear='wide', gcol='N', gdark='n', weapon='gun')),
  (3, 'hero_artificer', 'артифицер: механический медный конь с трубой и паром, фартук, гогглы, гаечный ключ',
   ('mech', 'y', 'f', 'Y', None), dict(body='n', bodyd='N', gear='wide', gcol='O', gdark='N', weapon='wrench')),
+ (3, 'hero_swarmlord', 'роевод: ездовой жук с рогом, хитиновый доспех, копьё-жало',
+  ('beetle', 'H', 'h', 'j', None), dict(body='H', bodyd='j', gear='helm', gcol='j', gdark='G', weapon='spear')),
+ (3, 'hero_pheromancer', 'феромант: ездовой жук, янтарная мантия, посох с фасеточным навершием',
+  ('beetle', 'j', 'H', 'G', None), dict(body='f', bodyd='O', gear='hood', gcol='H', gdark='j', weapon='staff')),
 ]
 
 TITLES = {1: 'всадники на карте (группа 1)', 2: 'всадники на карте (группа 2)', 3: 'всадники на карте (группа 3)'}

@@ -540,3 +540,90 @@ class Fig(Canvas):
             self.horns(CX, CY - r * 0.9, r * 1.2, gd, g, spread=int(r * 0.9), curve=int(r * 0.4))
         if extras:
             for fn in extras: fn(self, CX, CY, r)
+
+    # ---------- насекомые (Улей) ----------
+    def chitin(self, cx, cy, rx, ry, mid, light, dark, seg=5, rot=0.0):
+        """Хитиновый сегментированный корпус: панцирь с поперечными пластинами.
+
+        Форму держат именно швы между сегментами: гладкий эллипс читается каплей,
+        а не насекомым. Свет сверху-слева — блик по верхней кромке каждой пластины.
+        """
+        self.ellipse(cx, cy, rx, ry, mid, rot)
+        self.ellipse(cx - rx * 0.18, cy - ry * 0.30, rx * 0.72, ry * 0.58, light, rot)
+        self.ellipse(cx + rx * 0.30, cy + ry * 0.28, rx * 0.62, ry * 0.52, dark, rot)
+        for i in range(1, seg):                                   # швы поперёк тела
+            t = -1 + 2.0 * i / seg
+            x = cx + rx * t * math.cos(rot)
+            y = cy + rx * t * math.sin(rot)
+            h = ry * math.sqrt(max(0.0, 1 - t * t))
+            self.line(x - h * math.sin(rot), y + h * math.cos(rot),
+                      x + h * math.sin(rot), y - h * math.cos(rot), dark)
+            self.line(x - h * math.sin(rot) + math.cos(rot), y + h * math.cos(rot) + math.sin(rot),
+                      x + h * math.sin(rot) + math.cos(rot), y - h * math.cos(rot) + math.sin(rot), light)
+
+    def insect_legs(self, cx, ytop, ybot, mid, dark, pairs=3, span=14, back=0.0):
+        """Суставчатые лапы: колено ВЫШЕ бедра, ступни разнесены вперёд и назад.
+
+        У насекомого нога ломается вверх, а пары тянутся в разные стороны — от
+        этого стойка. Ровные вертикальные палки читались как ножки табурета.
+        """
+        reach = (0.95, 0.15, -0.85)                       # передняя вперёд, средняя вбок, задняя назад
+        for i in range(pairs):
+            r = reach[i] if i < len(reach) else 0.0
+            hx = cx - back + (i - (pairs - 1) / 2.0) * span * 0.22
+            hy = ytop + (ybot - ytop) * 0.15
+            kx = hx + span * r * 0.45 + span * 0.12
+            ky = hy - (ybot - ytop) * 0.22
+            fx, fy = hx + span * r * 0.95, ybot
+            for s, col in ((-1, dark), (1, mid)):         # дальняя нога пары темнее ближней
+                o = s * span * 0.10
+                self.line(hx + o, hy, kx + o, ky, col, 3)
+                self.line(kx + o, ky, fx + o, fy, col, 2)
+                self.ellipse(fx + o, fy, 2.2, 1.6, col)
+
+    def mandibles(self, cx, cy, r, mid, dark, tip='i'):
+        """Жвалы: две изогнутые клешни вперёд, светлые острия."""
+        for s in (-1, 1):
+            self.line(cx, cy + s * r * 0.2, cx + r * 0.9, cy + s * r * 0.75, mid, 3)
+            self.line(cx + r * 0.9, cy + s * r * 0.75, cx + r * 1.5, cy + s * r * 0.25, mid, 2)
+            self.ellipse(cx + r * 1.5, cy + s * r * 0.25, 1.6, 1.6, tip)
+            self.line(cx + r * 0.2, cy + s * r * 0.35, cx + r * 0.85, cy + s * r * 0.8, dark)
+
+    def compound_eye(self, cx, cy, rx, ry, mid, light, dark='k'):
+        """Фасеточный глаз: крупная линза с сеткой фасеток и бликом."""
+        self.ellipse(cx, cy, rx, ry, mid)
+        for dy in range(int(-ry), int(ry) + 1, 2):
+            for dx in range(int(-rx), int(rx) + 1, 2):
+                if (dx / max(0.5, rx)) ** 2 + (dy / max(0.5, ry)) ** 2 <= 0.9:
+                    if (dx + dy) % 4 == 0: self.put(cx + dx, cy + dy, dark)
+        self.ellipse(cx - rx * 0.3, cy - ry * 0.35, rx * 0.3, ry * 0.3, light)
+
+    def wing_membrane(self, x, y, span, rise, mid, light, vein, flip=False, droop=0.5):
+        """Перепончатое крыло с жилками: длинное, узкое, с прожилками веером.
+
+        От крыла летучей мыши отличается тем, что перепонка светлая и сквозная,
+        а держат её тонкие жилки, а не пальцы.
+        """
+        s = -1 if flip else 1
+        tipx, tipy = x + s * span, y - rise
+        self.poly([(x, y), (x + s * span * 0.45, y - rise * 1.05), (tipx, tipy),
+                   (x + s * span * 0.55, y + rise * droop * 0.55), (x + s * span * 0.12, y + rise * 0.16)], mid)
+        self.poly([(x, y), (x + s * span * 0.42, y - rise * 0.92), (x + s * span * 0.82, y - rise * 0.82),
+                   (x + s * span * 0.4, y - rise * 0.1)], light)
+        for i in range(5):                                        # жилки от основания к кромке
+            t = 0.15 + i * 0.2
+            self.line(x + s * span * 0.06, y, x + s * span * t * 1.05,
+                      y - rise * (1.0 - 0.45 * abs(t - 0.5)), vein)
+
+    def sting(self, x, y, length, mid, dark, tip='i'):
+        """Жало: конус назад-вниз со светлым остриём."""
+        self.poly([(x, y - 4), (x, y + 4), (x - length, y + 1)], mid)
+        self.poly([(x, y - 1), (x, y + 3), (x - length, y + 1)], dark)
+        self.ellipse(x - length, y + 1, 1.6, 1.6, tip)
+
+    def antennae(self, cx, cy, length, ch, spread=5):
+        """Усики: две дуги вверх-наружу с утолщением на конце."""
+        for s in (-1, 1):
+            self.line(cx, cy, cx + s * spread, cy - length * 0.6, ch, 2)
+            self.line(cx + s * spread, cy - length * 0.6, cx + s * spread * 1.9, cy - length, ch)
+            self.ellipse(cx + s * spread * 1.9, cy - length, 2, 2, ch)
