@@ -850,7 +850,9 @@
       return;
     }
     const abil = cur && Bt.abilityOf(cur), abilT = abil ? Bt.abilityTargets(b, cur) : [];
-    if (abil) mk(UI.icon('ic_spellbook') + ' ' + ABILITY_LABEL[abil], () => {
+    // «Поднять» подписываем тем, кого поднимаем: демонов у Владыки бездны, личинок у Матки
+    const abilLabel = abil === 'raise' ? 'Поднять: ' + C.get(C.abParam(C.get(cur.cid), 'raise') || 'demon').name.toLowerCase() : ABILITY_LABEL[abil];
+    if (abil) mk(UI.icon('ic_spellbook') + ' ' + abilLabel, () => {
       const best = AI.chooseAbility(b, cur);
       if (best) doAction(best.action); else UI.toast('Некого выбрать', 'warn');
     }, !human || !abilT.length, 'Раз за бой; можно и кликнуть по своему отряду');
