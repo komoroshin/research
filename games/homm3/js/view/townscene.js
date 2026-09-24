@@ -21,6 +21,7 @@
     stronghold: { n: '#9a6a3c', N: '#5a3a1c', r: '#c88a2a', R: '#8a5a10' }, fortress: { n: '#7a8a5a', N: '#4a5a3a', r: '#4a8a5a', R: '#2a5a3a' },
     conflux: { n: '#dfe6ee', N: '#9aa8bc', r: '#7fd9ea', R: '#3a9ab8' }, cove: { n: '#b89a6a', N: '#6f5a3e', r: '#3a9ab8', R: '#0f4f45' },
     factory: { n: '#a04a12', N: '#5a2a0c', r: '#6a6a74', R: '#3b3b44' },
+    hive: { n: '#c8b878', N: '#7a6a3a', r: '#a8b02a', R: '#5f6a14' },
   };
   const SCENE = {
     castle: { sky: ['#4d8fe0', '#bcdcf7'], far: ['#6f8aa0', '#8fa8b8'], terrain: 'grass', trees: ['tree_1', 'tree_2'], water: 'river', flowers: true },
@@ -34,6 +35,7 @@
     conflux: { sky: ['#6fb0e0', '#e8f4ff'], far: ['#8fa8c8', '#bcd4e8'], terrain: 'grass', trees: ['tree_1', 'tree_2'], water: 'lake', flowers: true },
     cove: { sky: ['#3a7ab8', '#bfe0f4'], far: ['#3a6a7a', '#5f8a9a'], terrain: 'swamp', trees: ['tree_swamp'], water: 'lake', reeds: true },
     factory: { sky: ['#8a7a6a', '#e0cfa8'], far: ['#7a6a52', '#9a8a6a'], terrain: 'sand', trees: ['tree_dead'], water: 'none', dust: true },
+    hive: { sky: ['#8a8a4a', '#d8d69a'], far: ['#6a6a3a', '#8a8a52'], terrain: 'dirt', trees: ['tree_dead', 'tree_3'], water: 'none', dust: true },
   };
   // слоты сцены: x — центр, y — земля (низ спрайта)
   const LAYOUT = {

@@ -196,5 +196,23 @@ def factory(c):
         for i in range(3): c.ellipse(cx + i * 3, H - 82 - i * 7, 5 + i, 4 + i * 0.6, 'l')
 add(3, 'town_factory', 'Фабрика: латунный корпус с шестернёй, кирпичные цеха, трубы с дымом', factory)
 
+# ---- Улей ----
+def hive(c):
+    base_town(c, 'T', 'i', 'N', 'H', 'j', 'f', 'h')
+    c.ellipse(W // 2, H - 58, 30, 30, 'T')                                    # земляной купол гнезда
+    c.ellipse(W // 2 - 6, H - 66, 22, 20, 'i')
+    c.ellipse(W // 2 + 10, H - 50, 20, 18, 'N')
+    for i, r in enumerate((26, 19, 12)):                                      # соты-ярусы
+        for k in range(-2, 3):
+            cx = W // 2 + k * r * 0.42
+            c.ellipse(cx, H - 58 - i * 12, 4.5, 4, 'f')
+            c.ellipse(cx, H - 58 - i * 12, 3, 2.6, 'O')
+    c.ellipse(W // 2, H - 24, 9, 8, 'D')                                      # лётное отверстие
+    for cx in (20, W - 21):                                                   # хитиновые шпили
+        c.poly([(cx - 7, H - 26), (cx + 7, H - 26), (cx, H - 86)], 'H')
+        c.poly([(cx - 4, H - 26), (cx + 1, H - 26), (cx - 1, H - 80)], 'h')
+        c.ellipse(cx, H - 88, 4, 5, 'f')
+add(3, 'town_hive', 'Улей: земляной купол с сотами, лётное отверстие, хитиновые шпили', hive)
+
 for g, title in ((1, 'города на карте (группа 1)'), (2, 'города на карте (группа 2)'), (3, 'города на карте (группа 3)')):
     write('towns_%d' % g, title, [b for gg, b in T if gg == g], 'towns3.py')

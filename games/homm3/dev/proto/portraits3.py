@@ -205,8 +205,31 @@ add('artificer', 'b', 'Агар: пожилой лысый инженер, се�
     extras=[lambda c, x, y, r: goggles(c, x, y, r, 'y'),
             lambda c, x, y, r: [c.ellipse(x + s * r * 1.5, y + r * 2.0, r * 0.5, r * 0.3, 'O') for s in (-1, 1)]])
 
+# ---- Улей: хитиновые наплечники, фасеточные вставки, усики в венце ----
+def feelers(c, CX, CY, r):                    # усики над головой
+    c.antennae(CX, CY - r * 1.15, r * 0.9, 'j', spread=int(r * 0.35))
+
+def chitin_pauldrons(c, CX, CY, r):           # хитиновые наплечники
+    for s in (-1, 1):
+        c.ellipse(CX + s * r * 1.45, CY + r * 1.95, r * 0.62, r * 0.4, 'H')
+        c.ellipse(CX + s * r * 1.45, CY + r * 1.85, r * 0.5, r * 0.28, 'h')
+
+add('swarmlord', 'a', 'Зурр, роевод: бритая голова, хитиновая маска-жвалы, наплечники', 4,
+    bg='C', skin='S', shade='T', eye='h', cloth='H', clothd='j', collar='j',
+    extras=[feelers, chitin_pauldrons,
+            lambda c, x, y, r: c.mandibles(x + r * 0.2, y + r * 0.5, r * 0.55, 'j', 'D')])
+add('swarmlord', 'b', 'Ктаа, роевод: тёмная кожа, шлем-панцирь с гребнем, янтарный глаз', 4,
+    bg='C', skin='T', shade='N', beard='z', eye='f', gear='helm', gcol='H', gdark='j', cloth='j', clothd='G',
+    extras=[feelers, chitin_pauldrons])
+add('pheromancer', 'a', 'Мелисса, феромант: рыжие волосы, венец из усиков, янтарное ожерелье', 4,
+    bg='C', skin='s', shade='S', hair='O', eye='h', cloth='f', clothd='O', collar='y',
+    extras=[feelers, lambda c, x, y, r: amulet(c, x, y, r, 'f')])
+add('pheromancer', 'b', 'Вирра, феромант: бледная кожа, капюшон с хитиновой каймой, фасеточная линза', 4,
+    bg='C', skin='i', shade='S', eye='h', gear='hood', gcol='j', gdark='G', cloth='H', clothd='j',
+    extras=[feelers, lambda c, x, y, r: c.compound_eye(x + r * 0.45, y - r * 0.1, r * 0.3, r * 0.26, 'h', 'w', 'G')])
+
 TITLES = {1: 'портреты героев (Замок, Оплот, Башня)', 2: 'портреты героев (Инферно, Некрополь, Подземелье)',
-          3: 'портреты героев (Цитадель, Крепость, Сопряжение)', 4: 'портреты героев (Бухта, Фабрика)'}
+          3: 'портреты героев (Цитадель, Крепость, Сопряжение)', 4: 'портреты героев (Бухта, Фабрика, Улей)'}
 for g in (1, 2, 3, 4):
     blocks = []
     for grp, name, comment, kw, extras in P:

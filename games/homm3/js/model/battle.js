@@ -443,11 +443,13 @@
     if (!u.alive || u.usedAbility) return null;
     const c = cre(u);
     if (C.hasAb(c, 'resurrectOnce')) return 'resurrect';
-    if (C.hasAb(c, 'raiseDemons')) return 'raise';
+    if (C.hasAb(c, 'raiseDemons') || C.abParam(c, 'raise')) return 'raise';
     if (C.hasAb(c, 'castRandomBuff')) return 'buff';
     if (C.hasAb(c, 'castBloodlust')) return 'bloodlust';
     return null;
   }
+  /** Кого поднимает стек: Владыка бездны — демонов, Матка Улья — личинок (`raise:<id>`). */
+  function raiseInto(u) { return C.abParam(cre(u), 'raise') || 'demon'; }
   /** Возможные цели способности — свои стеки (для «поднятия» — павшие). */
   function abilityTargets(b, u) {
     const kind = abilityOf(u); if (!kind) return [];
@@ -457,7 +459,7 @@
       const ca = cre(a);
       if (C.hasAb(ca, 'machine')) continue;
       if (kind === 'resurrect') { if (a.alive && a.count < a.initial && !C.isUndead(ca) && !C.hasAb(ca, 'nonliving')) out.push(a); }
-      else if (kind === 'raise') { if (!a.alive && !C.isUndead(ca) && !C.hasAb(ca, 'nonliving') && a.cid !== 'demon') out.push(a); }
+      else if (kind === 'raise') { if (!a.alive && !C.isUndead(ca) && !C.hasAb(ca, 'nonliving') && a.cid !== raiseInto(u)) out.push(a); }
       else if (a.alive) out.push(a);
     }
     return out;
@@ -472,13 +474,13 @@
       b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'resurrect', amount });
       heal(b, t, amount, true, true);
     } else if (kind === 'raise') {
-      // корпус павшего стека превращается в демонов; после боя они не остаются
-      const demon = C.get('demon');
+      // корпус павшего стека превращается в поднятых; после боя они не остаются
+      const rid = raiseInto(u), spawn = C.get(rid);
       const corpseHp = t.initial * t.maxHp;
-      const n = Math.max(1, Math.min(u.count, Math.floor(corpseHp / demon.hp)));
-      t.cid = 'demon'; t.maxHp = demon.hp; t.hp = demon.hp; t.count = n; t.initial = Math.max(t.initial, n);
+      const n = Math.max(1, Math.min(u.count, Math.floor(corpseHp / spawn.hp)));
+      t.cid = rid; t.maxHp = spawn.hp; t.hp = spawn.hp; t.count = n; t.initial = Math.max(t.initial, n);
       t.alive = true; t.effects = {}; t.shots = 0; t.tempRaised = n; t.retal = 1;
-      b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'raiseDemons', n });
+      b.events.push({ t: 'ability', unit: u.id, target: t.id, ab: 'raiseDemons', n, cid: rid });
     } else {
       const pick = kind === 'bloodlust' ? ['bloodlust', 6] : b._rng.pick(GENIE_BUFFS);
       addEffect(b, t, pick[0], pick[1], 3);
@@ -877,7 +879,7 @@
     return out;
   }
 
-  H3.Battle = { tacticsHexes, inTacticsBand, isMachine, autoMachine, berserk, abilityOf, abilityTargets, W, H, WALL_COL, MOAT_COL, GATE_ROW, TOWER_ROWS, WALL_SEGMENTS, create, act, current, reachable, pathFrom, preview, calcDamage, availableSpells, spellTargets,
+  H3.Battle = { tacticsHexes, inTacticsBand, isMachine, autoMachine, berserk, abilityOf, abilityTargets, useAbility, W, H, WALL_COL, MOAT_COL, GATE_ROW, TOWER_ROWS, WALL_SEGMENTS, create, act, current, reachable, pathFrom, preview, calcDamage, availableSpells, spellTargets,
     unitAt, occupies, hexesOf, around, isBig, dirOf, canStand, unitDist, contactPair, isObstacle, wallState, isMoat, effSpeed, effAtt, effDef, unitMorale, unitLuck, totalHp, canAct, isShooterNow, adjacentEnemy, enemies, allies, cre, hasEff, effVal, passable, finish };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Battle;
 })(typeof window !== 'undefined' ? window : globalThis);

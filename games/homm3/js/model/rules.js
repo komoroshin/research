@@ -164,6 +164,7 @@
     const [base] = F.creaturesOf(town.faction, tier);
     let mult = 1;
     if (town.buildings.castle) mult = 2; else if (town.buildings.citadel) mult = 1.5;
+    if (town.faction === 'hive' && town.buildings.special && tier <= 3) mult += 0.5;   // Инкубатор Улья
     return Math.max(1, Math.floor(base.growth * mult));
   }
   function guildLevel(town) { for (let i = 5; i >= 1; i--) if (town.buildings['guild_' + i]) return i; return 0; }

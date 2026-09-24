@@ -860,6 +860,34 @@ test('море по заказу сценария: sea=none осушает ка�
   }
 });
 
+test('Улей: прирост выше нормы, матка поднимает павших в личинок, Инкубатор ускоряет низкие тиры', () => {
+  const C = H3.Creatures, F = H3.Factions, Bt = H3.Battle;
+  // прирост каждого тира выше среднего по остальным фракциям — иначе это не рой
+  for (let t = 1; t <= 7; t++) {
+    const hive = F.creaturesOf('hive', t)[0];
+    const others = F.LIST.filter(f => f.id !== 'hive').map(f => F.creaturesOf(f.id, t)[0]);
+    const avg = others.reduce((s, c) => s + c.growth, 0) / others.length;
+    assert.ok(hive.growth > avg * 1.2, 'тир ' + t + ': прирост ' + hive.growth + ' против среднего ' + avg.toFixed(1));
+    assert.ok(hive.hp < others.reduce((s, c) => s + c.hp, 0) / others.length, 'тир ' + t + ': рой должен быть слабее поштучно');
+  }
+  // Инкубатор: +50 % к приросту тиров 1–3 и ничего выше
+  const town = { faction: 'hive', buildings: {} };
+  const base1 = R.growthOf(town, 1), base4 = R.growthOf(town, 4);
+  town.buildings.special = true;
+  assert.ok(R.growthOf(town, 1) > base1, 'Инкубатор поднимает первый тир');
+  assert.equal(R.growthOf(town, 4), base4, 'четвёртого тира Инкубатор не касается');
+  // матка поднимает павший свой стек в личинок (тот же механизм, что демоны у Владыки бездны)
+  const b = Bt.create({ army: [{ cid: 'queen', n: 3 }, { cid: 'worker', n: 10 }], player: 0 },
+                      { army: [{ cid: 'pikeman', n: 1 }], player: 1 }, { rng: new U.RNG(4), terrain: 'grass' });
+  const q = b.units.find(u => u.cid === 'queen'), dead = b.units.find(u => u.cid === 'worker');
+  dead.alive = false; dead.count = 0;
+  const targets = Bt.abilityTargets(b, q);
+  assert.ok(targets.some(t => t.id === dead.id), 'павший рабочий — цель способности матки');
+  Bt.useAbility(b, q, dead.id);
+  assert.equal(b.units.find(u => u.id === dead.id).cid, 'larva', 'стек поднят личинками');
+  assert.ok(b.units.find(u => u.id === dead.id).alive, 'поднятый стек жив');
+});
+
 test('особые постройки фракций: ход, гильдия, пруд, портал, разовый подарок, некромантия', () => {
   const A = H3.Adventure, B = H3.Buildings;
   const mk = f => S.newGame({ size: 'S', seed: 11, opponents: 1, difficulty: 'normal', faction: f });
@@ -994,9 +1022,9 @@ test('Некромантию предлагают только героям Не
     assert.ok(R.makeHero(st, t.id, 0, 0, 0, true).skills.necromancy >= 1, t.name + ' без Некромантии');
 });
 
-test('все 11 фракций комплектны: существа, жилища, герои, особая постройка, местность', () => {
+test('все 12 фракций комплектны: существа, жилища, герои, особая постройка, местность', () => {
   const F = H3.Factions, B = H3.Buildings, C = H3.Creatures;
-  assert.equal(F.LIST.length, 11);
+  assert.equal(F.LIST.length, 12);
   for (const f of F.LIST) {
     assert.ok(R.TERRAIN_INDEX[f.terrain] !== undefined, f.name + ': неизвестная местность ' + f.terrain);
     assert.ok(U.RARE.includes(f.rare), f.name + ': редкий ресурс ' + f.rare);
