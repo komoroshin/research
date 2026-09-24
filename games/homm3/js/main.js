@@ -6,11 +6,11 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '3.15.3';
+  const VERSION = '3.15.4';
   /* Пауза: PAUSED = true убирает с первой страницы все кнопки — партию из интерфейса не запустить.
      Включая обратно, не забудь поднять версию здесь, в sw.js и в index.html: иначе телефон отдаст старый кеш.
      Отладочные прогоны не ломаются и на паузе: ?dev=1 открывает обычное меню (скрипты в dev/ его дописывают). */
-  const PAUSED = false;
+  const PAUSED = true;
   function devMode() {
     try { return !!new URLSearchParams(location.search).get('dev'); } catch (e) { return false; }
   }
