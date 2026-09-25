@@ -49,7 +49,9 @@
     if (t >= 0) { h = towardHue(h, 0.13, t * 0.22 * s); s = s * (1 - t * 0.12); l = l + (1 - l) * t * 0.85; }
     else { const k = -t; h = towardHue(h, 0.66, k * 0.28 * s); s = Math.min(1, s * (1 + k * 0.25)); l = l * (1 - k * 0.78); }
     const [R, G, B] = fromHsl(h, s, l);
-    v = a === undefined ? 'rgb(' + (R | 0) + ',' + (G | 0) + ',' + (B | 0) + ')' : 'rgba(' + (R | 0) + ',' + (G | 0) + ',' + (B | 0) + ',' + a + ')';
+    // без прозрачности — '#rrggbb': такой цвет можно снова передать в tone() (улучшения строят краски от базовых)
+    const hx = v2 => Math.max(0, Math.min(255, Math.round(v2))).toString(16).padStart(2, '0');
+    v = a === undefined ? '#' + hx(R) + hx(G) + hx(B) : 'rgba(' + (R | 0) + ',' + (G | 0) + ',' + (B | 0) + ',' + a + ')';
     toneCache.set(key, v); return v;
   }
 
@@ -168,8 +170,16 @@
   }
 
   /* ---------- одна форма ---------- */
+  /** Цвет формы: '#rrggbb' или '$b:#запасной' — цвет из подмены (цвет игрока, краска фракции). */
+  function colorOf(c, env) {
+    if (!c || c[0] !== '$') return c || '#888888';
+    const i = c.indexOf(':'), key = c.slice(1, i < 0 ? undefined : i), def = i < 0 ? '#888888' : c.slice(i + 1);
+    let v = env.tint && env.tint[key];
+    if (v && v[0] !== '#') { const P = H3.Sprites && H3.Sprites.PAL; v = P && P[v]; }
+    return v || def;
+  }
   function paintShape(ctx, s, env, rnd, depth) {
-    const mat = MAT[s.m] || MAT.cloth, c = s.c || '#888888';
+    const mat = MAT[s.m] || MAT.cloth, c = colorOf(s.c, env);
     const path = s._p || (s._p = new Path2D(s._d));
     const [x0, y0, x1, y1] = s._bb, w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
     const lx = env.lx, ly = env.ly, R = Math.hypot(w, h) * 0.5;
@@ -204,7 +214,7 @@
     }
     if (s.lines) for (const l of s.lines) {
       const lp = l._p || (l._p = new Path2D(l._d));
-      ctx.strokeStyle = l.c || (l.light ? tone(c, 0.7, l.a || 0.8) : tone(c, -0.72, l.a || 0.8));
+      ctx.strokeStyle = l.c ? colorOf(l.c, env) : (l.light ? tone(c, 0.7, l.a || 0.8) : tone(c, -0.72, l.a || 0.8));
       ctx.lineWidth = l.w || 1.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke(lp);
     }
     if (s.glint) for (const [gx, gy, gr] of s.glint) {
@@ -216,16 +226,17 @@
     const lw = (s.line === undefined ? mat.line : s.line) * (depth ? 0.75 : 1);
     if (lw) {
       // контур толще со стороны тени: второй проход чуть сдвинут от света
-      ctx.strokeStyle = s.lc || tone(c, -0.82); ctx.lineWidth = 2 * lw; ctx.lineJoin = 'round'; ctx.stroke(path);
+      ctx.strokeStyle = s.lc ? colorOf(s.lc, env) : tone(c, -0.82); ctx.lineWidth = 2 * lw; ctx.lineJoin = 'round'; ctx.stroke(path);
       if (!s._out) s._out = new Path2D('M' + (x0 - 20) + ' ' + (y0 - 20) + 'H' + (x1 + 20) + 'V' + (y1 + 20) + 'H' + (x0 - 20) + 'Z' + s._d);
       ctx.save(); ctx.clip(s._out, 'evenodd'); ctx.translate(-lx * 0.9 * lw, -ly * 0.9 * lw); ctx.lineWidth = 1.8 * lw; ctx.stroke(path); ctx.restore();
     }
   }
 
   /* ---------- свет сцены: тёплый сверху-слева, холодный снизу-справа, отсвет земли снизу ---------- */
-  function sceneLight(ctx, W, H, SC) {
+  function sceneLight(ctx, W, H, SC, X0, Y0) {
     if (!SC || !SC.id) return;
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-atop';
+    // градиенты считаются по всему существу, даже когда холст — обрезанная часть
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, -(X0 || 0), -(Y0 || 0)); ctx.globalCompositeOperation = 'source-atop';
     const rgba = (r, g, b, a) => 'rgba(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ',' + a.toFixed(3) + ')';
     if (SC.wk) { const g = ctx.createLinearGradient(0, 0, W * 0.75, H * 0.75); g.addColorStop(0, rgba(SC.wr, SC.wg, SC.wb, SC.wk * 0.5)); g.addColorStop(1, rgba(SC.wr, SC.wg, SC.wb, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
     if (SC.ck) { const g = ctx.createLinearGradient(W, H, W * 0.3, H * 0.3); g.addColorStop(0, rgba(SC.cr, SC.cg, SC.cb, SC.ck * 0.55)); g.addColorStop(1, rgba(SC.cr, SC.cg, SC.cb, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
@@ -234,7 +245,21 @@
   }
 
   /* ---------- рендер ---------- */
+  /** Улучшение из базового: те же формы с заменой красок (recolor), без форм с id из drop,
+      с добавленными формами (add: [{ part: индекс, shapes, back: true — под остальными }]). */
+  function variant(d) {
+    const b = DEFS[d.base]; if (!b) throw new Error('Vec: нет базового ' + d.base);
+    const map = {}; for (const k in d.recolor || {}) map[k.toLowerCase()] = d.recolor[k];
+    const rc = c => (c && map[c.toLowerCase()]) || c;
+    const cp = s => { const o = Object.assign({}, s); o.c = rc(s.c); if (s.lc) o.lc = rc(s.lc);
+      if (s.sub) o.sub = s.sub.map(cp); if (s.lines) o.lines = s.lines.map(l => l.c ? Object.assign({}, l, { c: rc(l.c) }) : l); return o; };
+    const drop = d.drop || [];
+    const parts = b.parts.map(p => Object.assign({}, p, { shapes: p.shapes.filter(s => !drop.includes(s.id)).map(cp) }));
+    for (const a of d.add || []) { const p = parts[a.part]; p.shapes = a.back ? a.shapes.concat(p.shapes) : p.shapes.concat(a.shapes); }
+    return { w: b.w, h: b.h, anchor: b.anchor, parts };
+  }
   function def(name, d) {
+    if (d.base) d = variant(d);
     for (const p of d.parts) p.shapes.forEach(compile);
     // холст растёт под рисунок: крыло или плюмаж могут выходить за рамку старого спрайта
     let x0 = 0, y0 = 0, x1 = d.w, y1 = d.h;
@@ -246,36 +271,47 @@
   }
   function has(name) { return VEC.on && !!DEFS[name]; }
   /** Холст одной части (или всего существа) при S пикселях на клетку. */
-  function paintPart(d, part, S, flip, SC, idx) {
+  /** Рамка части в пикселях полного холста: часть хранится обрезанной — память телефона не резиновая. */
+  function partRect(d, part, px, W, flip) {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const s of part.shapes) { const b = s._bb; x0 = Math.min(x0, b[0]); y0 = Math.min(y0, b[1]); x1 = Math.max(x1, b[2]); y1 = Math.max(y1, b[3]); }
+    x0 -= 4; y0 -= 4; x1 += 4; y1 += 4;
+    const sx0 = flip ? W - (x1 + d.ox) * px : (x0 + d.ox) * px, sx1 = flip ? W - (x0 + d.ox) * px : (x1 + d.ox) * px;
+    const X0 = Math.max(0, Math.floor(sx0)), Y0 = Math.max(0, Math.floor((y0 + d.oy) * px));
+    return [X0, Y0, Math.max(1, Math.ceil(sx1) - X0), Math.max(1, Math.ceil((y1 + d.oy) * px) - Y0)];
+  }
+  function paintPart(d, part, S, flip, SC, idx, tint) {
     const px = S / U, W = Math.max(1, Math.round(d.W * px)), H = Math.max(1, Math.round(d.H * px));
-    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const [X0, Y0, cw, ch] = partRect(d, part, px, W, flip);
+    const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; cv._x = X0; cv._y = Y0;
     const ctx = cv.getContext('2d');
-    if (flip) ctx.setTransform(-px, 0, 0, px, W - d.ox * px, d.oy * px); else ctx.setTransform(px, 0, 0, px, d.ox * px, d.oy * px);
+    if (flip) ctx.setTransform(-px, 0, 0, px, W - d.ox * px - X0, d.oy * px - Y0); else ctx.setTransform(px, 0, 0, px, d.ox * px - X0, d.oy * px - Y0);
     const L = Math.hypot(SC && SC.lx || -0.6, SC && SC.ly || -0.8), slx = (SC && SC.lx !== undefined ? SC.lx : -0.6) / L, sly = (SC && SC.ly !== undefined ? SC.ly : -0.8) / L;
     // свет в координатах рисунка: при зеркале он тоже зеркалится, чтобы на экране всегда падал сверху-слева
-    const env = { px, sx: 1, lx: flip ? -slx : slx, ly: sly, sl: [flip ? -slx : slx, sly] };
+    const env = { px, sx: 1, lx: flip ? -slx : slx, ly: sly, sl: [flip ? -slx : slx, sly], tint };
     // смещение тени задаётся в пикселях холста — зеркалу оно не подчиняется, поэтому переворачиваем знак сами
     env.sx = flip ? -1 : 1;
     const rnd = rngOf(d.seed + idx * 7919);
     for (const s of part.shapes) paintShape(ctx, s, env, rnd, 0);
-    sceneLight(ctx, W, H, SC);
+    sceneLight(ctx, W, H, SC, X0, Y0);
     return cv;
   }
   const cache = new Map();
   function sceneId(SC) { return SC && SC.id || ''; }
   /** Все части при S пикселях на клетку; кэш по имени, плотности, зеркалу и свету сцены. */
-  function build(name, S, flip, SC) {
-    const key = name + '|' + S + '|' + (flip ? 1 : 0) + '|' + sceneId(SC);
+  function build(name, S, flip, SC, tint) {
+    const key = name + '|' + S + '|' + (flip ? 1 : 0) + '|' + sceneId(SC) + (tint ? '|' + JSON.stringify(tint) : '');
     let r = cache.get(key); if (r) return r;
     const d = DEFS[name]; if (!d) return null;
     const px = S / U;
     const parts = d.parts.map((p, i) => ({
-      kind: p.kind, side: (p.side || 0) * (flip ? -1 : 1), x: 0, y: 0,
+      kind: p.kind, side: (p.side || 0) * (flip ? -1 : 1),
       pivot: [(flip ? d.W - d.ox - p.pivot[0] : p.pivot[0] + d.ox) * px, (p.pivot[1] + d.oy) * px],
-      cv: paintPart(d, p, S, flip, SC, i),
+      cv: paintPart(d, p, S, flip, SC, i, tint),
     }));
-    const cv = document.createElement('canvas'); cv.width = parts[0].cv.width; cv.height = parts[0].cv.height;
-    const c = cv.getContext('2d'); for (const p of parts) c.drawImage(p.cv, 0, 0);
+    for (const p of parts) { p.x = p.cv._x; p.y = p.cv._y; }
+    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(d.W * px)); cv.height = Math.max(1, Math.round(d.H * px));
+    const c = cv.getContext('2d'); for (const p of parts) c.drawImage(p.cv, p.x, p.y);
     const ax = (flip ? d.W - d.ox - d.anchor[0] : d.anchor[0] + d.ox) / U, ay = (d.anchor[1] + d.oy) / U;
     cv._w = d.W / U; cv._h = d.H / U; cv._anchor = [ax, ay]; cv._vec = true;
     r = { parts, cv, anchor: [ax, ay], vec: true, ordered: true };
@@ -286,15 +322,15 @@
   /** Запас плотности: рисуем с избытком под экран телефона и приближение камеры. */
   function quality() { const dpr = root.devicePixelRatio || 1; return Math.min(5, Math.max(2, Math.round(dpr * 1.5 * 2) / 2)); }
   /** Картинка ровно в масштабе scale (для теней, иконок, снимков). */
-  function render(name, scale, flip, tint, SC) { const r = build(name, scale || 1, flip, SC); return r && r.cv; }
+  function render(name, scale, flip, tint, SC) { const r = build(name, scale || 1, flip, SC, tint); return r && r.cv; }
   /** Картинка с запасом плотности: { cv, k }, на экране cv.width * k. */
   function image(name, scale, flip, tint, SC) {
-    const Q = quality(), r = build(name, (scale || 1) * Q, flip, SC);
+    const Q = quality(), r = build(name, (scale || 1) * Q, flip, SC, tint);
     return r ? { cv: r.cv, k: 1 / Q } : null;
   }
   /** Части для анимации — в том же формате, что даёт нарезка пиксельного спрайта. */
   function parts(name, scale, flip, tint, SC) {
-    const Q = quality(), r = build(name, (scale || 1) * Q, flip, SC);
+    const Q = quality(), r = build(name, (scale || 1) * Q, flip, SC, tint);
     return r ? { parts: r.parts, anchor: r.anchor, k: 1 / Q, cv: r.cv, vec: true, ordered: true } : null;
   }
   function setOn(v) {
