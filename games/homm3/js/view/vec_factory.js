@@ -592,7 +592,7 @@
     const crest = [];
     const nCrest = o.crestN || 4;
     for (let i = 0; i < nCrest; i++) {
-      const lf = K.leaf([252 - i * 3, 94 + i * 2], -Math.PI * (0.62 + i * 0.1), 62 - i * 6 + (o.crestL || 0), 13);
+      const lf = K.leaf([254 - i * 3, 94 + i * 2], -Math.PI * (0.7 + i * 0.07), 60 - i * 5 + (o.crestL || 0), 13);
       crest.push({ p: lf.body, c: o.crest[i % o.crest.length], m: 'leather', gloss: 0.5, line: 0.6, lines: [{ p: lf.shaft, w: 0.9, light: true, a: 0.55 }] });
     }
     const headS = [
@@ -616,7 +616,7 @@
     ];
     const W = o.w, Wf = { pri: tone(W.pri, -0.2), pri2: tone(W.pri2 || W.pri, -0.2), sec: tone(W.sec, -0.2), sec2: tone(W.sec2 || W.sec, -0.2), cov: tone(W.cov, -0.2), cov2: tone(W.cov2, -0.2) };
     const parts = [
-      { kind: 'prop', pivot: [196, 138], shapes: mirror(wing.feather([196, 138], [-0.5, -1], 112, Wf), 196) },
+      { kind: 'prop', pivot: [204, 130], shapes: mirror(wing.feather([204, 130], [-0.32, -1], 112, Wf), 204) },
       { kind: 'torso', pivot: [180, 250], shapes: bodyS },
       { kind: 'head', pivot: [238, 118], shapes: headS },
       { kind: 'prop', pivot: [168, 150], shapes: wing.feather([168, 150], [-0.8, -0.72], 128, W) },

@@ -269,7 +269,7 @@
     // башни
     out.push(...tower(72, G, 32, 236, Object.assign({}, S, { win: [262, 322], roofH: 132, flag: '#3f8f33', flagL: 40, flagLeft: true })));
     out.push(...tower(370, G, 28, 178, Object.assign({}, S, { win: [320], roofH: 104 })));
-    out.push(...tower(CX, G, 56, 300, Object.assign({}, S, { win: [220, 286], winW: 12, winH: 34, roofH: 150, eave: 8, flag: '#3f8f33', flagL: 44 })));
+    out.push(...tower(CX, G, 56, 284, Object.assign({}, S, { win: [220, 286], winW: 12, winH: 34, roofH: 132, eave: 8, flag: '#3f8f33', flagL: 40 })));
     // деревянные балконы на башнях
     for (const [cx, y, hw] of [[72, 290, 32], [CX, 250, 56], [370, 340, 28]]) out.push({ p: box(cx - hw - 12, y, cx + hw + 12, y + 9), c: '#8a5a30', m: 'wood', flow: 0, line: 1,
       lines: [{ p: [[cx - hw - 10, y - 12], [cx + hw + 10, y - 12]], w: 2.4, c: '#5a3a1c', a: 0.9 }, ...[-1, -0.5, 0, 0.5, 1].map(k => ({ p: [[cx + k * (hw + 8), y], [cx + k * (hw + 8), y - 12]], w: 2, c: '#5a3a1c', a: 0.9 }))] });
@@ -320,7 +320,7 @@
       out.push(horn(x - 30, 196, -1, 56, '#6a5a50'), horn(x + 30, 196, 1, 56, '#6a5a50'), ...t, { p: box(x - 26, 176, x + 26, 190), c: '#2a1e1c', m: 'steel', line: 1 }, ...flame(x, 180, 24, 58));
     }
     // донжон с рогами
-    const d = tower(CX, 414, 74, 300, Object.assign({}, S, { win: [], roofH: 150, eave: 10 }));
+    const d = tower(CX, 414, 74, 300, Object.assign({}, S, { win: [], roofH: 126, eave: 10 }));
     out.push(horn(CX - 64, 130, -1, 92, '#7a6a5e'), horn(CX + 64, 130, 1, 92, '#7a6a5e'), ...d);
     out.push(spikes(CX - 84, CX + 84, 118, 18, 21, '#2a1e1c'));
     out.push(...win(CX, 220, 13, 38, { pointed: true, c: '#ffa040', lc: '#2a0a04' }), ...win(CX - 40, 280, 10, 30, { pointed: true, c: '#ffa040', lc: '#2a0a04' }), ...win(CX + 40, 280, 10, 30, { pointed: true, c: '#ffa040', lc: '#2a0a04' }));
@@ -356,7 +356,7 @@
   town('town_dungeon', () => {
     const S = { wall: '#5c4c60', shade: '#342a38', light: '#76667a', roof: '#8a4ac0', roofD: '#4e2a72', winC: '#e090ff', winLC: '#2a0e3a', pointed: true, flare: 0.1, finial: '#c890f0' };
     const RK = '#4a4252', RK2 = '#3a3442', out = [];
-    out.push(...tower(CX, 380, 56, 300, Object.assign({}, S, { win: [150, 210, 270], winW: 11, winH: 32, roofH: 140, eave: 8 })));
+    out.push(...tower(CX, 380, 56, 262, Object.assign({}, S, { win: [180, 236, 290], winW: 11, winH: 32, roofH: 122, eave: 8 })));
     // скальные массивы по бокам
     out.push(rock([P(-20, G, 1), [-14, 250], [20, 170], [70, 130], [130, 150], [176, 210], [200, 300], P(214, G, 1)], RK, { lines: [{ p: [[60, 160], [80, 240], [66, 320]], w: 2.4, a: 0.45 }, { p: [[140, 190], [150, 280]], w: 2, a: 0.4 }] }));
     out.push(rock([P(352, G, 1), [366, 300], [390, 220], [440, 160], [500, 150], [548, 190], [564, 280], P(566, G, 1)], RK, { lines: [{ p: [[470, 170], [456, 260], [480, 340]], w: 2.4, a: 0.45 }] }));
@@ -461,7 +461,7 @@
     out.push(...tower(448, G, 34, 208, Object.assign({}, S, { win: [270, 330], roofH: 110 })));
     for (const [x, c] of [[30, '#ff7a2a'], [196, '#3a9af0'], [370, '#eaf6ff'], [537, '#b08a4a']]) out.push(...pylon(x, G, 120, c));
     // центральный хрустальный шпиль
-    const d = tower(CX, G, 60, 290, Object.assign({}, S, { win: [], roofH: 170, eave: 8, flare: 0.2 }));
+    const d = tower(CX, G, 60, 290, Object.assign({}, S, { win: [], roofH: 150, eave: 8, flare: 0.2 }));
     out.push(...d, { p: tube([[CX - 50, 104, 4], [CX, 118, 4], [CX + 50, 104, 4]]), c: GOLD, m: 'gold', line: 0.5 }, { p: tube([[CX - 34, 60, 3], [CX, 70, 3], [CX + 34, 60, 3]]), c: GOLD, m: 'gold', line: 0.5 });
     out.push(...win(CX, 220, 13, 40, { pointed: true, c: '#dcc0ff', lc: '#4a3a6a' }), ...win(CX - 34, 290, 9, 28, { pointed: true, c: '#dcc0ff', lc: '#4a3a6a' }), ...win(CX + 34, 290, 9, 28, { pointed: true, c: '#dcc0ff', lc: '#4a3a6a' }));
     out.push(...gate(CX, G, 30, 86, { pointed: true, ring: '#d0d8e6', rw: 10, hole: '#2a3a5a', grateC: '#9ad8f0' }));
@@ -476,7 +476,7 @@
     const out = [];
     out.push(...cwall(150, 540, 334, 404, '#c0a070', { top: '#ccae80' }));
     out.push(...tower(410, 404, 32, 176, Object.assign({}, S, { win: [290, 346], roofH: 96 })));
-    out.push(...tower(CX, 404, 66, 290, Object.assign({}, S, { win: [], roofH: 136, eave: 10, flag: '#c42a2a', flagL: 44 })));
+    out.push(...tower(CX, 404, 66, 272, Object.assign({}, S, { win: [], roofH: 122, eave: 10, flag: '#c42a2a', flagL: 40 })));
     out.push(...win(CX, 200, 12, 34), ...win(CX - 36, 262, 10, 28), ...win(CX + 36, 262, 10, 28));
     out.push(...gate(CX, 404, 30, 80, { ring: '#a88a5c', rw: 10 }));
     // маяк на скале
@@ -633,7 +633,7 @@
 
   /* ---------- ратуша: от сельской управы до капитолия ---------- */
   bld('bld_hall_1', (f, g) => [
-    ...tower(80, 200, 30, 120, Object.assign({}, TWR, { roofH: 58, win: [], mason: false, eave: 6 })),
+    ...tower(80, 200, 30, 114, Object.assign({}, TWR, { roofH: 58, win: [], mason: false, eave: 6 })),
     walls(56, 164, 364, g), hip(56, 364, 170, 84, 14, 64), cornice(52, 368, 168),
     ...win(105, 210, 12, 32), ...win(305, 210, 12, 32), ...win(105, 300, 12, 32), ...win(305, 300, 12, 32),
     { e: [210, 196, 20, 20], c: GOLD, m: 'gold', line: 1, lines: [{ p: [[210, 196], [210, 183]], w: 3, c: '#3a2a10', a: 0.9 }, { p: [[210, 196], [219, 200]], w: 3, c: '#3a2a10', a: 0.9 }] },
@@ -650,7 +650,7 @@
     ...door(230, g - 10, 30, 118),
   ]);
   bld('bld_hall_3', (f, g) => [
-    ...tower(260, 200, 30, 130, Object.assign({}, TWR, { roofH: 64, win: [140], winW: 7, winH: 20, mason: false })),
+    ...tower(260, 200, 30, 110, Object.assign({}, TWR, { roofH: 62, win: [150], winW: 7, winH: 20, mason: false })),
     ...tower(76, 260, 34, 150, Object.assign({}, TWR, { roofH: 72, win: [178], winW: 8, winH: 22, mason: false })),
     ...tower(444, 260, 34, 150, Object.assign({}, TWR, { roofH: 72, win: [178], winW: 8, winH: 22, mason: false })),
     walls(44, 204, 476, g), hip(44, 476, 210, 86, 14, 80), cornice(40, 480, 208),
