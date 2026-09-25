@@ -275,7 +275,8 @@
       lines: [{ p: [[cx - hw - 10, y - 12], [cx + hw + 10, y - 12]], w: 2.4, c: '#5a3a1c', a: 0.9 }, ...[-1, -0.5, 0, 0.5, 1].map(k => ({ p: [[cx + k * (hw + 8), y], [cx + k * (hw + 8), y - 12]], w: 2, c: '#5a3a1c', a: 0.9 }))] });
     out.push(...gate(CX, G, 28, 86, { pointed: true, ring: '#e6d8a8', rw: 8, grate: false, door: '#8a5a30' }));
     // кусты у подножия
-    out.push(...foliage(120, 424, 44, 18, 3, LEAF, 5, { leaf: 0.5 }), ...foliage(450, 424, 50, 18, 3, LEAF, 9, { leaf: 0.5 }));
+    const BUSH = ['#4a8a32', '#5e9e3c', '#76b44a', '#8ac458'];
+    out.push(...foliage(118, 412, 40, 20, 3, BUSH, 5, { leaf: 0.5 }), ...foliage(452, 412, 44, 20, 3, BUSH, 9, { leaf: 0.5 }));
     return out;
   });
 
