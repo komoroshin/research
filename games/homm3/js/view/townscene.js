@@ -270,17 +270,37 @@
     /** Черты фракции поверх постройки: снег на крышах, шипы, черепа, плющ, кристаллы. */
     function ornaments(c, it, ts) {
       const sh = it.shape, fid = town.faction;
-      const roof = (step, fn) => { for (let x = 0; x < sh.w; x += step) { const y = sh.top[x]; if (y < 0) continue; fn(it.bx + x, it.by + y, x); } };
-      if (fid === 'tower') { c.fillStyle = '#ffffff'; roof(2, (x, y) => c.fillRect(x, y, 2, 2)); c.fillStyle = 'rgba(255,255,255,0.5)'; roof(2, (x, y) => c.fillRect(x, y + 2, 2, 1)); }
-      else if (fid === 'inferno') { c.fillStyle = '#1a0a08'; roof(8, (x, y, i) => { if (i % 16 === 0) { c.beginPath(); c.moveTo(x - 2, y + 1); c.lineTo(x + 2, y + 1); c.lineTo(x, y - 7); c.fill(); } }); if (Math.random() < 0.15) { const x = it.bx + Math.floor(Math.random() * sh.w); const y = sh.top[x - it.bx]; if (y >= 0) scene.fx.add({ x, y: it.by + y, vx: rnd(-4, 4), vy: -rnd(10, 22), ax: 0, ay: 0, ttl: 500, life: 0, size: 1.6, color: '#ff9a3a', shape: 'dot', glow: true, shrink: true }); } }
-      else if (fid === 'necropolis') { let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; } if (px >= 0) { const x = it.bx + px, y = it.by + py; c.fillStyle = '#e8e8ea'; c.fillRect(x - 2, y - 6, 5, 4); c.fillStyle = '#000'; c.fillRect(x - 1, y - 5, 1, 1); c.fillRect(x + 1, y - 5, 1, 1); } }
-      else if (fid === 'rampart') { c.fillStyle = '#3f7f2f'; for (let x = 4; x < sh.w - 4; x += 6) c.fillRect(it.bx + x, it.pos[1] - 3 - (x % 3), 3, 3 + (x % 3)); c.fillStyle = '#5cb84a'; roof(6, (x, y, i) => { if (i % 12 === 0) c.fillRect(x, y + 3, 2, 4 + (i % 5)); }); }
-      else if (fid === 'dungeon') { c.fillStyle = '#c04fd0'; [[-1, 0], [1, 0]].forEach(([s]) => { const x = it.pos[0] + s * (sh.w / 2 - 4); c.beginPath(); c.moveTo(x - 3, it.pos[1]); c.lineTo(x + 3, it.pos[1]); c.lineTo(x, it.pos[1] - 9); c.fill(); }); c.fillStyle = '#e6a0ff'; c.fillRect(it.pos[0] - sh.w / 2 + 3, it.pos[1] - 5, 1, 2); }
-      else if (fid === 'stronghold') { c.fillStyle = '#5a3a1c'; for (let x = 2; x < sh.w; x += 7) c.fillRect(it.bx + x, it.pos[1] - 8, 2, 8); c.fillStyle = '#e8e8ea'; c.fillRect(it.bx + 2, it.pos[1] - 12, 4, 4); }
-      else if (fid === 'fortress') { c.fillStyle = '#7fa838'; roof(4, (x, y, i) => { if (i % 8 === 0) c.fillRect(x, y + 1, 3, 2); }); c.fillStyle = 'rgba(60,90,90,0.5)'; c.fillRect(it.bx, it.pos[1] - 2, sh.w, 3); }
-      else { // замок: вымпел цвета игрока на коньке
-        const p = st.players[town.owner]; let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; }
-        if (p && px >= 0 && it.key !== 'hall') { const x = it.bx + px, y = it.by + py; c.fillStyle = '#2a1a10'; c.fillRect(x, y - 8, 1, 8); c.fillStyle = p.color; const wv = Math.round(Math.sin(ts / 150 + px) * 1.5); c.fillRect(x + 1, y - 8 + wv, 5, 3); }
+      // линия крыши в координатах сцены (каждые step точек)
+      const ridge = step => { const pts = []; for (let x = 0; x < sh.w; x += step) { const y = sh.top[x]; if (y >= 0) pts.push([it.bx + x, it.by + y]); } return pts; };
+      const peak = () => { let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; } return px < 0 ? null : [it.bx + px, it.by + py]; };
+      if (fid === 'tower') {   // снег шапкой по линии крыши
+        const pts = ridge(2); if (pts.length < 2) return;
+        c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(pts[0][0], pts[0][1] - 1);
+        for (const p of pts) c.lineTo(p[0], p[1] - 1.2);
+        for (let k = pts.length - 1; k >= 0; k--) c.lineTo(pts[k][0], pts[k][1] + 2 + ((k * 7) % 3));
+        c.closePath(); c.fill(); c.strokeStyle = 'rgba(150,175,200,0.6)'; c.lineWidth = 0.6; c.stroke();
+      } else if (fid === 'inferno') {   // шипы по коньку и искры
+        for (const [x, y] of ridge(16)) { const g = c.createLinearGradient(x - 2, y - 8, x + 2, y); g.addColorStop(0, '#4a1a10'); g.addColorStop(1, '#120604'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 2.5, y + 1); c.quadraticCurveTo(x - 0.5, y - 3, x, y - 8); c.quadraticCurveTo(x + 0.8, y - 3, x + 2.5, y + 1); c.fill(); }
+        if (Math.random() < 0.15) { const x = it.bx + Math.floor(Math.random() * sh.w); const y = sh.top[x - it.bx]; if (y >= 0) scene.fx.add({ x, y: it.by + y, vx: rnd(-4, 4), vy: -rnd(10, 22), ax: 0, ay: 0, ttl: 500, life: 0, size: 1.6, color: '#ff9a3a', shape: 'dot', glow: true, shrink: true }); }
+      } else if (fid === 'necropolis') {   // череп на верхушке
+        const p = peak(); if (!p) return; const [x, y] = p;
+        const g = c.createRadialGradient(x - 1, y - 6, 0.5, x, y - 5, 4); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#a8a6a0'); c.fillStyle = g;
+        c.beginPath(); c.ellipse(x, y - 5, 3.2, 2.8, 0, 0, Math.PI * 2); c.fill(); c.fillRect(x - 1.8, y - 3.5, 3.6, 2);
+        c.fillStyle = '#1a1414'; c.beginPath(); c.arc(x - 1.1, y - 5.2, 0.8, 0, Math.PI * 2); c.arc(x + 1.1, y - 5.2, 0.8, 0, Math.PI * 2); c.fill();
+      } else if (fid === 'rampart') {   // плющ у основания и по стенам
+        c.fillStyle = '#3f7f2f';
+        for (let x = 4; x < sh.w - 4; x += 5) { const h = 3 + ((x * 13) % 5); c.beginPath(); c.ellipse(it.bx + x, it.pos[1] - h / 2 - 1, 2.6, h / 2 + 1, 0, 0, Math.PI * 2); c.fill(); }
+        c.fillStyle = '#6cc052'; for (let x = 6; x < sh.w - 6; x += 9) { c.beginPath(); c.ellipse(it.bx + x, it.pos[1] - 4, 1.6, 1.2, 0, 0, Math.PI * 2); c.fill(); }
+      } else if (fid === 'dungeon') {   // кристаллы у углов
+        for (const s2 of [-1, 1]) { const x = it.pos[0] + s2 * (sh.w / 2 - 4), y = it.pos[1]; const g = c.createLinearGradient(x - 3, y - 9, x + 3, y); g.addColorStop(0, '#f0c0ff'); g.addColorStop(1, '#8a3aa8'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 3, y); c.lineTo(x - 1, y - 7); c.lineTo(x, y - 10); c.lineTo(x + 1.5, y - 6); c.lineTo(x + 3, y); c.fill(); }
+      } else if (fid === 'stronghold') {   // частокол у основания
+        for (let x = 2; x < sh.w; x += 7) { const g = c.createLinearGradient(it.bx + x, 0, it.bx + x + 2.5, 0); g.addColorStop(0, '#8a6038'); g.addColorStop(1, '#4a2e14'); c.fillStyle = g; c.beginPath(); c.moveTo(it.bx + x, it.pos[1]); c.lineTo(it.bx + x, it.pos[1] - 7); c.lineTo(it.bx + x + 1.2, it.pos[1] - 9); c.lineTo(it.bx + x + 2.5, it.pos[1] - 7); c.lineTo(it.bx + x + 2.5, it.pos[1]); c.fill(); }
+      } else if (fid === 'fortress') {   // мох по крыше и сырость у основания
+        c.fillStyle = 'rgba(127,168,56,0.9)'; for (const [x, y] of ridge(5)) { c.beginPath(); c.ellipse(x, y + 1.5, 2.4, 1.3, 0, 0, Math.PI * 2); c.fill(); }
+        const g = c.createLinearGradient(0, it.pos[1] - 6, 0, it.pos[1]); g.addColorStop(0, 'rgba(60,90,90,0)'); g.addColorStop(1, 'rgba(60,90,90,0.55)'); c.fillStyle = g; c.fillRect(it.bx, it.pos[1] - 6, sh.w, 6);
+      } else { // вымпел цвета игрока на коньке
+        const p = st.players[town.owner], pk = peak();
+        if (p && pk && it.key !== 'hall') { const [x, y] = pk; c.strokeStyle = '#2a1a10'; c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y - 9); c.stroke(); const wv = Math.sin(ts / 150 + x) * 1.5; c.fillStyle = p.color; c.beginPath(); c.moveTo(x + 0.5, y - 9); c.quadraticCurveTo(x + 3, y - 9 + wv, x + 7, y - 7.5 + wv); c.quadraticCurveTo(x + 3, y - 6 + wv, x + 0.5, y - 6); c.fill(); }
       }
     }
     function drawLights(c, night, ts) {
