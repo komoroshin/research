@@ -549,10 +549,12 @@
   const urlCache = new Map();
   /** dataURL для <img> в DOM. */
   function url(name, scale, flip) {
-    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + SCENE.id + (vecOf(name) ? '|v' : '');
+    const vec = vecOf(name);
+    // интерфейс рисованного — без света сцены: портрет и иконка не должны синеть утром и рыжеть на лаве
+    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + (vec ? 'v' : SCENE.id);
     let u = urlCache.get(key);
     if (u) return u;
-    const cv = render(name, scale || 2, flip);
+    const cv = vec ? H3.Vec.render(name, scale || 2, flip, null, null) : render(name, scale || 2, flip);
     if (!cv) {
       const c = document.createElement('canvas'); c.width = c.height = 16 * (scale || 2);
       placeholder(c.getContext('2d'), name, c.width / 2, c.height, scale || 2);

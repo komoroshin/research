@@ -294,37 +294,47 @@
     const X0 = Math.max(0, Math.floor(sx0)), Y0 = Math.max(0, Math.floor((y0 + d.oy) * px));
     return [X0, Y0, Math.max(1, Math.ceil(sx1) - X0), Math.max(1, Math.ceil((y1 + d.oy) * px) - Y0)];
   }
-  function paintPart(d, part, S, flip, SC, idx, tint) {
-    const px = S / U, W = Math.max(1, Math.round(d.W * px)), H = Math.max(1, Math.round(d.H * px));
-    const [X0, Y0, cw, ch] = partRect(d, part, px, W, flip);
+  function paintPart(d, part, S, idx, tint) {
+    const px = S / U, W = Math.max(1, Math.round(d.W * px));
+    const [X0, Y0, cw, ch] = partRect(d, part, px, W, false);
     const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; cv._x = X0; cv._y = Y0;
     const ctx = cv.getContext('2d');
-    if (flip) ctx.setTransform(-px, 0, 0, px, W - d.ox * px - X0, d.oy * px - Y0); else ctx.setTransform(px, 0, 0, px, d.ox * px - X0, d.oy * px - Y0);
-    const L = Math.hypot(SC && SC.lx || -0.6, SC && SC.ly || -0.8), slx = (SC && SC.lx !== undefined ? SC.lx : -0.6) / L, sly = (SC && SC.ly !== undefined ? SC.ly : -0.8) / L;
-    // свет в координатах рисунка: при зеркале он тоже зеркалится, чтобы на экране всегда падал сверху-слева
-    const env = { px, sx: 1, lx: flip ? -slx : slx, ly: sly, sl: [flip ? -slx : slx, sly], tint };
-    // смещение тени задаётся в пикселях холста — зеркалу оно не подчиняется, поэтому переворачиваем знак сами
-    env.sx = flip ? -1 : 1;
+    ctx.setTransform(px, 0, 0, px, d.ox * px - X0, d.oy * px - Y0);
+    // объём считается при студийном свете сверху-слева; свет дня и отсвет земли кладутся потом (дёшево)
+    const L = Math.hypot(0.6, 0.8), env = { px, sx: 1, lx: -0.6 / L, ly: -0.8 / L, sl: [-0.6 / L, -0.8 / L], tint };
     const rnd = rngOf(d.seed + idx * 7919);
     for (const s of part.shapes) paintShape(ctx, s, env, rnd, 0);
-    sceneLight(ctx, W, H, SC, X0, Y0);
     return cv;
   }
-  const cache = new Map();
+  /* Кэш в два слоя. База — части без света сцены и без зеркала: дорого, рисуется один раз на плотность.
+     Вид — база, отзеркаленная для стороны защиты, с наложенным светом дня и местности: дёшево,
+     поэтому новый бой в другой день или на другой земле не перерисовывает существ заново. */
+  const baseCache = new Map(), cache = new Map();
   function sceneId(SC) { return SC && SC.id || ''; }
-  /** Все части при S пикселях на клетку; кэш по имени, плотности, зеркалу и свету сцены. */
+  function base(name, S, tint) {
+    const key = name + '|' + S + (tint ? '|' + JSON.stringify(tint) : '');
+    let b = baseCache.get(key); if (b) return b;
+    const d = DEFS[name]; if (!d) return null;
+    b = { d, W: Math.max(1, Math.round(d.W * S / U)), H: Math.max(1, Math.round(d.H * S / U)), parts: d.parts.map((p, i) => paintPart(d, p, S, i, tint)) };
+    baseCache.set(key, b);
+    if (baseCache.size > 300) baseCache.delete(baseCache.keys().next().value);
+    return b;
+  }
   function build(name, S, flip, SC, tint) {
     const key = name + '|' + S + '|' + (flip ? 1 : 0) + '|' + sceneId(SC) + (tint ? '|' + JSON.stringify(tint) : '');
     let r = cache.get(key); if (r) return r;
-    const d = DEFS[name]; if (!d) return null;
-    const px = S / U;
-    const parts = d.parts.map((p, i) => ({
-      kind: p.kind, side: (p.side || 0) * (flip ? -1 : 1),
-      pivot: [(flip ? d.W - d.ox - p.pivot[0] : p.pivot[0] + d.ox) * px, (p.pivot[1] + d.oy) * px],
-      cv: paintPart(d, p, S, flip, SC, i, tint),
-    }));
-    for (const p of parts) { p.x = p.cv._x; p.y = p.cv._y; }
-    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(d.W * px)); cv.height = Math.max(1, Math.round(d.H * px));
+    const b = base(name, S, tint); if (!b) return null;
+    const d = b.d, px = S / U, W = b.W, H = b.H;
+    const parts = d.parts.map((p, i) => {
+      const src = b.parts[i], cv = document.createElement('canvas'); cv.width = src.width; cv.height = src.height;
+      const c = cv.getContext('2d'), x = flip ? W - src._x - src.width : src._x;
+      if (flip) { c.setTransform(-1, 0, 0, 1, src.width, 0); }
+      c.drawImage(src, 0, 0); c.setTransform(1, 0, 0, 1, 0, 0);
+      sceneLight(c, W, H, SC, x, src._y);
+      return { kind: p.kind, side: (p.side || 0) * (flip ? -1 : 1), x, y: src._y, cv,
+        pivot: [(flip ? d.W - d.ox - p.pivot[0] : p.pivot[0] + d.ox) * px, (p.pivot[1] + d.oy) * px] };
+    });
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     const c = cv.getContext('2d'); for (const p of parts) c.drawImage(p.cv, p.x, p.y);
     const ax = (flip ? d.W - d.ox - d.anchor[0] : d.anchor[0] + d.ox) / U, ay = (d.anchor[1] + d.oy) / U;
     cv._w = d.W / U; cv._h = d.H / U; cv._anchor = [ax, ay]; cv._vec = true;
@@ -334,7 +344,7 @@
     return r;
   }
   /** Запас плотности: рисуем с избытком под экран телефона и приближение камеры. */
-  function quality() { const dpr = root.devicePixelRatio || 1; return Math.min(5, Math.max(2, Math.round(dpr * 1.5 * 2) / 2)); }
+  function quality() { const dpr = root.devicePixelRatio || 1; return Math.min(3, Math.max(2, Math.round(dpr * 2) / 2)); }
   /** Картинка ровно в масштабе scale (для теней, иконок, снимков). */
   function render(name, scale, flip, tint, SC) { const r = build(name, scale || 1, flip, SC, tint); return r && r.cv; }
   /** Картинка с запасом плотности: { cv, k }, на экране cv.width * k. */
@@ -348,7 +358,7 @@
     return r ? { parts: r.parts, anchor: r.anchor, k: 1 / Q, cv: r.cv, vec: true, ordered: true } : null;
   }
   function setOn(v) {
-    VEC.on = !!v; cache.clear();
+    VEC.on = !!v; cache.clear(); baseCache.clear();
     if (H3.Anim && H3.Anim.setParts) H3.Anim.setParts(H3.Anim.PARTS.on);   // нарезка частей строилась из прежних картинок
   }
 
