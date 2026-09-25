@@ -15,7 +15,7 @@
   const { tube, ell, P, rot, frameOf, tone } = K;
 
   /* ---------- основа: формы, штрихи, вписывание ---------- */
-  const LW = 1.5;      // контур иконок — толще обычного, чтобы силуэт читался мелко
+  const LW = 1.6;      // контур иконок — толще обычного, чтобы силуэт читался мелко
   const M = 5;         // поля в рамке старой иконки, дизайн-единицы
   const rad = d => d * Math.PI / 180;
   const sharp = pts => pts.map(q => P(q[0], q[1], 1));
@@ -66,12 +66,33 @@
   const hl = (p, a, w) => ({ p, w: w || 1.4, light: true, a: a || 0.8 });   // светлый штрих
   const dl = (p, a, w) => ({ p, w: w || 1.4, a: a || 0.6 });                // тёмный штрих
 
+  /** Светлым формам (белое, кость, пергамент) — контур темнее: иначе мелко они сливаются со светлым фоном. */
+  function darkRim(s) {
+    if (!s.lc && s.c && s.c[0] === '#' && s.line !== 0 && s.m !== 'flat') {
+      const h = s.c.slice(1), n = parseInt(h.length === 3 ? h.replace(/./g, c => c + c) : h, 16);
+      const lum = (0.3 * (n >> 16 & 255) + 0.59 * (n >> 8 & 255) + 0.11 * (n & 255)) / 255;
+      if (lum > 0.7) s.lc = tone(s.c, -0.96);
+    }
+    return s;
+  }
   /** Описать иконку: формы в квадрате 100×100 → рамка старой иконки. */
   function icon(name, shapes) {
     const fr = frameOf(name) || { w: 160, h: 160, anchor: [80, 160] };
+    const src = shapes.flat().filter(Boolean);
+    const make = (k, ox, oy) => V.def(name, { w: fr.w, h: fr.h, anchor: fr.anchor,
+      parts: [{ kind: 'torso', pivot: [fr.w / 2, fr.h / 2], shapes: xf(src, (x, y) => [ox + x * k, oy + y * k], k).map(darkRim) }] });
     const k = (Math.min(fr.w, fr.h) - 2 * M) / 100, ox = (fr.w - 100 * k) / 2, oy = (fr.h - 100 * k) / 2;
-    const list = xf(shapes.flat().filter(Boolean), (x, y) => [ox + x * k, oy + y * k], k);
-    V.def(name, { w: fr.w, h: fr.h, anchor: fr.anchor, parts: [{ kind: 'torso', pivot: [fr.w / 2, fr.h / 2], shapes: list }] });
+    const d = make(k, ox, oy);
+    if (d.W === fr.w && d.H === fr.h) return;
+    // рисунок вылез за рамку (толстая трубка, луч) — холст вырос бы и иконка встала бы не на место: ужимаем внутрь рамки
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const s of d.parts[0].shapes) { const b = s._bb; x0 = Math.min(x0, b[0]); y0 = Math.min(y0, b[1]); x1 = Math.max(x1, b[2]); y1 = Math.max(y1, b[3]); }
+    const m = 4.5, s = Math.min(1, (fr.w - 2 * m) / (x1 - x0), (fr.h - 2 * m) / (y1 - y0));
+    const nx0 = x0 * s, nx1 = x1 * s, ny0 = y0 * s, ny1 = y1 * s;
+    // масштаб вокруг центра рамки, затем сдвиг ровно настолько, чтобы рисунок вошёл
+    const tx = Math.max(m - nx0, Math.min(fr.w - m - nx1, fr.w / 2 * (1 - s)));
+    const ty = Math.max(m - ny0, Math.min(fr.h - m - ny1, fr.h / 2 * (1 - s)));
+    make(k * s, ox * s + tx, oy * s + ty);
   }
 
   /* ---------- краски ---------- */
@@ -163,10 +184,10 @@
   function clover(cx, cy, r, c, o) {
     o = o || {}; const out = [S(tube([[cx, cy, 7], [cx + r * 0.5, cy + r * 1.4, 6.5], [cx + r * 0.3, cy + r * 2.2, 5.5]]), o.stem || tone(c, -0.2), 'leather')];
     for (let i = 0; i < 4; i++) {
-      const a = 45 + i * 90, lx = cx + Math.cos(rad(a - 90)) * r * 0.62 * 0, ly = 0;
-      const leafC = [cx + Math.cos(rad(a)) * r * 0.78, cy + Math.sin(rad(a)) * r * 0.78];
-      out.push(S(rot(heartPts(leafC[0], leafC[1], r * 0.72), leafC[0], leafC[1], rad(a - 90 + 180)), i % 2 ? tone(c, 0.08) : c, 'leather',
-        { gloss: 0.4, lines: [hl([[cx + (lx || 0), cy + ly], [cx + Math.cos(rad(a)) * r * 1.2, cy + Math.sin(rad(a)) * r * 1.2]], 0.55, 1.6)] }));
+      // лист-сердечко остриём к центру, жилка по середине
+      const a = 45 + i * 90, leafC = [cx + Math.cos(rad(a)) * r * 0.78, cy + Math.sin(rad(a)) * r * 0.78];
+      out.push(S(rot(heartPts(leafC[0], leafC[1], r * 0.72), leafC[0], leafC[1], rad(a + 90)), i % 2 ? tone(c, 0.08) : c, 'leather',
+        { gloss: 0.4, lines: [hl([[cx, cy], [cx + Math.cos(rad(a)) * r * 1.2, cy + Math.sin(rad(a)) * r * 1.2]], 0.55, 1.6)] }));
     }
     out.push(E(cx, cy, r * 0.18, r * 0.18, tone(c, -0.2), 'leather', { line: 0.8 }));
     return out;
@@ -190,7 +211,7 @@
     const F = [[80, 60, 56, 94], [70, 50, 36, 86], [60, 40, 18, 74], [50, 32, 6, 54], [42, 26, 4, 32], [38, 22, 10, 8]];
     F.forEach(([bx, by, tx, ty], i) => {
       const lf = K.leaf([bx, by], Math.atan2(ty - by, tx - bx), Math.hypot(tx - bx, ty - by), 21);
-      out.push(S(lf.body, i % 2 ? c : tone(c, -0.1), 'cloth', { lo: 0.55, ao: 0.45, lines: [dl(lf.shaft, 0.35, 1.2)] }));
+      out.push(S(lf.body, i % 2 ? c : tone(c, -0.1), 'cloth', { lo: 0.55, ao: 0.45, line: 1.1, lc: tone(c, -0.5), lines: [dl(lf.shaft, 0.3, 1.2)] }));
     });
     out.push(S([[97, 72], [97, 50], [86, 34], [66, 20], [46, 12], [28, 12], [26, 22], [44, 30], [60, 42], [74, 58], [84, 76]], tone(c, 0.08), 'cloth',
       { lo: 0.55, ao: 0.45, lines: [hl([[90, 50], [70, 30], [44, 18]], 0.7, 1.8), dl([[40, 28], [58, 40], [74, 58]], 0.3, 1.4)] }));
@@ -406,9 +427,9 @@
   icon('ic_shots', [arrow(10, 92, 92, 10, { hw: 11, hlen: 24, sw: 6 })]);
   icon('ic_skull', [skull(50, 48, 42)]);
   icon('ic_sound', [
-    S(tube([[36, 78, 6], [36, 20, 6]]), '#efe6d0', 'horn'), S(tube([[82, 70, 6], [82, 12, 6]]), '#efe6d0', 'horn'),
-    S(sharp([[33, 14], [85, 4], [85, 20], [33, 30]]), '#efe6d0', 'horn'),
-    S(ell(26, 80, 13, 10, 12, rad(-20)), '#efe6d0', 'horn'), S(ell(72, 72, 13, 10, 12, rad(-20)), '#efe6d0', 'horn'),
+    S(tube([[36, 78, 8], [36, 20, 8]]), '#f2e2b0', 'horn'), S(tube([[82, 70, 8], [82, 12, 8]]), '#f2e2b0', 'horn'),
+    S(sharp([[32, 14], [86, 3], [86, 21], [32, 32]]), '#f2e2b0', 'horn'),
+    S(ell(24, 80, 15, 11, 12, rad(-20)), '#f2e2b0', 'horn'), S(ell(70, 72, 15, 11, 12, rad(-20)), '#f2e2b0', 'horn'),
   ]);
 
   /* ======================= art_*: артефакты ======================= */
@@ -500,7 +521,7 @@
   icon('art_helm_enlightenment', [helm({ c: '#f2f2f6', band: GOLD, s: 0.84, crest: [S(star(50, 36, 36, 22, 14), '#ffe07a', 'flat', { line: 0.8 })] })]);
   icon('art_titan_cuirass', [cuirass('#3a64d0', GOLD, [S(star(50, 56, 12, 5, 8), GOLD, 'gold', { line: 1 })])]);
   icon('art_necklace_bliss', [chain(60), ...place(gem(50, 50, 18, '#8ae8f8'), 1, 0, 28)]);
-  icon('art_angel_wings', [place(wingL(WHITE), 0.62, -18, 2), mirror(place(wingL(WHITE), 0.62, -18, 2))]);
+  icon('art_angel_wings', [place(wingL(WHITE), 0.66, -17, 0), mirror(place(wingL(WHITE), 0.66, -17, 0))]);
   icon('art_drowned_compass', [
     E(50, 50, 46, 46, GOLD, 'gold', { gloss: 1.2 }),
     E(50, 50, 35, 35, '#e8eef4', 'cloth', { line: 1.2, lines: [dl([[50, 18], [50, 24]], 0.7, 2.4), dl([[82, 50], [76, 50]], 0.7, 2.4), dl([[50, 82], [50, 76]], 0.7, 2.4), dl([[18, 50], [24, 50]], 0.7, 2.4)] }),
@@ -524,10 +545,10 @@
     icon('sp_' + id, [
       S(rrect(1, 1, 99, 99, 14), sc.rim, 'gold', { gloss: 0.6 }),
       S(rrect(9, 9, 91, 91, 8), sc.field, 'cloth', { line: 1, hi: 1.6 }),
-      place(sym.flat(), 0.8, 0, 0),
+      place(sym.flat(), 0.86, 0, 0),
     ]);
   }
-  spell('magic_arrow', [S(star(74, 26, 22, 8, 4, -45), '#f0d8ff', 'flat', { line: 0 }), arrow(14, 86, 80, 20, { shaft: '#d8b8ff', head: '#f4e8ff', fl: '#b070e0', hw: 12, sw: 7 })]);
+  spell('magic_arrow', [S(star(76, 24, 26, 9, 4, -45), '#f0d8ff', 'flat', { line: 0 }), arrow(10, 90, 82, 18, { shaft: '#e4c8ff', head: '#faf0ff', fl: '#c080f0', hw: 15, hlen: 26, sw: 9 })]);
   spell('haste', [boot({ c: '#8a5a2e' }), place(wingL(WHITE), 0.54, -28, -24)]);
   spell('slow', [
     S([P(8, 90, 1), [10, 76], [30, 72], [70, 72], [86, 58], [92, 40], [98, 44], [96, 66], [86, 84], P(70, 90, 1)], '#78b048', 'skin', { gloss: 0.5 }),
@@ -541,16 +562,17 @@
   spell('bloodlust', [S(dropPts(50, 58, 32), '#c01828', 'gem', { gloss: 1.3, glint: [[40, 50, 8]] })]);
   spell('cure', [E(50, 50, 44, 44, '#2e6a3a', 'flat', { line: 0 }), S(sharp([[38, 8], [62, 8], [62, 38], [92, 38], [92, 62], [62, 62], [62, 92], [38, 92], [38, 62], [8, 62], [8, 38], [38, 38]]), '#f8f6ee', 'cloth', { gloss: 0.5 })]);
   spell('dispel', [
-    S(tube([[50, 50, 4], [60, 46, 6], [62, 34, 7], [50, 24, 8], [32, 30, 9], [24, 50, 10], [34, 72, 10], [58, 78, 9], [76, 64, 8], [82, 40, 7], [72, 18, 6], [56, 8, 4]]), '#c080f8', 'gem', { gloss: 1 }),
+    S(tube([[50, 50, 6], [60, 46, 9], [62, 34, 10], [50, 24, 11], [32, 30, 12], [24, 50, 13], [34, 72, 13], [58, 78, 12], [76, 64, 11], [82, 40, 10], [72, 18, 8], [56, 8, 6]]), '#dca4ff', 'gem', { gloss: 1 }),
     S(star(86, 82, 12, 3, 4), '#f0d8ff', 'flat', { line: 0 }), S(star(14, 16, 10, 3, 4), '#f0d8ff', 'flat', { line: 0 }),
   ]);
   spell('lightning_bolt', [S(boltPts(), '#ffe040', 'gold', { gloss: 1.2 })]);
   spell('ice_bolt', [
-    S([P(90, 10, 1), [62, 30], P(58, 26, 1), [44, 50], P(48, 54, 1), [26, 68], P(10, 90, 1), [32, 74], P(38, 80, 1), [52, 58], P(56, 62, 1), [70, 38]], '#a8e8ff', 'gem', { gloss: 1.4, lc: '#2a6a90', lines: [hl([[86, 14], [36, 64]], 0.8, 2)] }),
+    prism(92, 8, 135, 112, 26, '#b4ecff', { lc: '#2a6a90' }),
+    prism(84, 34, 150, 30, 12, '#dff8ff', { lc: '#2a6a90' }), prism(64, 10, 118, 26, 10, '#dff8ff', { lc: '#2a6a90' }),
   ]);
   spell('death_ripple', [
-    S(band(50, 50, 42, 42, 7, 0), '#6ac850', 'gem', { line: 1 }), S(band(50, 50, 30, 30, 6, 0), '#4aa040', 'gem', { line: 1 }),
-    skull(50, 50, 18),
+    S(band(50, 50, 42, 42, 9, 0), '#9af070', 'gem', { line: 1 }), S(band(50, 50, 29, 29, 8, 0), '#70d858', 'gem', { line: 1 }),
+    skull(50, 50, 19),
   ]);
   spell('blind', [
     S([P(6, 50, 1), [28, 28], [50, 22], [72, 28], P(94, 50, 1), [72, 72], [50, 78], [28, 72]], '#f4f0e8', 'cloth', { sub: [E(50, 50, 18, 18, '#3a70c0', 'gem', { line: 1 }), E(50, 50, 8, 8, '#101018', 'flat', { line: 0 })] }),
@@ -561,9 +583,9 @@
     arrow(96, 4, 48, 52, { hw: 8, hlen: 16, sw: 5, fl: '#3a78e8' }),
   ]);
   spell('weakness', [
-    ...sword(12, 90, 60, 40, { bw: 13, tip: 0.1 }),
-    S(sharp([[64, 32], [78, 18], [90, 8], [84, 22], [70, 38], [66, 36]]), '#d0d6de', 'steel', { gloss: 1 }),
-    S(sharp([[58, 34], [66, 30], [62, 40], [70, 40], [60, 46], [62, 38]]), '#fff2a0', 'flat', { line: 0 }),
+    ...sword(10, 92, 56, 46, { bw: 17, tip: 0.1, gw: 40 }),
+    S(sharp([[66, 40], [72, 26], [94, 6], [80, 36]]), '#e2e8ee', 'steel', { gloss: 1 }),
+    S(star(62, 38, 13, 4, 5, -30), '#fff2a0', 'flat', { line: 0 }),
   ]);
   spell('disrupting_ray', [
     S(sharp([[4, 14], [16, 4], [96, 84], [84, 96]]), '#d890ff', 'gem', { gloss: 1.2, lines: [hl([[10, 9], [90, 89]], 0.9, 3)] }),
@@ -585,10 +607,10 @@
     S(tube([[50, 50, 3], [58, 46, 5], [56, 36, 6], [42, 34, 7], [34, 48, 7], [44, 62, 6], [62, 62, 5]]), '#4ab0d8', 'flat', { line: 0 }),
   ]);
   spell('meteor_shower', [
-    ...[[26, 30, 13], [74, 22, 11], [56, 68, 17]].flatMap(([x, y, r]) => [
-      S(tube([[x - r * 2.2, y - r * 2.2, 4], [x - r * 0.3, y - r * 0.3, r * 1.9]]), '#ff8a24', 'flat', { lc: '#8a2a08', line: 1 }),
+    ...[[26, 30, 15], [74, 24, 12], [56, 66, 20]].flatMap(([x, y, r]) => [
+      S(tube([[x - r * 1.9, y - r * 1.9, 5], [x - r * 0.3, y - r * 0.3, r * 1.9]]), '#ff8a24', 'flat', { lc: '#8a2a08', line: 1 }),
       S(tube([[x - r * 1.4, y - r * 1.4, 3], [x - r * 0.3, y - r * 0.3, r * 1.1]]), '#ffe07a', 'flat', { line: 0 }),
-      E(x, y, r, r, '#7a4a34', 'horn', { lc: '#2a1208', gloss: 0.3, sub: [E(x + r * 0.5, y + r * 0.5, r * 0.75, r * 0.75, '#ff7a2a', 'flat', { line: 0 })] })]),
+      E(x, y, r, r, '#8a4a2c', 'horn', { lc: '#2a1208', gloss: 0.3, sub: [E(x + r * 0.45, y + r * 0.45, r * 0.8, r * 0.8, '#ff8a30', 'flat', { line: 0 })] })]),
   ]);
   spell('chain_lightning', [
     S(sharp([[40, 2], [58, 2], [48, 30], [70, 30], [52, 56], [74, 56], [40, 98], [50, 64], [30, 64], [44, 40], [24, 40]]), '#ffe040', 'gold', { gloss: 1.1 }),
@@ -603,13 +625,14 @@
   ]);
   /** Ладонь в профиль пальцами вверх (левая; правая — зеркалом). */
   const prayHand = c => [
-    S([P(50, 4, 1), [45, 8], [41, 20], [38, 40], [37, 58], [39, 72], P(50, 80, 1)], c, 'skin', { lc: '#6a3a1a' }),
-    S([[40, 44], [32, 46], [29, 54], [33, 62], [42, 60]], tone(c, 0.06), 'skin', { line: 1.2, lc: '#6a3a1a' }),
+    S([P(50, 12, 1), [48, 7], [42, 5], [36, 10], [30, 28], [26, 50], [28, 66], [36, 76], P(50, 80, 1)], c, 'skin', { lc: '#6a3a1a', lines: [dl([[40, 12], [34, 36]], 0.45, 1.4), dl([[46, 14], [41, 38]], 0.45, 1.4)] }),
+    S([[38, 42], [28, 44], [22, 54], [26, 62], [40, 60]], tone(c, 0.06), 'skin', { line: 1.2, lc: '#6a3a1a' }),
   ];
   spell('prayer', [
-    S(star(50, 44, 48, 28, 12), '#fff2b0', 'flat', { line: 0 }),
+    S(band(50, 42, 40, 40, 6, 90), '#ffe58a', 'gold', { line: 0.8 }),
+    S(star(16, 18, 10, 3, 4), '#fff8d0', 'flat', { line: 0 }), S(star(86, 22, 8, 2.5, 4), '#fff8d0', 'flat', { line: 0 }),
     prayHand(SKIN), mirror(prayHand(tone(SKIN, -0.1))),
-    S(rrect(30, 74, 70, 96, 4), '#5a7ad8', 'cloth', { lines: [hl([[32, 80], [68, 80]], 0.6, 1.6)] }),
+    S(rrect(24, 74, 76, 96, 4), '#5a7ad8', 'cloth', { lines: [hl([[32, 80], [68, 80]], 0.6, 1.6)] }),
   ]);
   spell('town_portal', [
     S(band(50, 50, 38, 44, 14, 90), '#b078f0', 'gem', { gloss: 1.2 }),
@@ -622,8 +645,9 @@
     E(50, 58, 12, 12, '#fff0a0', 'flat', { line: 0 }),
   ]);
   spell('implosion', [
-    ...[45, 135, 225, 315].map(a => S(sharp([pol(50, 50, 48, a - 7), pol(50, 50, 28, a - 7), pol(50, 50, 28, a - 16), pol(50, 50, 14, a), pol(50, 50, 28, a + 16), pol(50, 50, 28, a + 7), pol(50, 50, 48, a + 7)]), '#d8c8a8', 'steel', { gloss: 0.8 })),
-    E(50, 50, 10, 10, '#1a0a20', 'flat', { line: 1.2, lc: '#c080ff' }),
+    E(50, 50, 20, 20, '#b060f0', 'flat', { line: 0 }),
+    ...[45, 135, 225, 315].map(a => S(sharp([pol(50, 50, 50, a - 9), pol(50, 50, 32, a - 9), pol(50, 50, 32, a - 22), pol(50, 50, 16, a), pol(50, 50, 32, a + 22), pol(50, 50, 32, a + 9), pol(50, 50, 50, a + 9)]), '#f4e6c4', 'steel', { gloss: 0.8 })),
+    E(50, 50, 9, 9, '#1a0a20', 'flat', { line: 1.2, lc: '#e0b0ff' }),
   ]);
   spell('titans_bolt', [S(star(56, 50, 48, 30, 10), '#bfe8ff', 'flat', { line: 0 }), place([S(boltPts(), '#fff070', 'gold', { gloss: 1.4, lc: '#8a5a00' })], 1.02, 0, 0)]);
   spell('berserk', [
@@ -634,13 +658,13 @@
 
   /* ======================= sk_*: вторичные навыки ======================= */
   icon('sk_air', [
-    S(tube([[52, 50, 5], [60, 44, 7], [58, 32, 8], [44, 26, 9], [28, 36, 10], [24, 56, 10], [38, 74, 10], [62, 76, 9], [80, 60, 8], [84, 36, 7], [72, 16, 5]]), '#8ad8f0', 'gem', { gloss: 1 }),
+    S(tube([[52, 50, 7], [60, 44, 10], [58, 32, 11], [44, 26, 12], [28, 36, 13], [24, 56, 13], [38, 74, 13], [62, 76, 12], [80, 60, 11], [84, 36, 9], [72, 16, 6]]), '#9ae4fa', 'gem', { gloss: 1 }),
     S(tube([[62, 88, 4], [92, 80, 3]]), '#cff2ff', 'flat', { line: 0 }), S(tube([[8, 22, 4], [30, 14, 3]]), '#cff2ff', 'flat', { line: 0 }),
   ]);
   icon('sk_archery', [
-    S(tube([[28, 6, 6], [18, 30, 9], [16, 50, 10], [18, 70, 9], [28, 94, 6]]), WOOD, 'wood'),
-    S(tube([[29, 8, 2], [29, 92, 2]]), '#f0e8d8', 'flat', { line: 0 }),
-    arrow(12, 50, 96, 50, { hw: 10, hlen: 20 }),
+    S(tube([[32, 4, 2.5], [32, 96, 2.5]]), '#f0e8d8', 'flat', { line: 0.6 }),
+    S(tube([[34, 4, 8], [18, 26, 12], [12, 50, 13], [18, 74, 12], [34, 96, 8]]), '#a0622a', 'wood', { flow: rad(90) }),
+    arrow(8, 50, 96, 50, { hw: 13, hlen: 24, sw: 7 }),
   ]);
   icon('sk_armorer', [cuirass('#b8c0cc', null, [...[[28, 30], [72, 30], [50, 66]].map(([x, y]) => E(x, y, 4.5, 4.5, GOLD, 'gold', { line: 0.8 }))])]);
   icon('sk_artillery', [
@@ -659,8 +683,8 @@
     E(22, 84, 11, 11, '#4a3a2a', 'wood'), E(78, 84, 11, 11, '#4a3a2a', 'wood'),
   ]);
   icon('sk_diplomacy', [
-    S(tube([[2, 74, 26], [36, 58, 24]]), '#3a6ad0', 'cloth'),
-    S(tube([[98, 74, 26], [64, 58, 24]]), '#c8342a', 'cloth'),
+    S(tube([[14, 74, 24], [38, 60, 22]]), '#3a6ad0', 'cloth'),
+    S(tube([[86, 74, 24], [62, 60, 22]]), '#c8342a', 'cloth'),
     S([[28, 46], [48, 36], [64, 38], [78, 48], [74, 64], [58, 72], [40, 72], [28, 64]], SKIN, 'skin', { lines: [dl([[44, 48], [62, 50]], 0.5), dl([[44, 56], [64, 58]], 0.5), dl([[46, 64], [62, 66]], 0.5)] }),
     S(tube([[46, 40, 9], [60, 30, 8]]), SKIN, 'skin', { line: 1.2 }),
   ]);
