@@ -888,6 +888,23 @@ test('Улей: прирост выше нормы, матка поднимае�
   assert.ok(b.units.find(u => u.id === dead.id).alive, 'поднятый стек жив');
 });
 
+test('Бастион: Тотем охоты даёт +1 к удаче навсегда и только за первый визит', () => {
+  const st = S.newGame({ size: 'S', seed: 1701, opponents: 1, difficulty: 'normal', faction: 'bastion' });
+  const town = S.townsOf(st, 0)[0], hero = S.heroesOf(st, 0)[0];
+  const before = R.heroLuck(hero).value;
+  town.buildings.special = true;
+  const A = H3.Adventure;
+  const gift = A.townVisitGift(st, hero, town);
+  assert.ok(gift, 'первый визит даёт подарок');
+  assert.equal(R.heroLuck(hero).value, before + 1, 'удача выросла на 1');
+  assert.ok(R.heroLuck(hero).parts.some(([n]) => n === 'Тотем охоты'), 'в разборе удачи виден Тотем охоты');
+  const again = A.townVisitGift(st, hero, town);
+  assert.ok(!again, 'второй визит ничего не даёт');
+  assert.equal(R.heroLuck(hero).value, before + 1, 'удача не растёт повторно');
+  // и атака не тронута: подарок Бастиона — не первичный навык
+  assert.ok(hero.pri.luck === undefined, 'удача не попала в первичные навыки');
+});
+
 test('особые постройки фракций: ход, гильдия, пруд, портал, разовый подарок, некромантия', () => {
   const A = H3.Adventure, B = H3.Buildings;
   const mk = f => S.newGame({ size: 'S', seed: 11, opponents: 1, difficulty: 'normal', faction: f });
@@ -1022,9 +1039,9 @@ test('Некромантию предлагают только героям Не
     assert.ok(R.makeHero(st, t.id, 0, 0, 0, true).skills.necromancy >= 1, t.name + ' без Некромантии');
 });
 
-test('все 12 фракций комплектны: существа, жилища, герои, особая постройка, местность', () => {
+test('все 13 фракций комплектны: существа, жилища, герои, особая постройка, местность', () => {
   const F = H3.Factions, B = H3.Buildings, C = H3.Creatures;
-  assert.equal(F.LIST.length, 12);
+  assert.equal(F.LIST.length, 13);
   for (const f of F.LIST) {
     assert.ok(R.TERRAIN_INDEX[f.terrain] !== undefined, f.name + ': неизвестная местность ' + f.terrain);
     assert.ok(U.RARE.includes(f.rare), f.name + ': редкий ресурс ' + f.rare);

@@ -77,7 +77,7 @@
     return { steps, stop };
   }
   /** Зал Валгаллы, Клетка полководцев, Орден Огня: разовая прибавка герою за первый визит. */
-  const VISIT_GIFT = { stronghold: ['att', 'атаке'], fortress: ['def', 'защите'], inferno: ['pow', 'силе магии'] };
+  const VISIT_GIFT = { stronghold: ['att', 'атаке'], fortress: ['def', 'защите'], inferno: ['pow', 'силе магии'], bastion: ['luck', 'удаче'] };
   function townVisitGift(state, hero, town) {
     if (!town.buildings.special) return null;
     const g = VISIT_GIFT[town.faction]; if (!g) return null;
@@ -85,7 +85,8 @@
     hero.visited = hero.visited || {};
     if (hero.visited[key]) return null;
     hero.visited[key] = 1;
-    hero.pri[g[0]]++;
+    if (g[0] === 'luck') hero.permLuck = (hero.permLuck || 0) + 1;   // удача не в pri: Тотем охоты Бастиона копит её отдельно
+    else hero.pri[g[0]]++;
     const b = H3.Buildings.SPECIAL[town.faction];
     S.addLog(state, hero.name + ' посетил(а) «' + b.name + '»: +1 к ' + g[1] + '.', 'good');
     return { text: b.name + ': +1 к ' + g[1] + ' навсегда.', name: b.name };

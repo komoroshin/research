@@ -228,8 +228,27 @@ add('pheromancer', 'b', 'Вирра, феромант: бледная кожа, 
     bg='C', skin='i', shade='S', eye='h', gear='hood', gcol='j', gdark='G', cloth='H', clothd='j',
     extras=[feelers, lambda c, x, y, r: c.compound_eye(x + r * 0.45, y - r * 0.1, r * 0.3, r * 0.26, 'h', 'w', 'G')])
 
+# ---- Бастион: капюшоны, меховые воротники, тотемная раскраска ----
+def fur_collar(c, CX, CY, r):
+    for s in (-1, 1):
+        c.ellipse(CX + s * r * 1.3, CY + r * 1.9, r * 0.75, r * 0.45, 'n')
+    c.fur(CX - r * 2.0, CY + r * 1.5, CX + r * 2.0, CY + r * 2.3, 'N', step=3, length=5)
+
+add('huntsman', 'a', 'Ольд, егерь: седая борода, зелёный капюшон, меховой воротник', 4,
+    bg='C', skin='S', shade='T', beard='l', eye='n', gear='hood', gcol='j', gdark='G', cloth='n', clothd='N',
+    extras=[fur_collar])
+add('huntsman', 'b', 'Брана, егерь: рыжая коса, кожаная повязка, шрам, меховой воротник', 4,
+    bg='C', skin='s', shade='S', hair='O', eye='g', gear='bandana', gcol='N', gdark='D', cloth='H', clothd='j',
+    extras=[fur_collar, scar])
+add('totemist', 'a', 'Ивка, тотемист: тёмные волосы, тотемная раскраска, ожерелье из когтей', 4,
+    bg='C', skin='s', shade='S', hair='D', eye='g', cloth='T', clothd='N', collar='n',
+    extras=[lambda c, x, y, r: warpaint(c, x, y, r, 'G'), lambda c, x, y, r: amulet(c, x, y, r, 'i')])
+add('totemist', 'b', 'Марр, тотемист: старик с оленьими рогами на капюшоне, посох', 4,
+    bg='C', skin='T', shade='N', beard='l', eye='y', gear='hood', gcol='N', gdark='D', cloth='G', clothd='j',
+    extras=[lambda c, x, y, r: c.horns(x, y - r * 0.95, r * 1.2, 'i', 'w', spread=int(r * 0.9), curve=int(r * 0.5))])
+
 TITLES = {1: 'портреты героев (Замок, Оплот, Башня)', 2: 'портреты героев (Инферно, Некрополь, Подземелье)',
-          3: 'портреты героев (Цитадель, Крепость, Сопряжение)', 4: 'портреты героев (Бухта, Фабрика, Улей)'}
+          3: 'портреты героев (Цитадель, Крепость, Сопряжение)', 4: 'портреты героев (Бухта, Фабрика, Улей, Бастион)'}
 for g in (1, 2, 3, 4):
     blocks = []
     for grp, name, comment, kw, extras in P:

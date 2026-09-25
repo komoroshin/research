@@ -1,5 +1,5 @@
 /* ============================================================================
-   data/heroes.js — 24 класса героев и 48 именованных героев (ТЗ §5.4).
+   data/heroes.js — 26 классов героев и 52 именованных героя (ТЗ §5.4).
    Класс: start {att,def,pow,kno}, grow — вероятности роста (%), type might|magic.
    Герой: name, cls, spec {type:'creature'|'skill'|'resource'|'spell', id},
           skills [{id, lvl}], spell (стартовое заклинание), portrait 'a'|'b'.
@@ -32,6 +32,8 @@
     cls('navigator', 'Навигатор', 'cove', 'magic', [1, 1, 2, 2], [20, 20, 30, 30]),
     cls('swarmlord', 'Роевод', 'hive', 'might', [2, 3, 1, 1], [35, 40, 15, 10]),
     cls('pheromancer', 'Феромант', 'hive', 'magic', [1, 1, 2, 2], [20, 20, 30, 30]),
+    cls('huntsman', 'Егерь', 'bastion', 'might', [2, 2, 1, 1], [35, 40, 10, 15]),
+    cls('totemist', 'Тотемист', 'bastion', 'magic', [1, 1, 2, 2], [15, 25, 30, 30]),
     cls('mercenary', 'Наёмник', 'factory', 'might', [3, 1, 1, 1], [45, 30, 15, 10]),
     cls('artificer', 'Механикус', 'factory', 'magic', [1, 1, 2, 2], [20, 25, 30, 25]),
   ];
@@ -100,6 +102,11 @@
     h('ktaa', 'Ктаа', 'swarmlord', { type: 'skill', id: 'tactics' }, [{ id: 'tactics', lvl: 1 }, { id: 'armorer', lvl: 1 }], 'b'),
     h('melissa', 'Мелисса', 'pheromancer', { type: 'creature', id: 'wasp_warrior' }, [{ id: 'wisdom', lvl: 1 }, { id: 'earth', lvl: 1 }], 'a', 'haste'),
     h('virra', 'Вирра', 'pheromancer', { type: 'spell', id: 'bless' }, [{ id: 'wisdom', lvl: 1 }, { id: 'sorcery', lvl: 1 }], 'b', 'bless'),
+    // Бастион
+    h('old', 'Ольд', 'huntsman', { type: 'creature', id: 'bear' }, [{ id: 'archery', lvl: 1 }, { id: 'pathfinding', lvl: 1 }], 'a'),
+    h('brana', 'Брана', 'huntsman', { type: 'skill', id: 'luck' }, [{ id: 'luck', lvl: 1 }, { id: 'offense', lvl: 1 }], 'b'),
+    h('ivka', 'Ивка', 'totemist', { type: 'creature', id: 'tracker' }, [{ id: 'wisdom', lvl: 1 }, { id: 'earth', lvl: 1 }], 'a', 'stone_skin'),
+    h('marr', 'Марр', 'totemist', { type: 'spell', id: 'fortune' }, [{ id: 'wisdom', lvl: 1 }, { id: 'luck', lvl: 1 }], 'b', 'fortune'),
   ];
   const HERO_BY_ID = Object.create(null);
   HEROES.forEach(x => { HERO_BY_ID[x.id] = x; });
