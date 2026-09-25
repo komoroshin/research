@@ -76,7 +76,7 @@
 
   /* ---------- краски ---------- */
   const GOLD = '#e2b43c', STEEL = '#c6ced8', IRON = '#7e8792', WOOD = '#94602e', BARK = '#6e4424', LEATHER = '#8a5430',
-    BONE = '#ece2c4', RED = '#d0342a', BLUE = '#3a6ad8', GREEN = '#4cae3a', PURPLE = '#9048d0', WHITE = '#f4f2ea',
+    BONE = '#ece2c4', RED = '#d0342a', BLUE = '#3a6ad8', GREEN = '#4cae3a', PURPLE = '#9048d0', WHITE = '#fbfaf4',
     PARCH = '#eadbb0', GLASS = '#cfe9f2', DARK = '#2e2a34', SKIN = '#eab88c';
 
   /* ---------- детали ---------- */
@@ -190,22 +190,22 @@
     const F = [[80, 60, 56, 94], [70, 50, 36, 86], [60, 40, 18, 74], [50, 32, 6, 54], [42, 26, 4, 32], [38, 22, 10, 8]];
     F.forEach(([bx, by, tx, ty], i) => {
       const lf = K.leaf([bx, by], Math.atan2(ty - by, tx - bx), Math.hypot(tx - bx, ty - by), 21);
-      out.push(S(lf.body, i % 2 ? c : tone(c, -0.1), 'cloth', { lines: [hl(lf.shaft, 0.5, 1.2)] }));
+      out.push(S(lf.body, i % 2 ? c : tone(c, -0.1), 'cloth', { lo: 0.55, ao: 0.45, lines: [dl(lf.shaft, 0.35, 1.2)] }));
     });
     out.push(S([[97, 72], [97, 50], [86, 34], [66, 20], [46, 12], [28, 12], [26, 22], [44, 30], [60, 42], [74, 58], [84, 76]], tone(c, 0.08), 'cloth',
-      { lines: [hl([[90, 50], [70, 30], [44, 18]], 0.7, 1.8), dl([[40, 28], [58, 40], [74, 58]], 0.3, 1.4)] }));
+      { lo: 0.55, ao: 0.45, lines: [hl([[90, 50], [70, 30], [44, 18]], 0.7, 1.8), dl([[40, 28], [58, 40], [74, 58]], 0.3, 1.4)] }));
     return out;
   }
   /** Шлем анфас. o: { c, visor (цвет прорези), crest — формы сверху, band — цвет обода } */
   function helm(o) {
     o = o || {}; const c = o.c || STEEL;
-    return [
-      ...(o.crest || []),
+    const h = [
       S([P(14, 90, 1), [13, 62], [20, 38], [36, 22], [50, 18], [64, 22], [80, 38], [87, 62], P(86, 90, 1)], c, 'steel',
         { gloss: 1.1, lines: [hl([[30, 32], [50, 24], [66, 28]], 0.7, 2)],
           sub: [S(sharp([[20, 50], [80, 50], [80, 60], [56, 60], [56, 90], [44, 90], [44, 60], [20, 60]]), o.visor || '#1a1820', 'flat', { line: 0.8 }),
             ...(o.band ? [S(sharp([[0, 38], [100, 38], [100, 46], [0, 46]]), o.band, 'gold', { line: 0.8 })] : [])] }),
     ];
+    return [...(o.crest || []), ...(o.s ? place(h, o.s, 0, (1 - o.s) * 48) : h)];
   }
   /** Кираса анфас: цвет, отделка, эмблема (формы). */
   function cuirass(c, trim, emblem, o) {
@@ -419,7 +419,7 @@
   ]);
   icon('art_dwarven_shield', [heater(50, 50, 84, 94, { field: '#b8c0ca', charge: [
     S(tube([[50, 36, 8], [50, 80, 8]]), WOOD, 'wood', { line: 1 }), S(rrect(32, 24, 68, 40, 3), GOLD, 'gold', { line: 1 })] })]);
-  icon('art_unicorn_helm', [helm({ c: '#e8ecf2', band: '#c8ccd8', crest: [S([P(44, 22, 1), P(58, 22, 1), P(54, 0, 1)], '#fff6e0', 'horn', { gloss: 1.2, lines: [dl([[47, 16], [56, 14]], 0.5), dl([[49, 9], [55, 8]], 0.5)] })] })]);
+  icon('art_unicorn_helm', [helm({ c: '#e8ecf2', band: '#c8ccd8', s: 0.8, crest: [S([P(40, 40, 1), P(58, 40, 1), P(56, 1, 1)], '#fff4d8', 'horn', { gloss: 1.2, lines: [dl([[43, 30], [57, 26]], 0.6, 1.6), dl([[46, 20], [57, 16]], 0.6, 1.6), dl([[50, 10], [56, 8]], 0.6, 1.6)] })] })]);
   icon('art_skull_helmet', [skull(50, 50, 44, { eye: '#e02020', glow: true })]);
   icon('art_petrified_breastplate', [cuirass('#8a6444', null, [], { m: 'wood', opt: { flow: rad(90) } })]);
   icon('art_ring_conjuring', [ring('#3a78e8')]);
@@ -457,7 +457,7 @@
     ...[18, 34, 50, 66].map((y, i) => S(tube([[50, y, 8], [72 + i, y + 4, 8], [84 - i * 2, y + 14, 7], [78 - i * 3, y + 20, 6]]), BONE, 'horn')),
     S(tube([[50, 10, 12], [50, 70, 10]]), '#f6eed6', 'horn'),
   ]);
-  icon('art_basilisk_scales', [cuirass('#48a048', null, [], { m: 'leather', opt: { tex: 'scale', texSize: 1.1, flow: rad(90) } })]);
+  icon('art_basilisk_scales', [cuirass('#48a048', null, [], { m: 'leather', opt: { tex: 'scale', texSize: 2.6, flow: rad(90) } })]);
   icon('art_boots_speed', [
     boot({ c: '#8a5a2e' }),
     place(wingL(WHITE), 0.5, -30, -26),
@@ -471,11 +471,11 @@
   icon('art_cape_conjuring', [cape('#3a5ad0', '#4ad0f0')]);
   icon('art_necklace_swiftness', [chain(64), place(wingL(WHITE), 0.44, 2, 30)]);
   icon('art_sword_hellfire', [
-    flame(80, 40, 30, 38, ['#e8401c', '#ffa020', '#fff0a0']),
+    turn(flame(40, 62, 44, 80, ['#e8401c', '#ffa020', '#fff0a0']), 45, 40, 62),
     sword(12, 90, 90, 10, { bw: 13, blade: '#f06a28', guard: '#3a2a2a', pommel: '#e04020', bladeLc: '#8a2010' }),
   ]);
   icon('art_shield_yawning_dead', [heater(50, 50, 84, 94, { field: '#3c3a46', rim: '#8a8e98', rimM: 'steel', charge: skull(50, 46, 24) })]);
-  icon('art_thunder_helmet', [helm({ c: '#aeb6c2', band: GOLD, crest: [S(place([S(boltPts(), '#ffd83a', 'gold')], 0.36, 16, -38)[0].p, '#ffd83a', 'gold')] })]);
+  icon('art_thunder_helmet', [helm({ c: '#aeb6c2', band: GOLD, s: 0.8, crest: place([S(boltPts(), '#ffd83a', 'gold', { gloss: 1.2 })], 0.5, 4, -24) })]);
   icon('art_armor_wonder', [cuirass('#f2dcf0', GOLD, [E(50, 56, 9, 9, '#a050e0', 'gem', { glint: [[47, 53, 3]] })])]);
   icon('art_ogre_club', [
     S(tube([[14, 94, 10], [36, 64, 16], [60, 36, 26], [76, 18, 30]]), '#8a5a2e', 'wood', { flow: rad(-50), lines: [dl([[48, 50], [54, 46]], 0.6, 2.4), dl([[64, 30], [70, 26]], 0.6, 2.4)] }),
@@ -497,7 +497,7 @@
   icon('art_boots_polarity', [boot({ c: '#8040b8', sole: '#2a1a3a' }), S(star(20, 20, 16, 5, 4), '#f0e0ff', 'gem', { line: 1 }), S(star(84, 30, 10, 3.5, 4), '#f0e0ff', 'gem', { line: 1 })]);
   icon('art_titan_gladius', [sword(14, 88, 90, 12, { bw: 17, blade: '#b4dcff', tip: 26, g0: 22 })]);
   icon('art_sentinel_shield', [heater(50, 50, 86, 96, { field: '#eef0f4', charge: [S(star(50, 44, 22, 10, 8), GOLD, 'gold', { line: 1 }), E(50, 44, 9, 9, '#f8e080', 'gold', { line: 1 })] })]);
-  icon('art_helm_enlightenment', [helm({ c: '#f2f2f6', band: GOLD, crest: [S(star(50, 30, 30, 18, 12), '#ffe07a', 'flat', { line: 0.8 })] })]);
+  icon('art_helm_enlightenment', [helm({ c: '#f2f2f6', band: GOLD, s: 0.84, crest: [S(star(50, 36, 36, 22, 14), '#ffe07a', 'flat', { line: 0.8 })] })]);
   icon('art_titan_cuirass', [cuirass('#3a64d0', GOLD, [S(star(50, 56, 12, 5, 8), GOLD, 'gold', { line: 1 })])]);
   icon('art_necklace_bliss', [chain(60), ...place(gem(50, 50, 18, '#8ae8f8'), 1, 0, 28)]);
   icon('art_angel_wings', [place(wingL(WHITE), 0.62, -18, 2), mirror(place(wingL(WHITE), 0.62, -18, 2))]);
@@ -585,9 +585,10 @@
     S(tube([[50, 50, 3], [58, 46, 5], [56, 36, 6], [42, 34, 7], [34, 48, 7], [44, 62, 6], [62, 62, 5]]), '#4ab0d8', 'flat', { line: 0 }),
   ]);
   spell('meteor_shower', [
-    ...[[30, 30, 12], [72, 26, 10], [56, 70, 15]].flatMap(([x, y, r]) => [
-      S(tube([[x - r * 2.6, y - r * 2.6, 3], [x - r * 0.4, y - r * 0.4, r * 1.6]]), '#f08020', 'flat', { line: 0 }),
-      E(x, y, r, r, '#8a5a3a', 'horn', { lc: '#3a1a08', gloss: 0.3, sub: [E(x + r * 0.4, y + r * 0.4, r * 0.6, r * 0.6, '#ff8a2a', 'flat', { line: 0 })] })]),
+    ...[[26, 30, 13], [74, 22, 11], [56, 68, 17]].flatMap(([x, y, r]) => [
+      S(tube([[x - r * 2.2, y - r * 2.2, 4], [x - r * 0.3, y - r * 0.3, r * 1.9]]), '#ff8a24', 'flat', { lc: '#8a2a08', line: 1 }),
+      S(tube([[x - r * 1.4, y - r * 1.4, 3], [x - r * 0.3, y - r * 0.3, r * 1.1]]), '#ffe07a', 'flat', { line: 0 }),
+      E(x, y, r, r, '#7a4a34', 'horn', { lc: '#2a1208', gloss: 0.3, sub: [E(x + r * 0.5, y + r * 0.5, r * 0.75, r * 0.75, '#ff7a2a', 'flat', { line: 0 })] })]),
   ]);
   spell('chain_lightning', [
     S(sharp([[40, 2], [58, 2], [48, 30], [70, 30], [52, 56], [74, 56], [40, 98], [50, 64], [30, 64], [44, 40], [24, 40]]), '#ffe040', 'gold', { gloss: 1.1 }),
@@ -600,11 +601,15 @@
     S(sharp([[44, 44], [56, 44], [56, 96], [44, 96]]), GOLD, 'gold'),
     S(sharp([[18, 50], [82, 50], [82, 62], [18, 62]]), GOLD, 'gold'),
   ]);
+  /** Ладонь в профиль пальцами вверх (левая; правая — зеркалом). */
+  const prayHand = c => [
+    S([P(50, 4, 1), [45, 8], [41, 20], [38, 40], [37, 58], [39, 72], P(50, 80, 1)], c, 'skin', { lc: '#6a3a1a' }),
+    S([[40, 44], [32, 46], [29, 54], [33, 62], [42, 60]], tone(c, 0.06), 'skin', { line: 1.2, lc: '#6a3a1a' }),
+  ];
   spell('prayer', [
-    S(star(50, 50, 48, 28, 12), '#fff2b0', 'flat', { line: 0 }),
-    S([P(50, 8, 1), [44, 20], [34, 48], [28, 70], P(22, 92, 1), P(50, 92, 1)], SKIN, 'skin', { lines: [dl([[42, 30], [34, 56]], 0.4)] }),
-    S([P(50, 8, 1), [56, 20], [66, 48], [72, 70], P(78, 92, 1), P(50, 92, 1)], tone(SKIN, -0.08), 'skin', { lines: [dl([[58, 30], [66, 56]], 0.4)] }),
-    S(sharp([[18, 80], [82, 80], [82, 98], [18, 98]]), '#6a8ae0', 'cloth'),
+    S(star(50, 44, 48, 28, 12), '#fff2b0', 'flat', { line: 0 }),
+    prayHand(SKIN), mirror(prayHand(tone(SKIN, -0.1))),
+    S(rrect(30, 74, 70, 96, 4), '#5a7ad8', 'cloth', { lines: [hl([[32, 80], [68, 80]], 0.6, 1.6)] }),
   ]);
   spell('town_portal', [
     S(band(50, 50, 38, 44, 14, 90), '#b078f0', 'gem', { gloss: 1.2 }),
