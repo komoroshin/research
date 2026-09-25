@@ -295,20 +295,33 @@
   }
   /** Туман войны мягкой маской (1 px на клетку → растяжение со сглаживанием). */
   function drawFog(ctx, st, vis, x0, y0, x1, y1) {
-    const m = S.lvl(st, V.layer), w = x1 - x0 + 3, h = y1 - y0 + 3;
+    // маска по 4 точки на клетку, дважды размытая: край разведанного — мягкая дымка, а не ступеньки клеток
+    const m = S.lvl(st, V.layer), S4 = 4, w = (x1 - x0 + 3) * S4, h = (y1 - y0 + 3) * S4;
     let cv = V.fogCanvas;
     if (!cv) { cv = V.fogCanvas = document.createElement('canvas'); }
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-    const fc = cv.getContext('2d'), img = fc.createImageData(w, h), d = img.data;
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; V.fogBuf = [new Float32Array(w * h), new Float32Array(w * h)]; }
+    // пересчёт — только когда сдвинулась видимая область или открылось новое
+    let key = x0 + ',' + y0 + ',' + x1 + ',' + y1 + ',' + V.layer, hsh = 0;
+    for (let y = Math.max(0, y0 - 1); y <= Math.min(m.h - 1, y1 + 1); y++) for (let x = Math.max(0, x0 - 1); x <= Math.min(m.w - 1, x1 + 1); x++) hsh = (hsh * 31 + vis[y * m.w + x]) | 0;
+    key += ',' + hsh;
+    if (V.fogKey !== key) {
+    V.fogKey = key;
+    const [a, b] = V.fogBuf, WP = H3.MapPaint ? H3.MapPaint.warp : null;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const mx = x0 - 1 + x, my = y0 - 1 + y;
+      let px = (x0 - 1) * TILE + (x + 0.5) * TILE / S4, py = (y0 - 1) * TILE + (y + 0.5) * TILE / S4;
+      if (WP) { const d2 = WP(px, py, 12); px += d2[0]; py += d2[1]; }
+      const mx = Math.floor(px / TILE), my = Math.floor(py / TILE);
       const v = (mx < 0 || my < 0 || mx >= m.w || my >= m.h) ? 0 : vis[my * m.w + mx];
-      d[(y * w + x) * 4 + 3] = v === 2 ? 0 : v === 1 ? 110 : 255;
+      a[y * w + x] = v === 2 ? 0 : v === 1 ? 110 : 255;
     }
+    const R = 3, blur = (src, dst, dx, dy, n) => { for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0, c = 0; for (let k = -R; k <= R; k++) { const xx = x + k * dx, yy = y + k * dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; s += src[yy * w + xx]; c++; } dst[y * w + x] = s / c; } };
+    blur(a, b, 1, 0); blur(b, a, 0, 1); blur(a, b, 1, 0); blur(b, a, 0, 1);
+    const fc = cv.getContext('2d'), img = fc.createImageData(w, h), d = img.data;
+    for (let i = 0; i < w * h; i++) d[i * 4 + 3] = a[i];
     fc.putImageData(img, 0, 0);
+    }
     const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
-    // центр каждого пикселя маски попадает в центр своей клетки
-    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, w * TILE, h * TILE);
+    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
     ctx.imageSmoothingEnabled = prev;
   }
   /* ---------- атмосфера: падающие тени, тени облаков, погода, виньетка ---------- */

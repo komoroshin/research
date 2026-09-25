@@ -54,15 +54,18 @@
     /** Земля куска: по точке на пиксель карты, затем ×RS со сглаживанием. */
     function paintBase(ctx, cx, cy) {
       const X0 = cx * CPX, Y0 = cy * CPX;
-      const low = document.createElement('canvas'); low.width = CPX; low.height = CPX;
-      const lc = low.getContext('2d'), img = lc.createImageData(CPX, CPX), d = img.data;
+      // основа плавная — считаем через точку (вчетверо быстрее), растягиваем со сглаживанием
+      const ST = 2, N = CPX / ST + 1;
+      const low = document.createElement('canvas'); low.width = N; low.height = N;
+      const lc = low.getContext('2d'), img = lc.createImageData(N, N), d = img.data;
       const W = map.w * TILE, H = map.h * TILE;
-      for (let j = 0; j < CPX; j++) for (let i = 0; i < CPX; i++) {
-        const x = X0 + i, y = Y0 + j, k = (j * CPX + i) * 4;
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const x = X0 + i * ST, y = Y0 + j * ST, k = (j * N + i) * 4;
         if (x >= W || y >= H) { d[k + 3] = 0; continue; }
-        const n1 = vnoise(x / 22, y / 22, seed) * 2 - 1 + (vnoise(x / 7, y / 7, seed + 3) - 0.5) * 0.5;
-        const n2 = vnoise(x / 22 + 40, y / 22, seed + 1) * 2 - 1 + (vnoise(x / 7 + 9, y / 7, seed + 4) - 0.5) * 0.5;
-        const px = x + n1 * 10, py = y + n2 * 10;
+        // граница местностей: крупная волна ±14 и мелкая ±6 — углы клеток скругляются, сетка не читается
+        const n1 = (vnoise(x / 44, y / 44, seed) * 2 - 1) * 14 + (vnoise(x / 13, y / 13, seed + 3) * 2 - 1) * 6;
+        const n2 = (vnoise(x / 44 + 40, y / 44, seed + 1) * 2 - 1) * 14 + (vnoise(x / 13 + 9, y / 13, seed + 4) * 2 - 1) * 6;
+        const px = x + n1, py = y + n2;
         const tx = Math.floor(px / TILE), ty = Math.floor(py / TILE), t = tAt(tx, ty);
         const P = PAL[t] || PAL.grass;
         const v = fbm(x / 110, y / 110, seed + 7, 3), s = vnoise(x / 8, y / 8, seed + 9);
@@ -83,7 +86,7 @@
         d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
-      ctx.save(); ctx.setTransform(RS, 0, 0, RS, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, 0, 0); ctx.restore();
+      ctx.save(); ctx.setTransform(RS * ST, 0, 0, RS * ST, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, -0.5, -0.5); ctx.restore();
     }
 
     /** Детали по клеткам (с полем в клетку вокруг куска — чтобы на стыке ничего не обрезалось). */
@@ -195,8 +198,19 @@
       return cv;
     }
     /** Вывести видимые клетки; недорисованные куски — по два за кадр, остальное — ровным цветом (дорисуется). */
+    let idleQ = null;
+    /** В паузах дорисовать кольцо кусков вокруг видимой области — прокрутка потом не ждёт. */
+    function prefetch(cx0, cy0, cx1, cy1) {
+      if (idleQ) return;
+      const want = [];
+      for (let cy = cy0 - 1; cy <= cy1 + 1; cy++) for (let cx = cx0 - 1; cx <= cx1 + 1; cx++) if (cx >= 0 && cy >= 0 && cx * CH < map.w && cy * CH < map.h && !chunks.has(cx + ',' + cy)) want.push([cx, cy]);
+      if (!want.length) return;
+      idleQ = want;
+      const step = () => { const c = idleQ && idleQ.shift(); if (!c) { idleQ = null; return; } get(c[0], c[1], true); (root.requestIdleCallback || (f => setTimeout(f, 30)))(step); };
+      (root.requestIdleCallback || (f => setTimeout(f, 30)))(step);
+    }
     function draw(ctx, x0, y0, x1, y1) {
-      let budget = 2;
+      let budget = 1;
       const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
       for (let cy = Math.floor(y0 / CH); cy <= Math.floor(y1 / CH); cy++) for (let cx = Math.floor(x0 / CH); cx <= Math.floor(x1 / CH); cx++) {
         let cv = get(cx, cy, false);
@@ -205,10 +219,13 @@
         else { ctx.fillStyle = (PAL[tAt(cx * CH + 4, cy * CH + 4)] || PAL.grass).c[1]; ctx.fillRect(cx * CPX, cy * CPX, CPX, CPX); painter.pending = true; }
       }
       ctx.imageSmoothingEnabled = prev;
+      prefetch(Math.floor(x0 / CH), Math.floor(y0 / CH), Math.floor(x1 / CH), Math.floor(y1 / CH));
     }
     const painter = { draw, get, clear: () => { chunks.clear(); order.length = 0; }, pending: false };
     return painter;
   }
 
-  H3.MapPaint = { create, PAL, CH };
+  /** Сдвиг точки по шуму (в пикселях карты) — чтобы края тумана и местностей не шли по сетке клеток. */
+  function warp(x, y, amp) { return [(vnoise(x / 22, y / 22, 77) * 2 - 1) * amp, (vnoise(x / 22 + 40, y / 22, 78) * 2 - 1) * amp]; }
+  H3.MapPaint = { create, PAL, CH, warp };
 })(typeof window !== 'undefined' ? window : globalThis);
