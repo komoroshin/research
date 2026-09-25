@@ -192,7 +192,19 @@
     if (v && v[0] !== '#') { const P = H3.Sprites && H3.Sprites.PAL; v = P && P[v]; }
     return v || def;
   }
+  /** op — прозрачность формы целиком (крыло насекомого, дух): форма рисуется со всем объёмом на отдельный слой и кладётся с альфой. */
+  let opCv = null;
   function paintShape(ctx, s, env, rnd, depth) {
+    if (s.op === undefined || s.op >= 1) return paintSolid(ctx, s, env, rnd, depth);
+    const W = ctx.canvas.width, H = ctx.canvas.height;
+    if (!opCv) opCv = document.createElement('canvas');
+    if (opCv.width < W || opCv.height < H) { opCv.width = Math.max(opCv.width, W); opCv.height = Math.max(opCv.height, H); }
+    const t = opCv.getContext('2d');
+    t.setTransform(1, 0, 0, 1, 0, 0); t.clearRect(0, 0, W, H); t.setTransform(ctx.getTransform());
+    paintSolid(t, s, env, rnd, depth);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha *= s.op; ctx.drawImage(opCv, 0, 0, W, H, 0, 0, W, H); ctx.restore();
+  }
+  function paintSolid(ctx, s, env, rnd, depth) {
     const mat = MAT[s.m] || MAT.cloth, c = colorOf(s.c, env);
     const path = s._p || (s._p = new Path2D(s._d));
     const [x0, y0, x1, y1] = s._bb, w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
