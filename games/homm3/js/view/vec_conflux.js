@@ -73,7 +73,8 @@
   /** Язык пламени: основание B, угол ang, длина, ширина; curl — изгиб кончика вбок. */
   function flameP(B, ang, len, wid, curl) {
     const at = along(B, ang, len), cu = curl || 0;
-    return [at(0, -wid * 0.5), at(0.3, -wid * 0.56), at(0.62, -wid * 0.3 + cu * 0.3), P(...at(1, cu), 1), at(0.7, wid * 0.14 + cu * 0.45), at(0.36, wid * 0.46), at(0, wid * 0.5)];
+    // бока S-образные: пламя «лижет» воздух, кончик уводит вбок на cu
+    return [at(0, -wid * 0.5), at(0.22, -wid * 0.6), at(0.5, -wid * 0.32 + cu * 0.2), at(0.78, -wid * 0.1 + cu * 0.62), P(...at(1, cu), 1), at(0.8, wid * 0.12 + cu * 0.78), at(0.56, wid * 0.3 + cu * 0.3), at(0.3, wid * 0.52), at(0, wid * 0.5)];
   }
   /** Трёхслойный язык огня: внешний край, средний слой и раскалённое ядро. pal: { out, mid, core, lc } */
   function tongue(B, ang, len, wid, pal, curl) {
@@ -85,11 +86,11 @@
     ];
   }
   /** Огненное тело: контур в три слоя (внешний, средний, ядро), сжатых к центру (cx, cy). */
-  function blaze(pts, cx, cy, pal, extra) {
+  function blaze(pts, cx, cy, pal, extra, core) {
     return [
       Object.assign({ p: pts, c: pal.out, m: 'gem', gloss: 0.35, ao: 0.4, line: 0.6, lc: pal.lc }, extra || {}),
       { p: grow(pts, cx, cy, 0.8, 0.86), c: pal.mid, m: 'gem', line: 0, ao: 0.15, gloss: 0.2, rim: 0 },
-      { p: grow(pts, cx, cy - 6, 0.5, 0.6), c: pal.core, m: 'flat', line: 0 },
+      ...(core || [grow(pts, cx, cy - 6, 0.5, 0.6)]).map(p => ({ p, c: pal.core, m: 'flat', line: 0 })),
     ];
   }
   /** Трубка-«рука» из огня: три слоя, сужающихся к оси. */
@@ -214,9 +215,11 @@
         ribbon([[74, 112, 10], [50, 104, 7], [30, 112, 4], [16, 104, 1.5]], 0.45),
         ribbon([[76, 136, 8], [52, 140, 6], [34, 132, 3], [24, 138, 1.5]], 0.4),
         { p: [[66, 106], [80, 86], [108, 78], [134, 84], [146, 100], [142, 124], [128, 142], [104, 152], [82, 146], [68, 128]], c: B, m: 'gem', gloss: 0.55, line: 0.7, lc: tone(B, -0.6), belly: 0.25,
-          lines: [{ p: [[74, 100], [100, 92], [132, 98]], w: 2.4, light: true, a: 0.8 }, { p: [[72, 122], [104, 118], [140, 116]], w: 2, light: true, a: 0.7 }, { p: [[80, 138], [108, 138], [128, 134]], w: 1.4, a: 0.45 }],
-          sub: [{ p: tube([[84, 124, 12], [104, 108, 14], [128, 110, 10], [136, 124, 5]]), c: BL, m: 'gem', line: 0, gloss: 0.6 }] },
+          lines: [{ p: [[74, 100], [100, 92], [132, 98]], w: 2.4, light: true, a: 0.8 }, { p: [[72, 122], [104, 118], [140, 116]], w: 2, light: true, a: 0.7 }, { p: [[80, 138], [108, 138], [128, 134]], w: 1.4, a: 0.45 }, { p: [[70, 110], [86, 106], [96, 112]], w: 1.2, a: 0.4 }] },
         ...(o.bolts ? [bolt([96, 96], [118, 136], 3, o.bolt, o.boltLc)] : []),
+        // ленты ветра обвивают корпус спереди — силуэт не сплошной
+        ribbon([[58, 126, 2.5], [82, 138, 5], [120, 134, 5], [148, 116, 2.5]], 0.6),
+        ribbon([[74, 160, 2], [96, 170, 4], [126, 160, 3], [138, 148, 1.5]], 0.5),
       ] },
       { kind: 'head', pivot: [108, 88], shapes: [
         // струя ветра со лба назад — «волосы» элементаля
@@ -259,9 +262,9 @@
       : [{ p: [[80, 108], [96, 124], [90, 150], [100, 176]], w: 2, light: true, a: 0.7 }, { p: [[120, 96], [132, 118], [124, 140]], w: 1.6, light: true, a: 0.6 }, { p: [[104, 186], [112, 204]], w: 1.4, light: true, a: 0.6 }];
     const legs = [
       // волна-завиток за спиной
-      { p: tube([[96, 236, 24], [66, 232, 20], [46, 218, 15], [40, 200, 11], [50, 190, 7], [60, 194, 4]]), c: MD, m: 'gem', gloss: 0.8, line: 0.6, lc,
+      { p: tube([[96, 230, 20], [66, 228, 18], [46, 216, 14], [40, 200, 11], [50, 190, 7], [60, 194, 4]], { flat0: true }), c: MD, m: 'gem', gloss: 0.8, line: 0.6, lc,
         lines: [{ p: [[88, 230], [62, 226], [48, 212]], w: 1.6, light: true, a: 0.7 }] },
-      haze(bevel([[34, 245], [44, 228], [70, 216], [104, 212], [140, 216], [164, 228], [170, 245]], 8), R, 0.3),
+      haze([P(32, 245, 1), [42, 228], [70, 215], [104, 211], [140, 215], [166, 228], P(172, 245, 1)], R, 0.3),
       { p: [P(40, 245, 1), [46, 232], [68, 222], [100, 218], [134, 220], [156, 230], P(164, 245, 1)], c: M, m: 'gem', gloss: 0.8, line: 0.6, lc,
         lines: [{ p: [[56, 236], [80, 230], [104, 234]], w: 1.6, light: true, a: 0.7 }, { p: [[112, 230], [140, 228], [152, 236]], w: 1.4, light: true, a: 0.6 }] },
     ];
@@ -321,25 +324,28 @@
     const orbs = o.orbs ? [[34, 88, 8], [172, 150, 6], [46, 204, 5.5]].flatMap(([x, y, rr]) => [...glow(x, y, rr * 2.8, rr * 2.8, R, 1), { e: [x, y, rr, rr], c: o.core, m: 'gem', gloss: 1.3, line: 0.5, lc: o.lc, glint: [[x - rr * 0.3, y - rr * 0.3, rr * 0.5]] }]) : [];
     const parts = [
       { kind: 'legs', pivot: [100, 226], shapes: [
-        ...glow(100, 234, 70, 16, R, 1),
+        ...glow(100, 230, 70, 14, R, 1),
         ...blaze([P(50, 245, 1), [58, 236], [88, 228], [124, 228], [150, 236], P(156, 245, 1)], 102, 240, pal),
-        ...T(58, 243, -0.64, 34, 20, -6), ...T(150, 243, -0.36, 32, 18, 6), ...T(78, 242, -0.58, 42, 22, -5), ...T(128, 242, -0.44, 40, 22, 5), ...T(104, 243, -0.5, 30, 18, 3),
+        // основания языков — выше земли на полширины, наклон не уводит их под землю
+        ...T(58, 239, -0.64, 34, 20, -6), ...T(150, 240, -0.36, 32, 18, 6), ...T(78, 241, -0.58, 42, 22, -5), ...T(128, 241, -0.44, 40, 22, 5), ...T(104, 242, -0.5, 30, 18, 3),
       ] },
       { kind: 'torso', pivot: [102, 150], shapes: [
-        ...glow(100, 132, 92, 118, R, 1),
+        ...glow(100, 132, 92, 110, R, 1),
         // языки пламени срываются со спины и тянутся вверх
         ...T(80, 196, -0.86, 44, 20, 9), ...T(66, 160, -0.83, 54, 24, 11), ...T(68, 128, -0.79, 62, 28, 13), ...T(78, 100, -0.73, 58, 26, 11), ...T(90, 86, -0.62, 40, 18, 7),
         // дальняя рука вскинута, в кулаке пламя
         ...blazeTube([[84, 100, 24], [70, 80, 18], [66, 58, 13]], pal),
         ...T(66, 62, -0.56, 46, 24, 8),
-        ...blaze(body, 106, 150, pal, { lines: [{ p: [[96, 100], [104, 130], [98, 168]], w: 1.6, light: true, a: 0.6 }] }),
+        // ядро — не контур тела, а языки жара, бьющие снизу вверх
+        ...blaze(body, 106, 150, pal, { lines: [{ p: [[96, 100], [104, 130], [98, 168]], w: 1.6, light: true, a: 0.6 }] },
+          [flameP([104, 234], -Math.PI * 0.52, 132, 30, 8), flameP([100, 160], -Math.PI * 0.62, 60, 22, 10), flameP([112, 150], -Math.PI * 0.4, 52, 18, -6)]),
         ...arcs, ...orbs,
       ] },
       { kind: 'head', pivot: [106, 86], shapes: [
         ...T(84, 62, -0.84, 40, 18, 8), ...T(90, 50, -0.73, 56, 24, 10), ...T(102, 42, -0.62, 64, 26, 11), ...T(118, 40, -0.52, 46, 20, 7),
         ...blaze(ell(112, 60, 21, 23, 12), 114, 62, pal),
         // злые раскосые глазницы, в них — белый жар
-        { p: [[113, 54], [127, 58], [126, 64], [115, 63]], c: o.socket, m: 'flat', line: 0 }, { p: [[131, 58], [139, 54], [139, 61], [132, 63]], c: o.socket, m: 'flat', line: 0 },
+        { p: [[115, 56], [127, 59], [126, 63], [116, 62]], c: o.socket, m: 'flat', line: 0 }, { p: [[132, 59], [138, 56], [138, 61], [132, 62]], c: o.socket, m: 'flat', line: 0 },
         ...glow(121, 60, 9, 6, o.eyeRgb, 1), { e: [121, 60.5, 3.4, 1.8], c: o.eye, m: 'gem', line: 0, glint: [[120.4, 60, 1.6]] },
         { e: [135, 59.5, 2.2, 1.5], c: o.eye, m: 'gem', line: 0, glint: [[134.6, 59, 1.2]] },
         ...(o.arcs ? [bolt([118, 36], [134, 10], 2.6, o.arc, o.arcLc)] : []),
@@ -427,7 +433,7 @@
   function psychic(name, o) {
     const R = o.rgb, L = o.lite, D = o.deep;
     const edge = { line: 0.9, lc: rgba(L, 0.85) };
-    const body = [[68, 98], [84, 84], [116, 80], [138, 92], [142, 118], [132, 146], [118, 168], [100, 176], [84, 166], [74, 138]];
+    const body = [[68, 98], [84, 84], [116, 80], [138, 92], [142, 118], [132, 144], [118, 164], [102, 176], [88, 166], [76, 138]];
     const orb = (x, y, rr) => [...glow(x, y, rr * 2.8, rr * 2.8, o.orbRgb, 1), { e: [x, y, rr, rr], c: o.orb, m: 'gem', gloss: 1.4, line: 0.6, lc: tone(o.orb, -0.55), glint: [[x - rr * 0.35, y - rr * 0.35, rr * 0.5]] }];
     const ring = (x, y, rx, ry, a) => ({ e: [x, y, rx, ry], c: rgba(R, 0.16 * a), m: 'flat', line: 0.8, lc: rgba(L, 0.75 * a) });
     // орбита (магический): эллипс вокруг корпуса, дальняя половина — за телом, ближняя — перед ним
@@ -442,14 +448,14 @@
       crown.push(...glow(x, y, 6, 6, o.dotRgb, 0.9), { e: [x, y, 3.2, 3.2], c: o.dot, m: 'gem', gloss: 1.2, line: 0.4, lc: tone(o.dot, -0.5) });
     }
     const mind = o.prism
-      ? [...glow(110, 52, 26, 26, o.orbRgb, 1), { p: star(110, 52, 16, 6, 0.5), c: o.gold, m: 'gem', gloss: 1.4, line: 0.6, lc: '#8a5a08', glint: [[106, 48, 4]] },
-        { e: [110, 52, 6, 6], c: '#ffffff', m: 'gem', line: 0, glint: [[108, 50, 3]] }]
-      : [...glow(110, 50, 26, 26, L, 1), { e: [110, 50, 14, 14], c: o.brain, m: 'gem', gloss: 1.3, line: 0.6, lc: tone(o.brain, -0.55), glint: [[105, 45, 4.5]],
-        lines: [{ p: [[99, 50], [104, 42], [114, 42], [120, 50], [114, 58], [106, 54], [108, 48]], w: 1.3, c: rgba('255,255,255', 0.75) }] }];
+      ? [...glow(108, 46, 26, 26, o.orbRgb, 1), { p: star(108, 46, 15, 6, 0.5), c: o.gold, m: 'gem', gloss: 1.4, line: 0.6, lc: '#8a5a08', glint: [[104, 42, 4]] },
+        { e: [108, 46, 5.5, 5.5], c: '#ffffff', m: 'gem', line: 0, glint: [[106, 44, 3]] }]
+      : [...glow(108, 46, 26, 26, L, 1), { e: [108, 46, 13, 13], c: o.brain, m: 'gem', gloss: 1.3, line: 0.6, lc: tone(o.brain, -0.55), glint: [[103, 41, 4.2]],
+        lines: [{ p: [[98, 46], [103, 38], [112, 38], [118, 46], [112, 54], [104, 50], [106, 44]], w: 1.3, c: rgba('255,255,255', 0.75) }] }];
     const parts = [
       { kind: 'legs', pivot: [100, 196], shapes: [
-        haze(tube([[100, 150, 68], [92, 184, 50], [100, 212, 32], [108, 232, 16], [112, 238, 7]]), R, 0.3, edge),
-        haze(tube([[100, 150, 40], [94, 184, 28], [101, 212, 17], [108, 230, 7]]), D, 0.35),
+        haze(tube([[102, 156, 52], [95, 188, 40], [101, 212, 28], [108, 232, 14], [112, 238, 7]]), R, 0.34, edge),
+        haze(tube([[102, 156, 32], [96, 188, 24], [102, 212, 15], [108, 230, 6]]), D, 0.38),
         ring(98, 194, 44, 8, 1), ring(104, 216, 32, 6, 0.9), ring(110, 234, 20, 4.5, 0.8),
       ] },
       { kind: 'torso', pivot: [102, 140], shapes: [
@@ -457,15 +463,15 @@
         ...(o.ring ? [orbit(false)] : []),
         haze(tube([[82, 98, 22], [62, 120, 17], [52, 144, 13]]), R, 0.45, edge),
         ...orb(46, 152, 8),
-        haze(body, R, 0.42, Object.assign({ lines: [{ p: [[104, 90], [102, 130], [100, 170]], w: 1.6, c: rgba(L, 0.7) }, { p: [[82, 110], [102, 118], [126, 108]], w: 1.2, c: rgba(L, 0.5) }, { p: [[84, 134], [102, 140], [124, 132]], w: 1.2, c: rgba(L, 0.45) }] }, edge)),
-        haze(grow(body, 104, 124, 0.62, 0.7), D, 0.4),
+        haze(body, R, 0.5, Object.assign({ lines: [{ p: [[104, 90], [102, 130], [100, 170]], w: 1.6, c: rgba(L, 0.7) }, { p: [[82, 110], [102, 118], [126, 108]], w: 1.2, c: rgba(L, 0.5) }, { p: [[84, 134], [102, 140], [124, 132]], w: 1.2, c: rgba(L, 0.45) }] }, edge)),
+        haze(grow(body, 104, 124, 0.62, 0.7), D, 0.5),
         ...(o.ring ? [orbit(true), ...runes] : [...glow(104, 124, 12, 12, L, 1)]),
       ] },
       { kind: 'head', pivot: [106, 86], shapes: [
         haze(tube([[106, 70, 18], [106, 90, 22]]), R, 0.4),
-        haze(ell(110, 54, 25, 28, 14), R, 0.36, edge),
+        haze(ell(110, 54, 25, 28, 14), R, 0.44, edge),
         ...mind,
-        ...glow(124, 64, 7, 5, '255,255,255', 1), { e: [124, 64, 4.6, 1.8], c: '#ffffff', m: 'gem', line: 0 }, { e: [133, 63, 3.2, 1.5], c: '#ffffff', m: 'gem', line: 0 },
+        ...glow(120, 66, 7, 5, '255,255,255', 1), { e: [120, 66, 4.4, 1.8], c: '#ffffff', m: 'gem', line: 0 }, { e: [129, 65, 3, 1.5], c: '#ffffff', m: 'gem', line: 0 },
         ...crown,
       ] },
       { kind: 'prop', pivot: [126, 94], shapes: [
@@ -487,13 +493,13 @@
      Феникс — пылающий: жёлто-белое пламя, огонь по краям крыльев и вместо концов хвоста, ореол. */
   const BG = 290;
   /** Концы маховых и второстепенных перьев крыла wing.feather — чтобы посадить на них пламя. */
-  function wingTips(O, d, L) {
+  function wingTips(O, d, L, sec) {
     d = norm(d[0], d[1]); const n = [d[1], -d[0]];
     const T = (x, y) => [O[0] + d[0] * x + n[0] * y, O[1] + d[1] * x + n[1] * y];
     const out = [];
     const add = (B, a, len) => { const tip = [B[0] + Math.cos(a) * len, B[1] + Math.sin(a) * len]; const gd = [d[0] * Math.cos(a) + n[0] * Math.sin(a), d[1] * Math.cos(a) + n[1] * Math.sin(a)]; out.push([T(tip[0], tip[1]), Math.atan2(gd[1], gd[0])]); };
     for (let i = 0; i < 6; i++) add([L * (0.62 + i * 0.066), 3 + (5 - i) * 1.6], Math.PI * (0.25 - i * 0.047), L * (0.44 + i * 0.05));
-    for (let j = 0; j < 7; j += 2) add([L * (0.06 + j * 0.086), 5], Math.PI * (0.45 - j * 0.03), L * (0.34 + j * 0.013));
+    if (sec) for (let j = 0; j < 7; j += 2) add([L * (0.06 + j * 0.086), 5], Math.PI * (0.45 - j * 0.03), L * (0.34 + j * 0.013));
     return out;
   }
   function birdLeg(X, c, feath, claw) {
@@ -513,23 +519,25 @@
     const nearO = [194, 158], nearD = [-0.64, -0.77], nearL = 152, farO = [206, 150], farD = [-0.12, -1], farL = 132;
     const nearWing = wing.feather(nearO, nearD, nearL, WN), farWing = wing.feather(farO, farD, farL, WF);
     if (o.flames) {
-      for (const [p, a] of wingTips(nearO, nearD, nearL)) nearWing.push(...tongue([p[0] - Math.cos(a) * 10, p[1] - Math.sin(a) * 10], a, 34, 17, pal, 4));
-      for (const [p, a] of wingTips(farO, farD, farL)) farWing.unshift(...tongue([p[0] - Math.cos(a) * 10, p[1] - Math.sin(a) * 10], a, 28, 14, pal, 4));
+      for (const [p, a] of wingTips(nearO, nearD, nearL, true)) nearWing.push(...tongue([p[0] - Math.cos(a) * 14, p[1] - Math.sin(a) * 14], a, 46, 22, pal, 7));
+      for (const [p, a] of wingTips(farO, farD, farL)) farWing.unshift(...tongue([p[0] - Math.cos(a) * 12, p[1] - Math.sin(a) * 12], a, 38, 18, pal, 6));
     }
     // хвост: длинные ленты с «глазком» (жар-птица) или языком пламени (феникс) на конце
     const tail = [];
     for (let i = 4; i >= 0; i--) { const lf = leaf([150, 212], Math.PI * (0.78 + i * 0.055), 70 - i * 4, 20); tail.push({ p: lf.body, c: i % 2 ? o.pri : o.sec, m: 'leather', gloss: 0.5, line: 0.6, lines: [{ p: lf.shaft, w: 0.9, light: true, a: 0.45 }] }); }
     const ribbons = [
-      [[150, 208, 12], [120, 204, 9], [94, 190, 7], [76, 170, 6], [70, 150, 5]],
-      [[150, 214, 13], [118, 226, 10], [86, 226, 8], [58, 214, 7], [42, 196, 6]],
-      [[152, 220, 12], [122, 242, 9], [92, 254, 7], [62, 258, 6], [40, 252, 5]],
+      [[148, 206, 12], [122, 198, 9], [100, 180, 7], [88, 158, 6], [86, 136, 5]],
+      [[150, 210, 12], [118, 212, 10], [90, 202, 8], [66, 186, 7], [52, 166, 6]],
+      [[150, 214, 13], [116, 228, 10], [84, 230, 8], [56, 222, 7], [36, 206, 6]],
+      [[152, 220, 12], [120, 242, 9], [90, 254, 7], [60, 258, 6], [36, 254, 5]],
+      [[154, 222, 11], [134, 250, 8], [112, 266, 6], [88, 272, 5], [66, 270, 4.5]],
     ];
     ribbons.forEach((c, i) => {
       const a = c[c.length - 2], b = c[c.length - 1], ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
-      tail.push({ p: tube(c), c: i === 1 ? o.ribbon : tone(o.ribbon, -0.12), m: 'leather', gloss: 0.7, line: 0.6, lines: [{ p: c.map(q => [q[0], q[1]]), w: 1, light: true, a: 0.55 }] });
-      if (o.flames) tail.push(...glow(b[0], b[1], 22, 22, o.glowRgb, 0.9), ...tongue([b[0] - Math.cos(ang) * 4, b[1] - Math.sin(ang) * 4], ang, 44, 24, pal, i === 2 ? 6 : -6));
+      tail.push({ p: tube(c), c: i % 2 ? o.ribbon : tone(o.ribbon, -0.12), m: 'leather', gloss: 0.7, line: 0.6, lines: [{ p: c.map(q => [q[0], q[1]]), w: 1, light: true, a: 0.55 }] });
+      if (o.flames) tail.push(...tongue([b[0] - Math.cos(ang) * 4, b[1] - Math.sin(ang) * 4], ang, 44, 24, pal, i > 2 ? 6 : -6));
       else {
-        const lf = leaf([b[0] - Math.cos(ang) * 4, b[1] - Math.sin(ang) * 4], ang, 34, 22), cx = b[0] + Math.cos(ang) * 14, cy = b[1] + Math.sin(ang) * 14;
+        const lf = leaf([b[0] - Math.cos(ang) * 4, b[1] - Math.sin(ang) * 4], ang, 30, 24), cx = b[0] + Math.cos(ang) * 13, cy = b[1] + Math.sin(ang) * 13;
         tail.push({ p: lf.body, c: o.eyeFeather, m: 'leather', gloss: 0.8, line: 0.6, lc: tone(o.eyeFeather, -0.6),
           sub: [{ e: [cx, cy, 7, 6], c: o.ocellus, m: 'gem', line: 0.5 }, { e: [cx + 1, cy, 3.4, 3], c: '#2a1030', m: 'gem', line: 0, glint: [[cx, cy - 1, 1.4]] }] });
       }
@@ -553,7 +561,7 @@
       { e: [286, 86, 4.4, 3.8], c: o.eye, m: 'gem', line: 0.6, sub: [{ e: [287, 86, 2, 2.8], c: '#1a0806', m: 'flat', line: 0 }], glint: [[285, 84.6, 1.6]] },
     ];
     const torso = [
-      ...(o.flames ? glow(200, 180, 150, 130, o.glowRgb, 0.9) : glow(200, 186, 90, 70, o.glowRgb, 0.6)),
+      ...(o.flames ? [...glow(196, 176, 150, 112, o.glowRgb, 1), ...glow(90, 226, 70, 40, o.glowRgb, 0.8)] : glow(200, 186, 90, 70, o.glowRgb, 0.6)),
       ...tail,
       { p: [[132, 216], [146, 190], [178, 166], [212, 154], [240, 160], [254, 184], [246, 212], [220, 232], [184, 240], [152, 234]], c: o.body, m: 'feather', texSize: 0.65, flow: Math.PI * 0.8, belly: 0.35,
         lines: [{ p: [[150, 204], [180, 182], [214, 170]], w: 1.4, light: true, a: 0.45 }],
@@ -568,7 +576,7 @@
       { kind: 'prop', pivot: nearO, shapes: nearWing },
     ];
     const to = frameOf(name) || { w: 360, h: 333, anchor: [183, 310] };
-    V.def(name, fit(parts, { ground: [196, BG] }, to, to.anchor[1] / BG * (o.size || 0.96)));
+    V.def(name, fit(parts, { ground: [196, BG] }, to, to.anchor[1] / BG * (o.size || 0.86)));
   }
   firebird('firebird', { pri: '#b01e18', sec: '#d8401a', cov: '#ec7a22', cov2: '#f6b43a', body: '#dc3a18', breast: '#f6a82a', neck: '#e8561c', head: '#f07a24', mask: '#b82a14',
     beak: '#f0d060', leg: '#e0a830', eye: '#ffe060', ribbon: '#e8481a', eyeFeather: '#f0b030', ocellus: '#2a8ad0', crest: '#f8c840', crestStem: '#d8401a', glowRgb: '255,150,60' });

@@ -93,8 +93,8 @@
     // голова: гиена в профиль, пасть приоткрыта
     const headS = [
       // грива на затылке и дальнее ухо
-      { p: [[110, 24], [96, 20], [82, 30], [76, 50], [74, 72], [82, 86], [94, 78], [98, 56]], c: mane, m: 'fur', furLen: 1.1, flow: Math.PI * 0.62, id: 'mane' },
-      { p: [[104, 36], [94, 22], [96, 8], [108, 10], [116, 28]], c: fD, m: 'fur', furLen: 0.4, line: 0.7, sub: [{ e: [103, 20, 4, 7], c: tone(o.earIn, -0.3), m: 'skin', line: 0 }] },
+      { p: [[116, 28], [108, 14, 1], [102, 26], [92, 16, 1], [90, 30], [78, 26, 1], [82, 40], [70, 42, 1], [78, 52], [66, 60, 1], [76, 66], [68, 80, 1], [82, 80], [92, 70], [98, 50], [106, 36]], c: mane, m: 'fur', furLen: 0.9, flow: Math.PI * 0.85, id: 'mane' },
+      { p: [[98, 40], [86, 30], [84, 16], [94, 10], [104, 18], [108, 32]], c: fD, m: 'fur', furLen: 0.4, line: 0.7, sub: [{ e: [95, 22, 5, 7], c: tone(o.earIn, -0.3), m: 'skin', line: 0 }] },
       // нижняя челюсть
       { p: [[118, 72], [140, 68], [164, 66], [170, 70], [160, 78], [140, 82], [120, 80]], c: fD, m: 'fur', furLen: 0.3, flow: Math.PI },
       { p: [[140, 64], [172, 60], [166, 69], [142, 71]], c: MOUTH, m: 'flat', line: 0.4 },
@@ -108,8 +108,8 @@
       { e: [132, 44, 4, 3.3], c: o.eye, m: 'gem', line: 0.5, sub: [{ e: [133, 44, 1.6, 2.6], c: DARK, m: 'flat', line: 0 }], glint: [[131, 42.6, 1.3]] },
       { p: [[122, 37], [140, 37], [143, 41], [124, 41]], c: tone(mane, -0.2), m: 'flat', line: 0 },
       // ближнее ухо — круглое, торчком
-      { p: [[108, 36], [100, 16], [106, 3], [118, 7], [122, 22], [120, 34]], c: f, m: 'fur', furLen: 0.4, line: 0.7, id: 'ear',
-        sub: [{ p: [[110, 32], [106, 16], [110, 8], [116, 12], [117, 28]], c: o.earIn, m: 'skin', line: 0 }] },
+      { p: [[106, 40], [94, 26], [94, 10], [106, 4], [118, 12], [120, 30]], c: f, m: 'fur', furLen: 0.4, line: 0.7, id: 'ear',
+        sub: [{ p: [[108, 34], [100, 22], [101, 12], [108, 9], [114, 16], [115, 30]], c: o.earIn, m: 'skin', line: 0 }] },
     ];
     if (o.paint) headS.push({ p: [[120, 48], [146, 42], [148, 47], [122, 53]], c: o.paint, m: 'flat', line: 0 });
     if (o.crest) headS.push({ p: [[118, 26], [110, 4, 1], [104, 20], [96, 2, 1], [94, 22], [84, 8, 1], [86, 30]], c: mane, m: 'fur', furLen: 0.9, flow: -Math.PI * 0.5, line: 0.6 });
@@ -165,8 +165,8 @@
         ...shoulder],
     }));
   }
-  gnoll('gnoll', { fur: '#c89a5a', spot: '#6a4626', mane: '#4a3020', muzzle: '#3e2c1e', earIn: '#b07a62', eye: '#f0b030', armor: 'wood', armorC: '#8a5a30', loin: '#5e6e34', tuft: '#4a3020' });
-  gnoll('gnoll_marauder', { fur: '#8c7258', spot: '#4e3c2c', mane: '#a8401e', muzzle: '#2a1e16', earIn: '#8a5a4a', eye: '#ff6a20', armor: 'leather', armorC: '#4a3222', sash: '#a82a24',
+  gnoll('gnoll', { fur: '#c89a5a', spot: '#6a4626', mane: '#4a3020', muzzle: '#3e2c1e', earIn: '#7a5040', eye: '#f0b030', armor: 'wood', armorC: '#8a5a30', loin: '#5e6e34', tuft: '#4a3020' });
+  gnoll('gnoll_marauder', { fur: '#8c7258', spot: '#4e3c2c', mane: '#a8401e', muzzle: '#2a1e16', earIn: '#5a3a2e', eye: '#ff6a20', armor: 'leather', armorC: '#4a3222', sash: '#a82a24',
     loin: '#3a2a1e', buckle: '#d8a53a', pauldron: '#8a929c', wraps: '#6a4a2c', paint: '#b8281e', crest: true, flail: true });
 
   /* ================= Ящер / ящер-воин =================
@@ -369,23 +369,28 @@
       { kind: 'leg', side: -1, pivot: [116, 152], shapes: bLeg([116, 150], [128, 186], [114, 206], [118, 223], 42, c, [[80, 122], [124, 116], [144, 146], [138, 180], [118, 192], [96, 178], [84, 150]]) },
       { kind: 'leg', side: 1, pivot: [236, 154], shapes: bLeg([234, 152], [242, 190], [240, 208], [246, 223], 38, c) },
     ];
-    const bands = [0, 1, 2, 3].map(i => ({ p: [[96 + i * 38, 92 - i * 5], [106 + i * 38, 118 - i * 3], [102 + i * 38, 150], [110 + i * 38, 176]], w: 1.6, a: 0.55 }));
-    const rivets = [];
-    for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) rivets.push([100 + i * 38 + j * 2, 104 - i * 4 + j * 24, 1.7]);
+    // кованые пластины поперёк спины — как у броненосца; обрезаются контуром корпуса
+    const plates = [], top = [[70, 100], [104, 92], [140, 88], [170, 74], [196, 60], [224, 60], [246, 76]];
+    for (let i = 0; i < top.length - 1; i++) {
+      const [x0] = top[i], [x1] = top[i + 1], pc = i % 2 ? tone(c, 0.06) : c;
+      plates.push({ p: [P(x0 - 4, 30, 1), P(x1 + 6, 30, 1), [x1 + 4, 110], [x1 - 2, 146], P(x1 - 6, 160, 1), P(x0 - 10, 162, 1), [x0 - 6, 146], [x0 - 2, 110]], c: pc, m: 'steel', gloss: 0.8, line: 0.9, lc: tone(c, -0.6),
+        lines: [{ p: [[x1 + 2, 70], [x1 + 2, 110], [x1 - 4, 150]], w: 1.4, light: true, a: 0.5 }], glint: [[x0 + 2, 120, 1.8], [x0 + 1, 140, 1.8], [x0 + 3, 98, 1.8]] });
+      if (o.trim) plates.push({ p: [P(x0 - 12, 150, 1), P(x1 - 6, 148, 1), P(x1 - 8, 162, 1), P(x0 - 12, 164, 1)], c: o.trim, m: 'gold', line: 0.5 });
+    }
     const bodyS = [
       // хвост с кисточкой
-      { p: tube([[64, 112, 11], [48, 130, 8], [40, 156, 6], [38, 172, 5]]), c: lc, m: 'steel', gloss: 0.5, line: 0.7 },
-      { p: [[30, 166], [46, 166], [50, 186, 1], [40, 180], [32, 190, 1], [30, 178]], c: o.tuft, m: 'fur', furLen: 0.8, flow: Math.PI * 0.5 },
-      { p: [[54, 132], [60, 106], [84, 90], [130, 88], [172, 78], [204, 64], [232, 68], [254, 90], [262, 122], [256, 156], [236, 176], [198, 180], [150, 176], [110, 178], [76, 170], [58, 154]], c, m: 'steel', tex: 'scale', texSize: 1.25, gloss: 0.55, belly: 0.45, id: 'body',
-        sub: [{ p: [[170, 76], [206, 60], [236, 66], [256, 92], [262, 126], [244, 118], [226, 96], [196, 90], [168, 98]], c: tone(c, 0.12), m: 'steel', tex: 'scale', texSize: 1, gloss: 0.8, line: 0 },
-          ...(o.trim ? [{ p: [[40, 164], [270, 150], [270, 190], [40, 190]], c: o.trim, m: 'gold', line: 0 }] : [])],
-        lines: bands.concat([{ p: [[80, 98], [130, 92], [180, 80], [220, 70]], w: 1.6, light: true, a: 0.45 }]), glint: rivets },
+      { p: tube([[64, 114, 11], [50, 132, 8], [42, 156, 6], [40, 172, 5]]), c: lc, m: 'steel', gloss: 0.5, line: 0.7 },
+      { p: [[38, 166], [48, 170], [50, 188], [44, 204, 1], [40, 190], [32, 200, 1], [32, 180]], c: o.tuft, m: 'fur', furLen: 0.9, flow: Math.PI * 0.5 },
+      { p: [[56, 138], [60, 112], [78, 96], [112, 92], [146, 88], [176, 72], [204, 58], [230, 62], [250, 82], [262, 112], [260, 150], [246, 178], [208, 184], [160, 176], [118, 178], [84, 172], [62, 158]], c: tone(c, -0.18), m: 'steel', tex: 'scale', texSize: 0.7, gloss: 0.4, belly: 0.45, id: 'body',
+        sub: plates, lines: [{ p: [[80, 104], [130, 96], [180, 80], [220, 66]], w: 1.6, light: true, a: 0.45 }] },
+      ...(o.ridge ? spikes([[150, 88], [176, 72], [204, 58], [230, 62]], 4, 14, o.ridge, 1, 'gold') : []),
     ];
     const headS = [
       hornT([[286, 104, 12], [290, 82, 9], [302, 68, 5.5], [316, 64, 2]], tone(o.horn, -0.25), o.hornTip && tone(o.hornTip, -0.2)),
       { p: [[246, 150], [240, 118], [252, 100], [274, 96], [292, 102], [306, 116], [316, 132], [322, 146], [316, 158], [298, 162], [282, 156], [266, 162], [250, 164]], c, m: 'steel', tex: 'scale', texSize: 0.6, gloss: 0.6, id: 'skull',
         sub: [{ p: [[300, 128], [330, 140], [330, 168], [296, 166]], c: o.muzzle, m: 'steel', gloss: 0.9, line: 0 }],
         lines: [{ p: [[258, 106], [280, 100], [298, 108]], w: 1.2, light: true, a: 0.5 }, { p: [[276, 128], [292, 140], [300, 156]], w: 1.2, a: 0.4 }] },
+      { p: [[256, 104], [276, 98], [296, 106], [310, 124], [300, 128], [282, 118], [262, 116]], c: tone(c, 0.08), m: 'steel', gloss: 0.9, line: 0.8, lc: tone(c, -0.6), glint: [[270, 104, 1.6], [290, 110, 1.6]] },
       { p: [[304, 156], [322, 156], [320, 162, 1], [304, 162]], c: '#1a1210', m: 'flat', line: 0 },
       { e: [316, 146, 3.2, 2.4], c: '#140c08', m: 'flat', line: 0 },
       // ухо назад
@@ -400,12 +405,13 @@
       // пар из ноздрей клубами
       [[334, 156, 8], [348, 150, 10], [364, 146, 12], [380, 148, 10]].forEach(([x, y, r], i) => headS.push({ e: [x, y, r, r * 0.8], c: 'rgba(' + o.breath + ',' + (0.55 - i * 0.1).toFixed(2) + ')', m: 'flat', line: 0 }));
     }
-    const parts = [...legs, { kind: 'torso', pivot: [160, 150], shapes: bodyS }, { kind: 'head', pivot: [252, 128], shapes: headS }];
+    const headL = mapShapes(headS, (x, y) => [252 + (x - 252) * 1.18, 128 + (y - 128) * 1.18], 1.18);
+    const parts = [...legs, { kind: 'torso', pivot: [160, 150], shapes: bodyS }, { kind: 'head', pivot: [252, 128], shapes: headL }];
     V.def(name, place(name, parts, [153, 223], o.size || 1));
   }
   gorgon('gorgon', { plate: '#b0703c', leg: '#8a5a38', muzzle: '#c88a58', hoof: '#2a201a', horn: '#ece2c8', hornTip: '#8a7a5a', eye: '#f0c030', tuft: '#3a2a1e' });
   gorgon('mighty_gorgon', { plate: '#4a5666', leg: '#3a4450', muzzle: '#6a7a8a', hoof: '#1a1a20', horn: '#f0c848', hornTip: '#8a5a1a', eye: '#b0ff70', eyeGlow: '140,255,90', tuft: '#1a1a20',
-    trim: '#d8a53a', cuff: '#d8a53a', ring: '#e8c050', breath: '150,240,120' });
+    trim: '#d8a53a', cuff: '#d8a53a', ring: '#e8c050', breath: '150,240,120', ridge: '#e8c050' });
 
   /* ================= Виверна / монарх виверн =================
      Стоит на двух лапах; перепончатые крылья вскинуты, длинная шея, хвост к земле с жалом.
@@ -485,7 +491,7 @@
     const neckHead = (b, m, h, k, open, dark) => {
       const col = dark ? far : c, [hx, hy] = h, K2 = v => v * k;
       const nk = [[b[0], b[1], 36 * k], [m[0], m[1], 28 * k], [hx - K2(8), hy + K2(8), 21 * k]];
-      const out = [{ p: tube(nk, { flat0: true }), c: col, m: 'skin', tex: 'scale', texSize: 0.55, sub: [{ p: bellyTube(nk, 0.42, 0.3), c: dark ? tone(bel, -0.2) : bel, m: 'skin', line: 0, lines: rings(nk, 0.1, 1, 1, 0.4) }] }];
+      const out = [{ p: tube(nk, { flat0: dark }), c: col, m: 'skin', tex: 'scale', texSize: 0.55, sub: [{ p: bellyTube(nk, 0.42, 0.3), c: dark ? tone(bel, -0.2) : bel, m: 'skin', line: 0, lines: rings(nk, 0.1, 1, 1, 0.4) }] }];
       if (o.spikes) out.push(...spikes(nk.map(q => [q[0] - q[2] * 0.2, q[1] - q[2] * 0.4]), 4, 9 * k, o.spikes, 1));
       const Hd = pts => pts.map(q => P(hx + q[0] * k, hy + q[1] * k, q[2]));
       if (o.horns) out.push(hornT(Hd([[-6, -8, 7], [-18, -18, 5], [-28, -20, 2]]).map((q, i) => [q[0], q[1], [7, 5, 2][i] * k]), dark ? tone(o.horns, -0.2) : o.horns));
@@ -527,21 +533,21 @@
     V.def(name, place(name, parts, [170, 310], o.size || 1));
   }
   const H5 = [
-    { b: [168, 212], m: [138, 166], h: [120, 112], far: true, open: 3 },
-    { b: [192, 204], m: [180, 142], h: [178, 80], far: true, open: 6 },
-    { b: [212, 208], m: [228, 152], h: [236, 92], open: 4 },
-    { b: [228, 218], m: [264, 184], h: [282, 132], open: 8 },
-    { b: [236, 232], m: [270, 232], h: [300, 196], open: 5, k: 1.05 },
+    { b: [168, 212], m: [136, 160], h: [118, 98], far: true, open: 3 },
+    { b: [190, 204], m: [178, 132], h: [176, 62], far: true, open: 6 },
+    { b: [210, 210], m: [228, 144], h: [236, 78], open: 4 },
+    { b: [226, 220], m: [266, 178], h: [284, 122], open: 8 },
+    { b: [234, 236], m: [272, 232], h: [304, 188], open: 5, k: 1.05 },
   ];
-  hydra('hydra', { body: '#5e7a36', belly: '#d8c070', spot: '#3e5626', claw: '#ece2c8', eye: '#f0d030', frill: '#b89040', heads: H5 });
-  hydra('chaos_hydra', { body: '#a8281e', belly: '#f0a040', spot: '#6a1410', claw: '#2a1a14', eye: '#ffe040', glow: '255,200,60', frill: '#2a1410', horns: '#2a1a14', spikes: '#2a1a14', size: 1.04,
+  hydra('hydra', { body: '#5e7a36', belly: '#d8c070', spot: '#3e5626', claw: '#ece2c8', eye: '#f0d030', frill: '#b89040', heads: H5, size: 1.04 });
+  hydra('chaos_hydra', { body: '#a8281e', belly: '#f0a040', spot: '#6a1410', claw: '#2a1a14', eye: '#ffe040', glow: '255,200,60', frill: '#2a1410', horns: '#2a1a14', spikes: '#2a1a14', size: 1.06,
     heads: [
-      { b: [158, 214], m: [120, 192], h: [84, 150], far: true, open: 4, k: 0.95 },
-      { b: [172, 208], m: [140, 160], h: [124, 100], far: true, open: 3 },
-      { b: [192, 204], m: [182, 132], h: [176, 64], far: true, open: 6 },
-      { b: [206, 204], m: [214, 144], h: [226, 76], open: 5 },
-      { b: [222, 212], m: [252, 168], h: [270, 116], open: 8 },
-      { b: [232, 226], m: [274, 214], h: [298, 170], open: 5, k: 1.05 },
-      { b: [236, 244], m: [262, 256], h: [300, 230], open: 7, k: 0.95 },
+      { b: [158, 214], m: [118, 186], h: [86, 138], far: true, open: 4, k: 0.95 },
+      { b: [172, 208], m: [138, 150], h: [126, 86], far: true, open: 3 },
+      { b: [192, 204], m: [180, 120], h: [178, 48], far: true, open: 6 },
+      { b: [206, 206], m: [218, 136], h: [230, 66], open: 5 },
+      { b: [222, 214], m: [256, 162], h: [274, 106], open: 8 },
+      { b: [232, 228], m: [276, 210], h: [302, 160], open: 5, k: 1.05 },
+      { b: [236, 246], m: [264, 258], h: [302, 226], open: 7, k: 0.95 },
     ] });
 })(typeof window !== 'undefined' ? window : globalThis);

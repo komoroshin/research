@@ -128,7 +128,7 @@
     const top = base - h, tw = hw * (1 - (o.taper || 0.04)), out = [];
     const sub = [{ p: [P(cx + tw * 0.42, top - 2, 1), P(cx + hw + 4, top - 2, 1), P(cx + hw + 4, base + 2, 1), P(cx + hw * 0.42, base + 2, 1)], c: o.shade, m: 'flat', line: 0 }];
     if (o.light) sub.push({ p: [P(cx - hw - 4, top - 2, 1), P(cx - tw * 0.72, top - 2, 1), P(cx - hw * 0.72, base + 2, 1), P(cx - hw - 4, base + 2, 1)], c: o.light, m: 'flat', line: 0 });
-    out.push({ p: trap(cx, top, base, tw, hw), c: o.wall, m: o.m || 'cloth', line: 1, lc: o.lc, sub, lines: o.mason === false ? [] : masonry(cx - hw, top, cx + hw, base, o.rh || 22, o.bw || hw * 0.9, o.ma || 0.35, 1.8), id: o.id });
+    out.push({ p: trap(cx, top, base, tw, hw), c: o.wall, m: o.m || 'cloth', line: 1, lc: o.lc, sub, lines: o.mason === false ? [] : masonry(cx - hw, top, cx + hw, base, o.rh || 22, o.bw || hw * 0.9, o.ma || 0.35, o.mw || 1.8), id: o.id });
     for (const y of o.win || []) out.push(...win(cx, y, o.winW || Math.max(6, hw * 0.24), o.winH || Math.max(16, hw * 0.62), { pointed: o.pointed, c: o.winC, lc: o.winLC }));
     const t = o.top || 'cone', eave = o.eave === undefined ? 6 : o.eave;
     if (t === 'cone') out.push(...cone(cx, top + 2, tw + eave, o.roofH || hw * 2.3, o.roof, o.roofD, { flare: o.flare, lean: o.lean, m: o.roofM }));
@@ -482,8 +482,7 @@
     // маяк на скале
     out.push({ p: ell(508, 406, 56, 22, 12), c: '#6a6258', m: 'horn', line: 1 });
     const bands = []; for (let y = 206; y < 400; y += 46) bands.push({ p: [P(470, y, 1), P(546, y, 1), P(546, y + 22, 1), P(470, y + 22, 1)], c: '#c42a2a', m: 'flat', line: 0 });
-    bands.push({ p: box(514, 150, 550, 404), c: '#000000', m: 'flat', line: 0, id: 'x' });
-    out.push({ p: trap(508, 196, 400, 22, 34), c: '#f2eee6', m: 'cloth', line: 1, sub: bands.slice(0, -1).concat([{ p: [P(516, 190, 1), P(550, 190, 1), P(550, 404, 1), P(524, 404, 1)], c: '#9a9088', m: 'flat', line: 0 }]) });
+    out.push({ p: trap(508, 196, 400, 22, 34), c: '#f2eee6', m: 'cloth', line: 1, sub: bands.concat([{ p: [P(516, 190, 1), P(550, 190, 1), P(550, 404, 1), P(524, 404, 1)], c: '#9a9088', m: 'flat', line: 0 }]) });
     out.push({ p: box(480, 186, 536, 198), c: '#3a3a42', m: 'steel', line: 1 }, { p: box(488, 150, 528, 188), c: '#ffd860', m: 'gem', gloss: 1, line: 1, lc: '#3a2a10', lines: [{ p: [[508, 150], [508, 188]], w: 3, c: '#3a3a42', a: 0.9 }] }, ...dome(508, 152, 24, 26, '#b8322a', '#7a1a14'));
     // пирс и корабль
     out.push({ p: box(0, 392, 212, 402), c: '#8a6a40', m: 'wood', flow: 0, line: 1, lines: planks(0, 392, 212, 402, 18, true, 0.5) });
@@ -587,4 +586,339 @@
     for (const x of [178, 388]) out.push({ p: tube([[x, G, 10], [x, 340, 8]]), c: '#6a4424', m: 'wood', line: 0.8, lines: [{ p: [[x - 5, 390], [x + 5, 390]], w: 4, c: '#b8322a', a: 0.9 }] }, ...skull(x, 330, 14, { horns: true }));
     return out;
   });
+
+  /* ============================== ПОСТРОЙКИ ЭКРАНА ГОРОДА ==============================
+     Стены — '$n' (тёмная сторона '$N'), крыши — '$r' (тёмная половина '$R'). Экран города рисует
+     их в масштабе 2 (5 единиц на точку сцены), поэтому штрихи толще, чем у городов на карте. */
+  const BEAM = '#5a3a22', LAMP = WIN;
+  function bld(name, build) {
+    const fr = frameOf(name); if (!fr) return;
+    one(name, build(fr, fr.anchor[1]), fr);
+  }
+  const TWR = { wall: Tn, shade: TN, roof: Tr, roofD: TR, rh: 26, ma: 0.4, mw: 2.6, finial: GOLD };
+  /** Стена-коробка с тёмной правой стороной и кладкой. */
+  function walls(x0, y0, x1, y1, o) {
+    o = o || {};
+    return { p: box(x0, y0, x1, y1), c: o.c || Tn, m: 'cloth', line: 1.2, belly: 0.15,
+      sub: [{ p: box(x1 - (x1 - x0) * (o.shadeK || 0.16), y0 - 2, x1 + 2, y1 + 2), c: o.shade || TN, m: 'flat', line: 0 }].concat(o.sub || []),
+      lines: o.lines || masonry(x0, y0, x1, y1, o.rh || 26, o.bw || 44, o.ma || 0.4, 2.6) };
+  }
+  /** Вальмовая крыша (трапеция) над x0…x1: низ y, высота h, свес e, срез боков inset. */
+  function hip(x0, x1, y, h, e, inset, o) {
+    o = o || {}; const rows = [];
+    for (let k = 1; k < 4; k++) { const yy = y - h * k / 4, dx = inset * k / 4; rows.push({ p: [[x0 - e + dx, yy], [x1 + e - dx, yy]], w: 2.6, a: 0.45 }); }
+    for (let x = x0 + 10; x < x1; x += 34) rows.push({ p: [[x, y - h * 0.02], [x + (x - (x0 + x1) / 2) * -0.08, y - h + 4]], w: 1.6, a: 0.25 });
+    return { p: [P(x0 - e, y, 1), P(x0 - e + inset, y - h, 1), P(x1 + e - inset, y - h, 1), P(x1 + e, y, 1)], c: o.c || Tr, m: 'leather', gloss: 0.25, line: 1.2, lines: rows, id: o.id,
+      sub: [{ p: [P((x0 + x1) / 2 + (x1 - x0) * 0.18, y - h - 2, 1), P(x1 + e + 2, y - h - 2, 1), P(x1 + e + 2, y + 2, 1), P((x0 + x1) / 2 + (x1 - x0) * 0.3, y + 2, 1)], c: o.cd || TR, m: 'flat', line: 0 }] };
+  }
+  /** Карниз: светлая полоса под крышей. */
+  const cornice = (x0, x1, y, c) => ({ p: box(x0, y - 5, x1, y + 5), c: c || TN, m: 'cloth', line: 1 });
+  /** Дверь: арка с досками и фонарём (lamp — точка огня ночью). */
+  function door(cx, base, w, h, lamp) {
+    const out = [{ p: arch(cx, base, w + 7, h + 7), c: TN, m: 'cloth', line: 1, lines: voussoirs(cx, base - h + w, w + 4, 6) },
+      { p: arch(cx, base, w, h), c: DOOR, m: 'wood', flow: -Math.PI / 2, line: 1.2, lines: [{ p: [[cx, base - h], [cx, base]], w: 2.6, a: 0.8 }, { p: [[cx - w, base - h * 0.3], [cx + w, base - h * 0.3]], w: 3.4, c: IRON, a: 0.9 }, { p: [[cx - w, base - h * 0.66], [cx + w, base - h * 0.66]], w: 3.4, c: IRON, a: 0.9 }] }];
+    if (lamp) out.push({ e: [lamp[0], lamp[1], 6, 6], c: LAMP, m: 'gem', gloss: 1, line: 1, lc: WIN_LC });
+    return out;
+  }
+  /** Прямоугольное окно со ставнями. */
+  function sqwin(cx, cy, w, h, o) {
+    o = o || {};
+    const out = [];
+    if (o.shutters) for (const s of [-1, 1]) out.push({ p: box(cx + s * w, cy - h, cx + s * (w + w * 0.8), cy + h), c: o.shutters, m: 'wood', flow: -Math.PI / 2, line: 1 });
+    out.push({ p: box(cx - w, cy - h, cx + w, cy + h), c: WIN, m: 'gem', gloss: 0.5, rim: 0, line: 1.2, lc: WIN_LC, lines: [{ p: [[cx, cy - h], [cx, cy + h]], w: 3, c: WIN_LC, a: 0.9 }, { p: [[cx - w, cy], [cx + w, cy]], w: 3, c: WIN_LC, a: 0.9 }] });
+    out.push({ p: box(cx - w - 4, cy + h, cx + w + 4, cy + h + 6), c: TN, m: 'cloth', line: 1 });
+    return out;
+  }
+  const pennant = (x, base, top, c) => flag(x, base, base - top, c || WIN, { fw: 30, fh: 20, pw: 4 });
+
+  /* ---------- ратуша: от сельской управы до капитолия ---------- */
+  bld('bld_hall_1', (f, g) => [
+    ...tower(80, 200, 30, 120, Object.assign({}, TWR, { roofH: 58, win: [], mason: false, eave: 6 })),
+    walls(56, 164, 364, g), hip(56, 364, 170, 84, 14, 64), cornice(52, 368, 168),
+    ...win(105, 210, 12, 32), ...win(305, 210, 12, 32), ...win(105, 300, 12, 32), ...win(305, 300, 12, 32),
+    { e: [210, 196, 20, 20], c: GOLD, m: 'gold', line: 1, lines: [{ p: [[210, 196], [210, 183]], w: 3, c: '#3a2a10', a: 0.9 }, { p: [[210, 196], [219, 200]], w: 3, c: '#3a2a10', a: 0.9 }] },
+    { p: box(170, g - 8, 250, g), c: TN, m: 'cloth', line: 1 },
+    ...door(210, g - 8, 26, 100),
+  ]);
+  bld('bld_hall_2', (f, g) => [
+    ...tower(80, 250, 32, 150, Object.assign({}, TWR, { roofH: 66, win: [168], winW: 7, winH: 20, mason: false })),
+    ...tower(380, 250, 32, 150, Object.assign({}, TWR, { roofH: 66, win: [168], winW: 7, winH: 20, mason: false })),
+    walls(46, 196, 414, g), hip(46, 414, 202, 92, 14, 90), cornice(42, 418, 200),
+    ...win(115, 240, 12, 32), ...win(335, 240, 12, 32), ...win(115, 340, 12, 32), ...win(335, 340, 12, 32),
+    { e: [230, 232, 24, 24], c: GOLD, m: 'gold', line: 1, lines: [{ p: [[230, 232], [230, 216]], w: 3.4, c: '#3a2a10', a: 0.9 }, { p: [[230, 232], [241, 238]], w: 3.4, c: '#3a2a10', a: 0.9 }] },
+    { p: box(180, g - 10, 280, g), c: TN, m: 'cloth', line: 1 },
+    ...door(230, g - 10, 30, 118),
+  ]);
+  bld('bld_hall_3', (f, g) => [
+    ...tower(260, 200, 30, 130, Object.assign({}, TWR, { roofH: 64, win: [140], winW: 7, winH: 20, mason: false })),
+    ...tower(76, 260, 34, 150, Object.assign({}, TWR, { roofH: 72, win: [178], winW: 8, winH: 22, mason: false })),
+    ...tower(444, 260, 34, 150, Object.assign({}, TWR, { roofH: 72, win: [178], winW: 8, winH: 22, mason: false })),
+    walls(44, 204, 476, g), hip(44, 476, 210, 86, 14, 80), cornice(40, 480, 208),
+    // фронтон с круглым окном
+    { p: [P(176, 212, 1), P(260, 140, 1), P(344, 212, 1)], c: Tn, m: 'cloth', line: 1.2, sub: [{ p: [P(264, 136, 1), P(350, 214, 1), P(300, 214, 1)], c: TN, m: 'flat', line: 0 }] },
+    { p: tube([[166, 214, 8], [260, 132, 8], [354, 214, 8]]), c: Tr, m: 'leather', line: 1 },
+    { e: [260, 186, 18, 18], c: WIN, m: 'gem', line: 1.2, lc: WIN_LC, lines: [{ p: [[242, 186], [278, 186]], w: 3, c: WIN_LC, a: 0.9 }, { p: [[260, 168], [260, 204]], w: 3, c: WIN_LC, a: 0.9 }] },
+    ...win(125, 250, 12, 32), ...win(385, 250, 12, 32), ...win(125, 350, 12, 32), ...win(385, 350, 12, 32), ...win(195, 300, 10, 28), ...win(325, 300, 10, 28),
+    { p: box(200, 330, 320, 342), c: TN, m: 'cloth', line: 1 },
+    { p: box(200, g - 10, 320, g), c: TN, m: 'cloth', line: 1 },
+    ...door(260, g - 10, 32, 106),
+  ]);
+  bld('bld_hall_4', (f, g) => {
+    const out = [];
+    // купол на барабане
+    out.push(walls(196, 150, 364, 244, { rh: 22 }), ...dome(280, 152, 92, 96, Tr, TR, { m: 'leather', gloss: 0.5 }));
+    out.push({ p: tube([[280, 60, 6], [280, 28, 4]]), c: GOLD, m: 'gold', line: 0.8 }, { e: [280, 24, 8, 8], c: GOLD, m: 'gold', line: 0.8 });
+    for (const x of [222, 262, 302, 342]) out.push(...win(x, 224, 7, 34, { cross: false }));
+    for (const [x, h] of [[152, 170], [408, 170]]) out.push(...tower(x, 250, 26, h - 70, Object.assign({}, TWR, { roofH: 58, win: [], mason: false })));
+    out.push(...tower(66, g, 36, 410, Object.assign({}, TWR, { roofH: 90, win: [210, 400, 480], winW: 8, winH: 24 })));
+    out.push(...tower(494, g, 36, 410, Object.assign({}, TWR, { roofH: 90, win: [210, 400, 480], winW: 8, winH: 24 })));
+    out.push(walls(100, 244, 460, g), merlons(96, 464, 242, 14, 24, Tn, { k: 0.5 }));
+    out.push(...win(135, 296, 12, 32), ...win(415, 296, 12, 32), ...win(135, 400, 12, 32), ...win(415, 400, 12, 32), ...win(135, 500, 12, 32), ...win(415, 500, 12, 32));
+    // портик: фронтон и колонны
+    out.push({ p: [P(170, 336, 1), P(280, 262, 1), P(390, 336, 1)], c: Tn, m: 'cloth', line: 1.2, sub: [{ p: [P(284, 258, 1), P(396, 338, 1), P(330, 338, 1)], c: TN, m: 'flat', line: 0 }] });
+    out.push({ p: tube([[160, 338, 9], [280, 256, 9], [400, 338, 9]]), c: Tr, m: 'leather', line: 1 }, { p: box(166, 334, 394, 346), c: TN, m: 'cloth', line: 1 });
+    out.push({ e: [280, 308, 14, 14], c: GOLD, m: 'gold', line: 1 });
+    out.push({ p: box(186, 346, 374, g - 16), c: '#2a2018', m: 'cloth', line: 1 }, ...door(280, g - 16, 30, 110));
+    for (const x of [192, 240, 320, 368]) out.push({ p: box(x - 11, 346, x + 11, g - 16), c: Tn, m: 'cloth', line: 1, lines: [{ p: [[x - 4, 350], [x - 4, g - 20]], w: 2, a: 0.4 }, { p: [[x + 4, 350], [x + 4, g - 20]], w: 2, a: 0.4 }], sub: [{ p: box(x + 4, 344, x + 13, g), c: TN, m: 'flat', line: 0 }] });
+    out.push({ p: box(160, g - 16, 400, g - 8), c: Tn, m: 'cloth', line: 1 }, { p: box(150, g - 8, 410, g), c: TN, m: 'cloth', line: 1 });
+    return out;
+  });
+
+  /* ---------- гильдия магов: башня, ярус за уровнем ---------- */
+  function guild(name, level) {
+    bld(name, (f, g) => {
+      const cx = f.anchor[0], top = 170, floors = level + 1, fh = (g - 30 - top) / floors, hw0 = 70, hw1 = 52, out = [];
+      const hwAt = y => hw1 + (hw0 - hw1) * (y - top) / (g - top);
+      out.push({ p: box(cx - hw0 - 14, g - 30, cx + hw0 + 14, g), c: TN, m: 'cloth', line: 1.2, lines: masonry(cx - hw0 - 14, g - 30, cx + hw0 + 14, g, 15, 30, 0.4, 2.4) });
+      out.push({ p: [P(cx - hw1, top, 1), P(cx + hw1, top, 1), P(cx + hw0, g - 30, 1), P(cx - hw0, g - 30, 1)], c: Tn, m: 'cloth', line: 1.2, lines: masonry(cx - hw0, top, cx + hw0, g - 30, 24, 40, 0.4, 2.6),
+        sub: [{ p: [P(cx + hw1 * 0.45, top - 2, 1), P(cx + hw1 + 4, top - 2, 1), P(cx + hw0 + 4, g, 1), P(cx + hw0 * 0.45, g, 1)], c: TN, m: 'flat', line: 0 }] });
+      for (let i = 1; i < floors; i++) { const y = g - 30 - i * fh, hw = hwAt(y); out.push({ p: box(cx - hw - 8, y - 6, cx + hw + 8, y + 6), c: TN, m: 'cloth', line: 1 }); }
+      // окна-витражи по ярусам, дверь внизу
+      for (let i = 1; i < floors; i++) { const y = g - 30 - i * fh - 16, dx = (i % 2 ? -1 : 1) * 16; out.push(...win(cx + dx, y, 13, Math.min(56, fh * 0.55), { pointed: true, c: '#8ae0ff', lc: '#1a3a5a' })); }
+      out.push(...door(cx, g - 30, 30, Math.min(110, fh * 0.8)));
+      // крыша, золотой обруч и сфера
+      out.push({ p: box(cx - hw1 - 12, top - 8, cx + hw1 + 12, top + 6), c: GOLD, m: 'gold', line: 1 });
+      out.push(...cone(cx, top - 6, hw1 + 18, 110, Tr, TR, { flare: 0.14 }));
+      out.push({ p: tube([[cx, top - 110, 7], [cx, top - 140, 5]]), c: GOLD, m: 'gold', line: 0.8 }, { e: [cx, top - 150, 13, 13], c: '#f0a0f0', m: 'gem', gloss: 1.2, line: 1, lc: '#6a2a6a', glint: [[cx - 4, top - 154, 5]] });
+      return out;
+    });
+  }
+  for (let i = 1; i <= 4; i++) guild('bld_guild_' + i, i);
+
+  /* ---------- таверна: фахверк, вывеска с кружкой, труба ---------- */
+  bld('bld_tavern', (f, g) => {
+    const out = [];
+    out.push({ p: box(244, 26, 284, 130), c: TN, m: 'cloth', line: 1.2, lines: masonry(244, 26, 284, 130, 16, 20, 0.45, 2.4) }, { p: box(238, 18, 290, 30), c: TN, m: 'cloth', line: 1 });
+    out.push(walls(56, 210, 304, g));
+    // верхний этаж с выносом, фахверк
+    const beams = [[40, 118], [40, 208], [320, 118], [320, 208], [110, 118], [110, 208], [180, 118], [180, 208], [250, 118], [250, 208]];
+    const lines = []; for (let i = 0; i < beams.length; i += 2) lines.push({ p: [beams[i], beams[i + 1]], w: 8, c: BEAM, a: 1 });
+    lines.push({ p: [[40, 164], [320, 164]], w: 6, c: BEAM, a: 1 }, { p: [[40, 118], [110, 164]], w: 6, c: BEAM, a: 1 }, { p: [[320, 118], [250, 164]], w: 6, c: BEAM, a: 1 });
+    out.push({ p: box(40, 118, 320, 212), c: Tn, m: 'cloth', line: 1.2, lines, sub: [{ p: box(282, 116, 322, 214), c: TN, m: 'flat', line: 0 }] });
+    out.push({ p: box(34, 206, 326, 218), c: BEAM, m: 'wood', flow: 0, line: 1 });
+    out.push(hip(40, 320, 124, 84, 18, 70));
+    out.push(...sqwin(75, 150, 16, 16), ...sqwin(145, 150, 16, 16), ...sqwin(215, 150, 16, 16), ...sqwin(285, 150, 14, 16));
+    out.push(...sqwin(100, 272, 18, 22, { shutters: BEAM }), ...sqwin(262, 272, 18, 22, { shutters: BEAM }));
+    out.push(...door(180, g, 26, 96, [187, 274]));
+    // вывеска: кронштейн и доска с кружкой
+    out.push({ p: tube([[304, 236, 5], [350, 236, 5]]), c: IRON, m: 'steel', line: 0.8 }, { p: box(316, 244, 352, 290), c: '#8a5a30', m: 'wood', flow: 0, line: 1.2,
+      sub: [{ p: [P(324, 256, 1), P(340, 256, 1), P(340, 282, 1), P(324, 282, 1)], c: GOLD, m: 'gold', line: 0.8 }, { e: [344, 268, 5, 8], c: '#8a5a30', m: 'flat', line: 0 }] });
+    out.push({ p: tube([[322, 236, 2], [322, 246, 2]]), c: IRON, m: 'steel', line: 0 }, { p: tube([[346, 236, 2], [346, 246, 2]]), c: IRON, m: 'steel', line: 0 });
+    // бочка у входа
+    out.push({ p: [P(40, g, 1), [36, g - 30], P(44, g - 58, 1), P(84, g - 58, 1), [92, g - 30], P(88, g, 1)], c: '#8a5a30', m: 'wood', flow: -Math.PI / 2, line: 1, lines: [{ p: [[38, g - 14], [90, g - 14]], w: 4, c: IRON, a: 0.9 }, { p: [[40, g - 46], [88, g - 46]], w: 4, c: IRON, a: 0.9 }] });
+    return out;
+  });
+
+  /* ---------- рынок: аркада с навесами, монета на коньке, товары ---------- */
+  bld('bld_market', (f, g) => {
+    const out = [];
+    out.push(walls(28, 116, 380, g));
+    out.push(hip(28, 380, 120, 58, 14, 70), cornice(24, 384, 120));
+    // вывеска-монета на коньке
+    out.push({ p: tube([[190, 64, 5], [190, 90, 5]]), c: IRON, m: 'steel', line: 0.6 }, { e: [190, 50, 24, 24], c: WIN, m: 'gold', gloss: 1, line: 1.2, lc: '#5a3a10', lines: [{ p: ell(190, 50, 16, 16, 12).concat([[206, 50]]), w: 3, c: '#8a6a20', a: 0.8 }], sub: [{ p: box(185, 45, 195, 55), c: '#6a4a10', m: 'flat', line: 0 }] });
+    // три арки с навесами и лавками
+    for (const [cx, ware] of [[94, '#c8322a'], [204, null], [314, '#e8c040']]) {
+      out.push({ p: arch(cx, g, 38, 96), c: '#2a2018', m: 'cloth', ao: 1.2, line: 1.2 });
+      if (ware) out.push({ p: box(cx - 34, g - 30, cx + 34, g), c: '#8a5a30', m: 'wood', flow: 0, line: 1 }, ...[-20, 0, 20].map(dx => ({ e: [cx + dx, g - 36, 10, 9], c: ware, m: 'skin', line: 0.8 })));
+      const stripes = []; for (let x = cx - 50; x < cx + 50; x += 20) stripes.push({ p: [P(x, g - 110, 1), P(x + 10, g - 110, 1), P(x + 12, g - 84, 1), P(x + 2, g - 84, 1)], c: '#f4ecd8', m: 'flat', line: 0 });
+      out.push({ p: [P(cx - 50, g - 112, 1), P(cx + 50, g - 112, 1), P(cx + 56, g - 84, 1), [cx + 38, g - 78], [cx + 19, g - 84], [cx, g - 78], [cx - 19, g - 84], [cx - 38, g - 78], P(cx - 56, g - 84, 1)], c: Tr, m: 'cloth', line: 1.2, sub: stripes });
+    }
+    out.push({ e: [209, 200, 6, 6], c: LAMP, m: 'gem', line: 1, lc: WIN_LC });
+    // мешки и ящики перед рынком
+    out.push({ p: box(150, g - 34, 184, g), c: '#9a7040', m: 'wood', flow: 0, line: 1, lines: [{ p: [[150, g - 34], [184, g]], w: 2.4, a: 0.6 }] });
+    out.push({ p: [[236, g], [232, g - 20], [240, g - 36], [252, g - 40], [264, g - 36], [270, g - 20], [266, g]], c: '#d8c090', m: 'cloth', line: 1 });
+    return out;
+  });
+
+  /* ---------- кузница: горн с огнём, наковальня, высокая труба ---------- */
+  bld('bld_blacksmith', (f, g) => {
+    const out = [];
+    out.push({ p: trap(252, 26, 200, 22, 26), c: TN, m: 'cloth', line: 1.2, lines: masonry(224, 26, 280, 200, 16, 22, 0.5, 2.4) }, { p: box(222, 16, 282, 30), c: IRON, m: 'steel', line: 1 });
+    out.push(walls(38, 196, 296, g, { c: TN, shade: TN, ma: 0.5 }));
+    out.push(hip(38, 296, 202, 88, 16, 60));
+    // открытый горн
+    out.push({ p: arch(104, g, 42, 124), c: '#2a1a12', m: 'cloth', ao: 1.2, line: 1.2 }, { p: ell(104, g - 26, 34, 22, 12), c: '#ff7a24', m: 'gem', gloss: 1, line: 0, sub: [{ p: ell(100, g - 26, 20, 12, 10), c: '#ffe08a', m: 'flat', line: 0 }] });
+    out.push(...flame(104, g - 34, 22, 50));
+    out.push(...door(214, g, 22, 88), { e: [173, 306, 6, 6], c: LAMP, m: 'gem', line: 1, lc: WIN_LC });
+    out.push(...sqwin(262, 258, 12, 16));
+    // вывеска-подкова
+    out.push({ p: tube([[160, 234, 12], [150, 256, 12], [160, 276, 12], [182, 276, 12], [192, 256, 12], [182, 234, 12]]), c: '#9aa0a8', m: 'steel', line: 1 });
+    // наковальня
+    out.push({ p: [P(10, g - 40, 1), P(62, g - 40, 1), [74, g - 34], P(56, g - 26, 1), P(50, g - 12, 1), P(60, g, 1), P(16, g, 1), P(26, g - 12, 1), P(20, g - 26, 1)], c: '#4a4a52', m: 'steel', line: 1 });
+    return out;
+  });
+
+  /* ---------- склад ресурсов: круглый амбар-силос с амбаром ---------- */
+  bld('bld_silo', (f, g) => {
+    const out = [];
+    out.push(walls(20, 230, 150, g, { rh: 22, bw: 36 }), { p: gable(20, 150, 236, 80, 14), c: Tr, m: 'leather', line: 1.2, lines: [{ p: [[20, 214], [150, 214]], w: 2.4, a: 0.4 }, { p: [[40, 196], [130, 196]], w: 2.4, a: 0.4 }], sub: [{ p: [P(85, 150, 1), P(170, 240, 1), P(85, 240, 1)], c: TR, m: 'flat', line: 0 }] });
+    out.push({ p: box(56, 280, 114, g), c: DOOR, m: 'wood', flow: -Math.PI / 2, line: 1, lines: [{ p: [[56, 280], [114, g]], w: 4, c: BEAM, a: 0.9 }, { p: [[114, 280], [56, g]], w: 4, c: BEAM, a: 0.9 }] });
+    // силос: цилиндр с обручами
+    const hoops = []; for (let y = 170; y < g; y += 44) hoops.push({ p: [[140, y], [210, y + 10], [280, y]], w: 5, c: IRON, a: 0.8 });
+    out.push({ p: [P(140, 150, 1), P(280, 150, 1), P(280, g, 1), [210, g + 3], P(140, g, 1)], c: Tn, m: 'cloth', line: 1.2, lines: hoops.concat(masonry(140, 150, 280, g, 22, 32, 0.3, 2.2)),
+      sub: [{ p: box(236, 146, 284, g + 4), c: TN, m: 'flat', line: 0 }] });
+    out.push(...cone(210, 152, 84, 118, Tr, TR, { flare: 0.04 }));
+    out.push({ p: tube([[210, 36, 5], [210, 18, 4]]), c: GOLD, m: 'gold', line: 0.6 });
+    out.push(...door(186, g, 20, 80), { e: [166, 323, 6, 6], c: LAMP, m: 'gem', line: 1, lc: WIN_LC });
+    out.push(...sqwin(236, 210, 12, 14));
+    // мешки и бочонок
+    out.push({ p: [[250, g], [244, g - 22], [252, g - 40], [266, g - 44], [280, g - 40], [288, g - 22], [284, g]], c: '#d8c090', m: 'cloth', line: 1, lines: [{ p: [[256, g - 36], [276, g - 36]], w: 3, c: '#8a6a3a', a: 0.8 }] });
+    out.push({ p: [[286, g], [284, g - 16], [292, g - 30], [304, g - 32], [314, g - 22], [312, g]], c: '#cbb080', m: 'cloth', line: 1 });
+    return out;
+  });
+
+  /* ---------- особая постройка: павильон с куполом и чашей силы ---------- */
+  bld('bld_special', (f, g) => {
+    const out = [];
+    out.push({ p: box(34, g - 26, 246, g), c: TN, m: 'cloth', line: 1.2 }, { p: box(48, g - 42, 232, g - 24), c: Tn, m: 'cloth', line: 1.2 });
+    out.push({ p: box(58, 120, 222, g - 42), c: '#2a2030', m: 'cloth', ao: 1.2, line: 1 });
+    // чаша силы: сияние в центре павильона
+    out.push({ p: [P(118, 210, 1), P(174, 210, 1), [166, 228], P(150, 234, 1), P(142, 234, 1), [126, 228]], c: GOLD, m: 'gold', line: 1 }, { p: tube([[146, 234, 8], [146, g - 44, 12]]), c: GOLD, m: 'gold', line: 1 });
+    out.push({ e: [146, 204, 22, 14], c: '#b890ff', m: 'gem', gloss: 1.2, line: 0.8, sub: [{ e: [146, 204, 10, 7], c: '#f4e8ff', m: 'flat', line: 0 }] }, { e: [146, 223, 5, 4], c: LAMP, m: 'gem', line: 0.6 });
+    for (const x of [66, 112, 180, 226]) out.push({ p: box(x - 12, 118, x + 12, g - 42), c: Tn, m: 'cloth', line: 1.2, lines: [{ p: [[x - 4, 122], [x - 4, g - 46]], w: 2.2, a: 0.45 }, { p: [[x + 4, 122], [x + 4, g - 46]], w: 2.2, a: 0.45 }], sub: [{ p: box(x + 4, 116, x + 14, g), c: TN, m: 'flat', line: 0 }] });
+    out.push({ p: box(40, 104, 240, 124), c: Tn, m: 'cloth', line: 1.2, lines: [{ p: [[40, 114], [240, 114]], w: 2.4, a: 0.4 }] });
+    out.push(...dome(140, 106, 92, 70, Tr, TR, { m: 'leather', gloss: 0.5 }));
+    out.push({ p: tube([[140, 38, 6], [140, 16, 4]]), c: GOLD, m: 'gold', line: 0.6 }, { e: [140, 12, 7, 7], c: GOLD, m: 'gold', line: 0.6 });
+    return out;
+  });
+
+  /* ---------- знак улучшения: золотая медаль с молотом ---------- */
+  bld('bld_upg', (f, g) => [
+    { e: [57, 72, 46, 46], c: GOLD, m: 'gold', gloss: 1, line: 1.4, lc: '#5a3a10', lines: [{ p: ell(57, 72, 38, 38, 16).concat([[95, 72]]), w: 3, a: 0.5 }] },
+    { p: tube([[57, 110, 10], [57, 58, 10]]), c: '#8a5a30', m: 'wood', line: 1 },
+    { p: [P(28, 40, 1), P(86, 40, 1), P(86, 62, 1), P(28, 62, 1)], c: '#b7c0ca', m: 'steel', line: 1.2 },
+    { p: [P(57, 128, 1), P(40, 108, 1), P(74, 108, 1)], c: '#5cc848', m: 'gem', line: 1 },
+  ]);
+
+  /* ---------- жилища существ: от хижины до чертога; флажки по уровню ---------- */
+  const DW = [
+    // py — верх флажков, knob — фонарь у двери, wall — верх стены, roof — высота крыши, tw — башни [cx, полуширина, верх]
+    { py: 46, knob: [137, 200], x0: 24, x1: 236, wall: 122, roof: 62, door: [130, 22, 70], wins: [[70, 176], [192, 176]] },
+    { py: 53, knob: [163, 223], x0: 24, x1: 289, wall: 132, roof: 64, door: [157, 24, 80], wins: [[80, 190], [236, 190]] },
+    { py: 53, knob: [183, 235], x0: 24, x1: 329, wall: 136, roof: 66, door: [177, 26, 84], wins: [[80, 196], [260, 196], [300, 196]], chim: 280 },
+    { py: 56, knob: [177, 240], x0: 24, x1: 290, wall: 140, roof: 66, door: [170, 26, 88], wins: [[80, 200], [240, 200]], tw: [[292, 38, 70]] },
+    { py: 73, knob: [207, 326], x0: 24, x1: 330, wall: 170, roof: 70, door: [200, 30, 106], wins: [[80, 230], [80, 320], [280, 230]], tw: [[346, 44, 70]] },
+    { py: 80, knob: [227, 360], x0: 24, x1: 380, wall: 180, roof: 76, door: [220, 32, 116], wins: [[80, 240], [80, 340], [330, 240], [330, 340]], tw: [[258, 34, 58, true], [400, 38, 60]] },
+    { py: 93, knob: [277, 410], x0: 24, x1: 440, wall: 196, roof: 80, door: [270, 36, 130], wins: [[80, 260], [80, 380], [200, 260], [360, 260], [360, 380]], tw: [[330, 40, 70, true], [476, 50, 40, false, 'dome']] },
+  ];
+  DW.forEach((o, i) => bld('bld_dwell_' + (i + 1), (f, g) => {
+    const out = [], lvl = i + 1;
+    for (const t of o.tw || []) {
+      const [cx, hw, top, back, kind] = t;
+      if (!back) continue;
+      out.push(...tower(cx, o.wall + 40, hw, o.wall + 40 - top - hw * 1.6, Object.assign({}, TWR, { roofH: hw * 1.8, win: [], mason: false })));
+    }
+    out.push(walls(o.x0, o.wall, o.x1, g), hip(o.x0, o.x1, o.wall + 6, o.roof, 12, o.roof * 0.9), cornice(o.x0 - 4, o.x1 + 4, o.wall + 4));
+    if (o.chim) out.push({ p: box(o.chim - 14, o.wall - o.roof - 10, o.chim + 14, o.wall - 10), c: TN, m: 'cloth', line: 1 });
+    for (const t of o.tw || []) {
+      const [cx, hw, top, back, kind] = t;
+      if (back) continue;
+      out.push(...tower(cx, g, hw, g - top - (kind === 'dome' ? hw * 0.9 : hw * 1.8), Object.assign({}, TWR, { top: kind || 'cone', roofH: kind === 'dome' ? hw * 0.9 : hw * 1.8, win: [g - 110, g - 190].filter(y => y > top + hw * 2.4), winW: 9, winH: 26 })));
+    }
+    for (const [x, y] of o.wins) out.push(...sqwin(x, y, 14, 18));
+    out.push(...door(o.door[0], g, o.door[1], o.door[2], o.knob));
+    // флажки уровня на скате крыши
+    const rx0 = o.x0 - 12 + o.roof * 0.9, roofY = x => x < rx0 ? o.wall + 6 - o.roof * (x - (o.x0 - 12)) / (o.roof * 0.9) : o.wall + 6 - o.roof;
+    for (let k = 0; k < lvl; k++) { const x = 62 + k * 30; out.push(...pennant(x, Math.max(o.py + 44, roofY(x) + 8), o.py - 2)); }
+    return out;
+  }));
+
+  /* ---------- стены: форт, цитадель, замок ---------- */
+  function fortWall(f, g, wallTop) {
+    const out = [];
+    out.push(walls(10, wallTop, 970, g, { shadeK: 0.02, rh: 24, bw: 48 }), merlons(6, 974, wallTop - 2, 26, 44, Tn, { k: 0.55 }));
+    out.push({ p: box(10, g - 30, 970, g), c: TN, m: 'cloth', line: 1 });
+    return out;
+  }
+  function gatehouse(g, top) {
+    return [
+      walls(410, top, 570, g, { rh: 24, bw: 40 }), merlons(404, 576, top - 2, 26, 36, Tn, { k: 0.55 }),
+      ...gate(490, g, 44, Math.min(150, (g - top) * 0.7), { ring: TN, rw: 14, grateC: '#6a6a72' }),
+      { p: box(454, top + 24, 466, top + 60), c: HOLE, m: 'flat', line: 0 }, { p: box(514, top + 24, 526, top + 60), c: HOLE, m: 'flat', line: 0 },
+    ];
+  }
+  bld('bld_fort', (f, g) => [...fortWall(f, g, 150), ...gatehouse(g, 96)]);
+  bld('bld_citadel', (f, g) => [...fortWall(f, g, 270),
+    ...tower(110, g, 60, 330, Object.assign({}, TWR, { roofH: 110, win: [200, 290], winW: 10, winH: 30, pointed: false })),
+    ...tower(870, g, 60, 330, Object.assign({}, TWR, { roofH: 110, win: [200, 290], winW: 10, winH: 30 })),
+    ...gatehouse(g, 216)]);
+  bld('bld_castle', (f, g) => [...fortWall(f, g, 460),
+    ...tower(110, g, 60, 340, Object.assign({}, TWR, { roofH: 110, win: [390, 480], winW: 10, winH: 30 })),
+    ...tower(870, g, 60, 340, Object.assign({}, TWR, { roofH: 110, win: [390, 480], winW: 10, winH: 30 })),
+    ...tower(490, g, 96, 520, Object.assign({}, TWR, { roofH: 116, eave: 12, win: [220, 310], winW: 12, winH: 34 })),
+    ...gate(490, g, 44, 140, { ring: TN, rw: 14, grateC: '#6a6a72' })]);
+
+  /* ============================== ЖИЛИЩА НА КАРТЕ ==============================
+     Общие для всех существ, растут с уровнем: хижина → домик → каменный дом → дом с башенкой →
+     чертог с башней → крепостца → башня. Слева у входа карта рисует само существо, справа вверху — флаг владельца. */
+  const DS = { wall: '#c4baa4', shade: '#8e8470', light: '#dcd4c0', roof: '#b8452e', roofD: '#7a2a1c', finial: GOLD, rh: 22, ma: 0.4 };
+  const SLATE = { roof: '#5a6a8a', roofD: '#36405a' };
+  function logWall(x0, y0, x1, y1, c) {
+    const lines = []; for (let y = y0 + 15; y < y1; y += 15) lines.push({ p: [[x0, y], [x1, y]], w: 2.4, a: 0.55 });
+    return { p: box(x0, y0, x1, y1), c: c || '#8a6038', m: 'wood', flow: 0, line: 1, lines, sub: [{ p: box(x1 - (x1 - x0) * 0.2, y0 - 2, x1 + 2, y1 + 2), c: '#5a3a1e', m: 'flat', line: 0 }] };
+  }
+  const stoneWall = (x0, y0, x1, y1) => walls(x0, y0, x1, y1, { c: DS.wall, shade: DS.shade, rh: 20, bw: 32 });
+  const G2 = 308;
+  one('dwelling_1', [
+    logWall(106, 220, 254, G2, '#8a6a40'),
+    { p: arch(160, G2, 17, 56), c: HOLE, m: 'cloth', line: 1 }, ...win(216, 268, 10, 24, { cross: false }),
+    { p: [P(76, 234, 1), [116, 176], P(180, 110, 1), [244, 176], P(284, 234, 1), [180, 248]], c: '#c8a860', m: 'fur', furLen: 1.1, flow: Math.PI * 0.5, dens: 1.2, line: 1, belly: 0.3, lines: [{ p: [[96, 232], [180, 244], [264, 232]], w: 4, c: '#8a6a30', a: 0.8 }] },
+    { p: tube([[180, 118, 6], [184, 92, 3]]), c: '#5a3a1e', m: 'wood', line: 0.6 },
+  ], frameOf('dwelling_1') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_2', [
+    logWall(100, 196, 262, G2),
+    { p: gable(100, 262, 204, 94, 18), c: DS.roof, m: 'leather', line: 1, lines: [{ p: [[100, 180], [262, 180]], w: 2.4, a: 0.4 }, { p: [[124, 156], [238, 156]], w: 2.4, a: 0.4 }, { p: [[150, 132], [212, 132]], w: 2.4, a: 0.4 }], sub: [{ p: [P(184, 108, 1), P(290, 210, 1), P(184, 210, 1)], c: DS.roofD, m: 'flat', line: 0 }] },
+    ...door(170, G2, 18, 64), ...sqwin(226, 250, 14, 16, { shutters: '#5a3a1e' }), ...win(181, 176, 9, 22),
+    { p: box(206, 268, 246, 276), c: '#6a4424', m: 'wood', line: 0.8 }, ...[212, 226, 240].map(x => ({ e: [x, 264, 6, 6], c: '#e05a7a', m: 'skin', line: 0.6 })),
+  ], frameOf('dwelling_2') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_3', [
+    { p: box(222, 124, 250, 190), c: '#8a8274', m: 'cloth', line: 1, lines: masonry(222, 124, 250, 190, 14, 14, 0.45) },
+    stoneWall(82, 188, 272, G2), hip(82, 272, 194, 76, 14, 60, { c: '#9a5a36', cd: '#6a3a22' }),
+    ...door(160, G2, 20, 70), ...sqwin(108, 240, 13, 16), ...sqwin(222, 240, 13, 16),
+  ], frameOf('dwelling_3') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_4', [
+    stoneWall(70, 166, 236, G2), hip(70, 236, 172, 70, 14, 56, { c: SLATE.roof, cd: SLATE.roofD }),
+    ...tower(262, G2, 32, 190, Object.assign({}, DS, SLATE, { roofH: 76, win: [190, 250], winW: 8, winH: 22 })),
+    ...door(146, G2, 20, 72), ...sqwin(96, 214, 12, 15), ...sqwin(196, 214, 12, 15), ...sqwin(96, 266, 12, 15),
+  ], frameOf('dwelling_4') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_5', [
+    stoneWall(64, 176, 220, G2), hip(64, 220, 182, 66, 14, 50, { c: DS.roof, cd: DS.roofD }),
+    ...tower(252, G2, 40, 214, Object.assign({}, DS, { roofH: 84, win: [150, 210, 266], winW: 9, winH: 24, flag: '#c8a030', flagL: 30 })),
+    ...door(138, G2, 22, 76), ...sqwin(92, 222, 12, 15), ...sqwin(186, 222, 12, 15),
+    { p: box(96, 232, 180, 240), c: '#8e8470', m: 'cloth', line: 1 },
+  ], frameOf('dwelling_5') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_6', [
+    ...tower(92, G2, 30, 190, Object.assign({}, DS, SLATE, { roofH: 72, win: [180, 240], winW: 8, winH: 22 })),
+    ...tower(270, G2, 30, 190, Object.assign({}, DS, SLATE, { roofH: 72, win: [180, 240], winW: 8, winH: 22 })),
+    stoneWall(112, 140, 250, G2), merlons(108, 254, 138, 16, 26, DS.light, { k: 0.55 }),
+    ...gate(181, G2, 24, 74, { ring: '#8e8470', rw: 8 }),
+    ...win(150, 190, 9, 26), ...win(212, 190, 9, 26),
+    ...flag(181, 120, 34, '#c8a030', { fw: 26, fh: 14 }),
+  ], frameOf('dwelling_6') || { w: 320, h: 313, anchor: [160, 310] });
+  one('dwelling_7', [
+    stoneWall(72, 226, 160, G2), hip(72, 160, 232, 50, 12, 36, { c: SLATE.roof, cd: SLATE.roofD }),
+    ...tower(206, G2, 52, 222, Object.assign({}, DS, SLATE, { top: 'cone', roofH: 96, eave: 10, win: [130, 190, 250], winW: 10, winH: 28, finial: GOLD })),
+    { p: box(150, 150, 262, 160), c: DS.shade, m: 'cloth', line: 1 },
+    ...door(206, G2, 20, 66), ...sqwin(114, 266, 12, 15),
+  ], frameOf('dwelling_7') || { w: 320, h: 313, anchor: [160, 310] });
 })(typeof window !== 'undefined' ? window : globalThis);

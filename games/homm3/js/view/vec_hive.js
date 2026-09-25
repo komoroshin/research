@@ -11,7 +11,7 @@
 (function (root) {
   'use strict';
   const H3 = root.H3, V = H3 && H3.Vec, K = H3 && H3.VK; if (!V || !K) return;
-  const { tube, P, norm, move, ell, lerp, wing, fit, frameOf, tone } = K;
+  const { tube, P, norm, ell, lerp, wing, fit, frameOf, tone } = K;
 
   /* ---------- общие помощники ---------- */
   /** Вписать существо, нарисованное в своей рамке (ground — точка опоры), в рамку старого спрайта. */
@@ -100,6 +100,8 @@
   }
   /** Капля (кислота, яд): круглая снизу, острая сверху. */
   const drop = (x, y, r, c) => ({ p: [P(x, y - r * 2, 1), [x + r, y - r * 0.2], [x + r * 0.7, y + r * 0.8], [x - r * 0.7, y + r * 0.8], [x - r, y - r * 0.2]], c, m: 'gem', gloss: 1.2, line: 0.6, glint: [[x - r * 0.3, y - r * 0.2, r * 0.45]] });
+  /** Увеличить формы вокруг точки (cx, cy). */
+  const scaleAt = (list, cx, cy, k) => K.mapShapes(list, (x, y) => [cx + (x - cx) * k, cy + (y - cy) * k], k);
   /** Ноги по схеме «треножник»: ближние перед и зад в одной фазе со средней дальней. */
   const legPart = (side, hip, shapes) => ({ kind: 'leg', side, pivot: hip, shapes });
 
@@ -107,7 +109,7 @@
   function larva(name, o) {
     const G = 137, c = o.flesh, cD = tone(c, -0.25);
     // сегменты от хвоста к голове: каждый следующий перекрывает предыдущий
-    const segs = [[22, 10, 11], [40, 14, 16], [60, 17, 21], [82, 18, 25], [105, 18, 27], [127, 17, 27], [147, 15, 24]];
+    const segs = [[22, 11, 13], [40, 15, 19], [60, 18, 25], [82, 19, 30], [105, 19, 33], [127, 18, 33], [147, 16, 29]];
     const bodyS = [];
     segs.forEach(([x, rx, ry], i) => {
       const cy = G - 12 - ry + i * 0.4;
@@ -120,8 +122,8 @@
     // ложноножки: две группы в разной фазе — тело «перетекает»
     const pro = k => segs.filter((s, i) => i % 2 === k && i > 0).map(([x]) => ({ p: ell(x + 2, G - 9, 7.5, 8, 10), c: cD, m: 'skin', gloss: 0.8, line: 0.8,
       lines: [{ p: [[x - 3, G - 3], [x + 7, G - 3]], w: 1.2, a: 0.6 }] }));
-    const hx = 170, hy = 98;
-    const headS = [
+    const hx = 172, hy = 92;
+    const headS = scaleAt([
       ...antenna([hx + 2, hy - 16], [hx + 8, hy - 30], [hx + 20, hy - 36], o.head, 2.6),
       mandible([hx + 14, hy + 12], 0.55, 18, tone(o.head, -0.3), true),
       { p: ell(hx, hy, 22, 20, 14, 0.1), c: o.head, m: 'gem', gloss: 1.1, id: 'capsule',
@@ -129,12 +131,12 @@
       cEye(hx + 9, hy - 3, 6.5, 5.5, o.eye, 0.2),
       { e: [hx + 1, hy - 9, 2.4, 2.2], c: o.eye, m: 'gem', line: 0.5 },
       mandible([hx + 14, hy + 8], 0.2, 20, tone(o.head, -0.2), false),
-    ];
+    ], hx, hy, 1.2);
     const parts = [
       legPart(-1, [100, G - 10], pro(0)),
       legPart(1, [100, G - 10], pro(1)),
       { kind: 'torso', pivot: [100, G - 30], shapes: bodyS },
-      { kind: 'head', pivot: [152, 104], shapes: headS },
+      { kind: 'head', pivot: [150, 100], shapes: headS },
     ];
     V.def(name, place(name, parts, [100, G], o.size));
   }
@@ -201,7 +203,7 @@
     for (const [x0, y0, x1, y1, w] of L) back.push({ p: tube([[x0, y0, w], [x1, y1, w * 0.9]]), c: o.wood, m: 'wood', flow: Math.atan2(y1 - y0, x1 - x0), line: 0.8,
       sub: [{ e: [x1, y1, w * 0.4, w * 0.4], c: tone(o.wood, 0.3), m: 'wood', line: 0.5 }] });
     back.push({ p: tube([[70, 64, 5], [84, 94, 5]]), c: o.strap, m: 'leather', line: 0.6 }, { p: tube([[50, 80, 5], [62, 108, 5]]), c: o.strap, m: 'leather', line: 0.6 });
-    return { back, front: [] };
+    return { back };
   }
   /** Восковой сот на плече: шестигранные ячейки, мёд в некоторых. */
   function comb(o) {
@@ -213,7 +215,7 @@
         if (Math.hypot(x - cx - 2, (y - cy - 4) * 0.95) > 44) continue;   // за краем пластины — не нужна
         s.push({ p: pts, c: (q * 7 + r * 3 + 40) % 5 === 0 ? o.honey : tone(o.wax, -0.18), m: 'gem', gloss: 0.8, line: 0.5 });
       } return s; })() });
-    return { back, front: [] };
+    return { back };
   }
   worker('worker', { chitin: '#5a8e2c', eye: '#e8a020', wood: '#8a5a30', strap: '#5a3a1e', stone: '#9a9484' });
   worker('builder', { chitin: '#c8902a', gaster: '#b07a22', eye: '#3a2008', load: 'comb', tool: 'trowel', wood: '#6a4424', wax: '#f0dc94', honey: '#e8a020', plates: '#f0d890', crest: '#f0d890' });
@@ -323,34 +325,36 @@
   function mantis(name, o) {
     const G = 313, c = o.chitin, cD = tone(c, -0.3);
     const legs = [
-      legPart(1, [124, 206], iLeg([124, 206], [150, 176], [166, 250], [184, G - 3], 9, cD, { spur: tone(cD, -0.3) })),
-      legPart(-1, [110, 212], iLeg([110, 212], [84, 180], [64, 256], [48, G - 3], 9, cD, { spur: tone(cD, -0.3) })),
-      legPart(-1, [132, 210], iLeg([132, 210], [164, 184], [178, 256], [198, G - 3], 11, c, { spur: cD })),
-      legPart(1, [116, 216], iLeg([116, 216], [92, 188], [72, 262], [58, G - 3], 11, c, { spur: cD })),
+      legPart(1, [124, 206], iLeg([124, 206], [150, 176], [166, 250], [184, G - 3], 11, cD, { spur: tone(cD, -0.3) })),
+      legPart(-1, [110, 212], iLeg([110, 212], [84, 180], [64, 256], [48, G - 3], 11, cD, { spur: tone(cD, -0.3) })),
+      legPart(-1, [132, 210], iLeg([132, 210], [164, 184], [178, 256], [198, G - 3], 13, c, { spur: cD })),
+      legPart(1, [116, 216], iLeg([116, 216], [92, 188], [72, 262], [58, G - 3], 13, c, { spur: cD })),
     ];
     // длинное брюшко назад-вниз, поверх — сложенные крылья-листья
     const bodyS = [
-      segBody(72, 222, 66, 22, 0.24, { c: o.belly || c, n: 7, id: 'abdomen' }),
+      segBody(72, 220, 70, 27, 0.24, { c: o.belly || c, n: 7, id: 'abdomen' }),
       { p: [[132, 194], [100, 196], [50, 208], [8, 232, 1], [40, 234], [92, 224], [126, 212]], c: o.wing, m: 'gem', gloss: 0.9, line: 0.8, id: 'wings',
         lines: [{ p: [[128, 202], [80, 212], [20, 232]], w: 1.2, a: 0.6 }, { p: [[118, 210], [70, 224], [36, 232]], w: 0.9, a: 0.4 }, { p: [[124, 198], [80, 204], [36, 222]], w: 1, light: true, a: 0.5 }] },
       ...(o.tatter ? [{ p: [[70, 206], [40, 216], [8, 232, 1], [26, 220, 1], [18, 228], [42, 214, 1], [40, 222]], c: tone(o.wing, -0.3), m: 'gem', line: 0.6 }] : []),
       segBody(128, 200, 16, 14, 0.2, { c, n: 2, ridge: false }),
       // вытянутая переднегрудь — «шея»
-      { p: tube([[130, 204, 20], [142, 160, 15], [156, 112, 14], [162, 96, 16]]), c, m: 'gem', gloss: 1, id: 'neck',
+      { p: tube([[130, 204, 24], [142, 160, 18], [156, 112, 17], [162, 96, 19]]), c, m: 'gem', gloss: 1, id: 'neck',
         lines: [{ p: [[134, 196], [146, 150], [158, 106]], w: 1.2, light: true, a: 0.5 }] },
     ];
     // дальняя лапа-серп — в корпусе, за шеей
     const scythe = (sh, col, far) => {
-      const k = [sh[0] + 18, sh[1] + 34], f = [sh[0] + 58, sh[1] - 12], t = [sh[0] + 40, sh[1] + 40], blade = o.blade || col;
+      const k = [sh[0] + 16, sh[1] + 34], f = [sh[0] + 66, sh[1] - 18], t = [sh[0] + 46, sh[1] + 48], blade = o.blade || col;
       const out = [
-        { p: tube([[sh[0], sh[1], 13], [k[0], k[1], 11]]), c: col, m: 'gem', gloss: 1, line: 0.8 },   // тазик
-        { p: [P(k[0] - 6, k[1] + 4, 1), [k[0] - 6, k[1] - 8], [f[0] - 6, f[1] - 8], P(f[0] + 4, f[1] - 4, 1), [f[0] + 4, f[1] + 8], [k[0] + 8, k[1] + 6]], c: col, m: 'gem', gloss: 1.1, line: 0.8,
-          lines: [{ p: [[k[0] - 2, k[1] - 5], [f[0] - 4, f[1] - 5]], w: 1, light: true, a: 0.6 }] },   // бедро с шипами
-        ...spikes([[k[0] + 6, k[1] + 6], [f[0] + 4, f[1] + 8]], 5, far ? 7 : 9, o.spine, -1),
-        { p: [P(f[0] - 2, f[1] - 6, 1), [f[0] + 6, f[1]], [t[0] + 6, t[1] - 4], P(t[0] - 8, t[1] + 14, 1), [t[0] - 4, t[1] - 4], [f[0] - 4, f[1] + 6]], c: blade, m: o.bladeM || 'gem', gloss: 1.2, line: 0.8,
-          lines: [{ p: [[f[0] + 2, f[1] + 2], [t[0] + 2, t[1] - 2]], w: 1, light: true, a: 0.7 }] },   // голень-серп
-        ...spikes([[f[0] - 2, f[1] + 6], [t[0] - 4, t[1] - 2]], 4, far ? 5 : 7, o.spine, -1),
-        { e: [f[0], f[1], 6, 6], c: tone(col, 0.08), m: 'gem', line: 0.7 },
+        { p: tube([[sh[0], sh[1], 16], [k[0], k[1], 13]]), c: col, m: 'gem', gloss: 1, line: 0.8 },   // тазик
+        // бедро: толстое, вверх-вперёд, по нижнему краю шипы
+        { p: [P(k[0] - 8, k[1] + 5, 1), [k[0] - 8, k[1] - 10], [lerp(k, f, 0.5)[0] - 8, lerp(k, f, 0.5)[1] - 12], [f[0] - 6, f[1] - 9], P(f[0] + 6, f[1] - 4, 1), [f[0] + 5, f[1] + 9], [lerp(k, f, 0.5)[0] + 8, lerp(k, f, 0.5)[1] + 10], [k[0] + 9, k[1] + 7]], c: col, m: 'gem', gloss: 1.1, line: 0.8,
+          lines: [{ p: [[k[0] - 3, k[1] - 7], [f[0] - 4, f[1] - 6]], w: 1.2, light: true, a: 0.6 }] },
+        ...spikes([[k[0] + 8, k[1] + 8], [f[0] + 5, f[1] + 10]], 5, far ? 8 : 11, o.spine, -1),
+        // голень-серп: выпуклая спинка, крюк на конце, зубья по лезвию
+        { p: [P(f[0] - 2, f[1] - 8, 1), [f[0] + 10, f[1] + 4], [t[0] + 14, t[1] - 16], [t[0] + 8, t[1] + 6], P(t[0] - 10, t[1] + 20, 1), [t[0] - 2, t[1] + 4], [t[0] - 6, t[1] - 8], [f[0] - 6, f[1] + 8]], c: blade, m: o.bladeM || 'gem', gloss: 1.3, line: 0.8,
+          lines: [{ p: [[f[0] + 4, f[1] + 2], [t[0] + 8, t[1] - 12], [t[0] + 2, t[1] + 8]], w: 1.2, light: true, a: 0.75 }, ...(o.edge ? [{ p: [[f[0] - 3, f[1] + 8], [t[0] - 4, t[1] - 6], [t[0] - 6, t[1] + 12]], w: 1.6, c: o.edge, a: 0.9 }] : [])] },
+        ...spikes([[f[0] - 4, f[1] + 8], [t[0] - 5, t[1] - 6]], 4, far ? 6 : 8, o.spine, -1),
+        { e: [f[0], f[1], 7, 7], c: tone(col, 0.08), m: 'gem', line: 0.7 },
       ];
       return out;
     };
@@ -367,31 +371,33 @@
       cEye(hx + 24, hy - 8, 9, 11, o.eye, -0.3),
       { p: [[hx + 4, hy + 20], [hx + 14, hy + 18], P(hx + 12, hy + 32, 1)], c: tone(c, -0.4), m: 'horn', line: 0.5 },
     ];
+    const headB = scaleAt(headS, hx, hy + 10, 1.15);
     const parts = [legs[0], legs[1], legs[2], legs[3],
       { kind: 'torso', pivot: [128, 204], shapes: bodyS },
-      { kind: 'head', pivot: [160, 98], shapes: headS },
+      { kind: 'head', pivot: [160, 98], shapes: headB },
       { kind: 'prop', pivot: [156, 128], shapes: scythe([156, 128], c, false) }];
     V.def(name, place(name, parts, [133, G], o.size));
   }
   mantis('mantis', { chitin: '#6aaa38', wing: '#8ac050', eye: '#d8e060', spine: '#e8e0a0' });
-  mantis('mantis_reaper', { chitin: '#d8d2bc', belly: '#b8b09a', wing: '#4a4038', eye: '#e82a1a', spine: '#2a2420', blade: '#c8d0da', bladeM: 'steel', crest: '#8a2a22', tatter: true, size: 1.03 });
+  mantis('mantis_reaper', { chitin: '#d8d2bc', belly: '#b8b09a', wing: '#4a4038', eye: '#e82a1a', spine: '#2a2420', blade: '#c8d0da', bladeM: 'steel', edge: '#a82020', crest: '#8a2a22', tatter: true, size: 1.03 });
 
   /* =================== жук-таран / жук-крепость =================== */
   function beetle(name, o) {
     const G = 223, c = o.chitin, cD = tone(c, -0.32), lg = o.legC || tone(c, -0.45), lgD = tone(lg, -0.25);
     const legs = [
-      legPart(-1, [250, 168], iLeg([250, 168], [280, 164], [296, 196], [312, G - 3], 17, lgD, { spur: tone(lgD, -0.3) })),
-      legPart(1, [176, 176], iLeg([176, 176], [200, 180], [206, 206], [222, G - 3], 17, lgD, { spur: tone(lgD, -0.3) })),
-      legPart(-1, [104, 174], iLeg([104, 174], [74, 172], [58, 200], [40, G - 3], 17, lgD, { spur: tone(lgD, -0.3) })),
+      legPart(-1, [246, 164], iLeg([246, 164], [276, 150], [298, 190], [314, G - 3], 16, lgD, { spur: tone(lgD, -0.3) })),
+      legPart(1, [178, 168], iLeg([178, 168], [202, 160], [214, 198], [230, G - 3], 16, lgD, { spur: tone(lgD, -0.3) })),
+      legPart(-1, [108, 166], iLeg([108, 166], [78, 154], [60, 194], [42, G - 3], 16, lgD, { spur: tone(lgD, -0.3) })),
       // ближние ноги кладём поверх брюшка: у жука они растут из-под панциря и видны целиком
-      legPart(1, [252, 190], iLeg([252, 190], [288, 184], [304, 206], [326, G - 3], 20, lg, { spur: lgD })),
-      legPart(-1, [174, 196], iLeg([174, 196], [200, 190], [202, 210], [218, G - 3], 20, lg, { spur: lgD })),
-      legPart(1, [104, 194], iLeg([104, 194], [76, 188], [62, 210], [44, G - 3], 20, lg, { spur: lgD })),
+      legPart(1, [254, 178], iLeg([254, 178], [286, 164], [306, 200], [328, G - 3], 19, lg, { spur: lgD })),
+      legPart(-1, [172, 184], iLeg([172, 184], [198, 172], [204, 204], [220, G - 3], 19, lg, { spur: lgD })),
+      legPart(1, [106, 182], iLeg([106, 182], [76, 170], [62, 206], [44, G - 3], 19, lg, { spur: lgD })),
     ];
     // надкрылья: большой купол со швом и рёбрами
     const shell = { p: [[34, 150], [40, 104], [72, 64], [124, 44], [180, 44], [226, 62], [250, 96], [252, 142], [236, 172], [190, 184], [120, 186], [66, 180], [40, 168]], c, m: 'gem', gloss: 1, belly: 0.4, id: 'shell',
       lines: [{ p: [[52, 162], [66, 110], [110, 66], [170, 50], [222, 68]], w: 2.2, a: 0.8 },   // шов надкрылий
-        { p: [[60, 132], [96, 84], [150, 62]], w: 1.2, a: 0.45 }, { p: [[90, 176], [120, 118], [190, 80]], w: 1.2, a: 0.45 }, { p: [[150, 182], [180, 130], [236, 100]], w: 1.2, a: 0.45 },
+        { p: [[60, 132], [96, 84], [150, 62]], w: 1.4, a: 0.6 }, { p: [[90, 176], [120, 118], [190, 80]], w: 1.4, a: 0.6 }, { p: [[150, 182], [180, 130], [236, 100]], w: 1.4, a: 0.6 },
+        { p: [[64, 136], [100, 88], [154, 66]], w: 1, light: true, a: 0.4 }, { p: [[94, 178], [124, 122], [194, 84]], w: 1, light: true, a: 0.4 },
         { p: [[74, 90], [118, 60], [170, 52]], w: 2, light: true, a: 0.55 }] };
     const under = { p: [[50, 166], [120, 178], [200, 176], [250, 160], [262, 180], [236, 196], [170, 202], [100, 200], [56, 186]], c: tone(c, -0.5), m: 'gem', gloss: 0.6, line: 0.8,
       lines: [80, 110, 140, 170, 200, 228].map(x => ({ p: [[x, 180], [x + 4, 200]], w: 1.2, a: 0.6 })) };
@@ -426,10 +432,12 @@
       cEye(314, 146, 5.5, 5, o.eye, 0),
       mandible([324, 164], 0.3, 14, tone(c, -0.5), true),
     ];
+    // корпус и голову приподнимаем над землёй — под панцирем видны ноги
+    const up = list => K.mapShapes(list, (x, y) => [x, y - 16], 1);
     const parts = [legs[0], legs[1], legs[2],
-      { kind: 'torso', pivot: [170, 150], shapes: bodyS },
+      { kind: 'torso', pivot: [170, 134], shapes: up(bodyS) },
       legs[3], legs[4], legs[5],
-      { kind: 'head', pivot: [256, 140], shapes: headS }];
+      { kind: 'head', pivot: [256, 124], shapes: up(headS) }];
     V.def(name, place(name, parts, [192, G], o.size));
   }
   beetle('ram_beetle', { chitin: '#4a8a3a', horn: '#2e3a1e', eye: '#e8b020' });

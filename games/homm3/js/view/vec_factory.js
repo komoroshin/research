@@ -406,7 +406,7 @@
     ];
     // ближняя рука: тяжёлый молот или алебарда
     const hand = [172, 140], dir = o.halberd ? [0.18, -1] : [0.34, -1], at = along(hand, dir);
-    const wpn = o.halberd ? weapon.polearm(hand, dir, 150, { kind: 'halberd', back: 94, shaft: IRON, head: '#c8d0da' })
+    const wpn = o.halberd ? weapon.polearm(hand, dir, 150, { kind: 'halberd', back: 74, shaft: IRON, head: '#c8d0da' })
       : [{ p: tube([[...at(-26, 0), 8], [...at(78, 0), 7]]), c: IRON, m: 'steel', line: 0.7, lines: [{ p: [at(-20, -2), at(74, -2)], w: 1, light: true, a: 0.5 }] },
         pl([at(62, -26), at(96, -26), at(96, 26), at(62, 26)].map(q => P(q[0], q[1], 1)), '#8e969e', { m: 'steel', line: 0.9, glint: rivets([at(68, -18), at(90, -18), at(68, 18), at(90, 18)], 2),
           lines: [{ p: [at(66, -22), at(92, -22)], w: 1.2, light: true, a: 0.7 }] }),
@@ -436,7 +436,7 @@
      Кольчатое тело встаёт из бархана, наверху — пасть-воронка с кольцами зубов. */
   function sandworm(name, o) {
     const C = o.body, CD = tone(C, -0.2), G = 303;
-    const spine = [[128, 308, 84], [122, 270, 82], [128, 232, 78], [146, 198, 72], [168, 166, 68], [182, 134, 64], [188, 108, 62]];
+    const spine = [[119, 298, 86], [117, 268, 83], [124, 228, 78], [146, 196, 72], [170, 166, 68], [184, 136, 64], [188, 110, 62]];
     // кольца поперёк тела: дуга от края к краю, чуть провисает книзу — цилиндр
     const rings = [];
     for (let i = 0; i < spine.length - 1; i++) for (const f of [0.25, 0.75]) {
@@ -450,14 +450,14 @@
       ...(o.spikes ? spine.slice(1).map((q, i) => { const x = q[0] - q[2] * 0.48, y = q[1]; return { p: [P(x + 2, y - 9, 1), P(x - 14, y - 4 - i, 1), P(x + 2, y + 8, 1)], c: o.spikes, m: 'horn', line: 0.6 }; }) : []),
     ];
     // пасть: плоскость рта наклонена вперёд-вверх
-    const M = [192, 88], A = -0.32;
+    const M = [190, 90], A = -0.3;
     const E = (rx, ry, n, dx, dy) => ell(M[0] + (dx || 0), M[1] + (dy || 0), rx, ry, n || 16, A);
     const onE = (rx, ry, t) => { const c = Math.cos(A), s = Math.sin(A), x = Math.cos(t) * rx, y = Math.sin(t) * ry; return [M[0] + x * c - y * s, M[1] + x * s + y * c]; };
-    const petals = [];
-    for (const [t, len] of [[Math.PI * 1.08, 34], [Math.PI * 1.42, 30], [Math.PI * 1.75, 32], [Math.PI * 0.1, 28]]) {
-      const b = onE(40, 20, t), tip = onE(40 + len, 20 + len * 0.7, t), l = onE(44, 24, t - 0.35), r = onE(44, 24, t + 0.35);
-      petals.push({ p: [l, [tip[0], tip[1] - 8], P(tip[0], tip[1] - 12, 1), r, b], c: tone(C, 0.06), m: 'skin', line: 0.8, belly: 0.2,
-        sub: [{ p: [lerp(l, b, 0.3), lerp(b, tip, 0.8), lerp(r, b, 0.3)], c: o.gum, m: 'skin', line: 0 }] });
+    // крупные клыки-крючья по краю воронки: торчат наружу и вверх
+    const fangs = [];
+    for (const t of [Math.PI * 0.95, Math.PI * 1.15, Math.PI * 1.35, Math.PI * 1.55, Math.PI * 1.75, Math.PI * 1.95, Math.PI * 0.12, Math.PI * 0.3]) {
+      const b = onE(46, 25, t), l = onE(46, 25, t - 0.2), r = onE(46, 25, t + 0.2), out = onE(66, 42, t);
+      fangs.push({ p: [P(...l, 1), [lerp(b, out, 0.6)[0] - 2, lerp(b, out, 0.6)[1] - 8], P(out[0], out[1] - 14, 1), P(...r, 1)], c: o.fang, m: 'horn', gloss: 0.8, line: 0.6, lines: [{ p: [b, [out[0], out[1] - 12]], w: 0.9, light: true, a: 0.5 }] });
     }
     const toothRing = (rx, ry, rin, n, c, len) => {
       const out = [];
@@ -468,31 +468,31 @@
       return out;
     };
     const headS = [
-      ...petals.slice(0, 3),
-      { p: E(44, 24, 18), c: tone(C, 0.04), m: 'skin', line: 0.9, id: 'lip' },
-      { p: E(36, 18, 16, 1, 1), c: o.gum, m: 'skin', line: 0.6, sub: [{ p: E(24, 11, 14, 3, 3), c: '#2a0808', m: 'flat', line: 0 }, { p: E(12, 5, 10, 4, 4), c: '#0e0404', m: 'flat', line: 0 }] },
-      ...toothRing(35, 17.5, 0.62, o.teeth, '#f2ead4', 0),
-      ...toothRing(24, 11.5, 0.55, o.teeth - 4, '#e0d4b4', 0),
-      ...petals.slice(3),
+      ...fangs.slice(0, 6),
+      { p: E(50, 28, 18), c: tone(C, 0.04), m: 'skin', line: 0.9, id: 'lip', lines: [{ p: E(46, 25, 16).concat([E(46, 25, 16)[0]]), w: 1.2, a: 0.4 }] },
+      { p: E(42, 22, 16, 1, 1), c: o.gum, m: 'skin', line: 0.6, sub: [{ p: E(28, 13, 14, 3, 3), c: '#2a0808', m: 'flat', line: 0 }, { p: E(14, 6, 10, 4, 4), c: '#0e0404', m: 'flat', line: 0 }] },
+      ...toothRing(41, 21.5, 0.64, o.teeth, '#f2ead4', 0),
+      ...toothRing(28, 14, 0.55, o.teeth - 4, '#e0d4b4', 0),
+      ...fangs.slice(6),
       ...(o.drool ? [{ p: tube([[222, 96, 4], [226, 112, 3], [224, 124, 2]]), c: o.drool, m: 'gem', line: 0.4 }, { e: [224, 130, 3.4, 4.4], c: o.drool, m: 'gem', line: 0.4, glint: [[223, 128, 1.2]] },
         { p: tube([[164, 102, 3.5], [162, 116, 2.5]]), c: o.drool, m: 'gem', line: 0.4 }] : []),
     ];
     // бархан: дальний склон за телом, ближний — насыпан поверх основания
     const grains = [[40, 282, 3], [66, 266, 2.4], [230, 270, 3], [252, 282, 2.2], [210, 252, 2.4], [84, 250, 2]];
     const back = { kind: 'legs', pivot: [150, 290], shapes: [
-      { p: [[6, G], [40, 290], [84, 276], [130, 268], [180, 270], [226, 280], [268, 292], [292, G, 1], [4, G, 1]], c: o.sand, m: 'skin', gloss: 0, belly: 0.3, line: 0.7, lines: [{ p: [[50, 290], [120, 274], [190, 276], [250, 290]], w: 1.4, light: true, a: 0.5 }] },
+      { p: [P(6, G, 1), [40, 290], [84, 276], [130, 268], [180, 270], [226, 280], [268, 292], [292, G, 1], [4, G, 1]], c: o.sand, m: 'skin', gloss: 0, belly: 0.3, line: 0.7, lines: [{ p: [[50, 290], [120, 274], [190, 276], [250, 290]], w: 1.4, light: true, a: 0.5 }] },
       ...grains.map(([x, y, r]) => ({ e: [x, y, r, r], c: tone(o.sand, -0.1), m: 'horn', line: 0.4 })),
     ] };
     const front = { kind: 'legs', pivot: [150, 296], shapes: [
-      { p: [[34, G], [70, 294], [96, 284], [120, 290], [138, 280], [162, 288], [196, 286], [230, 296], [262, G, 1], [30, G, 1]], c: tone(o.sand, 0.08), m: 'skin', gloss: 0, belly: 0.25, line: 0.7,
+      { p: [P(34, G, 1), [70, 294], [96, 284], [120, 290], [138, 280], [162, 288], [196, 286], [230, 296], [262, G, 1], [30, G, 1]], c: tone(o.sand, 0.08), m: 'skin', gloss: 0, belly: 0.25, line: 0.7,
         lines: [{ p: [[80, 292], [118, 286], [160, 290], [210, 292]], w: 1.2, light: true, a: 0.5 }] },
       ...[[64, 298, 4], [212, 300, 3.4], [150, 296, 2.6]].map(([x, y, r]) => ({ e: [x, y, r * 1.4, r], c: tone(o.sand, -0.15), m: 'horn', line: 0.4 })),
     ] };
     const parts = [back, { kind: 'torso', pivot: [140, 290], shapes: bodyS }, { kind: 'head', pivot: [186, 118], shapes: headS }, front];
     V.def(name, placeAt(name, parts, [147, G], o.size || 1));
   }
-  sandworm('sandworm', { body: '#d0a472', belly: '#ecd4a8', gum: '#c05a5a', sand: SAND, teeth: 14 });
-  sandworm('olgoi_khorkhoi', { body: '#b0302a', belly: '#e07a5a', gum: '#6a1418', sand: '#d4a868', teeth: 18, spikes: '#3a1a14', drool: '#9ae040' });
+  sandworm('sandworm', { body: '#d0a472', belly: '#ecd4a8', gum: '#c05a5a', sand: SAND, teeth: 14, fang: '#f0e6cc' });
+  sandworm('olgoi_khorkhoi', { body: '#b0302a', belly: '#e07a5a', gum: '#6a1418', sand: '#d4a868', teeth: 18, spikes: '#3a1a14', drool: '#9ae040', fang: '#2a1a14' });
 
   /* ================= Стрелок / охотник за головами =================
      Ковбой: широкополая шляпа, рубаха и жилет, кобура на поясе, револьвер вперёд. */
@@ -501,10 +501,12 @@
     const legs = (hip, foot, side) => {
       const d = side < 0 ? -0.2 : 0, out = leg(hip, foot, { style: 'hose', c: tone(o.pants, d), boot: tone(o.boot, d), tw: 25, toe: 13 });
       const kx = (hip[0] + foot[0]) / 2 + 3, ky = (hip[1] + foot[1]) / 2 - 2;
-      // кожаные чапсы с бахромой поверх штанины
-      out.splice(2, 0, { p: tube([[hip[0] - 1, hip[1] - 2, 28], [kx, ky, 24], [foot[0] - 2, foot[1] - 22, 20]], { flat0: true, flat1: true }), c: tone(o.chaps, d), m: 'leather',
-        lines: [{ p: [[hip[0] - 12, hip[1] + 6], [kx - 11, ky], [foot[0] - 13, foot[1] - 24]], w: 2, c: tone(o.chaps, d - 0.25), a: 0.8 }] });
-      out.push({ p: [P(foot[0] - 16, foot[1] - 8, 1), P(foot[0] - 22, foot[1] - 12, 1), P(foot[0] - 20, foot[1] - 5, 1), P(foot[0] - 25, foot[1] - 2, 1), P(foot[0] - 15, foot[1] - 4, 1)], c: '#c8ccd4', m: 'steel', line: 0.5 });
+      // кожаные чапсы спереди штанины, бахрома по шву
+      out.splice(2, 0, { p: tube([[hip[0] + 3, hip[1] - 2, 20], [kx + 3, ky, 17], [foot[0] + 1, foot[1] - 24, 15]], { flat0: true, flat1: true }), c: tone(o.chaps, d), m: 'leather',
+        lines: [{ p: [[hip[0] - 5, hip[1] + 6], [kx - 5, ky], [foot[0] - 6, foot[1] - 26]], w: 1.6, c: tone(o.chaps, d - 0.3), a: 0.8 }] });
+      // шпора: хвостовик и колёсико
+      out.push({ p: tube([[foot[0] - 12, foot[1] - 7, 2.4], [foot[0] - 19, foot[1] - 8, 2.4]]), c: '#b8bec8', m: 'steel', line: 0.4 },
+        { e: [foot[0] - 21, foot[1] - 8, 3.6, 3.6], c: '#c8ccd4', m: 'steel', line: 0.5 });
       return out;
     };
     const coat = o.duster;
@@ -523,7 +525,7 @@
       ] : [
         { p: [[66, 86], [96, 82], [100, 142], [74, 146], [66, 120]], c: o.vest, m: 'leather', id: 'vestL' },
         { p: [[116, 82], [132, 88], [138, 110], [134, 142], [114, 144]], c: o.vest, m: 'leather', id: 'vestR' },
-        { p: [P(124, 102, 1), P(126, 96, 1), P(128, 102, 1), P(134, 102, 1), P(129, 106, 1), P(131, 112, 1), P(126, 108, 1), P(121, 112, 1), P(123, 106, 1), P(118, 102, 1)], c: BRASS, m: 'gold', gloss: 1.2, line: 0.5, glint: [[125, 104, 1.8]] },
+        { p: [P(84, 104, 1), P(86, 98, 1), P(88, 104, 1), P(94, 104, 1), P(89, 108, 1), P(91, 114, 1), P(86, 110, 1), P(81, 114, 1), P(83, 108, 1), P(78, 104, 1)], c: BRASS, m: 'gold', gloss: 1.2, line: 0.5, glint: [[85, 106, 1.8]] },
       ]),
       // шейный платок
       { p: [[92, 80], [120, 78], [120, 88], [108, 102, 1], [94, 90]], c: o.scarf, m: 'cloth', line: 0.7 },
@@ -531,7 +533,7 @@
       { p: [[70, 140], [134, 144], [136, 156], [70, 152]], c: o.belt, m: 'leather', glint: rivets([[80, 146], [88, 147], [96, 148], [112, 150], [120, 151]], 1.8),
         sub: [{ p: [P(100, 142, 1), P(110, 143, 1), P(110, 156, 1), P(100, 155, 1)], c: '#c8ccd4', m: 'steel' }] },
       { p: [[124, 148], [140, 150], [144, 184], [132, 190], [124, 182]], c: tone(o.belt, 0.08), m: 'leather', line: 0.8, lines: [{ p: [[128, 156], [138, 158]], w: 1, a: 0.5 }] },
-      { p: [[72, 150], [134, 154], [136, 170], [120, 176], [104, 168], [88, 176], [70, 170]], c: tone(o.chaps, -0.1), m: 'leather', id: 'hips' },
+      { p: [[76, 150], [130, 154], [130, 172], [104, 170], [78, 172]], c: tone(o.pants, -0.08), m: 'cloth', line: 0.4, id: 'hips' },
     ];
     const headS = [
       ...head(hx, hy, r, { skin: SKIN, hair: o.hair, hairStyle: 'short', beard: o.beard, beardLen: 1.2 }),
@@ -563,7 +565,7 @@
     }
     V.def(name, humanoid({ name, size: o.size || 0.98, legs, back, body, head: headS, arm: armS }));
   }
-  gunslinger('gunslinger', { shirt: SHIRT, vest: '#7a4a28', pants: '#a08a64', chaps: '#8a5a32', boot: '#4a2e1a', belt: '#5a3820', scarf: '#b8302a', hair: '#5a3418', hat: '#9a6a3a', band: '#4a2e18' });
+  gunslinger('gunslinger', { shirt: SHIRT, vest: '#7a4a28', pants: '#5e5244', chaps: '#8a5a32', boot: '#4a2e1a', belt: '#5a3820', scarf: '#b8302a', hair: '#5a3418', hat: '#9a6a3a', band: '#4a2e18' });
   gunslinger('bounty_hunter', { shirt: '#c8b890', vest: '#4a3020', pants: '#4a4238', chaps: '#3a2a1c', boot: '#2a1c12', belt: '#3a2618', scarf: '#6a1a18', hair: '#2a1c14', beard: '#2a1c14', hat: '#2a2226', band: '#8a6a3a',
     duster: '#6a5238', mask: '#7a2020', rifle: true });
 
@@ -571,13 +573,13 @@
      Пернатый змей: кольцо тела на земле, шея вверх, перьевой воротник и гребень, крылья «галочкой». */
   function couatl(name, o) {
     const C = o.body, CD = tone(C, -0.22), B = o.belly;
-    const low = [[18, 302, 7], [56, 303, 18], [104, 299, 32], [160, 295, 42], [212, 286, 48], [244, 264, 50], [244, 236, 50]];
+    const low = [[18, 304, 7], [56, 300, 18], [104, 293, 32], [160, 288, 42], [212, 282, 48], [244, 262, 50], [244, 234, 50]];
     const up = [[246, 244, 50], [220, 222, 50], [180, 216, 48], [152, 198, 46], [148, 166, 42], [164, 140, 36], [192, 124, 30], [222, 114, 27], [246, 110, 25]];
     const bellyT = (pts, sides) => tube(pts.map((q, i) => { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)], [tx, ty] = norm(b[0] - a[0], b[1] - a[1]), s = sides[i]; return [q[0] - ty * q[2] * 0.3 * s, q[1] + tx * q[2] * 0.3 * s, q[2] * 0.4]; }));
     const scales = pts => pts.slice(1, -1).map((q, i) => { const a = pts[i], b = pts[i + 2], [tx, ty] = norm(b[0] - a[0], b[1] - a[1]), w = q[2] * 0.5; return { p: [[q[0] + ty * w, q[1] - tx * w], [q[0] - tx * w * 0.2, q[1] - ty * w * 0.2], [q[0] - ty * w, q[1] + tx * w]], w: 1.1, a: 0.35 }; });
     const bodyS = [
       { p: tube(low), c: CD, m: 'skin', tex: 'scale', texSize: 0.9, belly: 0.25, lines: scales(low), sub: [{ p: bellyT(low, [1, 1, 1, 1, 1, 1, 1]), c: tone(B, -0.12), m: 'skin', line: 0 }] },
-      ...(o.fan ? [0, 1, 2, 3].map(i => { const lf = K.leaf([22, 300], Math.PI * (0.9 + i * 0.1), 34 - i * 2, 12); return { p: lf.body, c: [o.w.pri, o.w.cov, o.w.sec, o.w.cov2][i], m: 'leather', gloss: 0.5, line: 0.6, lines: [{ p: lf.shaft, w: 0.8, light: true, a: 0.5 }] }; }) : []),
+      ...(o.fan ? [0, 1, 2, 3].map(i => { const lf = K.leaf([24, 296], Math.PI * (0.98 + i * 0.07), 48 - i * 3, 15); return { p: lf.body, c: [o.w.pri, o.w.cov, o.w.sec, o.w.cov2][i], m: 'leather', gloss: 0.5, line: 0.6, lines: [{ p: lf.shaft, w: 0.8, light: true, a: 0.5 }] }; }) : []),
       { p: tube(up, { flat0: true }), c: C, m: 'skin', tex: 'scale', texSize: 0.9, belly: 0.2, lines: scales(up), sub: [{ p: bellyT(up, [-1, -1, -1, -0.5, 1, 1, 1, 1, 1]), c: B, m: 'skin', line: 0 }] },
       ...(o.rings ? [[150, 186, 44], [152, 160, 40], [232, 264, 48]].map(([x, y, w]) => ({ p: tube([[x - w * 0.5, y - 2, 6], [x, y + 3, 6], [x + w * 0.5, y - 2, 6]]), c: o.rings, m: 'gold', gloss: 1.2, line: 0.5 })) : []),
     ];
@@ -614,15 +616,15 @@
     ];
     const W = o.w, Wf = { pri: tone(W.pri, -0.2), pri2: tone(W.pri2 || W.pri, -0.2), sec: tone(W.sec, -0.2), sec2: tone(W.sec2 || W.sec, -0.2), cov: tone(W.cov, -0.2), cov2: tone(W.cov2, -0.2) };
     const parts = [
-      { kind: 'prop', pivot: [196, 138], shapes: mirror(wing.feather([196, 138], [-0.42, -1], 128, Wf), 196) },
+      { kind: 'prop', pivot: [196, 138], shapes: mirror(wing.feather([196, 138], [-0.5, -1], 112, Wf), 196) },
       { kind: 'torso', pivot: [180, 250], shapes: bodyS },
       { kind: 'head', pivot: [238, 118], shapes: headS },
-      { kind: 'prop', pivot: [168, 150], shapes: wing.feather([168, 150], [-0.72, -0.82], 146, W) },
+      { kind: 'prop', pivot: [168, 150], shapes: wing.feather([168, 150], [-0.8, -0.72], 128, W) },
     ];
-    V.def(name, placeAt(name, parts, [173, 310], o.size || 1));
+    V.def(name, placeAt(name, parts, [173, 310], o.size || 0.88));
   }
   couatl('couatl', { body: '#3a9a52', belly: '#e8d878', eye: '#f0c020', ruff: ['#d8402a', '#f0b830', '#2aa0a0'], crest: ['#2a9a8a', '#e8b030', '#d8402a', '#3aba5a'],
-    w: { pri: '#1e7a6a', pri2: '#2a8a78', sec: '#e0a830', sec2: '#d09420', cov: '#d8502a', cov2: '#f0c040' } });
+    w: { pri: '#1e7a6a', pri2: '#2a8a78', sec: '#e0a830', sec2: '#d09420', cov: '#d8502a', cov2: '#3a9a52' } });
   couatl('crimson_couatl', { body: '#b02a2a', belly: '#f0b848', eye: '#a0f040', ruff: ['#f0c040', '#1a1414', '#f0e0a0'], crest: ['#f0c040', '#e04a1a', '#1a1414', '#fff0a0'], crestN: 6, crestL: 12,
-    w: { pri: '#4a1216', pri2: '#5a1a1a', sec: '#e06a1e', sec2: '#d05a18', cov: '#f0b030', cov2: '#ffe08a' }, rings: BRASS, diadem: '#3ad08a', fan: true });
+    w: { pri: '#4a1216', pri2: '#5a1a1a', sec: '#e06a1e', sec2: '#d05a18', cov: '#f0b030', cov2: '#b02a2a' }, rings: BRASS, diadem: '#3ad08a', fan: true });
 })(typeof window !== 'undefined' ? window : globalThis);
