@@ -238,7 +238,7 @@
     // лук в вытянутой руке, стрела на тетиве
     const armS = [...arm([126, 90], [148, 98], [168, 100], { c: sk, m: 'skin', hand: sk, handM: 'skin', w: 15 }),
       // «верх» лука направлен вниз: так дуга выгибается вперёд, а тетива — к стрелку
-      ...weapon.bow([170, 100], [-0.08, 1], o.bowLen || 60, { wood: o.bow, string: '#e0d6c0' }),
+      ...weapon.bow([170, 100], [0.08, -1], o.bowLen || 60, { wood: o.bow, string: '#e0d6c0' }),
       { p: [[122, 98], [180, 99], [180, 101], [122, 100]], c: '#e0d6c0', m: 'flat', line: 0 }, { p: [P(180, 95.5, 1), P(191, 100, 1), P(180, 104.5, 1)], c: o.tip, m: 'horn', line: 0.6 }];
     if (o.bowTips) { const t = [[168, 42], [172, 158]]; t.forEach(q => armS.push({ e: [q[0], q[1], 4, 4], c: o.bowTips, m: 'gold', line: 0.5 })); }
     if (o.pad) armS.push({ p: tube([[146, 94, 13], [160, 98, 12]], { flat0: true, flat1: true }), c: o.pad, m: 'gold', line: 0.6 },

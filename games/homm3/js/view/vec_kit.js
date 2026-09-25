@@ -158,7 +158,7 @@
     },
     /** Лук: кисть держит середину; up — направление верхнего плеча. */
     bow(hand, up, size, o) {
-      o = o || {}; const [ux, uy] = norm(up[0], up[1]), nx = uy, ny = -ux;   // n — вперёд (в сторону выстрела)
+      o = o || {}; const [ux, uy] = norm(up[0], up[1]), nx = -uy, ny = ux;   // n — вперёд (в сторону выстрела): середина дуги впереди кисти, тетива сзади
       const pt = (t, bulge) => [hand[0] + ux * t + nx * bulge, hand[1] + uy * t + ny * bulge];
       const S = size;
       const arc = [[...pt(-S, -2), 3.2], [...pt(-S * 0.55, 8), 5], [...pt(0, 11), 6.4], [...pt(S * 0.55, 8), 5], [...pt(S, -2), 3.2]];
