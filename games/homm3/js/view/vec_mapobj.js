@@ -228,7 +228,150 @@
     out.push(...place(RES[rid](), 64, 290, 1.1));
     return out;
   }
-  for (const r of RES_IDS) obj('mine_' + r, () => mine(r));
+  /* ---------- у каждой добычи свой промысел, как в оригинале ----------
+     Золото — штольня в холме; дерево — лесопилка с водяным колесом; руда — открытый карьер с воротом;
+     ртуть — алхимическая лаборатория; сера — дымящиеся дюны; кристаллы — пещера в друзах; самоцветы — пруд. */
+  const puff = (x, y, r, a, c) => el(x, y, r, r * 0.86, 'rgba(' + (c || '236,236,228') + ',' + (a || 0.5) + ')', 'flat', { line: 0 });
+  const flame = (x, y, h, w) => sh([P(x - w, y, 1), [x - w * 0.9, y - h * 0.4], P(x - w * 0.3, y - h * 0.8, 1), [x, y - h * 0.5], P(x + w * 0.2, y - h, 1), [x + w * 0.9, y - h * 0.35], P(x + w, y, 1)], '#ff9a2a', 'flat',
+    { line: 0.5, lc: '#a8401a', sub: [sh([P(x - w * 0.5, y, 1), [x - w * 0.3, y - h * 0.4], P(x, y - h * 0.62, 1), [x + w * 0.35, y - h * 0.3], P(x + w * 0.5, y, 1)], '#ffe070', 'flat', { line: 0 })] });
+  /** Вагонетка на рельсах с добычей rid (x — середина). */
+  function cart(x, y, rid, k) {
+    k = k || 1; const L = (a, b) => [x + a * k, y + b * k];
+    return [...place(RES[rid](), x, y - 36 * k, 0.8 * k),
+      sh([P(...L(-42, -48), 1), P(...L(42, -48), 1), P(...L(34, -2), 1), P(...L(-34, -2), 1)], '#8a5a32', 'wood', { flow: 0,
+        lines: [ln([L(-39, -32), L(39, -32)], 1.2, 0.5), ln([L(-40, -46), L(40, -46)], 2.4, 0.6, { light: true }), ln([L(-39, -44), L(-32, -4)], 3, 0.8, { c: IRON }), ln([L(39, -44), L(32, -4)], 3, 0.8, { c: IRON })] }),
+      ...wheel(x - 20 * k, y + 6 * k, 11 * k, '#3e3830', { n: 6 }), ...wheel(x + 20 * k, y + 6 * k, 11 * k, '#3e3830', { n: 6, a: 0.4 })];
+  }
+
+  function sawmill() {
+    const out = [];
+    out.push(patch(186, 282, 142, 13, '#9a7a4e', { ao: 0.3 }));
+    // водяное колесо за домом: обод, спицы, лопасти; ручей под ним
+    out.push(water(58, 282, 56, 11, '#3a86c0'));
+    const cx = 62, cy = 206, r = 58, pads = [];
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2 + 0.13; pads.push(sh(tube([[cx + Math.cos(a) * (r - 6), cy + Math.sin(a) * (r - 6), 11], [cx + Math.cos(a) * (r + 12), cy + Math.sin(a) * (r + 12), 11]], { flat0: true, flat1: true }), PLANK, 'wood', { line: 0.6 })); }
+    out.push(...pads, ...wheel(cx, cy, r, WOOD_D, { n: 8, hub: IRON }));
+    out.push(puff(28, 270, 9, 0.55, '240,250,255'), puff(92, 272, 7, 0.5, '240,250,255'));
+    // сарай из брёвен, тёсовая крыша, открытый пролёт с пилой
+    out.push(logWall(92, 150, 252, 282, LOG, 12));
+    out.push(roof(92, 252, 154, 96, '#7a5634', { m: 'wood', rows: 4, ov: 12 }));
+    out.push(...win(122, 196, 18, 20));
+    out.push(sh(box(152, 196, 244, 282), '#2a2018', 'cloth', { line: 0.7, rim: 0 }));
+    const teeth = []; for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2, rr = i % 2 ? 26 : 33; teeth.push(P(200 + Math.cos(a) * rr, 236 + Math.sin(a) * rr, 1)); }
+    out.push(sh(teeth, '#c8ccd4', 'steel', { gloss: 1.1, line: 0.6, sub: [el(200, 236, 18, 18, '#a8aeb8', 'steel', { line: 0, lines: [ln(ell(200, 236, 12, 12, 12), 1, 0.4, { closed: true })] })], glint: [[190, 226, 4]] }));
+    out.push(el(200, 236, 5, 5, IRON, 'steel', { line: 0.5 }));
+    // верстак и бревно под пилу
+    out.push(sh(box(146, 252, 250, 264), '#6a4424', 'wood', { flow: 0, line: 0.7 }), sh(tube([[160, 264, 7], [160, 282, 7]], { flat0: true, flat1: true }), '#5a3a1c', 'wood'), sh(tube([[236, 264, 7], [236, 282, 7]], { flat0: true, flat1: true }), '#5a3a1c', 'wood'));
+    out.push(sh(tube([[118, 243, 17], [184, 243, 17]], { flat0: true, flat1: true }), LOG, 'wood', { flow: 0, line: 0.7 }), el(118, 243, 7, 8.5, '#dcb47a', 'wood', { line: 0.6, lines: [ln(ell(118, 243, 4, 5, 8), 0.9, 0.5, { closed: true })] }));
+    for (let i = 0; i < 9; i++) out.push(el(176 + i * 7 - (i % 3) * 3, 280 - (i % 2) * 2, 3, 1.6, '#e8cc8a', 'flat', { line: 0 }));   // опилки
+    // штабель досок и поленница справа
+    for (let i = 0; i < 5; i++) { const y = 282 - i * 8; out.push(sh(box(256 - i * 1.5, y - 8, 318 - i * 2, y), i % 2 ? '#c89458' : '#b8844a', 'wood', { flow: 0, line: 0.6, lines: [ln([[258, y - 6.5], [316 - i * 2, y - 6.5]], 1, 0.5, { light: true })] })); }
+    out.push(...place(RES.wood(), 286, 244, 0.5));
+    return out;
+  }
+
+  function orePit() {
+    const out = [];
+    // карьер: земляной вал, уступы вглубь, тёмное дно
+    out.push(el(160, 252, 146, 42, '#9a8468', 'horn', { gloss: 0.05, belly: 0.3 }));
+    out.push(el(160, 254, 118, 31, '#7a6650', 'horn', { gloss: 0.05, ao: 0.6, line: 0.5 }));
+    out.push(el(160, 258, 88, 22, '#5e4e3e', 'horn', { gloss: 0.05, ao: 0.7, line: 0.5 }));
+    out.push(el(160, 262, 56, 13, '#2a221c', 'cloth', { line: 0.5, rim: 0 }));
+    // ворот над ямой: козлы, барабан с ручкой, канат, бадья
+    out.push(sh(tube([[96, 268, 9], [160, 112, 7]], { flat0: true }), WOOD, 'wood', { line: 0.7 }), sh(tube([[224, 268, 9], [160, 112, 7]], { flat0: true }), WOOD, 'wood', { line: 0.7 }));
+    out.push(sh(tube([[124, 196, 6], [196, 196, 6]], { flat0: true, flat1: true }), WOOD_D, 'wood', { line: 0.6 }));
+    out.push(...wheel(160, 116, 13, '#6a4424', { n: 4 }));
+    out.push(sh(tube([[160, 128, 2.4], [160, 222, 2.4]]), ROPE, 'cloth', { line: 0.4 }));
+    out.push(...barrel(160, 250, 26, 26, '#7a5230'), ...place(RES.ore(), 160, 226, 0.34));
+    // руда и вагонетка
+    out.push(...place(RES.ore(), 48, 290, 0.9));
+    const sleepers = []; for (let x = 238; x < 322; x += 14) sleepers.push(ln([[x, 276], [x - 3, 288]], 4, 0.9, { c: '#5a3a1c' }));
+    out.push(sh([P(232, 290, 1), P(322, 288, 1), P(320, 274, 1), P(236, 275, 1)], '#6e6254', 'cloth', { line: 0.4, lines: [...sleepers, ln([[234, 278], [320, 277]], 2, 0.9, { c: '#c8ccd4' }), ln([[233, 286], [321, 285]], 2.2, 0.9, { c: '#c8ccd4' })] }));
+    out.push(...cart(278, 268, 'ore'));
+    out.push(boulder(26, 256, 14, 9, '#8a8478'), boulder(300, 230, 12, 8, '#7a746a'));
+    return out;
+  }
+
+  function alchemyLab() {
+    const out = [];
+    out.push(patch(170, 282, 150, 11, '#7a6a58', { ao: 0.3 }));
+    // пристройка с трубой: цветной дым
+    out.push(puff(272, 104, 13, 0.45, '170,230,190'), puff(282, 84, 16, 0.38, '190,170,230'), puff(270, 62, 19, 0.3, '200,220,240'));
+    out.push(wall(262, 110, 282, 172, '#8a5a48', 8, 12));
+    out.push(wall(204, 168, 296, 282, STONE_D, 13, 22), roof(204, 296, 170, 136, SLATE, { tiles: true, rows: 3, ov: 8, ins: 12 }));
+    out.push(...win(262, 214, 18, 20, { glass: '#9ee8ff' }));
+    // круглая башня с конической крышей
+    out.push(wall(112, 110, 214, 282, STONE, 14, 24));
+    out.push(sh([P(100, 114, 1), [128, 80], P(163, 26, 1), [198, 80], P(226, 114, 1)], SLATE, 'leather', { gloss: 0.2, belly: 0.3, lines: [ln([[132, 90], [194, 90]], 1.4, 0.5), ln([[118, 104], [208, 104]], 1.4, 0.5)] }));
+    out.push(el(163, 26, 5, 5, GOLD, 'gold', { line: 0.5 }), sh(tube([[163, 22, 2], [163, 6, 1.4]]), IRON, 'steel'));
+    out.push(...win(163, 160, 16, 24, { glass: '#9ee8ff' }), door(163, 282, 34, 56, PLANK, { ring: true }));
+    // перегонный куб: стеклянная колба с ртутью на треноге над огнём, змеевик в башню
+    out.push(sh(tube([[40, 282, 4], [58, 250, 3]]), IRON, 'steel'), sh(tube([[84, 282, 4], [66, 250, 3]]), IRON, 'steel'));
+    out.push(flame(62, 280, 22, 10));
+    out.push(sh(tube([[66, 196, 7], [92, 170, 6], [112, 166, 6]], { flat1: true }), '#c8ecf6', 'gem', { gloss: 1, line: 0.5, op: 0.85 }));
+    out.push(el(62, 222, 30, 30, '#cdeef8', 'gem', { gloss: 1.3, rim: 0.8, line: 0.7, op: 0.88, sub: [el(62, 238, 30, 16, '#6ab8dc', 'steel', { line: 0, gloss: 1.2 })], glint: [[52, 208, 5], [72, 232, 2.5]] }));
+    out.push(sh(tube([[62, 194, 10], [62, 180, 9]], { flat1: true }), '#cdeef8', 'gem', { line: 0.6, op: 0.88 }), el(62, 178, 6, 3, '#8a5a32', 'wood', { line: 0.5 }));
+    out.push(...place(RES.mercury(), 262, 292, 0.55));
+    return out;
+  }
+
+  function sulfurDune() {
+    const out = [];
+    // дюны серы: дальняя, средняя, ближняя
+    out.push(sh([P(20, 284, 1), [60, 206], [124, 150], [176, 138], [232, 168], [284, 222], P(318, 284, 1)], '#c89a22', 'cloth', { belly: 0.4, gloss: 0.15, lines: [ln([[80, 200], [140, 164], [200, 158]], 1.4, 0.35, { light: true })] }));
+    out.push(sh([P(4, 288, 1), [34, 238], [90, 214], [148, 226], P(186, 288, 1)], '#e2b62c', 'cloth', { belly: 0.35, gloss: 0.2, lines: [ln([[40, 246], [96, 224], [140, 232]], 1.4, 0.4, { light: true })] }));
+    out.push(sh([P(150, 290, 1), [186, 246], [240, 228], [292, 244], P(324, 290, 1)], '#eec83a', 'cloth', { belly: 0.35, gloss: 0.2 }));
+    // жерла с жёлтым паром
+    for (const [x, y, rx] of [[172, 148, 16], [92, 222, 12], [244, 236, 11]]) {
+      out.push(el(x, y, rx, rx * 0.36, '#5a3c10', 'cloth', { line: 0.6, rim: 0, sub: [el(x, y + 1, rx * 0.6, rx * 0.2, '#ff9a2a', 'flat', { line: 0 })] }));
+      out.push(puff(x - 3, y - 16, rx * 0.8, 0.5, '250,240,190'), puff(x + 5, y - 34, rx, 0.38, '245,235,200'), puff(x - 2, y - 56, rx * 1.2, 0.26, '240,236,210'));
+    }
+    // друзы серы и бочка добытого
+    out.push(...crystals(200, 206, ['#f6e050', '#ffe878', '#e8c030'], 3, 36, 26), ...crystals(52, 262, ['#f6e050', '#ffe878', '#e8c030'], 3, 30, 22));
+    out.push(...barrel(122, 290, 30, 32, '#8a5a32'), el(122, 258, 12, 3.5, '#f0cc30', 'cloth', { line: 0.4 }));
+    out.push(...place(RES.sulfur(), 272, 292, 0.62));
+    return out;
+  }
+
+  function crystalCave() {
+    const out = [];
+    // скала: зубчатый массив, светлые грани слева
+    out.push(sh([P(16, 286, 1), [30, 220], P(56, 180, 1), [84, 150], P(112, 104, 1), [150, 92], P(186, 78, 1), [214, 108], P(246, 122, 1), [276, 168], P(300, 214, 1), [314, 250], P(318, 286, 1)], '#7c7f8e', 'horn', { gloss: 0.15, belly: 0.35 }));
+    out.push(sh([P(34, 262, 1), [48, 204], P(80, 160, 1), [110, 118], P(150, 96, 1), [128, 136], [96, 196], P(80, 256, 1)], '#9a9dac', 'horn', { gloss: 0.1, line: 0.4, ao: 0.4 }));
+    out.push(sh([P(246, 126, 1), [280, 172], [304, 226], P(310, 282, 1), [280, 250], [262, 190]], '#5e6070', 'horn', { gloss: 0.05, line: 0.4, ao: 0.5 }));
+    // вход: тёмный зев с сиреневым светом изнутри
+    out.push(sh([P(110, 284, 1), [114, 224], [132, 190], [164, 176], [196, 188], [214, 222], P(220, 284, 1)], '#1a1426', 'cloth', { line: 0.7, rim: 0,
+      sub: [el(164, 262, 40, 30, 'rgba(170,140,255,0.45)', 'flat', { line: 0 }), el(164, 270, 22, 14, 'rgba(210,190,255,0.5)', 'flat', { line: 0 })] }));
+    // друзы: большие у входа, мелкие на скале
+    out.push(...crystals(74, 284, ['#eaf8ff', '#c4e6f8', '#a8d8f2', '#d8ccff'], 5, 150, 96));
+    out.push(...crystals(262, 284, ['#eaf8ff', '#c4e6f8', '#b8c8ff'], 4, 112, 72));
+    out.push(...crystals(170, 96, ['#eaf8ff', '#d0e8ff', '#c4e6f8'], 3, 54, 36));
+    out.push(...crystals(236, 136, ['#eaf8ff', '#c4e6f8'], 3, 34, 24));
+    out.push(...crystals(144, 286, ['#d8ccff', '#eaf8ff'], 3, 30, 22), ...crystals(196, 286, ['#eaf8ff', '#c4e6f8'], 3, 26, 20));
+    return out;
+  }
+
+  function gemPond() {
+    const out = [];
+    // берег: влажная земля и камни вокруг пруда
+    out.push(el(164, 256, 156, 38, '#6e6a4a', 'cloth', { ao: 0.4, belly: 0.2, line: 0.5 }));
+    out.push(...crystals(58, 240, ['#3cc060', '#58d474', '#2aa850'], 5, 118, 70), ...crystals(262, 236, ['#e03048', '#f0506a', '#c02038'], 4, 96, 56), ...crystals(160, 228, ['#6a8ae8', '#8aa8f8', '#4a6ad0'], 3, 58, 34));
+    out.push(el(164, 258, 128, 28, '#4aa6d6', 'gem', { gloss: 0.4, line: 0.6 }));
+    out.push(water(164, 260, 116, 23, '#2a6ea8', { glint: [[120, 254, 3.5], [196, 262, 3], [150, 268, 2.4], [226, 256, 2.2]] }));
+    // самоцветы на дне и на берегу
+    for (const [x, y, r, c] of [[132, 262, 7, '#e03048'], [168, 256, 8, '#3a6ae0'], [204, 266, 6, '#3cc060'], [104, 268, 5, '#f0c030'], [236, 262, 5, '#b060e0']]) out.push(cutGem(x, y, r, c));
+    for (const [x, y, rx, ry, c] of [[30, 270, 18, 11, '#8a8478'], [300, 266, 16, 10, '#7a746a'], [70, 288, 14, 8, '#9a9488'], [256, 290, 17, 9, '#8a8478'], [164, 294, 12, 6, '#7a746a']]) out.push(boulder(x, y, rx, ry, c));
+    out.push(cutGem(96, 290, 11, '#e03048'), cutGem(118, 294, 9, '#3a6ae0'), cutGem(214, 292, 10, '#3cc060'), cutGem(234, 296, 7, '#f0c030'));
+    // камыш
+    for (const [x, h, lean] of [[18, 56, -0.2], [26, 70, -0.05], [36, 50, 0.15], [292, 60, 0.1], [304, 74, 0.25], [314, 52, 0.3]]) {
+      out.push(sh(tube([[x, 272, 3], [x + lean * h, 272 - h, 1.6]]), '#5a8a32', 'leather', { line: 0.4 }));
+      if (h > 55) out.push(sh(tube([[x + lean * h * 0.86, 272 - h * 0.86, 5.5], [x + lean * h * 0.98, 272 - h * 0.98, 5]]), '#6a4424', 'fur', { line: 0.4 }));
+    }
+    return out;
+  }
+
+  const MINES = { gold: () => mine('gold'), wood: sawmill, ore: orePit, mercury: alchemyLab, sulfur: sulfurDune, crystal: crystalCave, gems: gemPond };
+  for (const r of RES_IDS) obj('mine_' + r, MINES[r]);
 
   /* =================================================================== находки
      Сундук — общий для сундука, ящика Пандоры и морского сундука. */
