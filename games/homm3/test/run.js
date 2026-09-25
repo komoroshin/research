@@ -1281,7 +1281,7 @@ test('рисованные существа: описаны для настоя�
     for (const p of d.parts) { assert.ok(KINDS.includes(p.kind), n + ': часть ' + p.kind); assert.ok(p.pivot && p.pivot.every(Number.isFinite) && p.shapes.length, n + ': у части нет крепления или форм'); }
     for (const p of d.parts) for (const s of p.shapes) assert.ok(s._bb.every(Number.isFinite), n + ': форма с пустыми координатами');
     assert.ok(d.W >= d.w && d.H >= d.h, n + ': холст меньше рамки');
-    const ay = d.anchor[1] + d.oy; assert.ok(ay <= d.H && ay >= d.H - 30, n + ': якорь не у ног');
+    const ay = d.anchor[1] + d.oy; if (cr) assert.ok(ay <= d.H && ay >= d.H - 30, n + ': якорь не у ног');   // у портретов и значков якорь не внизу
     for (const p of d.parts) if (p.kind === 'leg') assert.ok(p.side === 1 || p.side === -1, n + ': у ноги нет стороны');
     // рамка — от старого спрайта: то же место в гексе
     if (g.H3.VK && Sp.has(n)) { const fr = g.H3.VK.frameOf(n); assert.ok(Math.abs(fr.anchor[1] - d.anchor[1]) <= 12, n + ': якорь не совпадает со старым спрайтом'); }
