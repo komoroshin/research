@@ -129,7 +129,7 @@
   /* ---------- фактура ---------- */
   function texture(ctx, s, mat, env, rnd) {
     const kind = s.tex || mat.tex; if (!kind || s.tex === false) return;
-    const [x0, y0, x1, y1] = s._bb, w = x1 - x0, h = y1 - y0, c = s.c, dens = s.dens || 1;
+    const [x0, y0, x1, y1] = s._bb, w = x1 - x0, h = y1 - y0, c = colorOf(s.c, env), dens = s.dens || 1;
     const flow = s.flow !== undefined ? s.flow : Math.PI * 0.62;
     ctx.lineCap = 'round';
     if (kind === 'fur') {
