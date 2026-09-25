@@ -538,6 +538,12 @@
   }
   /** Вписать в прямоугольник (иконки в UI). */
   function drawFit(ctx, name, x, y, w, h, flip) {
+    if (vecOf(name)) {   // рисованное: вписываем дробным масштабом и сглаживаем
+      const fr = H3.Vec.render(name, 1, flip), s = Math.min(w / fr._w, h / fr._h), im = image(name, s, flip);
+      const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(im.cv, x + (w - fr._w * s) / 2, y + (h - fr._h * s) / 2, im.cv.width * im.k, im.cv.height * im.k);
+      ctx.imageSmoothingEnabled = prev; return;
+    }
     const cv = render(name, 1, flip);
     if (!cv) { placeholder(ctx, name, x + w / 2, y + h, 1); return; }
     const s = Math.max(1, Math.floor(Math.min(w / cv._w, h / cv._h)));
