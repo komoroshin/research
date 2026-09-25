@@ -48,7 +48,7 @@
     clampCam(); V.dirty = true;
   }
   function setState(state) {
-    V.state = state; V.layer = 0; V.mapCanvas = [T.renderMap(state, 0), null]; V.miniCanvas = document.createElement('canvas');
+    V.state = state; V.layer = 0; V.mapCanvas = [null, null]; V.painter = [null, null]; V.miniCanvas = document.createElement('canvas');
     if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
@@ -56,6 +56,9 @@
   }
   function invalidate() { V.pf = null; V.dirty = true; }
   /** Полотно слоя рисуется лениво: подземелье — только когда туда спустились. */
+  /** Рисованная земля (куски по 8×8 клеток); ?map=0 — прежнее пиксельное полотно. */
+  const painted = () => !!H3.MapPaint && !/[?&]map=0\b/.test(location.search);
+  function painterOf(z) { if (!V.painter[z]) V.painter[z] = H3.MapPaint.create(V.state, z); return V.painter[z]; }
   function layerCanvas(z) {
     if (!V.mapCanvas[z]) V.mapCanvas[z] = T.renderMap(V.state, z);
     return V.mapCanvas[z];
@@ -251,7 +254,8 @@
       Sp.setScene(T.sceneLight(st.day, R.TERRAINS[m.terrain[cy * m.w + cx]], V.layer === 1));
     }
     // местность
-    ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    if (painted()) { const P = painterOf(V.layer); P.pending = false; P.draw(ctx, x0, y0, x1, y1); if (P.pending) V.dirty = true; ctx.imageSmoothingEnabled = false; }
+    else ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
     drawCloudShadows(ctx, st, ts, x0, y0, x1, y1);
     V.view = { x0, y0, x1, y1 };
@@ -291,20 +295,33 @@
   }
   /** Туман войны мягкой маской (1 px на клетку → растяжение со сглаживанием). */
   function drawFog(ctx, st, vis, x0, y0, x1, y1) {
-    const m = S.lvl(st, V.layer), w = x1 - x0 + 3, h = y1 - y0 + 3;
+    // маска по 4 точки на клетку, дважды размытая: край разведанного — мягкая дымка, а не ступеньки клеток
+    const m = S.lvl(st, V.layer), S4 = 4, w = (x1 - x0 + 3) * S4, h = (y1 - y0 + 3) * S4;
     let cv = V.fogCanvas;
     if (!cv) { cv = V.fogCanvas = document.createElement('canvas'); }
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-    const fc = cv.getContext('2d'), img = fc.createImageData(w, h), d = img.data;
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; V.fogBuf = [new Float32Array(w * h), new Float32Array(w * h)]; }
+    // пересчёт — только когда сдвинулась видимая область или открылось новое
+    let key = x0 + ',' + y0 + ',' + x1 + ',' + y1 + ',' + V.layer, hsh = 0;
+    for (let y = Math.max(0, y0 - 1); y <= Math.min(m.h - 1, y1 + 1); y++) for (let x = Math.max(0, x0 - 1); x <= Math.min(m.w - 1, x1 + 1); x++) hsh = (hsh * 31 + vis[y * m.w + x]) | 0;
+    key += ',' + hsh;
+    if (V.fogKey !== key) {
+    V.fogKey = key;
+    const [a, b] = V.fogBuf, WP = H3.MapPaint ? H3.MapPaint.warp : null;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const mx = x0 - 1 + x, my = y0 - 1 + y;
+      let px = (x0 - 1) * TILE + (x + 0.5) * TILE / S4, py = (y0 - 1) * TILE + (y + 0.5) * TILE / S4;
+      if (WP) { const d2 = WP(px, py, 12); px += d2[0]; py += d2[1]; }
+      const mx = Math.floor(px / TILE), my = Math.floor(py / TILE);
       const v = (mx < 0 || my < 0 || mx >= m.w || my >= m.h) ? 0 : vis[my * m.w + mx];
-      d[(y * w + x) * 4 + 3] = v === 2 ? 0 : v === 1 ? 110 : 255;
+      a[y * w + x] = v === 2 ? 0 : v === 1 ? 110 : 255;
     }
+    const R = 3, blur = (src, dst, dx, dy, n) => { for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0, c = 0; for (let k = -R; k <= R; k++) { const xx = x + k * dx, yy = y + k * dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; s += src[yy * w + xx]; c++; } dst[y * w + x] = s / c; } };
+    blur(a, b, 1, 0); blur(b, a, 0, 1); blur(a, b, 1, 0); blur(b, a, 0, 1);
+    const fc = cv.getContext('2d'), img = fc.createImageData(w, h), d = img.data;
+    for (let i = 0; i < w * h; i++) d[i * 4 + 3] = a[i];
     fc.putImageData(img, 0, 0);
+    }
     const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
-    // центр каждого пикселя маски попадает в центр своей клетки
-    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, w * TILE, h * TILE);
+    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
     ctx.imageSmoothingEnabled = prev;
   }
   /* ---------- атмосфера: падающие тени, тени облаков, погода, виньетка ---------- */
@@ -425,6 +442,19 @@
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
+    if (painted()) {   // рисованная карта: древко с навершием и гладкое полотнище-волна
+      const ph = (x * 0.37 + y * 0.11), t = V.ts / 140, wy = i => Math.sin(t + ph + i * 0.9) * (i / w) * 1.6;
+      ctx.save(); ctx.imageSmoothingEnabled = true; ctx.lineCap = 'round';
+      ctx.strokeStyle = '#2a1a10'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(x + 0.5, y - 0.5); ctx.lineTo(x + 0.5, y + h + 3); ctx.stroke();
+      ctx.fillStyle = '#d8b24a'; ctx.beginPath(); ctx.arc(x + 0.5, y - 0.8, 0.9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x + 1, y);
+      for (let i = 1; i <= w; i++) ctx.lineTo(x + 1 + i, y + wy(i));
+      for (let i = w; i >= 0; i--) ctx.lineTo(x + 1 + i, y + h - 2 + wy(i) + (i === w ? -0.6 : 0));
+      ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(x + 1.3, y + 0.6); for (let i = 1; i <= w; i++) ctx.lineTo(x + 1 + i, y + 0.6 + wy(i)); ctx.stroke();
+      ctx.restore(); return;
+    }
     x = Math.round(x); y = Math.round(y);
     ctx.fillStyle = '#2a1a10'; ctx.fillRect(x, y, 1, h + 3);
     // полотнище полощется: каждый столбец сдвинут по синусоиде, дальше от древка — сильнее

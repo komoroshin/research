@@ -76,7 +76,9 @@
     opts = opts || {};
     const st = opts.state || H3.Game.state, f = F.get(town.faction), sc = SCENE[town.faction] || SCENE.castle, tint = TINT[town.faction];
     const ctx = canvas.getContext('2d');
-    canvas.width = W; canvas.height = H;
+    // холст с плотностью экрана: рисованные постройки и фон не мылятся; координаты сцены по-прежнему 960×400
+    const RS = Math.min(3, Math.max(1, Math.round(root.devicePixelRatio || 1)));
+    canvas.width = W * RS; canvas.height = H * RS;
     const rng = new U.RNG(U.hashStr(town.name + town.faction));
     const scene = { town, items: [], hover: null, fx: H3.Fx.scene(), bg: null, clouds: [], props: [], t0: 0 };
     scene.fx.S.bounds = { w: W, h: H };
@@ -92,6 +94,7 @@
 
     /* ---------- фон (один раз) ---------- */
     function paintBg(day) {
+      if (H3.BattleBg && !/[?&]bg=0\b/.test(root.location ? root.location.search : '')) return paintBgPainted(day);
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d'); c.imageSmoothingEnabled = false;
       const night = NIGHT[(day - 1) % 7];
       // небо
@@ -129,6 +132,22 @@
       // цветы / трещины / снег
       if (sc.flowers) { const r4 = new U.RNG(3); for (let i = 0; i < 80; i++) { c.fillStyle = r4.pick(['#ffd070', '#ff8a9a', '#ffffff', '#c9a9ff']); c.fillRect(r4.int(0, W), r4.int(horizon + 10, H), 2, 2); } }
       if (sc.embers) { const r4 = new U.RNG(4); for (let i = 0; i < 40; i++) { c.fillStyle = '#ff5a1f'; c.globalAlpha = 0.5; c.fillRect(r4.int(0, W), r4.int(horizon + 10, H), r4.int(4, 14), 1); } c.globalAlpha = 1; }
+      return cv;
+    }
+    /** Рисованный фон: небо, дальний план и земля — тем же художником, что задник боя. */
+    function paintBgPainted(day) {
+      scene.painted = true;   // облака уже нарисованы в небе — летающие эллипсы не нужны
+      const night = NIGHT[(day - 1) % 7];
+      const L = H3.BattleBg.make(sc.cave ? 'subter' : sc.terrain, W, H, day, 0.4);
+      const cv = document.createElement('canvas'); cv.width = W * RS; cv.height = H * RS; const c = cv.getContext('2d');
+      c.imageSmoothingEnabled = true;
+      for (const l of [L.sky, L.mid, L.ground]) c.drawImage(l, 0, 0, W * RS, H * RS);
+      c.setTransform(RS, 0, 0, RS, 0, 0);
+      if (night && !sc.cave) { c.fillStyle = 'rgba(10,10,40,' + (0.55 * night) + ')'; c.fillRect(0, 0, W, 170); const sr = new U.RNG(7); c.fillStyle = 'rgba(255,255,255,' + (0.8 * night) + ')'; for (let i = 0; i < 70; i++) c.fillRect(sr.int(0, W), sr.int(0, 120), 1, 1); }
+      paintWater(c, night);
+      // дорога к воротам: мягкая колея
+      const g = c.createLinearGradient(0, 270, 0, 400); g.addColorStop(0, 'rgba(140,116,80,0.35)'); g.addColorStop(1, 'rgba(150,124,86,0.75)');
+      c.fillStyle = g; c.beginPath(); c.moveTo(440, 268); c.quadraticCurveTo(480, 262, 522, 268); c.quadraticCurveTo(560, 330, 606, 400); c.lineTo(354, 400); c.quadraticCurveTo(402, 330, 440, 268); c.fill();
       return cv;
     }
     function paintWater(c, night) {
@@ -181,14 +200,46 @@
     }
 
     /* ---------- рисование ---------- */
+    /* реквизит сцены — мягкими формами с объёмом (свет сверху-слева) */
+    const lg = (c, x0, y0, x1, y1, a, b) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, a); g.addColorStop(1, b); return g; };
+    function propRock(c, x, y, s) {
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.ellipse(x + s * 0.6, y + 1, s * 2.2, s * 0.7, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = lg(c, x - s * 2, y - s * 1.6, x + s * 2, y, '#a4a6ac', '#4b4d54'); c.beginPath(); c.ellipse(x, y - s * 0.5, s * 2, s * 1.1, 0, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(30,30,36,0.7)'; c.lineWidth = 0.8; c.stroke();
+    }
+    function propGrave(c, x, y) {
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.ellipse(x + 3, y, 9, 2.5, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = lg(c, x - 6, y - 16, x + 6, y, '#c4c6cc', '#6a6c74'); c.beginPath(); c.moveTo(x - 5, y); c.lineTo(x - 5, y - 10); c.arc(x, y - 10, 5, Math.PI, 0); c.lineTo(x + 5, y); c.closePath(); c.fill();
+      c.strokeStyle = '#3a3c44'; c.lineWidth = 0.8; c.stroke(); c.strokeStyle = 'rgba(40,40,48,0.8)'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(x, y - 13); c.lineTo(x, y - 6); c.moveTo(x - 2.5, y - 10.5); c.lineTo(x + 2.5, y - 10.5); c.stroke();
+    }
+    function propStake(c, x, y) {
+      c.fillStyle = lg(c, x - 2, 0, x + 2, 0, '#8a6a44', '#4a3018'); c.beginPath(); c.moveTo(x - 2, y); c.lineTo(x - 1.5, y - 18); c.lineTo(x + 1.5, y - 18); c.lineTo(x + 2, y); c.closePath(); c.fill();
+      c.fillStyle = lg(c, x - 4, y - 25, x + 4, y - 17, '#f4f0e6', '#a8a498'); c.beginPath(); c.ellipse(x, y - 21, 3.6, 3.2, 0, 0, Math.PI * 2); c.fill(); c.strokeStyle = '#5a564c'; c.lineWidth = 0.6; c.stroke();
+      c.fillStyle = '#1a1410'; c.beginPath(); c.arc(x - 1.2, y - 21.5, 0.8, 0, Math.PI * 2); c.arc(x + 1.2, y - 21.5, 0.8, 0, Math.PI * 2); c.fill();
+    }
+    function propReed(c, x, y) {
+      c.strokeStyle = '#4e7a26'; c.lineWidth = 1; c.lineCap = 'round';
+      for (let i = -3; i <= 3; i += 1.5) { c.beginPath(); c.moveTo(x + i, y); c.quadraticCurveTo(x + i * 1.2, y - 8, x + i * 1.8, y - 14 + Math.abs(i)); c.stroke(); }
+      c.fillStyle = lg(c, x - 1.5, y - 20, x + 1.5, y - 13, '#8a5a2a', '#4a2e12'); c.beginPath(); c.ellipse(x + 0.5, y - 16, 1.6, 3.6, 0.1, 0, Math.PI * 2); c.fill();
+    }
+    /** Городская стена во всю ширину: кладка с объёмом, зубцы с тенью. */
+    function wallBand(c) {
+      const y0 = H - 42, g = c.createLinearGradient(0, y0, 0, H); g.addColorStop(0, tint.n); g.addColorStop(1, tint.N);
+      c.fillStyle = g; c.fillRect(0, y0 + 8, W, 34);
+      for (let x = 0; x < W; x += 16) { const mg = c.createLinearGradient(x, y0, x + 9, y0 + 8); mg.addColorStop(0, tint.n); mg.addColorStop(1, tint.N); c.fillStyle = mg; c.fillRect(x, y0, 9, 9); c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 9, y0 + 2, 1.5, 7); }
+      c.strokeStyle = 'rgba(0,0,0,0.18)'; c.lineWidth = 0.7; c.beginPath();
+      for (let y = y0 + 16, r = 0; y < H; y += 8, r++) { c.moveTo(0, y); c.lineTo(W, y); for (let x = (r % 2) * 10; x < W; x += 20) { c.moveTo(x, y - 8); c.lineTo(x, y); } }
+      c.stroke();
+      c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(0, y0 + 8, W, 1.5);
+    }
     function drawProps(c, layer) {
       for (const p of scene.props) {
         if ((p.y < 262) !== (layer === 0)) continue;   // за ратушей / перед
         if (p.kind === 'tree' && Sp.has(p.sprite)) Sp.draw(c, p.sprite, p.x, p.y, p.s);
-        else if (p.kind === 'rock') { c.fillStyle = '#4b4d54'; c.beginPath(); c.ellipse(p.x, p.y, p.s * 2, p.s, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#8b8d94'; c.fillRect(p.x - p.s, p.y - p.s, p.s, 1); }
-        else if (p.kind === 'grave') { c.fillStyle = '#8b8d94'; c.fillRect(p.x - 4, p.y - 12, 8, 12); c.fillStyle = '#4b4d54'; c.fillRect(p.x - 4, p.y - 12, 2, 12); c.fillStyle = '#c9c9cc'; c.fillRect(p.x - 1, p.y - 10, 2, 6); c.fillRect(p.x - 3, p.y - 8, 6, 2); }
-        else if (p.kind === 'stake') { c.fillStyle = '#5a3a1c'; c.fillRect(p.x - 2, p.y - 18, 4, 18); c.fillStyle = '#e8e8ea'; c.fillRect(p.x - 3, p.y - 22, 6, 5); c.fillStyle = '#000'; c.fillRect(p.x - 2, p.y - 20, 1, 1); c.fillRect(p.x + 1, p.y - 20, 1, 1); }
-        else if (p.kind === 'reed') { c.fillStyle = '#5a8a2a'; for (let i = -3; i <= 3; i += 3) c.fillRect(p.x + i, p.y - 14 + Math.abs(i), 1, 14 - Math.abs(i)); c.fillStyle = '#5a3a1c'; c.fillRect(p.x - 1, p.y - 16, 2, 4); }
+        else if (p.kind === 'rock') propRock(c, p.x, p.y, p.s);
+        else if (p.kind === 'grave') propGrave(c, p.x, p.y);
+        else if (p.kind === 'stake') propStake(c, p.x, p.y);
+        else if (p.kind === 'reed') propReed(c, p.x, p.y);
         else if (p.kind === 'crystal' && Sp.has('crystal_rock')) Sp.draw(c, 'crystal_rock', p.x, p.y, 1.5);
       }
     }
@@ -196,7 +247,7 @@
       const sh = it.shape, hover = scene.hover === it;
       if (it.wide) { // стена: полоса на всю ширину
         c.globalAlpha = it.ghost ? 0.22 : 1;
-        c.fillStyle = tint.n; c.fillRect(0, H - 2 - 40, W, 40); c.fillStyle = tint.N; for (let x = 0; x < W; x += 16) c.fillRect(x, H - 42, 8, 8);
+        wallBand(c);
       }
       if (it.ghost) {
         c.globalAlpha = hover ? 0.55 : (it.ghost.ok ? 0.34 : 0.16);
@@ -219,17 +270,37 @@
     /** Черты фракции поверх постройки: снег на крышах, шипы, черепа, плющ, кристаллы. */
     function ornaments(c, it, ts) {
       const sh = it.shape, fid = town.faction;
-      const roof = (step, fn) => { for (let x = 0; x < sh.w; x += step) { const y = sh.top[x]; if (y < 0) continue; fn(it.bx + x, it.by + y, x); } };
-      if (fid === 'tower') { c.fillStyle = '#ffffff'; roof(2, (x, y) => c.fillRect(x, y, 2, 2)); c.fillStyle = 'rgba(255,255,255,0.5)'; roof(2, (x, y) => c.fillRect(x, y + 2, 2, 1)); }
-      else if (fid === 'inferno') { c.fillStyle = '#1a0a08'; roof(8, (x, y, i) => { if (i % 16 === 0) { c.beginPath(); c.moveTo(x - 2, y + 1); c.lineTo(x + 2, y + 1); c.lineTo(x, y - 7); c.fill(); } }); if (Math.random() < 0.15) { const x = it.bx + Math.floor(Math.random() * sh.w); const y = sh.top[x - it.bx]; if (y >= 0) scene.fx.add({ x, y: it.by + y, vx: rnd(-4, 4), vy: -rnd(10, 22), ax: 0, ay: 0, ttl: 500, life: 0, size: 1.6, color: '#ff9a3a', shape: 'dot', glow: true, shrink: true }); } }
-      else if (fid === 'necropolis') { let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; } if (px >= 0) { const x = it.bx + px, y = it.by + py; c.fillStyle = '#e8e8ea'; c.fillRect(x - 2, y - 6, 5, 4); c.fillStyle = '#000'; c.fillRect(x - 1, y - 5, 1, 1); c.fillRect(x + 1, y - 5, 1, 1); } }
-      else if (fid === 'rampart') { c.fillStyle = '#3f7f2f'; for (let x = 4; x < sh.w - 4; x += 6) c.fillRect(it.bx + x, it.pos[1] - 3 - (x % 3), 3, 3 + (x % 3)); c.fillStyle = '#5cb84a'; roof(6, (x, y, i) => { if (i % 12 === 0) c.fillRect(x, y + 3, 2, 4 + (i % 5)); }); }
-      else if (fid === 'dungeon') { c.fillStyle = '#c04fd0'; [[-1, 0], [1, 0]].forEach(([s]) => { const x = it.pos[0] + s * (sh.w / 2 - 4); c.beginPath(); c.moveTo(x - 3, it.pos[1]); c.lineTo(x + 3, it.pos[1]); c.lineTo(x, it.pos[1] - 9); c.fill(); }); c.fillStyle = '#e6a0ff'; c.fillRect(it.pos[0] - sh.w / 2 + 3, it.pos[1] - 5, 1, 2); }
-      else if (fid === 'stronghold') { c.fillStyle = '#5a3a1c'; for (let x = 2; x < sh.w; x += 7) c.fillRect(it.bx + x, it.pos[1] - 8, 2, 8); c.fillStyle = '#e8e8ea'; c.fillRect(it.bx + 2, it.pos[1] - 12, 4, 4); }
-      else if (fid === 'fortress') { c.fillStyle = '#7fa838'; roof(4, (x, y, i) => { if (i % 8 === 0) c.fillRect(x, y + 1, 3, 2); }); c.fillStyle = 'rgba(60,90,90,0.5)'; c.fillRect(it.bx, it.pos[1] - 2, sh.w, 3); }
-      else { // замок: вымпел цвета игрока на коньке
-        const p = st.players[town.owner]; let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; }
-        if (p && px >= 0 && it.key !== 'hall') { const x = it.bx + px, y = it.by + py; c.fillStyle = '#2a1a10'; c.fillRect(x, y - 8, 1, 8); c.fillStyle = p.color; const wv = Math.round(Math.sin(ts / 150 + px) * 1.5); c.fillRect(x + 1, y - 8 + wv, 5, 3); }
+      // линия крыши в координатах сцены (каждые step точек)
+      const ridge = step => { const pts = []; for (let x = 0; x < sh.w; x += step) { const y = sh.top[x]; if (y >= 0) pts.push([it.bx + x, it.by + y]); } return pts; };
+      const peak = () => { let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; } return px < 0 ? null : [it.bx + px, it.by + py]; };
+      if (fid === 'tower') {   // снег шапкой по линии крыши
+        const pts = ridge(2); if (pts.length < 2) return;
+        c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(pts[0][0], pts[0][1] - 1);
+        for (const p of pts) c.lineTo(p[0], p[1] - 1.2);
+        for (let k = pts.length - 1; k >= 0; k--) c.lineTo(pts[k][0], pts[k][1] + 2 + ((k * 7) % 3));
+        c.closePath(); c.fill(); c.strokeStyle = 'rgba(150,175,200,0.6)'; c.lineWidth = 0.6; c.stroke();
+      } else if (fid === 'inferno') {   // шипы по коньку и искры
+        for (const [x, y] of ridge(16)) { const g = c.createLinearGradient(x - 2, y - 8, x + 2, y); g.addColorStop(0, '#4a1a10'); g.addColorStop(1, '#120604'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 2.5, y + 1); c.quadraticCurveTo(x - 0.5, y - 3, x, y - 8); c.quadraticCurveTo(x + 0.8, y - 3, x + 2.5, y + 1); c.fill(); }
+        if (Math.random() < 0.15) { const x = it.bx + Math.floor(Math.random() * sh.w); const y = sh.top[x - it.bx]; if (y >= 0) scene.fx.add({ x, y: it.by + y, vx: rnd(-4, 4), vy: -rnd(10, 22), ax: 0, ay: 0, ttl: 500, life: 0, size: 1.6, color: '#ff9a3a', shape: 'dot', glow: true, shrink: true }); }
+      } else if (fid === 'necropolis') {   // череп на верхушке
+        const p = peak(); if (!p) return; const [x, y] = p;
+        const g = c.createRadialGradient(x - 1, y - 6, 0.5, x, y - 5, 4); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#a8a6a0'); c.fillStyle = g;
+        c.beginPath(); c.ellipse(x, y - 5, 3.2, 2.8, 0, 0, Math.PI * 2); c.fill(); c.fillRect(x - 1.8, y - 3.5, 3.6, 2);
+        c.fillStyle = '#1a1414'; c.beginPath(); c.arc(x - 1.1, y - 5.2, 0.8, 0, Math.PI * 2); c.arc(x + 1.1, y - 5.2, 0.8, 0, Math.PI * 2); c.fill();
+      } else if (fid === 'rampart') {   // плющ у основания и по стенам
+        c.fillStyle = '#3f7f2f';
+        for (let x = 4; x < sh.w - 4; x += 5) { const h = 3 + ((x * 13) % 5); c.beginPath(); c.ellipse(it.bx + x, it.pos[1] - h / 2 - 1, 2.6, h / 2 + 1, 0, 0, Math.PI * 2); c.fill(); }
+        c.fillStyle = '#6cc052'; for (let x = 6; x < sh.w - 6; x += 9) { c.beginPath(); c.ellipse(it.bx + x, it.pos[1] - 4, 1.6, 1.2, 0, 0, Math.PI * 2); c.fill(); }
+      } else if (fid === 'dungeon') {   // кристаллы у углов
+        for (const s2 of [-1, 1]) { const x = it.pos[0] + s2 * (sh.w / 2 - 4), y = it.pos[1]; const g = c.createLinearGradient(x - 3, y - 9, x + 3, y); g.addColorStop(0, '#f0c0ff'); g.addColorStop(1, '#8a3aa8'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 3, y); c.lineTo(x - 1, y - 7); c.lineTo(x, y - 10); c.lineTo(x + 1.5, y - 6); c.lineTo(x + 3, y); c.fill(); }
+      } else if (fid === 'stronghold') {   // частокол у основания
+        for (let x = 2; x < sh.w; x += 7) { const g = c.createLinearGradient(it.bx + x, 0, it.bx + x + 2.5, 0); g.addColorStop(0, '#8a6038'); g.addColorStop(1, '#4a2e14'); c.fillStyle = g; c.beginPath(); c.moveTo(it.bx + x, it.pos[1]); c.lineTo(it.bx + x, it.pos[1] - 7); c.lineTo(it.bx + x + 1.2, it.pos[1] - 9); c.lineTo(it.bx + x + 2.5, it.pos[1] - 7); c.lineTo(it.bx + x + 2.5, it.pos[1]); c.fill(); }
+      } else if (fid === 'fortress') {   // мох по крыше и сырость у основания
+        c.fillStyle = 'rgba(127,168,56,0.9)'; for (const [x, y] of ridge(5)) { c.beginPath(); c.ellipse(x, y + 1.5, 2.4, 1.3, 0, 0, Math.PI * 2); c.fill(); }
+        const g = c.createLinearGradient(0, it.pos[1] - 6, 0, it.pos[1]); g.addColorStop(0, 'rgba(60,90,90,0)'); g.addColorStop(1, 'rgba(60,90,90,0.55)'); c.fillStyle = g; c.fillRect(it.bx, it.pos[1] - 6, sh.w, 6);
+      } else { // вымпел цвета игрока на коньке
+        const p = st.players[town.owner], pk = peak();
+        if (p && pk && it.key !== 'hall') { const [x, y] = pk; c.strokeStyle = '#2a1a10'; c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y - 9); c.stroke(); const wv = Math.sin(ts / 150 + x) * 1.5; c.fillStyle = p.color; c.beginPath(); c.moveTo(x + 0.5, y - 9); c.quadraticCurveTo(x + 3, y - 9 + wv, x + 7, y - 7.5 + wv); c.quadraticCurveTo(x + 3, y - 6 + wv, x + 0.5, y - 6); c.fill(); }
       }
     }
     function drawLights(c, night, ts) {
@@ -280,9 +351,11 @@
       const dt = Math.min(80, ts - (lastTs || ts)); lastTs = ts;
       scene.fx.update(dt); ambient(dt);
       for (const cl of scene.clouds) { cl.x += cl.v * dt / 1000; if (cl.x - cl.w > W) cl.x = -cl.w; }
+      ctx.setTransform(RS, 0, 0, RS, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(scene.bg, 0, 0, W, H);
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(scene.bg, 0, 0);
-      if (!sc.cave) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
+      if (!sc.cave && !scene.painted) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
       drawWaterGlints(ctx, ts);
       drawProps(ctx, 0);
       for (const it of scene.items) drawItem(ctx, it, ts, night);

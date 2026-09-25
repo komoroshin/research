@@ -538,6 +538,12 @@
   }
   /** Вписать в прямоугольник (иконки в UI). */
   function drawFit(ctx, name, x, y, w, h, flip) {
+    if (vecOf(name)) {   // рисованное: вписываем дробным масштабом и сглаживаем
+      const fr = H3.Vec.render(name, 1, flip), s = Math.min(w / fr._w, h / fr._h), im = image(name, s, flip);
+      const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(im.cv, x + (w - fr._w * s) / 2, y + (h - fr._h * s) / 2, im.cv.width * im.k, im.cv.height * im.k);
+      ctx.imageSmoothingEnabled = prev; return;
+    }
     const cv = render(name, 1, flip);
     if (!cv) { placeholder(ctx, name, x + w / 2, y + h, 1); return; }
     const s = Math.max(1, Math.floor(Math.min(w / cv._w, h / cv._h)));
@@ -549,10 +555,12 @@
   const urlCache = new Map();
   /** dataURL для <img> в DOM. */
   function url(name, scale, flip) {
-    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + SCENE.id + (vecOf(name) ? '|v' : '');
+    const vec = vecOf(name);
+    // интерфейс рисованного — без света сцены: портрет и иконка не должны синеть утром и рыжеть на лаве
+    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + (vec ? 'v' : SCENE.id);
     let u = urlCache.get(key);
     if (u) return u;
-    const cv = render(name, scale || 2, flip);
+    const cv = vec ? H3.Vec.render(name, scale || 2, flip, null, null) : render(name, scale || 2, flip);
     if (!cv) {
       const c = document.createElement('canvas'); c.width = c.height = 16 * (scale || 2);
       placeholder(c.getContext('2d'), name, c.width / 2, c.height, scale || 2);
@@ -561,7 +569,16 @@
     urlCache.set(key, u);
     return u;
   }
-  function img(name, scale, cls) { return '<img class="px ' + (cls || '') + '" src="' + url(name, scale) + '" alt="">'; }
+  /** <img> для интерфейса. Рисованное — с плотностью экрана и тем же размером на экране, что пиксельное. */
+  function img(name, scale, cls) {
+    scale = scale || 2;
+    if (vecOf(name)) {
+      const R = Math.min(3, Math.max(1, Math.ceil(root.devicePixelRatio || 1))), cv = render(name, scale);
+      const w = cv ? Math.round(cv._w * scale) : 0, h = cv ? Math.round(cv._h * scale) : 0;
+      return '<img class="vec ' + (cls || '') + '" src="' + url(name, scale * R) + '" width="' + w + '" height="' + h + '" alt="">';
+    }
+    return '<img class="px ' + (cls || '') + '" src="' + url(name, scale) + '" alt="">';
+  }
 
   /** Чёрный силуэт спрайта — из него рисуются падающие тени (наклон + сплющивание). */
   const shadowCache = new Map();
