@@ -384,6 +384,8 @@
     ];
     if (o.barding) bodyShapes.push({ p: [[80, 138], [150, 134], [236, 134], [258, 160], [254, 212, 1], [236, 222], [210, 214], [186, 226], [160, 214], [134, 226], [108, 214], [82, 222], [70, 200, 1], [70, 160]], c: o.barding, m: 'cloth', belly: 0.35, id: 'barding',
       sub: [{ p: [[60, 200], [270, 200], [270, 230], [60, 230]], c: o.bardTrim || GOLD, m: 'gold', line: 0 }], lines: [{ p: [[150, 140], [150, 214]], w: 1.1, a: 0.4 }] });
+    if (o.blanket) bodyShapes.push({ p: [[134, 126], [206, 120], [214, 174, 1], [192, 182], [172, 174], [152, 182], [130, 174, 1]], c: o.blanket, m: 'cloth', belly: 0.3, id: 'blanket',
+      sub: [{ p: [[120, 166], [220, 166], [220, 190], [120, 190]], c: o.blanketTrim || GOLD, m: 'gold', line: 0 }], lines: [{ p: [[170, 128], [172, 172]], w: 1, a: 0.35 }] });
     if (o.saddle) bodyShapes.push({ p: [[150, 128], [192, 124], [200, 140], [186, 150], [154, 150], [144, 138]], c: o.saddle, m: 'leather', id: 'saddle' });
     const headShapes = [
       { p: [[212, 152], [218, 112], [236, 80], [258, 60], [280, 60], [286, 84], [276, 118], [266, 156], [240, 174]], c, m: o.m || 'fur', furLen: 0.4, id: 'neck', lines: [{ p: [[270, 90], [262, 130], [252, 160]], w: 1.2, a: 0.3 }] },
@@ -403,7 +405,7 @@
    * o.leg — { c, boot }; o.back — формы за всадником (плащ). Вписывается в рамку o.name (или o.frame).
    */
   function mounted(o) {
-    const h = horse(o.horse || {}), k = 1.08, fR = (x, y) => [170 + (x - 100) * k, 126 + (y - 160) * k];
+    const h = o.mount || horse(o.horse || {}), k = 1.08, fR = (x, y) => [170 + (x - 100) * k, 126 + (y - 160) * k];
     const R = list => mapShapes(list || [], fR, k);
     const lc = (o.leg && o.leg.c) || '#6a5a4a', boot = (o.leg && o.leg.boot) || '#3a2a1c', lm = (o.leg && o.leg.m) || 'cloth';
     const riderLeg = [

@@ -48,7 +48,7 @@
     clampCam(); V.dirty = true;
   }
   function setState(state) {
-    V.state = state; V.layer = 0; V.mapCanvas = [T.renderMap(state, 0), null]; V.miniCanvas = document.createElement('canvas');
+    V.state = state; V.layer = 0; V.mapCanvas = [null, null]; V.painter = [null, null]; V.miniCanvas = document.createElement('canvas');
     if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
@@ -56,6 +56,9 @@
   }
   function invalidate() { V.pf = null; V.dirty = true; }
   /** Полотно слоя рисуется лениво: подземелье — только когда туда спустились. */
+  /** Рисованная земля (куски по 8×8 клеток); ?map=0 — прежнее пиксельное полотно. */
+  const painted = () => !!H3.MapPaint && !/[?&]map=0\b/.test(location.search);
+  function painterOf(z) { if (!V.painter[z]) V.painter[z] = H3.MapPaint.create(V.state, z); return V.painter[z]; }
   function layerCanvas(z) {
     if (!V.mapCanvas[z]) V.mapCanvas[z] = T.renderMap(V.state, z);
     return V.mapCanvas[z];
@@ -251,7 +254,8 @@
       Sp.setScene(T.sceneLight(st.day, R.TERRAINS[m.terrain[cy * m.w + cx]], V.layer === 1));
     }
     // местность
-    ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
+    if (painted()) { const P = painterOf(V.layer); P.pending = false; P.draw(ctx, x0, y0, x1, y1); if (P.pending) V.dirty = true; ctx.imageSmoothingEnabled = false; }
+    else ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
     drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
     drawCloudShadows(ctx, st, ts, x0, y0, x1, y1);
     V.view = { x0, y0, x1, y1 };

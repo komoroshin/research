@@ -561,7 +561,16 @@
     urlCache.set(key, u);
     return u;
   }
-  function img(name, scale, cls) { return '<img class="px ' + (cls || '') + '" src="' + url(name, scale) + '" alt="">'; }
+  /** <img> для интерфейса. Рисованное — с плотностью экрана и тем же размером на экране, что пиксельное. */
+  function img(name, scale, cls) {
+    scale = scale || 2;
+    if (vecOf(name)) {
+      const R = Math.min(3, Math.max(1, Math.ceil(root.devicePixelRatio || 1))), cv = render(name, scale);
+      const w = cv ? Math.round(cv._w * scale) : 0, h = cv ? Math.round(cv._h * scale) : 0;
+      return '<img class="vec ' + (cls || '') + '" src="' + url(name, scale * R) + '" width="' + w + '" height="' + h + '" alt="">';
+    }
+    return '<img class="px ' + (cls || '') + '" src="' + url(name, scale) + '" alt="">';
+  }
 
   /** Чёрный силуэт спрайта — из него рисуются падающие тени (наклон + сплющивание). */
   const shadowCache = new Map();

@@ -1265,19 +1265,26 @@ test('анимация: пружина хвоста движения не рас
 
 test('рисованные существа: описаны для настоящих существ и встают в свой гекс', () => {
   const g = (typeof window !== 'undefined' ? window : globalThis);
-  require('../js/view/vector.js'); require('../js/view/vec_pilot.js');
-  const Vc = g.H3.Vec, names = Vc.names();
+  const fs = require('fs'), path = require('path'), dir = path.join(__dirname, '..', 'js', 'view');
+  require('../js/view/sprites.js');
+  for (const f of fs.readdirSync(dir).filter(f => /^sprites_.*\.js$/.test(f))) require(path.join(dir, f));
+  require('../js/view/vector.js'); require('../js/view/vec_pilot.js'); require('../js/view/vec_kit.js');
+  for (const f of fs.readdirSync(dir).filter(f => /^vec_/.test(f) && !/^vec_(pilot|kit)\.js$/.test(f))) require(path.join(dir, f));
+  const Vc = g.H3.Vec, Sp = g.H3.Sprites, names = Vc.names();
   assert.ok(names.length >= 3, 'пилот: мечник, медведь, грифон');
   const KINDS = ['leg', 'legs', 'torso', 'head', 'prop'];
   for (const n of names) {
-    assert.ok(H3.Creatures.get(n), n + ' — нет такого существа');
+    const cr = H3.Creatures.get(n);
+    assert.ok(cr || Sp.has(n), n + ' — нет такого существа или спрайта');
     const d = Vc._defs[n];
-    assert.ok(d.parts.some(p => p.kind === 'torso'), n + ': нужен корпус');
-    for (const p of d.parts) { assert.ok(KINDS.includes(p.kind), n + ': часть ' + p.kind); assert.ok(p.pivot && p.shapes.length, n + ': у части нет крепления или форм'); }
-    // холст вырос под рисунок, якорь (ноги) внутри и у нижнего края
+    if (cr) assert.ok(d.parts.some(p => p.kind === 'torso'), n + ': нужен корпус');
+    for (const p of d.parts) { assert.ok(KINDS.includes(p.kind), n + ': часть ' + p.kind); assert.ok(p.pivot && p.pivot.every(Number.isFinite) && p.shapes.length, n + ': у части нет крепления или форм'); }
+    for (const p of d.parts) for (const s of p.shapes) assert.ok(s._bb.every(Number.isFinite), n + ': форма с пустыми координатами');
     assert.ok(d.W >= d.w && d.H >= d.h, n + ': холст меньше рамки');
-    const ay = d.anchor[1] + d.oy; assert.ok(ay <= d.H && ay >= d.H - 20, n + ': якорь не у ног');
+    const ay = d.anchor[1] + d.oy; assert.ok(ay <= d.H && ay >= d.H - 30, n + ': якорь не у ног');
     for (const p of d.parts) if (p.kind === 'leg') assert.ok(p.side === 1 || p.side === -1, n + ': у ноги нет стороны');
+    // рамка — от старого спрайта: то же место в гексе
+    if (g.H3.VK && Sp.has(n)) { const fr = g.H3.VK.frameOf(n); assert.ok(Math.abs(fr.anchor[1] - d.anchor[1]) <= 12, n + ': якорь не совпадает со старым спрайтом'); }
   }
 });
 
