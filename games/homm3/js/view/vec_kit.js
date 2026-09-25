@@ -354,7 +354,7 @@
     insect(O, d, L, col) {
       d = norm(d[0], d[1]); const n = [d[1], -d[0]];
       const T = (x, y) => [O[0] + d[0] * x + n[0] * y, O[1] + d[1] * x + n[1] * y];
-      return [{ p: [T(0, -L * 0.06), T(L * 0.5, -L * 0.14), T(L * 1.0, -L * 0.06), T(L * 1.04, L * 0.08), T(L * 0.6, L * 0.2), T(L * 0.1, L * 0.12)], c: col.mem || '#cfe8f0', m: 'gem', gloss: 1.2, rim: 0.4, line: 0.6, lc: col.vein || '#4a6a78',
+      return [{ p: [T(0, -L * 0.06), T(L * 0.5, -L * 0.14), T(L * 1.0, -L * 0.06), T(L * 1.04, L * 0.08), T(L * 0.6, L * 0.2), T(L * 0.1, L * 0.12)], c: col.mem || '#cfe8f0', m: 'gem', gloss: 1.2, rim: 0.4, line: 0.6, lc: col.vein || '#4a6a78', op: col.op === undefined ? 0.72 : col.op,
         lines: [0.25, 0.5, 0.75].map(t => ({ p: [T(0, 0), T(L * t, -L * 0.1 + L * 0.2 * t * 0.3), T(L * (t + 0.2), L * 0.12)], w: 0.8, c: col.vein || '#4a6a78', a: 0.6 })) }];
     },
   };
