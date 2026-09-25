@@ -1,0 +1,2 @@
+project_id,client,location,type,start_date,end_date,status,contract_value_usd,variations_done_usd,variations_invoiced_usd,received_usd,receivable_usd,materials_usd,subcontractors_usd,own_labour_usd,other_costs_usd,total_costs_usd,margin_usd,margin_pct,source,notes
+DXB-001,,,villa renovation,,,,,,,,,,,,,,,,,
