@@ -136,6 +136,7 @@
     }
     /** Рисованный фон: небо, дальний план и земля — тем же художником, что задник боя. */
     function paintBgPainted(day) {
+      scene.painted = true;   // облака уже нарисованы в небе — летающие эллипсы не нужны
       const night = NIGHT[(day - 1) % 7];
       const L = H3.BattleBg.make(sc.cave ? 'subter' : sc.terrain, W, H, day, 0.4);
       const cv = document.createElement('canvas'); cv.width = W * RS; cv.height = H * RS; const c = cv.getContext('2d');
@@ -199,14 +200,46 @@
     }
 
     /* ---------- рисование ---------- */
+    /* реквизит сцены — мягкими формами с объёмом (свет сверху-слева) */
+    const lg = (c, x0, y0, x1, y1, a, b) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, a); g.addColorStop(1, b); return g; };
+    function propRock(c, x, y, s) {
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.ellipse(x + s * 0.6, y + 1, s * 2.2, s * 0.7, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = lg(c, x - s * 2, y - s * 1.6, x + s * 2, y, '#a4a6ac', '#4b4d54'); c.beginPath(); c.ellipse(x, y - s * 0.5, s * 2, s * 1.1, 0, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(30,30,36,0.7)'; c.lineWidth = 0.8; c.stroke();
+    }
+    function propGrave(c, x, y) {
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.beginPath(); c.ellipse(x + 3, y, 9, 2.5, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = lg(c, x - 6, y - 16, x + 6, y, '#c4c6cc', '#6a6c74'); c.beginPath(); c.moveTo(x - 5, y); c.lineTo(x - 5, y - 10); c.arc(x, y - 10, 5, Math.PI, 0); c.lineTo(x + 5, y); c.closePath(); c.fill();
+      c.strokeStyle = '#3a3c44'; c.lineWidth = 0.8; c.stroke(); c.strokeStyle = 'rgba(40,40,48,0.8)'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(x, y - 13); c.lineTo(x, y - 6); c.moveTo(x - 2.5, y - 10.5); c.lineTo(x + 2.5, y - 10.5); c.stroke();
+    }
+    function propStake(c, x, y) {
+      c.fillStyle = lg(c, x - 2, 0, x + 2, 0, '#8a6a44', '#4a3018'); c.beginPath(); c.moveTo(x - 2, y); c.lineTo(x - 1.5, y - 18); c.lineTo(x + 1.5, y - 18); c.lineTo(x + 2, y); c.closePath(); c.fill();
+      c.fillStyle = lg(c, x - 4, y - 25, x + 4, y - 17, '#f4f0e6', '#a8a498'); c.beginPath(); c.ellipse(x, y - 21, 3.6, 3.2, 0, 0, Math.PI * 2); c.fill(); c.strokeStyle = '#5a564c'; c.lineWidth = 0.6; c.stroke();
+      c.fillStyle = '#1a1410'; c.beginPath(); c.arc(x - 1.2, y - 21.5, 0.8, 0, Math.PI * 2); c.arc(x + 1.2, y - 21.5, 0.8, 0, Math.PI * 2); c.fill();
+    }
+    function propReed(c, x, y) {
+      c.strokeStyle = '#4e7a26'; c.lineWidth = 1; c.lineCap = 'round';
+      for (let i = -3; i <= 3; i += 1.5) { c.beginPath(); c.moveTo(x + i, y); c.quadraticCurveTo(x + i * 1.2, y - 8, x + i * 1.8, y - 14 + Math.abs(i)); c.stroke(); }
+      c.fillStyle = lg(c, x - 1.5, y - 20, x + 1.5, y - 13, '#8a5a2a', '#4a2e12'); c.beginPath(); c.ellipse(x + 0.5, y - 16, 1.6, 3.6, 0.1, 0, Math.PI * 2); c.fill();
+    }
+    /** Городская стена во всю ширину: кладка с объёмом, зубцы с тенью. */
+    function wallBand(c) {
+      const y0 = H - 42, g = c.createLinearGradient(0, y0, 0, H); g.addColorStop(0, tint.n); g.addColorStop(1, tint.N);
+      c.fillStyle = g; c.fillRect(0, y0 + 8, W, 34);
+      for (let x = 0; x < W; x += 16) { const mg = c.createLinearGradient(x, y0, x + 9, y0 + 8); mg.addColorStop(0, tint.n); mg.addColorStop(1, tint.N); c.fillStyle = mg; c.fillRect(x, y0, 9, 9); c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 9, y0 + 2, 1.5, 7); }
+      c.strokeStyle = 'rgba(0,0,0,0.18)'; c.lineWidth = 0.7; c.beginPath();
+      for (let y = y0 + 16, r = 0; y < H; y += 8, r++) { c.moveTo(0, y); c.lineTo(W, y); for (let x = (r % 2) * 10; x < W; x += 20) { c.moveTo(x, y - 8); c.lineTo(x, y); } }
+      c.stroke();
+      c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(0, y0 + 8, W, 1.5);
+    }
     function drawProps(c, layer) {
       for (const p of scene.props) {
         if ((p.y < 262) !== (layer === 0)) continue;   // за ратушей / перед
         if (p.kind === 'tree' && Sp.has(p.sprite)) Sp.draw(c, p.sprite, p.x, p.y, p.s);
-        else if (p.kind === 'rock') { c.fillStyle = '#4b4d54'; c.beginPath(); c.ellipse(p.x, p.y, p.s * 2, p.s, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#8b8d94'; c.fillRect(p.x - p.s, p.y - p.s, p.s, 1); }
-        else if (p.kind === 'grave') { c.fillStyle = '#8b8d94'; c.fillRect(p.x - 4, p.y - 12, 8, 12); c.fillStyle = '#4b4d54'; c.fillRect(p.x - 4, p.y - 12, 2, 12); c.fillStyle = '#c9c9cc'; c.fillRect(p.x - 1, p.y - 10, 2, 6); c.fillRect(p.x - 3, p.y - 8, 6, 2); }
-        else if (p.kind === 'stake') { c.fillStyle = '#5a3a1c'; c.fillRect(p.x - 2, p.y - 18, 4, 18); c.fillStyle = '#e8e8ea'; c.fillRect(p.x - 3, p.y - 22, 6, 5); c.fillStyle = '#000'; c.fillRect(p.x - 2, p.y - 20, 1, 1); c.fillRect(p.x + 1, p.y - 20, 1, 1); }
-        else if (p.kind === 'reed') { c.fillStyle = '#5a8a2a'; for (let i = -3; i <= 3; i += 3) c.fillRect(p.x + i, p.y - 14 + Math.abs(i), 1, 14 - Math.abs(i)); c.fillStyle = '#5a3a1c'; c.fillRect(p.x - 1, p.y - 16, 2, 4); }
+        else if (p.kind === 'rock') propRock(c, p.x, p.y, p.s);
+        else if (p.kind === 'grave') propGrave(c, p.x, p.y);
+        else if (p.kind === 'stake') propStake(c, p.x, p.y);
+        else if (p.kind === 'reed') propReed(c, p.x, p.y);
         else if (p.kind === 'crystal' && Sp.has('crystal_rock')) Sp.draw(c, 'crystal_rock', p.x, p.y, 1.5);
       }
     }
@@ -214,7 +247,7 @@
       const sh = it.shape, hover = scene.hover === it;
       if (it.wide) { // стена: полоса на всю ширину
         c.globalAlpha = it.ghost ? 0.22 : 1;
-        c.fillStyle = tint.n; c.fillRect(0, H - 2 - 40, W, 40); c.fillStyle = tint.N; for (let x = 0; x < W; x += 16) c.fillRect(x, H - 42, 8, 8);
+        wallBand(c);
       }
       if (it.ghost) {
         c.globalAlpha = hover ? 0.55 : (it.ghost.ok ? 0.34 : 0.16);
@@ -302,7 +335,7 @@
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(scene.bg, 0, 0, W, H);
       ctx.imageSmoothingEnabled = false;
-      if (!sc.cave) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
+      if (!sc.cave && !scene.painted) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
       drawWaterGlints(ctx, ts);
       drawProps(ctx, 0);
       for (const it of scene.items) drawItem(ctx, it, ts, night);
