@@ -42,6 +42,9 @@
   for (const k in PAL) PAL[k].rgb = PAL[k].c.map(rgb);
   const BEACH = rgb('#e2cc92'), SHALLOW = rgb('#4aa6d6'), FOAM = rgb('#e6f4fb');
 
+  /** Плавная ступенька: 0 при x=e0, 1 при x=e1 (e0 может быть больше e1). */
+  const sstep = (e0, e1, x) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+
   /** Художник одного слоя карты. */
   function create(state, z) {
     const map = H3.State.lvl(state, z), T = H3.Rules.TERRAINS, Sp = H3.Sprites, seed = (state.seed || 1) >>> 0;
@@ -67,22 +70,36 @@
         const n2 = (vnoise(x / 44 + 40, y / 44, seed + 1) * 2 - 1) * 14 + (vnoise(x / 13 + 9, y / 13, seed + 4) * 2 - 1) * 6;
         const px = x + n1, py = y + n2;
         const tx = Math.floor(px / TILE), ty = Math.floor(py / TILE), t = tAt(tx, ty);
-        const P = PAL[t] || PAL.grass;
-        const v = fbm(x / 110, y / 110, seed + 7, 3), s = vnoise(x / 8, y / 8, seed + 9);
-        let c = v < 0.5 ? mix(P.rgb[0], P.rgb[1], v * 2) : mix(P.rgb[1], P.rgb[2], (v - 0.5) * 2);
-        c = mix(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
-        if (t === 'water') {
-          // глубина: чем ближе суша, тем светлее; у самой кромки — пена
-          let near = 0;
-          for (const [dx, dy, w] of [[9, 0, 1], [-9, 0, 1], [0, 9, 1], [0, -9, 1], [4, 0, 2], [-4, 0, 2], [0, 4, 2], [0, -4, 2]]) if (land(tAt(Math.floor((px + dx) / TILE), Math.floor((py + dy) / TILE)))) near = Math.max(near, w);
-          if (near === 1) c = mix(c, SHALLOW, 0.45);
-          else if (near === 2) c = mix(mix(c, SHALLOW, 0.6), FOAM, 0.35 + 0.35 * s);
-        } else if (t !== 'lava' && t !== 'rock' && t !== 'snow' && t !== 'subter') {
-          // пляж у воды
-          let wet = false;
-          for (const [dx, dy] of [[6, 0], [-6, 0], [0, 6], [0, -6]]) if (tAt(Math.floor((px + dx) / TILE), Math.floor((py + dy) / TILE)) === 'water') { wet = true; break; }
-          if (wet) c = mix(c, BEACH, 0.7);
+        // расстояния до соседних клеток другой местности и до воды/суши — непрерывные,
+        // поэтому кромка не повторяет сетку выборки и при увеличении не идёт лесенкой
+        let dOther = 99, tOther = null, dWater = 99, dLand = 99;
+        for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+          if (!ox && !oy) continue;
+          const nt = tAt(tx + ox, ty + oy); if (nt === t) continue;
+          const rx0 = (tx + ox) * TILE, ry0 = (ty + oy) * TILE;
+          const ddx = Math.max(rx0 - px, 0, px - rx0 - TILE), ddy = Math.max(ry0 - py, 0, py - ry0 - TILE), dd = Math.sqrt(ddx * ddx + ddy * ddy);
+          if (dd < dOther) { dOther = dd; tOther = nt; }
+          if (nt === 'water') dWater = Math.min(dWater, dd); else dLand = Math.min(dLand, dd);
         }
+        const tone = (tt, edge) => {
+          const P = PAL[tt] || PAL.grass;
+          let c = v < 0.5 ? mix(P.rgb[0], P.rgb[1], v * 2) : mix(P.rgb[1], P.rgb[2], (v - 0.5) * 2);
+          c = mix(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
+          if (tt === 'water') {
+            // глубина: чем ближе суша, тем светлее; у самой кромки — пена
+            const dl = edge ? 0 : dLand;
+            c = mix(c, SHALLOW, 0.6 * sstep(13, 3, dl));
+            c = mix(c, FOAM, (0.35 + 0.35 * s) * sstep(5, 0.5, dl));
+          } else if (tt !== 'lava' && tt !== 'rock' && tt !== 'snow' && tt !== 'subter') {
+            c = mix(c, BEACH, 0.7 * sstep(7, 3, edge ? 0 : dWater));   // пляж у воды
+          }
+          return c;
+        };
+        const v = fbm(x / 110, y / 110, seed + 7, 3), s = vnoise(x / 8, y / 8, seed + 9);
+        let c = tone(t, false);
+        // на самой границе обе стороны сходятся к середине: у воды шов ±2.5 точки, между сушей — шире, как мазок
+        const BW = t === 'water' || tOther === 'water' ? 2.5 : 7;
+        if (dOther < BW) c = mix(c, tone(tOther, true), 0.5 * sstep(BW, 0, dOther));
         d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
