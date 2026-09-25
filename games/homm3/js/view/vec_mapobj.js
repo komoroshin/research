@@ -678,7 +678,7 @@
     out.push(sh(box(104, 156, 304, 174), '#e4e2dc', 'horn', { gloss: 0.2, lines: [ln([[105, 165], [303, 165]], 1.2, 0.4)] }));
     out.push(gable(204, 158, 100, 116, '#a8a8ac', { m: 'horn', lines: [ln([[110, 154], [204, 104], [298, 154]], 1.4, 0.5, { light: true })] }));
     // крыло грифона на коньке
-    for (let i = 0; i < 5; i++) { const lf = K.leaf([204, 104], -Math.PI * (0.62 - i * 0.1), 58 - i * 6, 18); out.push(sh(lf.body, i % 2 ? '#e8e4dc' : '#d4d0c8', 'feather', { texSize: 0.4, flow: -Math.PI * (0.62 - i * 0.1), line: 0.6, lines: [ln(lf.shaft, 1, 0.4)] })); }
+    for (let i = 0; i < 6; i++) { const lf = K.leaf([204, 104], -Math.PI * (0.66 - i * 0.09), 84 - i * 8, 22); out.push(sh(lf.body, i % 2 ? '#e8e4dc' : '#d4d0c8', 'feather', { texSize: 0.4, flow: -Math.PI * (0.66 - i * 0.09), line: 0.6, lines: [ln(lf.shaft, 1, 0.4)] })); }
     out.push(el(204, 106, 9, 7, '#c8a040', 'gold', { line: 0.5 }));
     return out;
   }, { dy: 12 });

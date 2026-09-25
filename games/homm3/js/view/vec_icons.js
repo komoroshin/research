@@ -184,18 +184,16 @@
     return S([at(0, -wid / 2, 1), at(len * 0.74, -wid / 2, 1), at(len, 0, 1), at(len * 0.74, wid / 2, 1), at(0, wid / 2, 1)], c, 'gem',
       Object.assign({ gloss: 1, lines: [hl([at(len * 0.04, -wid * 0.1), at(len * 0.74, -wid * 0.1), at(len * 0.98, 0)], 0.75, 1.5)] }, o));
   }
-  /** Перьевое крыло влево-вверх (корень справа внизу ≈ 88, 64) в квадрате 100×100. */
-  function wingL(c, o) {
-    o = o || {}; const out = [], root = [88, 66], tip = [10, 12], ctl = [58, 16];
-    const A = t => [(1 - t) * (1 - t) * root[0] + 2 * (1 - t) * t * ctl[0] + t * t * tip[0], (1 - t) * (1 - t) * root[1] + 2 * (1 - t) * t * ctl[1] + t * t * tip[1]];
-    const n = o.n || 5;
-    for (let i = n - 1; i >= 0; i--) {
-      const t = 0.25 + 0.75 * i / (n - 1), B = A(t), ang = rad(112 + 62 * t), len = 30 + 16 * t;
-      const lf = K.leaf(B, ang, len, 17);
-      out.push(S(lf.body, i % 2 ? c : tone(c, -0.06), 'cloth', { lines: [hl(lf.shaft, 0.5, 1.2)] }));
-    }
-    const arm = []; for (let i = 0; i <= 6; i++) { const t = i / 6, B = A(t); arm.push([B[0], B[1] + 4 - 2 * t, 20 - 12 * t]); }
-    out.push(S(tube(arm), tone(c, 0.05), 'cloth', { lines: [hl([A(0.1), A(0.5), A(0.9)].map(q => [q[0], q[1] - 2]), 0.7, 1.6)] }));
+  /** Перьевое крыло, поднятое влево-вверх (корень справа внизу ≈ 92, 64) в квадрате 100×100: маховые перья + кроющие. */
+  function wingL(c) {
+    const out = [];
+    const F = [[80, 60, 56, 94], [70, 50, 36, 86], [60, 40, 18, 74], [50, 32, 6, 54], [42, 26, 4, 32], [38, 22, 10, 8]];
+    F.forEach(([bx, by, tx, ty], i) => {
+      const lf = K.leaf([bx, by], Math.atan2(ty - by, tx - bx), Math.hypot(tx - bx, ty - by), 21);
+      out.push(S(lf.body, i % 2 ? c : tone(c, -0.1), 'cloth', { lines: [hl(lf.shaft, 0.5, 1.2)] }));
+    });
+    out.push(S([[97, 72], [97, 50], [86, 34], [66, 20], [46, 12], [28, 12], [26, 22], [44, 30], [60, 42], [74, 58], [84, 76]], tone(c, 0.08), 'cloth',
+      { lines: [hl([[90, 50], [70, 30], [44, 18]], 0.7, 1.8), dl([[40, 28], [58, 40], [74, 58]], 0.3, 1.4)] }));
     return out;
   }
   /** Шлем анфас. o: { c, visor (цвет прорези), crest — формы сверху, band — цвет обода } */
@@ -327,10 +325,10 @@
   icon('ic_luck', [clover(46, 42, 22, '#3cb040')]);
   /** Золотые крылья с камнем — мораль. */
   icon('ic_morale', [
-    place(wingL('#f0c040', { n: 4 }), 0.62, -21, -6), mirror(place(wingL('#f0c040', { n: 4 }), 0.62, -21, -6)),
-    S(heartPts(50, 62, 22), '#d83a30', 'gem', { gloss: 1.2, glint: [[42, 56, 5]] }),
+    place(wingL('#f0c040'), 0.56, -22, -8), mirror(place(wingL('#f0c040'), 0.56, -22, -8)),
+    S(heartPts(50, 60, 26), '#d83a30', 'gem', { gloss: 1.2, glint: [[40, 52, 6]] }),
   ]);
-  icon('ic_speed', [place(wingL(WHITE), 1.0, 0, 6)]);
+  icon('ic_speed', [wingL(WHITE)]);
   icon('ic_move', [boot({ c: '#9a5e2e' })]);
   icon('ic_xp', [S(star(50, 54, 48, 20, 5), '#f4c83a', 'gold', { gloss: 1.2, glint: [[42, 42, 7]], lines: [hl([[50, 10], [50, 50]], 0.5, 1.6)] })]);
   icon('ic_day', [
@@ -462,7 +460,7 @@
   icon('art_basilisk_scales', [cuirass('#48a048', null, [], { m: 'leather', opt: { tex: 'scale', texSize: 1.1, flow: rad(90) } })]);
   icon('art_boots_speed', [
     boot({ c: '#8a5a2e' }),
-    place(wingL(WHITE, { n: 4 }), 0.55, -34, -20),
+    place(wingL(WHITE), 0.5, -30, -26),
   ]);
   icon('art_equestrian_gloves', (() => {
     const glove = c => [
@@ -471,7 +469,7 @@
     return [place(glove('#a07040'), 0.82, -14, 4), place(glove('#b88050'), 0.82, 18, 8)];
   })());
   icon('art_cape_conjuring', [cape('#3a5ad0', '#4ad0f0')]);
-  icon('art_necklace_swiftness', [chain(70), place(wingL(WHITE, { n: 4 }), 0.42, 4, 30)]);
+  icon('art_necklace_swiftness', [chain(64), place(wingL(WHITE), 0.44, 2, 30)]);
   icon('art_sword_hellfire', [
     flame(80, 40, 30, 38, ['#e8401c', '#ffa020', '#fff0a0']),
     sword(12, 90, 90, 10, { bw: 13, blade: '#f06a28', guard: '#3a2a2a', pommel: '#e04020', bladeLc: '#8a2010' }),
@@ -502,7 +500,7 @@
   icon('art_helm_enlightenment', [helm({ c: '#f2f2f6', band: GOLD, crest: [S(star(50, 30, 30, 18, 12), '#ffe07a', 'flat', { line: 0.8 })] })]);
   icon('art_titan_cuirass', [cuirass('#3a64d0', GOLD, [S(star(50, 56, 12, 5, 8), GOLD, 'gold', { line: 1 })])]);
   icon('art_necklace_bliss', [chain(60), ...place(gem(50, 50, 18, '#8ae8f8'), 1, 0, 28)]);
-  icon('art_angel_wings', [place(wingL(WHITE), 0.62, -18, 0), mirror(place(wingL(WHITE), 0.62, -18, 0))]);
+  icon('art_angel_wings', [place(wingL(WHITE), 0.62, -18, 2), mirror(place(wingL(WHITE), 0.62, -18, 2))]);
   icon('art_drowned_compass', [
     E(50, 50, 46, 46, GOLD, 'gold', { gloss: 1.2 }),
     E(50, 50, 35, 35, '#e8eef4', 'cloth', { line: 1.2, lines: [dl([[50, 18], [50, 24]], 0.7, 2.4), dl([[82, 50], [76, 50]], 0.7, 2.4), dl([[50, 82], [50, 76]], 0.7, 2.4), dl([[18, 50], [24, 50]], 0.7, 2.4)] }),
@@ -530,7 +528,7 @@
     ]);
   }
   spell('magic_arrow', [S(star(74, 26, 22, 8, 4, -45), '#f0d8ff', 'flat', { line: 0 }), arrow(14, 86, 80, 20, { shaft: '#d8b8ff', head: '#f4e8ff', fl: '#b070e0', hw: 12, sw: 7 })]);
-  spell('haste', [boot({ c: '#8a5a2e' }), place(wingL(WHITE, { n: 4 }), 0.6, -30, -18)]);
+  spell('haste', [boot({ c: '#8a5a2e' }), place(wingL(WHITE), 0.54, -28, -24)]);
   spell('slow', [
     S([P(8, 90, 1), [10, 76], [30, 72], [70, 72], [86, 58], [92, 40], [98, 44], [96, 66], [86, 84], P(70, 90, 1)], '#78b048', 'skin', { gloss: 0.5 }),
     S(tube([[88, 44, 4], [84, 22, 3]]), '#78b048', 'skin', { line: 1 }), S(tube([[94, 46, 4], [98, 26, 3]]), '#78b048', 'skin', { line: 1 }),
