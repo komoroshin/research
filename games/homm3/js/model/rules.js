@@ -108,6 +108,7 @@
     const l = skillVal(hero, 'luck'); if (l) { v += l; parts.push(['Удача (навык)', l]); }
     const fx = artifactFx(hero); if (fx.luck) { v += fx.luck; parts.push(['Артефакты', fx.luck]); }
     if (hero.bonuses && hero.bonuses.luck) { v += hero.bonuses.luck; parts.push(['Посещение', hero.bonuses.luck]); }
+    if (hero.permLuck) { v += hero.permLuck; parts.push(['Тотем охоты', hero.permLuck]); }
     if (extra) for (const [name, val] of extra) { v += val; parts.push([name, val]); }
     return { value: U.clamp(v, -3, 3), parts };
   }

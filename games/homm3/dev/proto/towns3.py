@@ -214,5 +214,20 @@ def hive(c):
         c.ellipse(cx, H - 88, 4, 5, 'f')
 add(3, 'town_hive', 'Улей: земляной купол с сотами, лётное отверстие, хитиновые шпили', hive)
 
+# ---- Бастион ----
+def bastion(c):
+    base_town(c, 'n', 'T', 'N', 'G', 'j', 'y', 'H')                            # бревенчатые стены, зелёные кровли
+    for x in range(8, W - 8, 6): c.rect(x, H - 44, x + 1, H - 6, 'N')            # частокол швами
+    for x in range(8, W - 8, 6): c.poly([(x - 1, H - 44), (x + 2, H - 50), (x + 5, H - 44)], 'T')
+    c.tree_crown(W // 2, H - 84, 16, 'G', 'H', 'j')                               # священный дуб над донжоном
+    c.rect(W // 2 - 3, H - 72, W // 2 + 3, H - 52, 'N')
+    for cx in (20, W - 21):                                                       # сторожевые вышки на столбах
+        c.rect(cx - 6, H - 62, cx + 6, H - 50, 'n'); c.planks(cx - 6, H - 62, cx + 6, H - 50, 'N', 4)
+        c.rect(cx - 2, H - 50, cx + 2, H - 26, 'N')
+        c.poly([(cx - 9, H - 62), (cx + 9, H - 62), (cx, H - 72)], 'G')
+    c.skull(W // 2 - 20, H - 30, 5, 'i', 'w', 'I', horns=True, jaw=False)          # тотемы у ворот
+    c.skull(W // 2 + 20, H - 30, 5, 'i', 'w', 'I', horns=True, jaw=False)
+add(3, 'town_bastion', 'Бастион: бревенчатый частокол, священный дуб над донжоном, вышки, тотемы', bastion)
+
 for g, title in ((1, 'города на карте (группа 1)'), (2, 'города на карте (группа 2)'), (3, 'города на карте (группа 3)')):
     write('towns_%d' % g, title, [b for gg, b in T if gg == g], 'towns3.py')

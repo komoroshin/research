@@ -34,6 +34,13 @@ def mount(c, kind, mid, light, dark, mane=None):
         for sgn in (-1, 1):                                # жвалы
             c.line(4, 46 + sgn * 3, 0, 46 + sgn * 6, 'D', 2)
         c.poly([(9, 35), (2, 24), (13, 34)], 'i')          # рог
+    elif kind == 'stag':                                   # олень: конское тело, ветвистые рога
+        c.horse(33, 46, 46, 24, mid, light, dark, mane=None)
+        for sgn in (-1, 1):
+            bx = 10 + (4 if sgn > 0 else 0)
+            c.line(bx, 22, bx - 4 * sgn, 6, 'i', 2)
+            for dy, dx in ((14, 6), (8, 7)):
+                c.line(bx - 4 * sgn * (1 - dy / 16.0), 6 + dy, bx - 4 * sgn * (1 - dy / 16.0) + dx * sgn, dy, 'i', 2)
     elif kind == 'mech':                                   # механический конь: трубa, пар, поршни
         c.horse(33, 46, 46, 24, mid, light, dark, mane=None)
         for x in range(16, 50, 6): c.rect(x, 38, x + 1, 54, dark)
@@ -158,6 +165,10 @@ R = [
   ('beetle', 'H', 'h', 'j', None), dict(body='H', bodyd='j', gear='helm', gcol='j', gdark='G', weapon='spear')),
  (3, 'hero_pheromancer', 'феромант: ездовой жук, янтарная мантия, посох с фасеточным навершием',
   ('beetle', 'j', 'H', 'G', None), dict(body='f', bodyd='O', gear='hood', gcol='H', gdark='j', weapon='staff')),
+ (3, 'hero_huntsman', 'егерь: олень с ветвистыми рогами, зелёный капюшон, лук',
+  ('stag', 'T', 't', 'N', None), dict(body='H', bodyd='j', gear='hood', gcol='j', gdark='G', weapon='spear')),
+ (3, 'hero_totemist', 'тотемист: олень, бурая накидка, тотемный посох',
+  ('stag', 'n', 'T', 'N', None), dict(body='T', bodyd='N', gear='hood', gcol='N', gdark='D', weapon='staff')),
 ]
 
 TITLES = {1: 'всадники на карте (группа 1)', 2: 'всадники на карте (группа 2)', 3: 'всадники на карте (группа 3)'}
