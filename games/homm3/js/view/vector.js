@@ -76,10 +76,20 @@
       + 'C' + f1(cx + rx) + ' ' + f1(cy + oy) + ' ' + f1(cx + ox) + ' ' + f1(cy + ry) + ' ' + f1(cx) + ' ' + f1(cy + ry)
       + 'C' + f1(cx - ox) + ' ' + f1(cy + ry) + ' ' + f1(cx - rx) + ' ' + f1(cy + oy) + ' ' + f1(cx - rx) + ' ' + f1(cy) + 'Z';
   }
+  /** Рамка пути по точкам на самой кривой (опорные точки Безье выносят рамку далеко за форму). */
   function bboxOf(d) {
-    const nums = d.match(/-?\d*\.?\d+(?:e-?\d+)?/g).map(Number);
-    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-    for (let i = 0; i + 1 < nums.length; i += 2) { const x = nums[i], y = nums[i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const tok = d.match(/[MLCZ]|-?\d*\.?\d+(?:e-?\d+)?/g);
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, cx = 0, cy = 0, i = 0;
+    const add = (x, y) => { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; };
+    let cmd = 'M';
+    while (i < tok.length) {
+      if (/[MLCZ]/.test(tok[i])) { cmd = tok[i++]; if (cmd === 'Z') continue; }
+      if (cmd === 'C') {
+        const a = +tok[i], b = +tok[i + 1], c = +tok[i + 2], e = +tok[i + 3], x = +tok[i + 4], y = +tok[i + 5]; i += 6;
+        for (let k = 1; k <= 8; k++) { const t = k / 8, u = 1 - t; add(u * u * u * cx + 3 * u * u * t * a + 3 * u * t * t * c + t * t * t * x, u * u * u * cy + 3 * u * u * t * b + 3 * u * t * t * e + t * t * t * y); }
+        cx = x; cy = y;
+      } else { cx = +tok[i]; cy = +tok[i + 1]; i += 2; add(cx, cy); }
+    }
     return [x0, y0, x1, y1];
   }
   /** Подготовка формы: строка пути, рамка, материал. Делается один раз при описании. */

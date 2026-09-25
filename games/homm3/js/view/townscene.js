@@ -76,7 +76,9 @@
     opts = opts || {};
     const st = opts.state || H3.Game.state, f = F.get(town.faction), sc = SCENE[town.faction] || SCENE.castle, tint = TINT[town.faction];
     const ctx = canvas.getContext('2d');
-    canvas.width = W; canvas.height = H;
+    // холст с плотностью экрана: рисованные постройки и фон не мылятся; координаты сцены по-прежнему 960×400
+    const RS = Math.min(3, Math.max(1, Math.round(root.devicePixelRatio || 1)));
+    canvas.width = W * RS; canvas.height = H * RS;
     const rng = new U.RNG(U.hashStr(town.name + town.faction));
     const scene = { town, items: [], hover: null, fx: H3.Fx.scene(), bg: null, clouds: [], props: [], t0: 0 };
     scene.fx.S.bounds = { w: W, h: H };
@@ -92,6 +94,7 @@
 
     /* ---------- фон (один раз) ---------- */
     function paintBg(day) {
+      if (H3.BattleBg && !/[?&]bg=0\b/.test(root.location ? root.location.search : '')) return paintBgPainted(day);
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d'); c.imageSmoothingEnabled = false;
       const night = NIGHT[(day - 1) % 7];
       // небо
@@ -129,6 +132,21 @@
       // цветы / трещины / снег
       if (sc.flowers) { const r4 = new U.RNG(3); for (let i = 0; i < 80; i++) { c.fillStyle = r4.pick(['#ffd070', '#ff8a9a', '#ffffff', '#c9a9ff']); c.fillRect(r4.int(0, W), r4.int(horizon + 10, H), 2, 2); } }
       if (sc.embers) { const r4 = new U.RNG(4); for (let i = 0; i < 40; i++) { c.fillStyle = '#ff5a1f'; c.globalAlpha = 0.5; c.fillRect(r4.int(0, W), r4.int(horizon + 10, H), r4.int(4, 14), 1); } c.globalAlpha = 1; }
+      return cv;
+    }
+    /** Рисованный фон: небо, дальний план и земля — тем же художником, что задник боя. */
+    function paintBgPainted(day) {
+      const night = NIGHT[(day - 1) % 7];
+      const L = H3.BattleBg.make(sc.cave ? 'subter' : sc.terrain, W, H, day, 0.4);
+      const cv = document.createElement('canvas'); cv.width = W * RS; cv.height = H * RS; const c = cv.getContext('2d');
+      c.imageSmoothingEnabled = true;
+      for (const l of [L.sky, L.mid, L.ground]) c.drawImage(l, 0, 0, W * RS, H * RS);
+      c.setTransform(RS, 0, 0, RS, 0, 0);
+      if (night && !sc.cave) { c.fillStyle = 'rgba(10,10,40,' + (0.55 * night) + ')'; c.fillRect(0, 0, W, 170); const sr = new U.RNG(7); c.fillStyle = 'rgba(255,255,255,' + (0.8 * night) + ')'; for (let i = 0; i < 70; i++) c.fillRect(sr.int(0, W), sr.int(0, 120), 1, 1); }
+      paintWater(c, night);
+      // дорога к воротам: мягкая колея
+      const g = c.createLinearGradient(0, 270, 0, 400); g.addColorStop(0, 'rgba(140,116,80,0.35)'); g.addColorStop(1, 'rgba(150,124,86,0.75)');
+      c.fillStyle = g; c.beginPath(); c.moveTo(440, 268); c.quadraticCurveTo(480, 262, 522, 268); c.quadraticCurveTo(560, 330, 606, 400); c.lineTo(354, 400); c.quadraticCurveTo(402, 330, 440, 268); c.fill();
       return cv;
     }
     function paintWater(c, night) {
@@ -280,8 +298,10 @@
       const dt = Math.min(80, ts - (lastTs || ts)); lastTs = ts;
       scene.fx.update(dt); ambient(dt);
       for (const cl of scene.clouds) { cl.x += cl.v * dt / 1000; if (cl.x - cl.w > W) cl.x = -cl.w; }
+      ctx.setTransform(RS, 0, 0, RS, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(scene.bg, 0, 0, W, H);
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(scene.bg, 0, 0);
       if (!sc.cave) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
       drawWaterGlints(ctx, ts);
       drawProps(ctx, 0);
