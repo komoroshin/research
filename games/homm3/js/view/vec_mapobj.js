@@ -132,6 +132,16 @@
   }
   /** Кольцо трубкой (обод большого колеса, обруч). */
   function ring(cx, cy, rx, ry, w, n) { n = n || 24; const pts = []; for (let i = 0; i <= n + 1; i++) { const a = i / n * Math.PI * 2; pts.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, w]); } return tube(pts); }
+  /** Арочный обод: полоса толщиной t по верхней половине эллипса (cx, yc, rx, ry), концы уходят вниз на ext. */
+  function archBand(cx, yc, rx, ry, t, ext) {
+    const o = [], n = 12, R = [rx + t / 2, ry + t / 2], r = [rx - t / 2, ry - t / 2];
+    o.push(P(cx - R[0], yc + ext, 1));
+    for (let i = 0; i <= n; i++) { const a = Math.PI + i / n * Math.PI; o.push([cx + Math.cos(a) * R[0], yc + Math.sin(a) * R[1]]); }
+    o.push(P(cx + R[0], yc + ext, 1), P(cx + r[0], yc + ext, 1));
+    for (let i = n; i >= 0; i--) { const a = Math.PI + i / n * Math.PI; o.push([cx + Math.cos(a) * r[0], yc + Math.sin(a) * r[1]]); }
+    o.push(P(cx - r[0], yc + ext, 1));
+    return o;
+  }
   /** Валун с гранью. */
   const boulder = (cx, cy, rx, ry, c, a) => ({ p: ell(cx, cy, rx, ry, 8, a || 0).map((p, i) => [p[0] + (i % 3 - 1) * rx * 0.08, p[1] + (i % 2) * ry * 0.06]), c, m: 'horn', gloss: 0.2,
     lines: [{ p: [[cx - rx * 0.3, cy - ry * 0.4], [cx, cy + ry * 0.1], [cx + rx * 0.2, cy + ry * 0.5]], w: 1, a: 0.35 }] });
@@ -584,7 +594,7 @@
     sh([P(4, 244, 1), [10, 190], [40, 122], [90, 72], [150, 74], [196, 120], [212, 190], P(210, 246, 1)], '#76707a', 'horn', { gloss: 0.15, belly: 0.3 }),
     sh([P(20, 230, 1), [30, 170], [58, 116], P(94, 80, 1), [80, 130], [60, 190], P(52, 240, 1)], '#908a94', 'horn', { gloss: 0.1, line: 0.4, ao: 0.4 }),
     sh([P(170, 96, 1), [198, 132], [210, 190], P(206, 244, 1), [180, 200]], '#5e5862', 'horn', { gloss: 0.05, line: 0.4, ao: 0.4 }),
-    sh(ring(108, 176, 52, 62, 16, 26).filter(p => p[1] <= 186), '#a49ea8', 'horn', { gloss: 0.2, line: 0.8 }),
+    sh(archBand(108, 176, 52, 62, 16, 10), '#a49ea8', 'horn', { gloss: 0.2, line: 0.8 }),
     sh(arch(108, 244, 88, 128), '#2a1438', 'cloth', { line: 0.7, rim: 0, sub: [el(108, 196, 30, 44, '#8a3ac8', 'gem', { line: 0, gloss: 0.4 }), el(108, 200, 14, 26, '#e0a8ff', 'gem', { line: 0, gloss: 1 })],
       lines: [ln([[70, 232], [146, 232]], 2, 0.8, { c: '#5a4a60' }), ln([[78, 220], [138, 220]], 2, 0.7, { c: '#4a3a50' })] }),
   ], { dy: 12 });
@@ -643,7 +653,7 @@
     out.push(wall(142, 120, 274, 280, '#6e6a74', 16, 26));
     out.push(sh([P(124, 126, 1), P(208, 66, 1), P(292, 126, 1)], '#3e3c46', 'leather', { gloss: 0.2, lines: [ln([[150, 118], [208, 80], [266, 118]], 1.4, 0.5)] }));
     out.push(sh(box(122, 124, 294, 134), '#5a5862', 'horn', { line: 0.7 }));
-    out.push(hole(208, 280, 60, 112), sh(ring(208, 204, 38, 44, 10, 20).filter(p => p[1] <= 214), '#8a8692', 'horn', { gloss: 0.2, line: 0.6 }));
+    out.push(hole(208, 280, 60, 112), sh(archBand(208, 204, 38, 44, 10, 10), '#8a8692', 'horn', { gloss: 0.2, line: 0.6 }));
     out.push(skull(208, 62, 18));
     out.push(...[[176, 272], [238, 276]].map(([x, y]) => sh(tube([[x - 12, y, 5], [x + 12, y - 3, 5]]), '#e0d8c4', 'horn', { line: 0.6 })));
     return out;
@@ -655,7 +665,7 @@
     wall(118, 160, 298, 330, '#a8a4a0', 17, 30),
     sh(box(112, 150, 304, 168), '#8e8a86', 'horn', { gloss: 0.2, lines: [ln([[113, 152], [303, 152]], 1.2, 0.5, { light: true })] }),
     sh(box(112, 128, 144, 152), GOLD, 'gold', { line: 0.7, glint: [[120, 134, 4]] }), sh(box(272, 128, 304, 152), GOLD, 'gold', { line: 0.7, glint: [[280, 134, 4]] }),
-    sh(ring(208, 256, 50, 56, 12, 22).filter(p => p[1] <= 262), '#d8a838', 'gold', { line: 0.7 }),
+    sh(archBand(208, 256, 50, 56, 12, 6), '#d8a838', 'gold', { line: 0.7 }),
     door(208, 330, 88, 132, '#7a4a26', { ring: true }),
     ...[[178, 232], [238, 232], [178, 292], [238, 292], [208, 222]].map(([x, y]) => el(x, y, 3.5, 3.5, '#f2d060', 'gold', { line: 0.4 })),
   ], { dy: 12 });
@@ -683,7 +693,7 @@
       horn(120, 180, -1), horn(380, 180, 1), horn(186, 120, -0.7), horn(314, 120, 0.7),
       sh([P(100, 184, 1), P(250, 92, 1), P(400, 184, 1)], '#c8962a', 'gold', { gloss: 0.3, lines: [ln([[128, 178], [250, 106], [372, 178]], 1.6, 0.6, { light: true })] }),
       el(250, 148, 24, 24, '#d8202a', 'gem', { gloss: 1.3, rim: 0.8, lc: '#6a1010', glint: [[242, 140, 7]] }),
-      sh(ring(250, 290, 58, 66, 14, 22).filter(p => p[1] <= 296), '#f4d870', 'gold', { line: 0.7 }),
+      sh(archBand(250, 290, 58, 66, 14, 6), '#f4d870', 'gold', { line: 0.7 }),
       hole(250, 426, 92, 184),
     ];
   }, { dy: 12 });
@@ -715,7 +725,7 @@
     boulder(70, 104, 30, 16, '#aca69a'), boulder(150, 96, 36, 18, '#9a9488', 0.1), boulder(236, 100, 30, 15, '#b0aa9e'), boulder(112, 92, 20, 10, '#8e887c'), boulder(196, 88, 18, 10, '#a49e92'),
     boulder(40, 168, 18, 9, '#8e887c'), boulder(270, 168, 20, 9, '#9a9488'),
   ]);
-  const gateArch = () => sh(ring(156, 256, 82, 90, 20, 24).filter(p => p[1] <= 262), '#bcb6aa', 'horn', { gloss: 0.2, line: 0.8 });
+  const gateArch = () => sh(archBand(156, 256, 82, 90, 20, 6), '#bcb6aa', 'horn', { gloss: 0.2, line: 0.8 });
   obj('gate', () => [...siegeWall(), gateArch(),
     Object.assign(door(156, 446, 148, 270, '#7a4a26'), { lines: [...[0.2, 0.4, 0.6, 0.8].map(t => ln([[82 + t * 148, 190], [82 + t * 148, 446]], 1.6, 0.6)), ...[0.25, 0.5, 0.75].map(t => ln([[82, 446 - 270 * t], [230, 446 - 270 * t]], 5, 0.9, { c: IRON }))],
       glint: [[100, 244, 3], [120, 244, 3], [140, 244, 3], [172, 244, 3], [192, 244, 3], [212, 244, 3], [100, 311, 3], [212, 311, 3]] }),

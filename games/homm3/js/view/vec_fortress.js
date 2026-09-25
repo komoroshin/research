@@ -326,7 +326,7 @@
     const ridge = [[60, 146], [90, 128], [130, 120], [172, 120], [206, 128], [222, 140]];
     const lift = list => mapShapes(list, (x, y) => [x, y - 18], 1);   // корпус поднят над лапами
     const bodyS = [
-      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.7, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3), c: bel, m: 'skin', line: 0 }] },
+      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.7, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3, -1), c: bel, m: 'skin', line: 0 }] },
       ...spikes(tail.slice(0, 4).map(q => [q[0], q[1] - q[2] * 0.42]), 4, 10, o.crest, -1, o.crestM),
       ...lift([...spikes(ridge, 9, o.spikeH || 22, o.crest, 1, o.crestM),
       { p: [[46, 170], [58, 142], [88, 126], [130, 118], [172, 118], [206, 126], [226, 142], [228, 164], [214, 180], [172, 188], [122, 188], [80, 186], [56, 180]], c, m: 'skin', tex: 'scale', texSize: 0.85, belly: 0.4, id: 'body',
@@ -447,7 +447,7 @@
     const tail = [[160, 214, 40], [124, 228, 32], [92, 248, 24], [62, 272, 18], [38, 292, 13], [18, 300, 9], [6, 294, 6]];
     const neck = [[244, 164, 50], [266, 130, 38], [282, 102, 30], [296, 82, 26]];
     const bodyS = [
-      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.7, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3), c: bel, m: 'skin', line: 0, lines: rings(tail, 0, 0.8, 1, 0.4) }] },
+      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.7, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3, -1), c: bel, m: 'skin', line: 0, lines: rings(tail, 0, 0.8, 1, 0.4) }] },
       // жало: изогнутый клинок на конце хвоста
       { p: [P(12, 300, 1), P(-2, 290), P(-8, 270, 1), P(4, 282), P(14, 288, 1)], c: o.sting, m: 'horn', gloss: 1.2, line: 0.8, glint: [[0, 282, 1.6]] },
       { p: [P(8, 296, 1), P(-10, 300, 1), P(4, 304, 1)], c: o.sting, m: 'horn', line: 0.6 },
@@ -526,7 +526,7 @@
     };
     const tail = [[100, 250, 44], [72, 264, 34], [48, 282, 23], [30, 298, 13], [16, 306, 6]];
     const bodyS = [
-      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.75, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3), c: bel, m: 'skin', line: 0 }] },
+      { p: tube(tail), c, m: 'skin', tex: 'scale', texSize: 0.75, belly: 0.3, sub: [{ p: bellyTube(tail, 0.4, 0.3, -1), c: bel, m: 'skin', line: 0 }] },
       ...(o.spikes ? spikes(tail.slice(0, 4).map(q => [q[0], q[1] - q[2] * 0.42]), 4, 11, o.spikes, -1) : []),
       { p: [[84, 262], [92, 226], [122, 200], [168, 190], [214, 196], [250, 216], [266, 246], [258, 274], [226, 290], [176, 294], [126, 290], [96, 280]], c, m: 'skin', tex: 'scale', texSize: 0.95, belly: 0.45,
         sub: [{ p: [[110, 286], [150, 276], [210, 278], [264, 256], [270, 300], [100, 300]], c: bel, m: 'skin', line: 0, lines: [0, 1, 2, 3, 4].map(i => ({ p: [[128 + i * 26, 280], [130 + i * 26, 296]], w: 1, a: 0.45 })) },
