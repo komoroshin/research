@@ -442,6 +442,19 @@
   }
   function drawFlag(ctx, x, y, color, small) {
     const h = small ? 6 : 9, w = small ? 5 : 7;
+    if (painted()) {   // рисованная карта: древко с навершием и гладкое полотнище-волна
+      const ph = (x * 0.37 + y * 0.11), t = V.ts / 140, wy = i => Math.sin(t + ph + i * 0.9) * (i / w) * 1.6;
+      ctx.save(); ctx.imageSmoothingEnabled = true; ctx.lineCap = 'round';
+      ctx.strokeStyle = '#2a1a10'; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(x + 0.5, y - 0.5); ctx.lineTo(x + 0.5, y + h + 3); ctx.stroke();
+      ctx.fillStyle = '#d8b24a'; ctx.beginPath(); ctx.arc(x + 0.5, y - 0.8, 0.9, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x + 1, y);
+      for (let i = 1; i <= w; i++) ctx.lineTo(x + 1 + i, y + wy(i));
+      for (let i = w; i >= 0; i--) ctx.lineTo(x + 1 + i, y + h - 2 + wy(i) + (i === w ? -0.6 : 0));
+      ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(x + 1.3, y + 0.6); for (let i = 1; i <= w; i++) ctx.lineTo(x + 1 + i, y + 0.6 + wy(i)); ctx.stroke();
+      ctx.restore(); return;
+    }
     x = Math.round(x); y = Math.round(y);
     ctx.fillStyle = '#2a1a10'; ctx.fillRect(x, y, 1, h + 3);
     // полотнище полощется: каждый столбец сдвинут по синусоиде, дальше от древка — сильнее
