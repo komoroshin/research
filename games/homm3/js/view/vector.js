@@ -47,7 +47,11 @@
     const key = c + '|' + t + '|' + a; let v = toneCache.get(key); if (v) return v;
     const [r, g, b] = rgbOf(c); let [h, s, l] = toHsl(r, g, b);
     if (t >= 0) { h = towardHue(h, 0.13, t * 0.22 * s); s = s * (1 - t * 0.12); l = l + (1 - l) * t * 0.85; }
-    else { const k = -t; h = towardHue(h, 0.66, k * 0.28 * s); s = Math.min(1, s * (1 + k * 0.25)); l = l * (1 - k * 0.78); }
+    else {
+      // тень холоднее; у жёлто-оранжевых кратчайший путь к синему идёт через красный — там сдвиг слабый, иначе золото рыжеет
+      const k = -t, warm = h > 0.04 && h < 0.22;
+      h = towardHue(h, 0.66, k * 0.28 * s * (warm ? 0.3 : 1)); s = Math.min(1, s * (1 + k * 0.25)); l = l * (1 - k * 0.78);
+    }
     const [R, G, B] = fromHsl(h, s, l);
     // без прозрачности — '#rrggbb': такой цвет можно снова передать в tone() (улучшения строят краски от базовых)
     const hx = v2 => Math.max(0, Math.min(255, Math.round(v2))).toString(16).padStart(2, '0');
