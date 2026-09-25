@@ -18,14 +18,29 @@
     const to = frameOf(name) || { w: ground[0] * 2, h: ground[1] + 4, anchor: ground };
     return fit(parts, { ground, height: ground[1] }, to, to.anchor[1] / ground[1] * (size || 1));
   }
-  /** Ряд зубов вдоль линии a→b; len > 0 — остриём вниз, len < 0 — вверх. */
+  /**
+   * Ряд зубов вдоль линии a→b одной формой-зигзагом (экономит формы); len > 0 — остриём вниз, len < 0 — вверх.
+   * Основание уходит на пару единиц в десну — его закрывает челюсть.
+   */
   function teeth(a, b, n, len, c) {
-    const out = [];
+    const out = [P(...a, 1)], back = Math.sign(len) * -1.6;
     for (let i = 0; i < n; i++) {
-      const t0 = (i + 0.15) / n, t1 = (i + 0.85) / n, p0 = lerp(a, b, t0), p1 = lerp(a, b, t1), m = lerp(a, b, (t0 + t1) / 2);
-      out.push({ p: [P(...p0, 1), P(m[0], m[1] + len, 1), P(...p1, 1)], c: c || '#f0e8d0', m: 'horn', line: 0.4 });
+      const t0 = (i + 0.12) / n, t1 = (i + 0.88) / n, p0 = lerp(a, b, t0), p1 = lerp(a, b, t1), m = lerp(a, b, (t0 + t1) / 2);
+      out.push(P(...p0, 1), P(m[0] + (b[0] - a[0]) / n * 0.08, m[1] + len, 1), P(...p1, 1));
     }
-    return out;
+    out.push(P(...b, 1), P(b[0], b[1] + back, 1), P(a[0], a[1] + back, 1));
+    return [{ p: out, c: c || '#f0e8d0', m: 'horn', line: 0.4 }];
+  }
+  /** Мелкие шипы вдоль линии одной формой (для шей и хвостов, где их много). */
+  function sawRidge(pts, n, h, c, side) {
+    const L = [], R = [];
+    for (let i = 0; i <= n * 2; i++) {
+      const t = i / (n * 2), k = t * (pts.length - 1), j = Math.min(pts.length - 2, Math.floor(k)), f = k - j;
+      const a = pts[j], b = pts[j + 1], p = lerp(a, b, f), [tx, ty] = norm(b[0] - a[0], b[1] - a[1]), nx = ty * (side || -1), ny = -tx * (side || -1);
+      const hh = i % 2 ? h * (1 - Math.abs(t - 0.45) * 0.7) : 0;
+      L.push(P(p[0] + nx * hh + tx * (i % 2 ? -h * 0.25 : 0), p[1] + ny * hh + ty * (i % 2 ? -h * 0.25 : 0), 1)); R.push(P(p[0] - nx * 2, p[1] - ny * 2, 1));
+    }
+    return { p: [...L, ...R.reverse()], c, m: 'horn', gloss: 0.7, line: 0.6 };
   }
   /** Рог изогнутой трубкой [[x, y, толщина]…] с кольцами; tip — цвет кончика. */
   function hornT(pts, c, tip) {
@@ -483,7 +498,7 @@
   function hydra(name, o) {
     const c = o.body, far = tone(c, -0.26), bel = o.belly;
     const hLeg = (x, y, col) => [
-      { p: tube([[x, y, 48], [x - 6, y + 26, 34], [x - 2, 298, 28]], { flat0: true }), c: col, m: 'skin', tex: 'scale', texSize: 0.6, belly: 0.25 },
+      { p: tube([[x, y, 48], [x - 6, y + 26, 34], [x - 2, 298, 28]], { flat0: true, flat1: true }), c: col, m: 'skin', tex: 'scale', texSize: 0.6, belly: 0.25 },
       { p: [[x - 20, 294], [x + 10, 292], [x + 24, 302], P(x + 27, 310, 1), P(x - 22, 310, 1)], c: col, m: 'skin', tex: 'scale', texSize: 0.4 },
       ...[0, 1, 2].map(i => ({ p: [P(x + 16 - i * 10, 305, 1), P(x + 29 - i * 10, 309.5, 1), P(x + 16 - i * 10, 310, 1)], c: o.claw, m: 'horn', line: 0.4 })),
     ];
@@ -492,7 +507,7 @@
       const col = dark ? far : c, [hx, hy] = h, K2 = v => v * k;
       const nk = [[b[0], b[1], 36 * k], [m[0], m[1], 28 * k], [hx - K2(8), hy + K2(8), 21 * k]];
       const out = [{ p: tube(nk, { flat0: dark }), c: col, m: 'skin', tex: 'scale', texSize: 0.55, sub: [{ p: bellyTube(nk, 0.42, 0.3), c: dark ? tone(bel, -0.2) : bel, m: 'skin', line: 0, lines: rings(nk, 0.1, 1, 1, 0.4) }] }];
-      if (o.spikes) out.push(...spikes(nk.map(q => [q[0] - q[2] * 0.2, q[1] - q[2] * 0.4]), 4, 9 * k, o.spikes, 1));
+      if (o.spikes) out.push(sawRidge(nk.map(q => [q[0] - q[2] * 0.2, q[1] - q[2] * 0.4]), 4, 9 * k, o.spikes, 1));
       const Hd = pts => pts.map(q => P(hx + q[0] * k, hy + q[1] * k, q[2]));
       if (o.horns) out.push(hornT(Hd([[-6, -8, 7], [-18, -18, 5], [-28, -20, 2]]).map((q, i) => [q[0], q[1], [7, 5, 2][i] * k]), dark ? tone(o.horns, -0.2) : o.horns));
       out.push(
@@ -502,10 +517,9 @@
         { p: Hd([[-14, 8], [-12, -6], [2, -14], [20, -13], [34, -7], [44, 0], [42, 5], [26, 6], [8, 9], [-6, 14]]), c: col, m: 'skin', tex: 'scale', texSize: 0.35,
           lines: [{ p: Hd([[-4, -8], [12, -12], [28, -8]]), w: 1, light: true, a: 0.5 }] },
         ...teeth(Hd([[12, 6]])[0], Hd([[42, 3]])[0], 4, 4 * k, '#f4ecd6'),
-        ...(o.glow ? glow(hx + 12 * k, hy - 4 * k, 9 * k, o.glow, 0.9) : []),
+        ...(o.glow ? [{ e: [hx + 12 * k, hy - 4 * k, 8 * k, 8 * k], c: 'rgba(' + o.glow + ',0.3)', m: 'flat', line: 0 }] : []),
         reptEye(hx + 12 * k, hy - 4 * k, 3.4 * k, o.eye),
-        { p: tube(Hd([[2, -9, 4], [12, -11, 4.5], [20, -8, 3]])), c: tone(col, -0.3), m: 'skin', line: 0.4 },
-        { e: [hx + 39 * k, hy - 1 * k, 1.6 * k, 1.1 * k], c: DARK, m: 'flat', line: 0 },
+        ...(dark ? [] : [{ p: tube(Hd([[2, -9, 4], [12, -11, 4.5], [20, -8, 3]])), c: tone(col, -0.3), m: 'skin', line: 0.4 }, { e: [hx + 39 * k, hy - 1 * k, 1.6 * k, 1.1 * k], c: DARK, m: 'flat', line: 0 }]),
         // гребень-бахрома за челюстью
         { p: Hd([[-10, 4], [-22, 0, 1], [-14, 10], [-24, 14, 1], [-10, 16]]), c: o.frill, m: 'skin', line: 0.6 });
       return out;
