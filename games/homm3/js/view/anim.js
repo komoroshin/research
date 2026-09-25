@@ -47,10 +47,13 @@
     let L = LAG.get(key);
     if (!L) { if (LAG.size > 300) LAG.clear(); L = { s: drive, v: 0, t: t }; LAG.set(key, L); }
     const dt = Math.max(0, Math.min(64, t - L.t)); L.t = t;
-    const f = dt / 16.7;
-    L.v += ((drive - L.s) * 0.30 - L.v * 0.42) * f;
-    L.s += L.v * f;
-    return drive - L.s;
+    // медленный кадр считаем несколькими шагами: один большой шаг раскачивает пружину,
+    // и части существа разлетаются (так было на тяжёлом первом кадре боя)
+    const n = Math.max(1, Math.ceil(dt / 16.7)), f = dt / 16.7 / n;
+    for (let i = 0; i < n; i++) { L.v += ((drive - L.s) * 0.30 - L.v * 0.42) * f; L.s += L.v * f; }
+    const r = drive - L.s;
+    if (!(Math.abs(r) < 3)) { L.s = drive; L.v = 0; return 0; }   // предохранитель
+    return r;
   }
 
   /**
@@ -261,6 +264,7 @@
     if (!PARTS.on) return null;
     const key = name + '|' + (scale || 1) + '|' + (flip ? 1 : 0) + '|' + (tint ? JSON.stringify(tint) : '');
     if (partCache.has(key)) return partCache.get(key);
+    if (H3.Vec && H3.Vec.has(name)) { const r = H3.Vec.parts(name, scale || 1, flip, tint, Sp.SCENE); partCache.set(key, r); return r; }
     const im = Sp.image(name, scale || 1, flip, tint);
     let res = null;
     if (im) { try { res = build(im); } catch (e) { res = null; } }
@@ -287,20 +291,22 @@
     ctx.save();
     ctx.globalAlpha *= st.alpha === undefined ? 1 : st.alpha;
     ctx.translate(Math.round(x + st.dx), Math.round(y + st.dy));
-    if (Sp.smoothFor) Sp.smoothFor(ctx, k);
-    const order = o.flying ? ['prop', 'leg', 'legs', 'torso', 'head'] : ['leg', 'legs', 'torso', 'head', 'prop'];
+    if (P.vec) ctx.imageSmoothingEnabled = true; else if (Sp.smoothFor) Sp.smoothFor(ctx, k);
+    // рисованные существа задают порядок слоёв сами (дальнее крыло — за телом, ближнее — перед ним)
+    const order = P.ordered ? [null] : o.flying ? ['prop', 'leg', 'legs', 'torso', 'head'] : ['leg', 'legs', 'torso', 'head', 'prop'];
     for (const kind of order) for (const p of P.parts) {
-      if (p.kind !== kind) continue;
+      if (kind !== null && p.kind !== kind) continue;
+      const kd = p.kind;
       let dx = 0, dy = 0, ang = 0;
-      if (kind === 'leg') {
+      if (kd === 'leg') {
         const sgn = p.side * (flip ? -1 : 1);
         dx = walk * 1.3 * u * sgn * fwd; dy = -Math.max(0, walk * sgn) * 0.9 * u;
         ang = walk * 0.16 * sgn * fwd + lunge * 0.04 * fwd;
-      } else if (kind === 'legs') {
+      } else if (kd === 'legs') {
         dx = walk * 0.5 * u * fwd; dy = -Math.abs(walk) * 0.5 * u;
-      } else if (kind === 'torso') {
+      } else if (kd === 'torso') {
         dy = bob - breath * 0.25 * u * (o.flying ? 0.4 : 1); ang = lunge * 0.17 * fwd - hurt * 0.18 * fwd + cast * 0.05;
-      } else if (kind === 'head') {
+      } else if (kd === 'head') {
         dy = bob - breath * 0.45 * u * (o.flying ? 0.4 : 1) - cast * 1.5 * u;
         dx = walk * 0.25 * u * fwd + lunge * 0.6 * u * fwd;
         ang = lunge * 0.1 * fwd - hurt * 0.35 * fwd - trail * 0.16 * fwd;
@@ -334,7 +340,7 @@
     const ax = cv._anchor[0] * (scale || 1), ay = cv._anchor[1] * (scale || 1);
     const flat = st.sx === 1 && st.sy === 1 && !st.skew;
     ctx.save();
-    if (k !== 1) Sp.smoothFor(ctx, k);
+    if (cv._vec) ctx.imageSmoothingEnabled = true; else if (k !== 1) Sp.smoothFor(ctx, k);
     if (flat) {
       ctx.drawImage(cv, Math.round(x + st.dx - ax), Math.round(y + st.dy - ay), dw, dh);
     } else {

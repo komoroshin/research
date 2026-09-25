@@ -466,8 +466,10 @@
     ctx.putImageData(img, 0, 0);
   }
 
+  const vecOf = name => H3.Vec && H3.Vec.has(name);
   function render(name, scale, flip, extraTint) {
     scale = scale || 1;
+    if (vecOf(name)) return H3.Vec.render(name, scale, flip, extraTint, SCENE);   // рисованное существо
     const key = name + '|' + scale + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '') + '|' + SCENE.id;
     let cv = cache.get(key);
     if (cv) return cv;
@@ -510,6 +512,7 @@
    */
   function image(name, scale, flip, extraTint) {
     scale = scale || 1;
+    if (vecOf(name)) return H3.Vec.image(name, scale, flip, extraTint, SCENE);
     const bs = baseScale(resolve(name));
     if (DETAIL.on && scale < bs && !DETAIL.skip.test(name)) { const cv = render(name, bs, flip, extraTint); return cv ? { cv, k: scale / bs } : null; }
     const cv = render(name, scale, flip, extraTint); return cv ? { cv, k: 1 } : null;
@@ -522,7 +525,8 @@
     if (!im) { placeholder(ctx, name, x, y, scale || 1); return; }
     const cv = im.cv, ax = cv._anchor[0] * (scale || 1), ay = cv._anchor[1] * (scale || 1);
     if (im.k === 1) { ctx.drawImage(cv, Math.round(x - ax), Math.round(y - ay)); return; }
-    const prev = smoothFor(ctx, im.k);
+    const prev = cv._vec ? ctx.imageSmoothingEnabled : smoothFor(ctx, im.k);
+    if (cv._vec) ctx.imageSmoothingEnabled = true;   // рисованное всегда сглаживаем
     ctx.drawImage(cv, Math.round(x - ax), Math.round(y - ay), cv.width * im.k, cv.height * im.k);
     ctx.imageSmoothingEnabled = prev;
   }
@@ -545,7 +549,7 @@
   const urlCache = new Map();
   /** dataURL для <img> в DOM. */
   function url(name, scale, flip) {
-    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + SCENE.id;
+    const key = name + '|' + (scale || 2) + '|' + (flip ? 1 : 0) + '|' + SCENE.id + (vecOf(name) ? '|v' : '');
     let u = urlCache.get(key);
     if (u) return u;
     const cv = render(name, scale || 2, flip);

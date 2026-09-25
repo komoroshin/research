@@ -1254,5 +1254,32 @@ test('свет сцены: солнце переходит с востока н�
   assert.equal(Sp.SCENE.wk, 0, 'пустая сцена — студийный свет без подкраски');
 });
 
+test('анимация: пружина хвоста движения не раскачивается на медленных кадрах', () => {
+  require('../js/view/sprites.js'); require('../js/view/anim.js');
+  const An = (typeof window !== 'undefined' ? window : globalThis).H3.Anim;
+  // кадры по 64 мс (тяжёлый первый кадр боя, слабый телефон) с частыми ударами крыльями
+  let mx = 0;
+  for (let k = 0; k < 300; k++) { const o = { t: k * 64, phase: 0, flying: true, moving: true, lunge: Math.sin(k * 0.7), key: 'slow' }; An.state(o); mx = Math.max(mx, Math.abs(o._trail)); }
+  assert.ok(mx < 1.5, 'хвост движения должен оставаться малым, а не ' + mx);
+});
+
+test('рисованные существа: описаны для настоящих существ и встают в свой гекс', () => {
+  const g = (typeof window !== 'undefined' ? window : globalThis);
+  require('../js/view/vector.js'); require('../js/view/vec_pilot.js');
+  const Vc = g.H3.Vec, names = Vc.names();
+  assert.ok(names.length >= 3, 'пилот: мечник, медведь, грифон');
+  const KINDS = ['leg', 'legs', 'torso', 'head', 'prop'];
+  for (const n of names) {
+    assert.ok(H3.Creatures.get(n), n + ' — нет такого существа');
+    const d = Vc._defs[n];
+    assert.ok(d.parts.some(p => p.kind === 'torso'), n + ': нужен корпус');
+    for (const p of d.parts) { assert.ok(KINDS.includes(p.kind), n + ': часть ' + p.kind); assert.ok(p.pivot && p.shapes.length, n + ': у части нет крепления или форм'); }
+    // холст вырос под рисунок, якорь (ноги) внутри и у нижнего края
+    assert.ok(d.W >= d.w && d.H >= d.h, n + ': холст меньше рамки');
+    const ay = d.anchor[1] + d.oy; assert.ok(ay <= d.H && ay >= d.H - 20, n + ': якорь не у ног');
+    for (const p of d.parts) if (p.kind === 'leg') assert.ok(p.side === 1 || p.side === -1, n + ': у ноги нет стороны');
+  }
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);

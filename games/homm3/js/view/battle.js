@@ -84,10 +84,12 @@
     if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
     // облака над полем (под землёй неба нет)
     V.clouds = [];
-    if (V.b.terrain !== 'subter') for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
+    if (V.b.terrain !== 'subter' && !V.bg.s) for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
   }
   /** Задник тремя слоями: небо и дальняя гряда, силуэты среднего плана, земля. Слои едут с разной скоростью. */
   function makeBgLayers(terrain, w, h, day, hz) {
+    // рисованный задник с запасом плотности; старый — если рисованные существа выключены (?vec=0)
+    if (H3.BattleBg && !/[?&]bg=0\b/.test(location.search)) return H3.BattleBg.make(terrain, w, h, day, hz);
     const layer = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
     const sky = layer(), mid = layer(), ground = layer();
     const rng = new U.RNG(U.hashStr(terrain));
@@ -619,13 +621,18 @@
     // свет поля боя: небо по времени суток, отсвет земли по местности —
     // на лаве отряды снизу горят оранжевым, на снегу получают холодный подбой
     Sp.setScene(T.sceneLight(V.day || 4, b.terrain, b.terrain === 'subter'));
+    // отдалённое поле короче холста: низ заливаем, иначе там остаются прошлые кадры
+    if (V.cam.z < 1) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#16110c'; ctx.fillRect(0, 0, V.canvas.width, V.canvas.height); }
     ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
     // параллакс: небо и дальний план отстают от земли, поле получает глубину при панораме
     const cx = V.cam.x;
-    ctx.drawImage(V.bg.sky, Math.round(cx * 0.72), 0);
-    ctx.drawImage(V.bg.mid, Math.round(cx * 0.34), 0);
-    ctx.drawImage(V.bg.ground, 0, 0);
+    const bs = V.bg.s || 1;
+    if (bs !== 1) ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(V.bg.sky, Math.round(cx * 0.72), 0, V.bg.sky.width / bs, V.bg.sky.height / bs);
+    ctx.drawImage(V.bg.mid, Math.round(cx * 0.34), 0, V.bg.mid.width / bs, V.bg.mid.height / bs);
+    ctx.drawImage(V.bg.ground, 0, 0, V.bg.ground.width / bs, V.bg.ground.height / bs);
+    ctx.imageSmoothingEnabled = false;
     for (const c of V.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + c.a + ')'; ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(c.x - c.w * 0.25, c.y + 2, c.w / 3.2, c.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(c.x + c.w * 0.22, c.y + 1, c.w / 3.5, c.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
     const cur = Bt.current(b);
     // гексы
