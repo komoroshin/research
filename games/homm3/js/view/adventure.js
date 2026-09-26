@@ -52,6 +52,8 @@
     if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
+    V.paper = V.paperKey = V.paperRect = V.paperBusy = V.fogCompKey = null;   // пергамент прежней партии
+    if (H3.MapPaint && H3.MapPaint.Live) H3.MapPaint.Live.reset();
     resize(); V.dirty = true;
   }
   function invalidate() { V.pf = null; V.dirty = true; }
@@ -347,8 +349,7 @@
     fc.putImageData(img, 0, 0);
     }
     const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
-    if (live()) drawParchment(ctx, st, vis, x0, y0, x1, y1);
+    if (!(live() && drawParchment(ctx, st, vis, x0, y0, x1, y1, cv, w / S4, h / S4))) ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
     ctx.imageSmoothingEnabled = prev;
   }
   /**
@@ -356,16 +357,51 @@
    * с обгоревшей кромкой и значками. Слой строится на область с запасом, выровненную по 4 клетки,
    * и пересобирается только при сдвиге этой области, смене масштаба или новом открытом.
    */
-  function drawParchment(ctx, st, vis, x0, y0, x1, y1) {
+  function drawParchment(ctx, st, vis, x0, y0, x1, y1, mask, mw, mh) {
     const m = S.lvl(st, V.layer), Q = 4;
     const rx0 = Math.floor((x0 - 2) / Q) * Q, ry0 = Math.floor((y0 - 2) / Q) * Q, rx1 = Math.ceil((x1 + 3) / Q) * Q - 1, ry1 = Math.ceil((y1 + 3) / Q) * Q - 1;
     const sc = Math.min(2, V.cam.z * V.dpr);
     let hsh = 0, hidden = 0;
     for (let y = Math.max(0, ry0 - 1); y <= Math.min(m.h - 1, ry1 + 1); y++) for (let x = Math.max(0, rx0 - 1); x <= Math.min(m.w - 1, rx1 + 1); x++) { const v = vis[y * m.w + x] ? 1 : 0; hidden += 1 - v; hsh = (hsh * 31 + v) | 0; }
-    if (!hidden && rx0 >= 0 && ry0 >= 0 && rx1 < m.w && ry1 < m.h) return;   // всё открыто — рисовать нечего
+    if (!hidden && rx0 >= 0 && ry0 >= 0 && rx1 < m.w && ry1 < m.h) return false;   // всё открыто — хватит тёмной маски
     const key = rx0 + ',' + ry0 + ',' + rx1 + ',' + ry1 + ',' + V.layer + ',' + sc + ',' + hsh + ',' + st.seed;
-    if (V.paperKey !== key) { V.paperKey = key; V.paper = H3.MapPaint.Live.fogLayer(vis, m, V.layer, rx0, ry0, rx1, ry1, sc, V.paper); }
-    ctx.drawImage(V.paper, rx0 * TILE, ry0 * TILE, (rx1 - rx0 + 1) * TILE, (ry1 - ry0 + 1) * TILE);
+    // бумага строится вне кадра (в паузе браузера), пока рисуется прежняя — прокрутка не дёргается
+    if (V.paperKey !== key && V.paperBusy !== key) {
+      V.paperBusy = key;
+      const z = V.layer, lvl = m;
+      (root.requestIdleCallback ? f => root.requestIdleCallback(f, { timeout: 80 }) : f => setTimeout(f, 0))(() => {
+        if (V.paperBusy !== key) return;
+        V.paperBusy = null;
+        if (!V.state || V.state !== st) return;
+        V.paper = H3.MapPaint.Live.fogLayer(st.players[st.turn].vis[z], lvl, z, rx0, ry0, rx1, ry1, sc, V.paper);
+        V.paperKey = key; V.paperRect = [rx0, ry0, rx1, ry1, z]; V.fogCompKey = null; V.dirty = true;
+      });
+    }
+    const P = V.paper, PR = V.paperRect;
+    if (!P || !PR || PR[4] !== V.layer) return false;   // ещё не готово — пока хватит тёмной маски
+    const X0 = PR[0] * TILE, Y0 = PR[1] * TILE, WM = (PR[2] - PR[0] + 1) * TILE, HM = (PR[3] - PR[1] + 1) * TILE;
+    if (V.paperKey !== key) {   // прежняя бумага на своём месте, маска отдельно
+      ctx.drawImage(mask, (x0 - 1) * TILE, (y0 - 1) * TILE, mw * TILE, mh * TILE);
+      ctx.drawImage(P, X0, Y0, WM, HM);
+      return true;
+    }
+    // тёмная маска и пергамент сводятся в один холст — на кадр одна заливка экрана, а не две;
+    // сведение повторяется, только когда меняется маска (сдвиг на клетку, новое открытое) или бумага
+    const ck = key + '|' + V.fogKey;
+    let C = V.fogComp;
+    if (V.fogCompKey !== ck) {
+      V.fogCompKey = ck;
+      if (!C) C = V.fogComp = document.createElement('canvas');
+      if (C.width !== P.width || C.height !== P.height) { C.width = P.width; C.height = P.height; }
+      const c = C.getContext('2d'), k = P.width / WM;
+      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, C.width, C.height);
+      c.imageSmoothingEnabled = true;
+      c.setTransform(k, 0, 0, k, -X0 * k, -Y0 * k);
+      c.drawImage(mask, (x0 - 1) * TILE, (y0 - 1) * TILE, mw * TILE, mh * TILE);
+      c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(P, 0, 0);
+    }
+    ctx.drawImage(C, X0, Y0, WM, HM);
+    return true;
   }
   /* ---------- атмосфера: падающие тени, тени облаков, погода, виньетка ---------- */
   /** Что и где рисуется у объекта — нужно и для спрайта, и для его тени. */

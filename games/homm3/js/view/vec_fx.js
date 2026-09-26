@@ -209,16 +209,19 @@
     c.shadowBlur = 0; c.strokeStyle = mix(col, '#ffffff', 0.7); c.lineWidth = 3.6; glyphPath(c, glyph);
   });
 
+  /** Естественный размер детали (множитель к «10 единиц = 1 точка»): при s = 1 кость ≈ 10 точек, стрела ≈ 16. */
+  const SZ = { 'skeleton.bone': 1.4, 'skeleton.skull': 2, 'cyclops.rock': 1, 'stone_golem.rock': 1.4, 'earth_elemental.rock': 1.6, 'magma_elemental.rock': 1.6,
+    'automaton.gear': 1.5, 'iron_golem.gear': 1.5, 'iron_golem.plate': 1.4, 'ballista.plank': 1.5, 'dendroid_guard.leaf': 1.8, 'ice_elemental.shard': 0.9, 'orc.axe': 1.3, 'halfling_grenadier.bomb': 1.4 };
   /** Рисунок-деталь в нужном масштабе (кэш по квантованной плотности). */
   function sprite(name, sc) {
-    const S = Math.max(0.5, Math.round(sc * Q() * 4) / 4), key = name + '|' + S;
+    const b = SZ[name] || 1, S = Math.max(0.5, Math.round(sc * b * Q() * 4) / 4), key = name + '|' + S;
     let r = SPR.get(key);
-    if (!r) { const cv = V.render(name, S); r = cv ? { cv, S, ax: cv._anchor[0] * S, ay: cv._anchor[1] * S } : null; SPR.set(key, r); }
+    if (!r) { const cv = V.render(name, S); r = cv ? { cv, S, b, ax: cv._anchor[0] * S, ay: cv._anchor[1] * S } : null; SPR.set(key, r); }
     return r;
   }
   function drawSprite(ctx, spr, x, y, rot, sc, sy) {
     if (!spr) return;
-    const k = sc / spr.S;
+    const k = sc * spr.b / spr.S;
     ctx.translate(x, y); if (rot) ctx.rotate(rot); ctx.scale(k, k * (sy || 1));
     ctx.drawImage(spr.cv, -spr.ax, -spr.ay);
     ctx.setTransform(ctx._vfxBase);
@@ -329,7 +332,7 @@
       for (let i = 0; i < (o.n || 6); i++) {
         const a = i / (o.n || 6) * TAU + rnd(-0.3, 0.3), R = (o.R || 30) * w * rnd(0.8, 1.2), glowC = o.glow;
         push({ x, y, a, R, ttl: (o.ttl || 450) * rnd(0.85, 1.1), delay: (o.delay || 0) + rnd(0, o.jitter || 60), add: !!glowC, rot: rnd(0, TAU), sq: o.sq || 0.6,
-          spr: o.names ? sprite(pick(o.names), (o.s || 0.6) * w) : null, tx: glowC ? glowTex(glowC, true) : null, r: (o.r || 3) * w, s: (o.s || 0.6) * w,
+          spr: o.names ? sprite(pick(o.names), (o.s || 1) * w) : null, tx: glowC ? glowTex(glowC, true) : null, r: (o.r || 3) * w, s: (o.s || 1) * w,
           draw(ctx, k, it) { const q = eIn(k), px = it.x + Math.cos(it.a + q * 1.2) * it.R * (1 - q), py = it.y + Math.sin(it.a + q * 1.2) * it.R * (1 - q) * it.sq - (1 - q) * 8 * w;
             ctx.globalAlpha = c01(Math.min(1, k * 5) * (k > 0.9 ? (1 - k) / 0.1 : 1));
             if (it.tx) ctx.drawImage(it.tx, px - it.r * 2, py - it.r * 2, it.r * 4, it.r * 4); else drawSprite(ctx, it.spr, px, py, it.rot + q * 5, it.s); } });
@@ -437,7 +440,7 @@
     sc.dome = (x, cy, o) => push({ x, cy, ttl: o.ttl || 800, delay: o.delay, add: true, rx: o.rx, ry: o.ry, col: o.col,
       draw(ctx, k, it) { const s = k < 0.2 ? 0.7 + 0.3 * eOut(k / 0.2) : 1, a = fade(k, 'hold'), rx = it.rx * s, ry = it.ry * s;
         const g = ctx.createRadialGradient(it.x, it.cy, Math.min(rx, ry) * 0.4, it.x, it.cy, Math.max(rx, ry));
-        g.addColorStop(0, rgba(it.col, 0)); g.addColorStop(0.75, rgba(it.col, 0.18)); g.addColorStop(0.97, rgba(it.col, 0.55)); g.addColorStop(1, rgba(it.col, 0));
+        g.addColorStop(0, rgba(it.col, 0.05)); g.addColorStop(0.7, rgba(it.col, 0.28)); g.addColorStop(0.95, rgba(it.col, 0.85)); g.addColorStop(1, rgba(it.col, 0));
         ctx.globalAlpha = c01(a); ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(it.x, it.cy, rx, ry, 0, 0, TAU); ctx.fill();
         ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.6 * ws(); ctx.lineCap = 'round'; ctx.beginPath(); ctx.ellipse(it.x, it.cy, rx * 0.86, ry * 0.86, 0, Math.PI * 1.1, Math.PI * 1.45); ctx.stroke();
         const sa = it.t / 180; ctx.globalAlpha = c01(a * 0.9); const gt = glowTex(it.col, true), sr = 5 * ws(); ctx.drawImage(gt, it.x + Math.cos(sa) * rx - sr, it.cy + Math.sin(sa) * ry - sr, sr * 2, sr * 2); } });
@@ -453,7 +456,7 @@
             const grd = ctx.createLinearGradient(bx, it.gy, tx, ty); grd.addColorStop(0, 'rgba(120,180,235,0.85)'); grd.addColorStop(0.6, 'rgba(200,235,255,0.92)'); grd.addColorStop(1, 'rgba(255,255,255,0.98)');
             ctx.fillStyle = grd; ctx.beginPath(); ctx.moveTo(bx - c.wd, it.gy); ctx.lineTo(bx - c.wd * 0.35 + Math.sin(c.ang) * L * 0.7, it.gy - Math.cos(c.ang) * L * 0.7); ctx.lineTo(tx, ty); ctx.lineTo(bx + c.wd, it.gy); ctx.closePath(); ctx.fill();
             ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 0.9 * w; ctx.beginPath(); ctx.moveTo(bx, it.gy); ctx.lineTo(tx, ty); ctx.stroke(); } },
-        end: o.shatter === false ? null : it => { if (!sc.alive) return; sc.debris(it.x, it.gy - 10 * w, { names: 'ice_elemental.shard', n: 4, s: 0.35, speed: 120, ground: it.gy + 2 * w, ttl: 700 }); sc.embers(it.x, it.gy - 8 * w, { n: 3, col: '#e8f8ff', vy: -20, ttl: 600, spread: 10 }); } });
+        end: o.shatter === false ? null : it => { if (!sc.alive) return; sc.debris(it.x, it.gy - 10 * w, { names: 'ice_elemental.shard', n: 4, s: 1.25, speed: 120, ground: it.gy + 2 * w, ttl: 700 }); sc.embers(it.x, it.gy - 8 * w, { n: 3, col: '#e8f8ff', vy: -20, ttl: 600, spread: 10 }); } });
     };
     /** Затемнение/окраска всего поля (армагеддон, волна смерти). */
     sc.tint = (col, a, ttl, o) => push({ ttl, add: false, col, a, delay: o && o.delay,
@@ -469,9 +472,12 @@
           const tr = TRAIL[it.kind]; if (tr && it.t >= it.next) { it.next = it.t + tr.every; tr.f(sc, it, w); } },
         draw: drawProjectile, end: () => res() });
     });
-    function ribbon(ctx, h, w0, cHead, cTail, a) {
+    /** Шлейф: не длиннее maxLen, сужается к хвосту, хвост темнее и прозрачнее. */
+    function ribbon(ctx, h, w0, cHead, cTail, a, maxLen) {
       ctx.lineCap = 'round';
-      for (let i = h.length - 1; i > 0; i--) { const f = 1 - i / h.length; ctx.globalAlpha = c01(a * f); ctx.strokeStyle = f > 0.55 ? cHead : cTail; ctx.lineWidth = w0 * (0.25 + 0.75 * f); ctx.beginPath(); ctx.moveTo(h[i][0], h[i][1]); ctx.lineTo(h[i - 1][0], h[i - 1][1]); ctx.stroke(); }
+      let n = 1, L = 0; for (; n < h.length; n++) { L += Math.hypot(h[n][0] - h[n - 1][0], h[n][1] - h[n - 1][1]); if (L > maxLen) break; }
+      n = Math.min(n, h.length - 1);
+      for (let i = n; i > 0; i--) { const f = 1 - (i - 1) / n; ctx.globalAlpha = c01(a * f * f); ctx.strokeStyle = f > 0.6 ? cHead : cTail; ctx.lineWidth = w0 * (0.2 + 0.8 * f); ctx.beginPath(); ctx.moveTo(h[i][0], h[i][1]); ctx.lineTo(h[i - 1][0], h[i - 1][1]); ctx.stroke(); }
     }
     function streak(ctx, it, col, wd, a) { const h = it.hist; if (h.length < 2) return; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(h[h.length - 1][0], h[h.length - 1][1]); ctx.lineTo(it.x, it.y); ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
     const G = (ctx, col, x, y, r, a, hard) => { ctx.globalAlpha = c01(a); ctx.drawImage(glowTex(col, hard), x - r, y - r, r * 2, r * 2); };
@@ -485,25 +491,28 @@
           ctx.globalAlpha = 1; drawSprite(ctx, sprite(nm, s * sz), x, y, it.ang, s * sz); break;
         }
         case 'axe': case 'rock': case 'pebble': case 'bomb': case 'meteor': {
-          if (it.kind === 'meteor') { ctx.globalCompositeOperation = 'lighter'; ribbon(ctx, it.hist, 12 * s, '#ffc04a', '#ff5a1f', 0.8); G(ctx, '#ff7a2a', x, y, 16 * s, 0.9); ctx.globalCompositeOperation = 'source-over'; }
+          if (it.kind === 'meteor') { ctx.globalCompositeOperation = 'lighter'; ribbon(ctx, it.hist, 9 * s, '#ffb03a', '#c8401a', 0.6, 46 * s); G(ctx, '#ff7a2a', x, y, 13 * s, 0.8); ctx.globalCompositeOperation = 'source-over'; }
           else streak(ctx, it, '#ffffff', 2 * s, 0.12);
           const nm = { axe: 'orc.axe', rock: 'cyclops.rock', pebble: 'stone_golem.rock', bomb: 'halfling_grenadier.bomb', meteor: 'magma_elemental.rock' }[it.kind];
-          const sz = { axe: 0.3, rock: 0.55, pebble: 0.14, bomb: 0.22, meteor: 0.45 }[it.kind];
+          const sz = { axe: 1.1, rock: 2, pebble: 0.5, bomb: 1, meteor: 2.2 }[it.kind];
           ctx.globalAlpha = 1; drawSprite(ctx, sprite(nm, s * sz), x, y, it.spin, s * sz);
           if (it.kind === 'bomb') { const fx2 = x + Math.cos(it.spin - 1.9) * 5 * s, fy2 = y + Math.sin(it.spin - 1.9) * 5 * s; ctx.globalCompositeOperation = 'lighter'; G(ctx, '#ffb04a', fx2, fy2, 5 * s, 0.9, true); ctx.globalCompositeOperation = 'source-over'; }
           break;
         }
         case 'fire': {
           ctx.globalCompositeOperation = 'lighter';
-          ribbon(ctx, it.hist, 11 * s * (it.col === 'big' ? 1.4 : 1), '#ffb03a', '#ff4a10', 0.75);
           const f = 1 + 0.12 * Math.sin(it.t / 28), big = it.col === 'big' ? 1.4 : 1;
-          G(ctx, '#ff6a1f', x, y, 15 * s * f * big, 0.85); G(ctx, '#ffc04a', x, y, 8 * s * f * big, 1, true);
+          ribbon(ctx, it.hist, 9 * s * big, '#ff9a2a', '#b83010', 0.55, 34 * s * big);
+          // языки пламени отстают от шара и треплются
+          const bx = Math.cos(it.ang), by = Math.sin(it.ang);
+          for (let i = 0; i < 3; i++) { const d = (4 + i * 4) * s * big, wob = Math.sin(it.t / 35 + i * 2) * 2.5 * s; G(ctx, i ? '#ff5a1f' : '#ff8a2a', x - bx * d - by * wob, y - by * d + bx * wob, (9 - i * 2) * s * big, 0.7); }
+          G(ctx, '#ff6a1f', x, y, 14 * s * f * big, 0.8); G(ctx, '#ffd070', x, y, 7 * s * f * big, 1, true);
           ctx.globalCompositeOperation = 'source-over'; break;
         }
         case 'orb': case 'holy': case 'wave': case 'spark': case 'arcane': case 'skull': case 'acid': case 'ice': case 'dark': {
           const P = { orb: ['#6ab8ff', '#dff0ff'], holy: ['#ffd66a', '#fffbe0'], wave: ['#3ad0c8', '#e0fffb'], spark: ['#7fd9ff', '#ffffff'], arcane: ['#c060ff', '#f4e0ff'], skull: ['#5ae070', '#e0ffe0'], acid: ['#8ad02a', '#f0ffb0'], ice: ['#8ad0ff', '#ffffff'], dark: ['#8040c0', '#e0c0ff'] }[it.kind];
           ctx.globalCompositeOperation = 'lighter';
-          ribbon(ctx, it.hist, (it.kind === 'arcane' ? 8 : 6) * s, P[1], P[0], it.kind === 'acid' ? 0.3 : 0.7);
+          ribbon(ctx, it.hist, (it.kind === 'arcane' ? 7 : 5) * s, P[1], P[0], it.kind === 'acid' ? 0.3 : 0.6, (it.kind === 'arcane' ? 40 : 28) * s);
           const f = 1 + 0.15 * Math.sin(it.t / 22);
           G(ctx, P[0], x, y, 11 * s * f, 0.85); G(ctx, P[1], x, y, 5 * s, 1, true);
           if (it.kind === 'holy' || it.kind === 'arcane') { ctx.strokeStyle = P[1]; ctx.lineWidth = 1.2 * s; ctx.globalAlpha = 0.8; for (let i = 0; i < 4; i++) { const a = it.t / 90 + i * TAU / 4; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * 4 * s, y + Math.sin(a) * 4 * s); ctx.lineTo(x + Math.cos(a) * 11 * s, y + Math.sin(a) * 11 * s); ctx.stroke(); } }
@@ -511,7 +520,7 @@
           ctx.globalCompositeOperation = 'source-over';
           if (it.kind === 'acid') { ctx.globalAlpha = 0.95; ctx.fillStyle = '#9ad83a'; ctx.beginPath(); ctx.ellipse(x, y, 5.5 * s, 3.8 * s, it.ang, 0, TAU); ctx.fill(); ctx.fillStyle = '#e8ffb0'; ctx.beginPath(); ctx.arc(x - 1.5 * s, y - 1.3 * s, 1.4 * s, 0, TAU); ctx.fill(); }
           if (it.kind === 'skull') { ctx.globalAlpha = 0.9; ctx.fillStyle = '#e8f0d8'; ctx.beginPath(); ctx.arc(x, y - 0.5 * s, 3.6 * s, 0, TAU); ctx.fill(); ctx.fillRect(x - 2 * s, y + 1.5 * s, 4 * s, 2.4 * s); ctx.fillStyle = '#123018'; ctx.beginPath(); ctx.arc(x - 1.4 * s, y - 0.6 * s, 1 * s, 0, TAU); ctx.arc(x + 1.4 * s, y - 0.6 * s, 1 * s, 0, TAU); ctx.fill(); }
-          if (it.kind === 'ice') { ctx.globalAlpha = 1; drawSprite(ctx, sprite('ice_elemental.shard', s * 0.28), x, y, it.ang, s * 0.28); }
+          if (it.kind === 'ice') { ctx.globalAlpha = 1; drawSprite(ctx, sprite('ice_elemental.shard', s * 1.6), x, y, it.ang, s * 1.6); }
           break;
         }
         case 'bullet': {
@@ -581,14 +590,14 @@
   function bleed(sc, cid, x, y, gy, n) {
     const w = sc.ws(), k = deathKind(cid);
     if (k === 'living' || k === 'demon') sc.drops(x, y, { n: n || 5, col: GREEN_BLOOD.test(cid) ? '#6aa02a' : '#a01e18', speed: 80, ground: gy, ttl: 700, r: 1.4 });
-    else if (k === 'plant') sc.debris(x, y, { names: 'dendroid_guard.leaf', n: 2, s: 0.28, speed: 70, ground: gy, ttl: 700 });
-    else if (k === 'bones') { sc.smoke(x, y, { n: 2, col: '#b8b0a0', size: 4 * w, ttl: 600, vy: -6 * w, a: 0.6 }); sc.debris(x, y, { names: 'skeleton.bone', n: 1, s: 0.22, speed: 70, ground: gy, ttl: 800 }); }
+    else if (k === 'plant') sc.debris(x, y, { names: 'dendroid_guard.leaf', n: 2, s: 1, speed: 70, ground: gy, ttl: 700 });
+    else if (k === 'bones') { sc.smoke(x, y, { n: 2, col: '#b8b0a0', size: 4 * w, ttl: 600, vy: -6 * w, a: 0.6 }); sc.debris(x, y, { names: 'skeleton.bone', n: 1, s: 0.79, speed: 70, ground: gy, ttl: 800 }); }
     else if (k === 'spirit' || k === 'magic') sc.embers(x, y, { n: 4, col: k === 'spirit' ? '#b8a0ff' : '#e0a0ff', ttl: 500, spread: 6, vy: -25 });
     else if (k === 'fire') sc.embers(x, y, { n: 5, col: ['#ffb04a', '#ff6a1f'], ttl: 500, spread: 6 });
     else if (k === 'water') sc.drops(x, y, { n: 5, col: '#4a8ad8', speed: 80, ground: gy, ttl: 600 });
-    else if (k === 'ice') sc.debris(x, y, { names: 'ice_elemental.shard', n: 2, s: 0.22, speed: 80, ground: gy, ttl: 600 });
+    else if (k === 'ice') sc.debris(x, y, { names: 'ice_elemental.shard', n: 2, s: 0.79, speed: 80, ground: gy, ttl: 600 });
     else if (k === 'air') sc.sparks(x, y, { n: 4, col: '#cff4ff', speed: 80, ttl: 260, grav: 0 });
-    else if (k === 'rock') { sc.debris(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 2, s: 0.18, speed: 80, ground: gy, ttl: 700 }); sc.smoke(x, y, { n: 1, col: '#9a8a78', size: 4 * w, ttl: 500, a: 0.6 }); }
+    else if (k === 'rock') { sc.debris(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 2, s: 0.64, speed: 80, ground: gy, ttl: 700 }); sc.smoke(x, y, { n: 1, col: '#9a8a78', size: 4 * w, ttl: 500, a: 0.6 }); }
     else if (k === 'metal' || k === 'wood') sc.sparks(x, y, { n: 6, col: ['#ffd070', '#ff9a3a'], speed: 140, ttl: 300, len: 4 });
   }
 
@@ -596,14 +605,14 @@
   function melee(sc, acid, tcid, A, T, o) {
     o = o || {};
     const w = sc.ws(), dir = T.x >= A.x ? 1 : -1, kind = meleeKind(acid), big = !!o.big;
-    const hx = T.x - dir * T.w * 0.18, hy = T.y - T.h * 0.52, R = (big ? 20 : 15) * w;
+    const hx = T.x - dir * T.w * 0.18, hy = T.y - T.h * 0.52, R = Math.max(T.h * (big ? 0.55 : 0.45), 14 * w);
     const PAL = { blade: ['#8fc8ff', '#ffffff'], fire: ['#ff6a1f', '#ffe0a0'], frost: ['#7fc8ff', '#f0faff'], shock: ['#6ad8ff', '#f4feff'], ghost: ['#7ae0b0', '#e8fff4'], claw: ['#ff8a6a', '#fff4ec'], blunt: ['#ffd070', '#ffffff'] }[kind];
-    if (kind !== 'blunt') sc.slash(hx - dir * 3 * w, hy, { R, dir, col: PAL[0], core: PAL[1], w: big ? 3.4 : 2.6, claws: kind === 'claw', ttl: 250 });
+    if (kind !== 'blunt') sc.slash(hx - dir * 3 * w, hy, { R, dir, col: PAL[0], core: PAL[1], w: big ? 4.2 : 3.2, claws: kind === 'claw', ttl: 280 });
     sc.star(hx + dir * 2 * w, hy + 2 * w, { r: kind === 'blunt' ? 17 : 11, col: kind === 'blunt' ? '#fff4d0' : PAL[1], delay: 60, ttl: 200 });
     if (kind === 'blunt') { sc.ring(hx, hy, { col: '#fff0d0', r0: 3 * w, r1: 20 * w, sq: 1, ttl: 220, under: false, a: 0.6, delay: 50 }); sc.sparks(hx, hy, { n: 6, col: '#ffe8b0', speed: 150, ttl: 260, grav: 250, delay: 50 }); }
     if (kind === 'fire') sc.embers(hx, hy, { n: 6, col: ['#ffb04a', '#ff6a1f'], ttl: 600, spread: 8, delay: 60 });
     if (kind === 'shock') sc.sparks(hx, hy, { n: 6, col: '#aee8ff', speed: 160, ttl: 260, grav: 0, delay: 60 });
-    if (kind === 'frost') sc.debris(hx, hy, { names: 'ice_elemental.shard', n: 3, s: 0.2, speed: 90, ground: T.y, ttl: 600, delay: 60 });
+    if (kind === 'frost') sc.debris(hx, hy, { names: 'ice_elemental.shard', n: 3, s: 0.71, speed: 90, ground: T.y, ttl: 600, delay: 60 });
     if (kind === 'ghost') sc.smoke(hx, hy, { n: 2, col: '#4a7a6a', size: 5 * w, ttl: 600, a: 0.5, delay: 60 });
     bleed(sc, tcid, hx, hy, T.y, big ? 8 : 5);
     if (big || kind === 'blunt') { const d = dustCol(o.terrain); sc.smoke(T.x, T.y - 2 * w, { n: big ? 5 : 3, col: d, size: 7 * w, ttl: 900, vy: -8 * w, out: 30, spread: T.w * 0.4, under: true, a: 0.7, delay: 60, grow: 1.4 }); if (big) sc.ring(T.x, T.y, { col: d, r0: 6 * w, r1: T.w * 0.9, ttl: 380, a: 0.35, delay: 60 }); }
@@ -616,7 +625,7 @@
     const groundDust = (n, a) => sc.smoke(cx, gy - 2 * w, { n, col: dust, size: 7 * w * m, ttl: 1100, vy: -6 * w, out: 26, spread: R.w * 0.45, under: true, a: a || 0.7, grow: 1.5, jitter: 80 });
     switch (k) {
       case 'bones':
-        sc.debris(cx, cy, { names: ['skeleton.bone', 'skeleton.bone', 'skeleton.skull', 'skeleton.bone'], n: Math.round(6 * m), s: 0.26 * m, speed: 120, ground: gy, ttl: 1300, spin: 8 });
+        sc.debris(cx, cy, { names: ['skeleton.bone', 'skeleton.bone', 'skeleton.skull', 'skeleton.bone'], n: Math.round(6 * m), s: 0.93 * m, speed: 120, ground: gy, ttl: 1300, spin: 8 });
         sc.smoke(cx, cy, { n: Math.round(5 * m), col: '#9a948a', size: 7 * w * m, ttl: 1200, vy: -16 * w, spread: R.w * 0.3, a: 0.7 });
         sc.embers(cx, cy, { n: 4, col: '#c8ffd0', ttl: 700, spread: 10, r: 1.4 });
         return 180;
@@ -644,7 +653,7 @@
         sc.smoke(cx, cy, { n: 3, col: '#c8e0f4', size: 7 * w, ttl: 900, vy: -12 * w, a: 0.5 });
         return 170;
       case 'ice':
-        sc.debris(cx, cy, { names: 'ice_elemental.shard', n: 9, s: 0.34, speed: 140, ground: gy, ttl: 1100, spin: 10 });
+        sc.debris(cx, cy, { names: 'ice_elemental.shard', n: 9, s: 1.21, speed: 140, ground: gy, ttl: 1100, spin: 10 });
         sc.glow(cx, cy, { col: '#bfe8ff', hard: true, r: 10 * w, r1: 24 * w, ttl: 260 });
         sc.decal(cx, gy, { kind: 'frost', r: R.w * 0.7, ttl: 2400 });
         sc.smoke(cx, cy, { n: 4, col: '#e0f0ff', size: 7 * w, ttl: 1000, vy: -8 * w, a: 0.6 });
@@ -661,14 +670,14 @@
         sc.sparks(cx, cy, { n: 12, col: ['#f0c0ff', '#a0e0ff'], speed: 150, ttl: 420, grav: 0, delay: 300 });
         return 380;
       case 'rock':
-        sc.debris(cx, cy, { names: cid === 'magma_elemental' ? ['magma_elemental.rock', 'earth_elemental.rock'] : ['stone_golem.rock', 'earth_elemental.rock', 'cyclops.rock'], n: Math.round(7 * m), s: 0.3 * m, speed: 120, ground: gy, ttl: 1300, spin: 6 });
+        sc.debris(cx, cy, { names: cid === 'magma_elemental' ? ['magma_elemental.rock', 'earth_elemental.rock'] : ['stone_golem.rock', 'earth_elemental.rock', 'cyclops.rock'], n: Math.round(7 * m), s: 1.07 * m, speed: 120, ground: gy, ttl: 1300, spin: 6 });
         sc.smoke(cx, cy, { n: 5, col: '#8a7e70', size: 8 * w * m, ttl: 1300, vy: -10 * w, out: 30, spread: R.w * 0.35, a: 0.75 });
         groundDust(3);
         if (cid === 'magma_elemental') sc.embers(cx, cy, { n: 10, col: ['#ffb04a', '#ff6a1f'], ttl: 1000, spread: 12 });
         sc.shake(2, 160);
         return 170;
       case 'metal':
-        sc.debris(cx, cy, { names: [cid === 'automaton' || cid === 'sentinel_automaton' ? 'automaton.gear' : 'iron_golem.gear', 'iron_golem.plate', 'automaton.gear'], n: 7, s: 0.3 * m, speed: 150, ground: gy, ttl: 1300, spin: 12 });
+        sc.debris(cx, cy, { names: [cid === 'automaton' || cid === 'sentinel_automaton' ? 'automaton.gear' : 'iron_golem.gear', 'iron_golem.plate', 'automaton.gear'], n: 7, s: 1.07 * m, speed: 150, ground: gy, ttl: 1300, spin: 12 });
         sc.sparks(cx, cy, { n: 16, col: ['#ffd070', '#ff9a3a', '#ffffff'], speed: 190, ttl: 520, len: 5 });
         sc.glow(cx, cy, { col: '#ffb04a', hard: true, r: 8 * w, r1: 22 * w, ttl: 240 });
         sc.smoke(cx, cy - 4 * w, { n: 5, col: '#2e2c2c', size: 7 * w * m, ttl: 1300, vy: -20 * w, a: 0.7, delay: 80 });
@@ -676,7 +685,7 @@
       case 'wood': case 'plant': {
         const leaves = k === 'plant';
         sc.debris(cx, cy, { names: leaves ? ['dendroid_guard.leaf', 'dendroid_guard.leaf', 'ballista.plank'] : ['ballista.plank', 'automaton.gear'], n: 8, s: leaves ? 0.35 : 0.3, speed: 130, ground: gy, ttl: 1400, spin: 7 });
-        if (leaves) sc.debris(cx, cy - R.h * 0.3, { names: 'dendroid_guard.leaf', n: 5, s: 0.3, speed: 40, grav: 30, ttl: 1500, spin: 3 });
+        if (leaves) sc.debris(cx, cy - R.h * 0.3, { names: 'dendroid_guard.leaf', n: 5, s: 1.07, speed: 40, grav: 30, ttl: 1500, spin: 3 });
         groundDust(4);
         return 200;
       }
@@ -696,8 +705,8 @@
       case 'arrow': case 'bolt': case 'spear': sc.star(x, y, { r: 7, col: '#fff4e0', ttl: 150 }); break;
       case 'ballista': sc.star(x, y, { r: 13 }); sc.sparks(x, y, { n: 6, speed: 140, ttl: 300 }); break;
       case 'axe': sc.star(x, y, { r: 10 }); sc.sparks(x, y, { n: 4, col: '#ffe8c0', speed: 120, ttl: 260 }); break;
-      case 'rock': sc.star(x, y, { r: 14, col: '#fff0d0' }); sc.debris(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 5, s: 0.2, speed: 110, ground: gy, ttl: 900 }); sc.smoke(x, gy - 3 * w, { n: 4, col: dustCol(o && o.terrain), size: 7 * w, ttl: 1000, out: 40, a: 0.7, under: true }); sc.shake(3, 160); break;
-      case 'pebble': sc.star(x, y, { r: 6 }); sc.debris(x, y, { names: 'stone_golem.rock', n: 2, s: 0.08, speed: 70, ground: gy, ttl: 600 }); break;
+      case 'rock': sc.star(x, y, { r: 14, col: '#fff0d0' }); sc.debris(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 5, s: 0.71, speed: 110, ground: gy, ttl: 900 }); sc.smoke(x, gy - 3 * w, { n: 4, col: dustCol(o && o.terrain), size: 7 * w, ttl: 1000, out: 40, a: 0.7, under: true }); sc.shake(3, 160); break;
+      case 'pebble': sc.star(x, y, { r: 6 }); sc.debris(x, y, { names: 'stone_golem.rock', n: 2, s: 0.29, speed: 70, ground: gy, ttl: 600 }); break;
       case 'bomb': explode(sc, x, y, gy, 11 * w, { lite: true, noDecal: false }); sc.shake(2, 140); break;
       case 'bullet': sc.star(x, y, { r: 7, col: '#fff0c0', ttl: 120 }); sc.sparks(x, y, { n: 5, col: '#ffd070', speed: 130, ttl: 240, len: 3 }); sc.smoke(x, y, { n: 1, col: '#c8c0b8', size: 3 * w, ttl: 500, a: 0.5 }); break;
       case 'fire': explode(sc, x, y, gy, (o && o.big ? 16 : 10) * w, { lite: !(o && o.big) }); break;
@@ -712,7 +721,7 @@
       }
       case 'skull': sc.glow(x, y, { col: '#5ae070', r: 10 * w, r1: 22 * w, ttl: 360 }); sc.smoke(x, y, { n: 5, col: '#2a5a30', size: 7 * w, ttl: 900, out: 30, a: 0.65 }); sc.embers(x, y, { n: 6, col: '#a0ffb0', ttl: 700, spread: 8 }); break;
       case 'acid': sc.drops(x, y, { n: 9, col: '#8ac82a', speed: 100, ground: gy, ttl: 800, r: 1.6 }); sc.decal(x, gy, { kind: 'acid', r: 12 * w, ttl: 2000 }); sc.smoke(x, y, { n: 3, col: '#b8e070', size: 5 * w, ttl: 800, vy: -20 * w, a: 0.45, delay: 80 }); break;
-      case 'ice': sc.debris(x, y, { names: 'ice_elemental.shard', n: 5, s: 0.2, speed: 110, ground: gy, ttl: 800 }); sc.glow(x, y, { col: '#bfe8ff', hard: true, r: 6 * w, r1: 16 * w, ttl: 240 }); sc.smoke(x, y, { n: 2, col: '#e0f0ff', size: 5 * w, ttl: 700, a: 0.5 }); break;
+      case 'ice': sc.debris(x, y, { names: 'ice_elemental.shard', n: 5, s: 0.71, speed: 110, ground: gy, ttl: 800 }); sc.glow(x, y, { col: '#bfe8ff', hard: true, r: 6 * w, r1: 16 * w, ttl: 240 }); sc.smoke(x, y, { n: 2, col: '#e0f0ff', size: 5 * w, ttl: 700, a: 0.5 }); break;
     }
   }
 
@@ -720,10 +729,10 @@
   function explode(sc, x, y, gy, R, o) {
     o = o || {};
     const w = sc.ws(), lite = !!o.lite;
-    sc.glow(x, y, { col: '#fff4d0', hard: true, r: R * 0.4, r1: R * 0.9, ttl: 200 });
+    sc.glow(x, y, { col: '#ffe8b0', hard: true, r: R * 0.25, r1: R * 0.6, ttl: 160 });
     sc.glow(x, y, { col: '#ff8a2a', r: R * 0.6, r1: R * 1.35, ttl: 500, a: 0.9 });
     sc.glow(x, gy, { col: '#ff6a1f', r: R * 1.1, r1: R * 1.6, sq: 0.45, ttl: 650, a: 0.55, under: true });
-    sc.ring(x, gy, { col: '#ffc070', r0: R * 0.3, r1: R * 1.8, ttl: 450 });
+    sc.ring(x, gy, { col: '#ffb060', r0: R * 0.3, r1: R * 1.8, ttl: 450, a: 0.6 });
     if (!lite) sc.ring(x, y, { col: '#fff0d0', r0: R * 0.25, r1: R * 1.4, sq: 0.85, ttl: 260, under: false, a: 0.55 });
     for (let i = 0; i < (lite ? 4 : 9); i++) { const a = rnd(0, TAU), sp = rnd(0.6, 1) * R * 2.4; sc.glow(x, y, { col: pick(['#ff9a3a', '#ff6a1f', '#ffc04a']), hard: true, r: R * rnd(0.3, 0.45), r1: R * 0.08, ttl: rnd(380, 580), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.6 - R * 1.4, drag: 2 }); }
     sc.smoke(x, y - R * 0.2, { n: lite ? 3 : 7, col: '#2e2622', size: R * 0.5, grow: 1.5, ttl: 1500, vy: -R * 1.1, spread: R * 0.5, delay: 110, a: 0.72, out: R * 0.8 });
@@ -735,8 +744,8 @@
   /** Аура заклинания над отрядом: руна на земле + символ над головой + «почерк» школы. */
   function aura(sc, R, o) {
     const w = sc.ws(), gy = R.y, top = R.y - R.h - 4 * w, cx = R.x, cy = R.y - R.h * 0.5, good = o.good !== false, col = o.col, dl = o.delay || 0;
-    sc.rune(cx, gy, { glyph: o.glyph, col, r: Math.max(R.w * 0.62, 18 * w), ttl: 1000, delay: dl });
-    sc.glyph(cx, good ? top : top - 14 * w, { glyph: o.glyph, col, size: 20, good, ttl: 950, delay: dl + 60 });
+    sc.rune(cx, gy, { glyph: o.glyph, col, r: Math.max(R.w * 0.78, 22 * w), ttl: 1000, delay: dl });
+    sc.glyph(cx, good ? top - 6 * w : top - 20 * w, { glyph: o.glyph, col, size: 30, good, ttl: 950, delay: dl + 60 });
     if (good) sc.pillar(cx, gy, { col, w: R.w * 0.9, h: R.h * 1.5, ttl: 600, a: 0.45, delay: dl });
     else { sc.smoke(cx, top, { n: 3, col: '#281c30', size: 6 * w, ttl: 900, vy: 10 * w, a: 0.55, delay: dl }); }
     switch (o.school) {
@@ -762,7 +771,7 @@
     const w = sc.ws(), green = o && o.green, col = green ? '#6ae08a' : '#ffe08a';
     if (green) {
       sc.smoke(R.x, R.y - 3 * w, { n: 7, col: '#2a5a34', size: 8 * w, ttl: 1400, vy: -8 * w, a: 0.65, swirl: 2.2, swirlR: R.w * 0.3, under: true });
-      sc.converge(R.x, R.y - R.h * 0.45, { names: ['skeleton.bone', 'skeleton.skull'], n: 6, s: 0.22, R: 34, ttl: 600, jitter: 200 });
+      sc.converge(R.x, R.y - R.h * 0.45, { names: ['skeleton.bone', 'skeleton.skull'], n: 6, s: 0.79, R: 34, ttl: 600, jitter: 200 });
       sc.embers(R.x, R.y, { n: 10, col: ['#8affa0', '#d0ffd8'], ttl: 1100, spread: R.w / w * 0.45, vy: -45, jitter: 300 });
       sc.rune(R.x, R.y, { glyph: 'skull', col, r: Math.max(R.w * 0.62, 18 * w), ttl: 1200 });
     } else {
@@ -800,7 +809,7 @@
       case 'ice_bolt': {
         if (!r0) return; const [x, y] = body(r0);
         await sc.projectile('ice', g.src[0], g.src[1], x, y, { ttl: 320, arc: 12, s: 1.3, trailN: 10 });
-        sc.debris(x, y, { names: 'ice_elemental.shard', n: 8, s: 0.3, speed: 140, ground: r0.y, ttl: 1000 });
+        sc.debris(x, y, { names: 'ice_elemental.shard', n: 8, s: 1.07, speed: 140, ground: r0.y, ttl: 1000 });
         sc.glow(x, y, { col: '#bfe8ff', hard: true, r: 8 * w, r1: 26 * w, ttl: 300 });
         sc.ring(x, y, { col: '#a0d8ff', r0: 4 * w, r1: 26 * w, sq: 1, under: false, ttl: 300, a: 0.7 });
         sc.decal(r0.x, r0.y, { kind: 'frost', r: r0.w * 0.8, ttl: 2600 });
@@ -857,7 +866,7 @@
           sc.glow(x, gy - 6 * w, { col: '#ffb04a', hard: true, r: 10 * w, r1: 26 * w, ttl: 260 });
           sc.ring(x, gy, { col: '#d8a060', r0: 5 * w, r1: g.size * 1.6, ttl: 420 });
           sc.decal(x, gy, { kind: 'crater', r: g.size * 0.95, ttl: 2800 });
-          sc.debris(x, gy - 4 * w, { names: ['earth_elemental.rock', 'magma_elemental.rock', 'stone_golem.rock'], n: 4, s: 0.2, speed: 150, ground: gy + 4 * w, ttl: 900 });
+          sc.debris(x, gy - 4 * w, { names: ['earth_elemental.rock', 'magma_elemental.rock', 'stone_golem.rock'], n: 4, s: 0.71, speed: 150, ground: gy + 4 * w, ttl: 900 });
           sc.smoke(x, gy - 4 * w, { n: 3, col: dustCol(g.terrain), size: 9 * w, ttl: 1300, vy: -14 * w, out: 40, a: 0.8, grow: 1.6 });
           sc.embers(x, gy, { n: 3, col: ['#ffb04a', '#ff6a1f'], ttl: 900, spread: 8 });
           sc.shake(4, 170);
@@ -879,11 +888,11 @@
         sc.decal(r0.x, r0.y, { kind: 'cracks', r: r0.w * 1.3, ttl: 2800 });
         sc.ring(r0.x, r0.y, { col: '#d0a060', r0: 70 * w, r1: 6 * w, ttl: 380 });
         sc.ring(x, y, { col: '#e0b870', r0: 50 * w, r1: 4 * w, ttl: 380, sq: 0.9, under: false });
-        sc.converge(x, y, { names: ['earth_elemental.rock', 'stone_golem.rock', 'magma_elemental.rock'], n: 9, s: 0.26, R: 60, ttl: 380, jitter: 40, sq: 0.8 });
+        sc.converge(x, y, { names: ['earth_elemental.rock', 'stone_golem.rock', 'magma_elemental.rock'], n: 9, s: 0.93, R: 60, ttl: 380, jitter: 40, sq: 0.8 });
         sc.glow(x, y, { col: '#402010', r: 30 * w, r1: 10 * w, ttl: 380, a: 0.6 });
         await wait(390);
         sc.glow(x, y, { col: '#ffe0a0', hard: true, r: 10 * w, r1: 36 * w, ttl: 260 });
-        sc.debris(x, y, { names: ['earth_elemental.rock', 'stone_golem.rock', 'cyclops.rock'], n: 10, s: 0.24, speed: 200, ground: r0.y, ttl: 1100, spread: TAU });
+        sc.debris(x, y, { names: ['earth_elemental.rock', 'stone_golem.rock', 'cyclops.rock'], n: 10, s: 0.86, speed: 200, ground: r0.y, ttl: 1100, spread: TAU });
         sc.smoke(x, y, { n: 6, col: '#8a7a64', size: 9 * w, ttl: 1300, out: 70, vy: -10 * w, a: 0.75 });
         sc.ring(r0.x, r0.y, { col: '#e0b870', r0: 6 * w, r1: 70 * w, ttl: 420 });
         sc.flash('#ffe0a0', 0.2, 180);
@@ -930,7 +939,7 @@
         if (id === 'haste') sc.sparks(r.x - r.w * 0.6, y, { n: 5, col: '#cff4ff', speed: 160, angle: Math.PI, spread: 0.25, grav: 0, ttl: 380, len: 6, delay: dl });
         if (id === 'shield') sc.dome(r.x, y + r.h * 0.05, { rx: r.w * 0.62, ry: r.h * 0.62, col: '#f0d080', ttl: 900, delay: dl });
         if (id === 'air_shield') { sc.dome(r.x, y + r.h * 0.05, { rx: r.w * 0.62, ry: r.h * 0.62, col: '#9fe8ff', ttl: 900, delay: dl }); sc.wind(r.x, r.y, { rx: r.w * 0.62, h: r.h, n: 4, ttl: 900, delay: dl }); }
-        if (id === 'stone_skin') { sc.converge(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 7, s: 0.14, R: 30, ttl: 420, delay: dl }); sc.glow(x, y, { col: '#c8c0b0', r: r.w * 0.4, r1: r.w * 0.6, ttl: 500, delay: dl + 380, mode: 'inout', a: 0.6 }); }
+        if (id === 'stone_skin') { sc.converge(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 7, s: 0.5, R: 30, ttl: 420, delay: dl }); sc.glow(x, y, { col: '#c8c0b0', r: r.w * 0.4, r1: r.w * 0.6, ttl: 500, delay: dl + 380, mode: 'inout', a: 0.6 }); }
         if (id === 'bless' || id === 'prayer') { sc.pillar(r.x, r.y, { col: '#ffe8a0', w: r.w * (id === 'prayer' ? 1.2 : 0.8), h: 360 * w, ttl: 800, delay: dl }); if (id === 'prayer') sc.ring(r.x, r.y, { col: '#ffe8a0', r0: 6 * w, r1: r.w * 1.1, ttl: 600, delay: dl }); }
         if (id === 'bloodlust' || id === 'berserk') { sc.glow(x, y, { col: '#ff3020', r: r.w * 0.45, r1: r.w * 0.7, ttl: 700, mode: 'inout', a: 0.55, delay: dl }); if (id === 'berserk') sc.smoke(x, r.y - r.h, { n: 3, col: '#e8d8d0', size: 5 * w, ttl: 800, vy: -20 * w, a: 0.45, delay: dl + 100 }); }
         if (id === 'blind') { sc.star(x, r.y - r.h * 0.8, { r: 22, col: '#fffbe8', ttl: 320, delay: dl }); sc.glow(x, r.y - r.h * 0.8, { col: '#fff4d0', hard: true, r: 10 * w, r1: 30 * w, ttl: 420, delay: dl }); }

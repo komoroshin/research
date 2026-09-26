@@ -135,6 +135,16 @@
   })() }] });
 
   /* =========================================================== жизнь сцены */
+  /** Готовое пятно света цвета rgb: рисуется одним drawImage с прозрачностью (градиент на кадр не создаём). */
+  const GLOW = {};
+  function glowSprite(rgb) {
+    let cv = GLOW[rgb]; if (cv) return cv;
+    cv = GLOW[rgb] = document.createElement('canvas'); cv.width = cv.height = 32;
+    const c = cv.getContext('2d'), g = c.createRadialGradient(16, 16, 0, 16, 16, 16);
+    g.addColorStop(0, 'rgba(' + rgb + ',1)'); g.addColorStop(0.35, 'rgba(' + rgb + ',0.45)'); g.addColorStop(1, 'rgba(' + rgb + ',0)');
+    c.fillStyle = g; c.fillRect(0, 0, 32, 32);
+    return cv;
+  }
   const rnd = (a, b) => a + Math.random() * (b - a);
   const pick = a => a[Math.floor(Math.random() * a.length)];
   const TAU = Math.PI * 2;
@@ -243,7 +253,7 @@
     }
 
     /* ---------- жители ---------- */
-    const pool = (POOL[fid] || POOL.castle).filter(p => V.has(p[0]) || Sp.has(p[0]));
+    const pool = (POOL[fid] || POOL.castle).filter(p => V.has(p[0]) || (Sp.has(p[0]) && !/^cit_/.test(p[0])));   // без рисованного конвейера — старые спрайты существ
     function makeActor(p, i) {
       const o = p[1] || {}, s = +((o.s || 0.56) * SIZE).toFixed(3), d = V._defs[p[0]];
       const hgt = (d ? d.anchor[1] / 10 : 24) * s;
@@ -504,7 +514,7 @@
     life.drawLights = function (c, ts, night) {
       if (!life.ready) return;
       c.save(); c.globalCompositeOperation = 'lighter';
-      const glow = (x, y, r, rgb, a) => { const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, 'rgba(' + rgb + ',' + a.toFixed(2) + ')'); g.addColorStop(1, 'rgba(' + rgb + ',0)'); c.fillStyle = g; c.fillRect(x - r, y - r, r * 2, r * 2); };
+      const glow = (x, y, r, rgb, a) => { if (a <= 0.01) return; c.globalAlpha = Math.min(1, a); c.drawImage(glowSprite(rgb), x - r, y - r, r * 2, r * 2); };
       for (const a of life.actors) {
         if (a.alpha <= 0.01) continue;
         const fl = 0.85 + 0.15 * Math.sin(ts / 90 + a.ph * 3);
@@ -526,5 +536,5 @@
     return life;
   }
 
-  H3.TownLife = { create, POOL, CRIT, DECOR };
+  H3.TownLife = { create, glowSprite, POOL, CRIT, DECOR };
 })(typeof window !== 'undefined' ? window : globalThis);

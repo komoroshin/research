@@ -444,7 +444,8 @@
       c.save();
       if (kind === 'lava') {
         c.globalCompositeOperation = 'lighter';
-        for (const [x, y, ph] of pts) { const p = Math.max(0, Math.sin(ts / 1400 + ph * 3)); if (p < 0.2) continue; const g = c.createRadialGradient(x, y, 0, x, y, 7); g.addColorStop(0, 'rgba(255,200,90,' + (0.5 * p).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,90,20,0)'); c.fillStyle = g; c.fillRect(x - 7, y - 7, 14, 14); }
+        const gs = H3.TownLife ? H3.TownLife.glowSprite('255,150,60') : null;
+        if (gs) for (const [x, y, ph] of pts) { const p = Math.max(0, Math.sin(ts / 1400 + ph * 3)); if (p < 0.2) continue; c.globalAlpha = 0.55 * p; c.drawImage(gs, x - 8, y - 8, 16, 16); }
       } else if (kind === 'swamp') {
         c.strokeStyle = 'rgba(200,230,210,0.7)'; c.lineWidth = 0.5;
         for (let i = 0; i < pts.length; i += 3) { const [x, y, ph] = pts[i], f = (ts / 2600 + ph) % 1; if (f > 0.5) continue; const rr = 0.6 + f * 3; c.globalAlpha = 1 - f * 2; c.beginPath(); c.ellipse(x, y, rr, rr * 0.55, 0, 0, Math.PI * 2); c.stroke(); }

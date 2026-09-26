@@ -566,6 +566,8 @@
       for (const off of [-8, 6]) TR.puffs.push({ kind: 'puff', col, x: x + dx * off + (rnd() - 0.5) * 3, y: y - 1, vx: fx * (6 + rnd() * 6) + (rnd() - 0.5) * 4, vy: -7 - rnd() * 6, r: 2 + rnd() * 1, g: 2.6, t: ts, life: 900 + rnd() * 500, a, z: info.z });
     }
   }
+  /** Новая партия: следы и гости прежней карты не нужны. */
+  function reset() { TR.marks.length = 0; TR.puffs.length = 0; TR.wake.length = 0; TR.last = null; SEA.ev = null; }
   /** Мягкий клуб: радиальный градиент одного цвета, рисуется один раз на цвет. */
   const puffCache = {};
   function puffSprite(col) {
@@ -605,7 +607,7 @@
         const w = TR.wake[i];
         if (w.z !== z) { prev = null; continue; }
         if (prev) { const g = Math.hypot(w.x - prev.w.x, w.y - prev.w.y); if (g > 8) { prev = null; back = 0; } else back += g; }
-        const age = (ts - w.t) / 2600, spread = 1.2 + back * 0.32 + age * 5, a = Math.pow(1 - age, 1.3) * Math.max(0, 1 - back / 110);
+        const age = (ts - w.t) / 2600, spread = 1.2 + back * 0.32 + age * 5 + Math.sin(back * 0.45 - ts / 160) * 0.5 * Math.min(1, back / 12), a = Math.pow(1 - age, 1.3) * Math.max(0, 1 - back / 110);
         const L = [w.x + w.nx * spread, w.y + w.ny * spread * 0.7], R = [w.x - w.nx * spread, w.y - w.ny * spread * 0.7];
         if (prev && a > 0.02) {
           const p = bk(wl, a); p.moveTo(prev.L[0], prev.L[1]); p.lineTo(L[0], L[1]); p.moveTo(prev.R[0], prev.R[1]); p.lineTo(R[0], R[1]);
@@ -613,9 +615,9 @@
         }
         prev = { w, L, R };
       }
-      ctx.save(); ctx.lineCap = 'round';
+      ctx.save(); ctx.lineCap = 'butt';
       strokeBuckets(ctx, core, '205,232,248', 0.3, 2.2);   // взбитая вода прямо за кормой
-      strokeBuckets(ctx, wl, '236,248,255', 0.65, 0.6);   // расходящиеся усы
+      ctx.lineCap = 'round'; strokeBuckets(ctx, wl, '236,248,255', 0.65, 0.6);   // расходящиеся усы
       ctx.restore();
     }
   }
@@ -657,7 +659,7 @@
     if (texCache[kind]) return texCache[kind];
     const S = TEX_MAP * TEX_RS, cv = document.createElement('canvas'); cv.width = S; cv.height = S;
     const c = cv.getContext('2d'), img = c.createImageData(S, S), d = img.data, stone = kind === 'stone';
-    const base = stone ? [60, 56, 64] : [232, 214, 170], dark = stone ? [34, 31, 38] : [206, 178, 128], lite = stone ? [84, 80, 90] : [246, 234, 200];
+    const base = stone ? [46, 42, 50] : [232, 214, 170], dark = stone ? [26, 24, 30] : [206, 178, 128], lite = stone ? [66, 62, 72] : [246, 234, 200];
     for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
       let n = 0, amp = 0.5, tot = 0;
       for (let o = 0; o < 4; o++) { const P = 3 << o; n += amp * vnoiseP(x / S * P, y / S * P, 31 + o * 7 + (stone ? 100 : 0), P); tot += amp; amp *= 0.5; }
@@ -752,35 +754,56 @@
    * vis — видимость (0 — не открыто). Строится при смене области/видимости, не каждый кадр.
    */
   function fogLayer(vis, m, z, rx0, ry0, rx1, ry1, sc, prev) {
-    const S8 = 8, tw = rx1 - rx0 + 1, th = ry1 - ry0 + 1, w = tw * S8, h = th * S8, stone = !!z;
-    // 1) поле «неизведанности» по 8 точек на клетку, с тем же сдвигом кромки, что и у тумана
-    const a = new Float32Array(w * h), b = new Float32Array(w * h);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      let px = rx0 * TILE + (x + 0.5) * TILE / S8, py = ry0 * TILE + (y + 0.5) * TILE / S8;
-      const d2 = warp(px, py, 12); px += d2[0]; py += d2[1];
-      const mx = Math.floor(px / TILE), my = Math.floor(py / TILE);
-      a[y * w + x] = (mx < 0 || my < 0 || mx >= m.w || my >= m.h) ? 1 : vis[my * m.w + mx] ? 0 : 1;
+    const S8 = 8, S4 = 4, tw = rx1 - rx0 + 1, th = ry1 - ry0 + 1, w = tw * S8, h = th * S8, w4 = tw * S4, h4 = th * S4, stone = !!z;
+    // 1) поле «неизведанности» по 4 точки на клетку (с тем же сдвигом кромки, что у тумана), размытое;
+    //    там же — крупные разводы бумаги. Всё мелкое досчитывается ниже, в 8 точках на клетку.
+    const a = new Float32Array(w4 * h4), b = new Float32Array(w4 * h4), stain = new Float32Array(w4 * h4);
+    // сдвиг кромки и разводы — плавные, поэтому считаются реже (по 2 и по 1 точке на клетку) и интерполируются
+    const w2 = tw * 2 + 2, h2 = th * 2 + 2, wpx = new Float32Array(w2 * h2), wpy = new Float32Array(w2 * h2);
+    for (let y = 0; y < h2; y++) for (let x = 0; x < w2; x++) {
+      const qx = rx0 * TILE + x * 16, qy = ry0 * TILE + y * 16;
+      wpx[y * w2 + x] = (vnoise(qx / 22, qy / 22, 77) * 2 - 1) * 12; wpy[y * w2 + x] = (vnoise(qx / 22 + 40, qy / 22, 78) * 2 - 1) * 12;
     }
-    const R = 3, blur = (src, dst, dx, dy) => { for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0, c = 0; for (let k = -R; k <= R; k++) { const xx = x + k * dx, yy = y + k * dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; s += src[yy * w + xx]; c++; } dst[y * w + x] = s / c; } };
+    const w1 = tw + 2, h1 = th + 2, st1 = new Float32Array(w1 * h1);
+    for (let y = 0; y < h1; y++) for (let x = 0; x < w1; x++) { const qx = (rx0 + x) * TILE, qy = (ry0 + y) * TILE; st1[y * w1 + x] = sstep(0.45, 0.9, vnoise(qx / 150, qy / 150, 403)) * 0.8 + sstep(0.6, 0.95, vnoise(qx / 40, qy / 40, 404)) * 0.35; }
+    const bil = (F, W, fx, fy) => { const ix = fx | 0, iy = fy | 0, u = fx - ix, v = fy - iy, i = iy * W + ix; return (F[i] * (1 - u) + F[i + 1] * u) * (1 - v) + (F[i + W] * (1 - u) + F[i + W + 1] * u) * v; };
+    for (let y = 0; y < h4; y++) for (let x = 0; x < w4; x++) {
+      const qx = rx0 * TILE + (x + 0.5) * TILE / S4, qy = ry0 * TILE + (y + 0.5) * TILE / S4, gx = (x + 0.5) / 2, gy = (y + 0.5) / 2;
+      const px = qx + bil(wpx, w2, gx, gy), py = qy + bil(wpy, w2, gx, gy);
+      const mx = Math.floor(px / TILE), my = Math.floor(py / TILE), i = y * w4 + x;
+      a[i] = (mx < 0 || my < 0 || mx >= m.w || my >= m.h) ? 1 : vis[my * m.w + mx] ? 0 : 1;
+      stain[i] = bil(st1, w1, (x + 0.5) / 4, (y + 0.5) / 4);
+    }
+    const R = 2, blur = (src, dst, dx, dy) => { for (let y = 0; y < h4; y++) for (let x = 0; x < w4; x++) { let s = 0, c = 0; for (let k = -R; k <= R; k++) { const xx = x + k * dx, yy = y + k * dy; if (xx < 0 || yy < 0 || xx >= w4 || yy >= h4) continue; s += src[yy * w4 + xx]; c++; } dst[y * w4 + x] = s / c; } };
     blur(a, b, 1, 0); blur(b, a, 0, 1); blur(a, b, 1, 0); blur(b, a, 0, 1);
+    const samp = (F, x, y) => {   // билинейно из сетки S4 в точку сетки S8
+      const fx = Math.max(0, Math.min(w4 - 1.001, (x + 0.5) / 2 - 0.5)), fy = Math.max(0, Math.min(h4 - 1.001, (y + 0.5) / 2 - 0.5));
+      const ix = fx | 0, iy = fy | 0, u = fx - ix, v = fy - iy, i = iy * w4 + ix;
+      return (F[i] * (1 - u) + F[i + 1] * u) * (1 - v) + (F[i + w4] * (1 - u) + F[i + w4 + 1] * u) * v;
+    };
     // 2) маска (рваная кромка) и тон (обгоревший край, пятна) — две маленькие картинки
     const mk = document.createElement('canvas'); mk.width = w; mk.height = h;
     const tn = document.createElement('canvas'); tn.width = w; tn.height = h;
     const mi = mk.getContext('2d').createImageData(w, h), ti = tn.getContext('2d').createImageData(w, h), md = mi.data, td = ti.data;
-    const burnC = stone ? [[235, 232, 240], [120, 112, 128], [26, 22, 30]] : [[228, 196, 150], [150, 92, 44], [48, 26, 14]];
+    const B = stone ? [235, 232, 240, 120, 112, 128, 26, 22, 30] : [228, 196, 150, 150, 92, 44, 48, 26, 14], ST = stone ? [205, 200, 212] : [232, 214, 188];
+    const burnTop = stone ? 0.72 : 0.8;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const i = y * w + x, wx = rx0 * TILE + (x + 0.5) * TILE / S8, wy = ry0 * TILE + (y + 0.5) * TILE / S8;
+      const i = y * w + x, k4 = i * 4, f0 = samp(a, x, y);
+      if (f0 < 0.25) { td[k4] = td[k4 + 1] = td[k4 + 2] = 255; td[k4 + 3] = 255; continue; }   // открыто и далеко от края
+      const wx = rx0 * TILE + (x + 0.5) * TILE / S8, wy = ry0 * TILE + (y + 0.5) * TILE / S8;
       // рваный край: мелкий шум по кромке
-      const rag = (vnoise(wx / 9, wy / 9, 401) - 0.5) * 0.22 + (vnoise(wx / 3.5, wy / 3.5, 402) - 0.5) * 0.1;
-      const f = a[i] + rag;
-      md[i * 4 + 3] = 255 * sstep(0.44, 0.52, f);
-      // обгоревшая кромка: чем ближе к краю бумаги, тем темнее
-      const burn = 1 - sstep(0.5, stone ? 0.72 : 0.8, f);
-      let c = [255, 255, 255];
-      const big = vnoise(wx / 150, wy / 150, 403), mid = vnoise(wx / 40, wy / 40, 404);
-      c = mix(c, stone ? [205, 200, 212] : [232, 214, 188], sstep(0.45, 0.9, big) * 0.8 + sstep(0.6, 0.95, mid) * 0.35);   // крупные разводы — плитка не читается
-      if (burn > 0) c = burn < 0.45 ? mix(c, burnC[0], burn / 0.45) : burn < 0.8 ? mix(burnC[0], burnC[1], (burn - 0.45) / 0.35) : mix(burnC[1], burnC[2], (burn - 0.8) / 0.2);
-      td[i * 4] = c[0]; td[i * 4 + 1] = c[1]; td[i * 4 + 2] = c[2]; td[i * 4 + 3] = 255;
+      const f = f0 < 0.97 ? f0 + (vnoise(wx / 9, wy / 9, 401) - 0.5) * 0.22 + (vnoise(wx / 3.5, wy / 3.5, 402) - 0.5) * 0.1 : f0;
+      md[k4 + 3] = 255 * sstep(0.44, 0.52, f);
+      // крупные разводы — плитка фактуры не читается; обгоревшая кромка — чем ближе к краю бумаги, тем темнее
+      const sk = samp(stain, x, y);
+      let r = 255 + (ST[0] - 255) * sk, g = 255 + (ST[1] - 255) * sk, bl = 255 + (ST[2] - 255) * sk;
+      const burn = 1 - sstep(0.5, burnTop, f);
+      if (burn > 0) {
+        let o, q, t;
+        if (burn < 0.45) { t = burn / 0.45; r += (B[0] - r) * t; g += (B[1] - g) * t; bl += (B[2] - bl) * t; }
+        else { if (burn < 0.8) { o = 0; q = 3; t = (burn - 0.45) / 0.35; } else { o = 3; q = 6; t = (burn - 0.8) / 0.2; } r = B[o] + (B[q] - B[o]) * t; g = B[o + 1] + (B[q + 1] - B[o + 1]) * t; bl = B[o + 2] + (B[q + 2] - B[o + 2]) * t; }
+      }
+      td[k4] = r; td[k4 + 1] = g; td[k4 + 2] = bl; td[k4 + 3] = 255;
     }
     mk.getContext('2d').putImageData(mi, 0, 0); tn.getContext('2d').putImageData(ti, 0, 0);
     // 3) сборка в пикселях карты × sc
@@ -792,7 +815,7 @@
     const tex = texture(stone ? 'stone' : 'paper');
     for (let ty = Math.floor(Y0 / TEX_MAP) * TEX_MAP; ty < Y0 + HM; ty += TEX_MAP) for (let tx = Math.floor(X0 / TEX_MAP) * TEX_MAP; tx < X0 + WM; tx += TEX_MAP) c.drawImage(tex, tx, ty, TEX_MAP, TEX_MAP);
     // значки: по одному на квадрат 7×7 клеток, только там, где вокруг всё неизведанно
-    const G = 7, ink = stone ? 'rgba(200,196,215,0.34)' : 'rgba(78,48,24,0.62)';
+    const G = 7, ink = stone ? 'rgba(178,170,200,0.5)' : 'rgba(78,48,24,0.62)';
     c.strokeStyle = ink; c.fillStyle = ink; c.lineCap = 'round'; c.lineJoin = 'round';
     const kinds = stone ? ['rune', 'crystal', 'rune'] : ['waves', 'mountains', 'trees', 'waves', 'mountains', 'compass'];
     for (let gy = Math.floor((ry0 - 2) / G); gy <= Math.floor((ry1 + 2) / G); gy++) for (let gx = Math.floor((rx0 - 2) / G); gx <= Math.floor((rx1 + 2) / G); gx++) {
@@ -803,6 +826,9 @@
       for (let y = cy - r; y <= cy + r && clear; y++) for (let x = cx - r; x <= cx + r; x++) { if (x < 0 || y < 0 || x >= m.w || y >= m.h) continue; if (vis[y * m.w + x]) { clear = false; break; } }
       if (!clear) continue;
       c.save(); c.translate(cx * TILE + 16, cy * TILE + 16); c.rotate((hash(gx, gy, 704) - 0.5) * 0.25);
+      if (stone) {   // под землёй значки процарапаны: тёмная борозда и светлая кромка
+        c.save(); c.translate(0.5, 0.6); c.strokeStyle = c.fillStyle = 'rgba(0,0,0,0.55)'; ICONS[kind](c, 16); c.restore();
+      }
       ICONS[kind](c, 16);
       c.restore();
     }
@@ -813,5 +839,5 @@
     return cv;
   }
 
-  H3.MapPaint = { create, PAL, CH, warp, Live: { drawSurf, drawWater, follow, drawGround, drawAir, fogLayer, texture, TR, SEA } };
+  H3.MapPaint = { create, PAL, CH, warp, Live: { drawSurf, drawWater, follow, drawGround, drawAir, fogLayer, texture, TR, SEA, reset } };
 })(typeof window !== 'undefined' ? window : globalThis);
