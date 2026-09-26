@@ -96,6 +96,26 @@
     return '<div class="small muted">Боевые машины</div><div class="artslots">'
       + ids.map(id => '<div class="artslot" title="' + UI.esc(C.get(id).name + ': ' + C.get(id).desc) + '">' + UI.icon(id, 2) + '</div>').join('') + '</div>';
   }
+  /* ---------- кукла: фигура героя с надетым, ячейки слотов у своих мест на теле ----------
+     Рисунок — H3.VecDoll (vec_doll.js). Ячейки те же .artslot[data-slot] (та же механика:
+     тап — снять, долгое нажатие — описание), стоят столбиками слева и справа, от каждой
+     к её месту на фигуре тянется нить. Пустой слот — бледный силуэт типичного артефакта.
+     Без рисованной графики (?vec=0) — прежний ряд ячеек. */
+  const useDoll = () => !!(H3.VecDoll && H3.Vec && H3.Vec.VEC.on);
+  function dollHtml(h) {
+    const Dl = H3.VecDoll, half = Dl.CELL / 2, pc = (v, of) => (v * 100 / of).toFixed(3) + '%';
+    const inSet = {}; for (const st of AR.setsOf(h)) if (st.complete) st.set.parts.forEach(id => { inSet[id] = true; });
+    let lines = '', cells = '';
+    for (const c of Dl.layout()) {
+      const id = h.arts[c.slot], a = id ? AR.get(id) : null;
+      const ex = c.x - c.side * half, kx = ex - c.side * 8;   // край ячейки, изгиб нити
+      lines += '<path class="' + (id ? 'on' : '') + '" d="M' + ex + ' ' + c.y + 'L' + kx + ' ' + c.y + 'L' + c.px.toFixed(1) + ' ' + c.py.toFixed(1) + '"/>'
+        + '<circle class="' + (id ? 'on' : '') + '" cx="' + c.px.toFixed(1) + '" cy="' + c.py.toFixed(1) + '" r="' + (id ? 2.6 : 2) + '"/>';
+      cells += '<div class="artslot dslot' + (a ? ' full r-' + a.cls : '') + (a && inSet[id] ? ' setdone' : '') + '" data-slot="' + c.slot + '" style="left:' + pc(c.x - half, Dl.PW) + ';top:' + pc(c.y - half, Dl.PH) + '">'
+        + (a ? UI.icon('art_' + id, 2) : UI.icon(Dl.HINT[c.slot], 2, 'ghost')) + '<small>' + UI.esc(AR.SLOT_NAMES[c.slot]) + '</small></div>';
+    }
+    return '<div class="doll"><canvas class="dollcv"></canvas><svg class="dlines" viewBox="0 0 ' + Dl.PW + ' ' + Dl.PH + '" preserveAspectRatio="none" aria-hidden="true">' + lines + '</svg>' + cells + '</div>';
+  }
   function artSlotHtml(h, slot) {
     const id = h.arts[slot];
     return '<div class="artslot' + (id ? ' full' : '') + '" data-slot="' + slot + '">' + (id ? UI.icon('art_' + id, 2) : '') + '<small>' + UI.esc(AR.SLOT_NAMES[slot]) + '</small></div>';
