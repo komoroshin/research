@@ -494,36 +494,36 @@
   function towerShapes(f) {
     const out = [el(TX, TG + 4, 118, 12, '#2a2418', 'flat', { line: 0, op: 0.5 })];
     const k = { rh: 40, bw: 64, ma: 0.45, mw: 3, winW: 15, winH: 40 };
-    const std = (o) => { const t = T.tower(TX, TG, 88, 300, Object.assign({}, k, o)); out.push(...t); return t; };
+    const std = (o) => { const t = T.tower(TX, TG, 100, 310, Object.assign({}, k, o)); out.push(...t); return t; };
     switch (f) {
       case 'castle':
-        std({ wall: '#e4e0d6', shade: '#b4b0aa', light: '#f4f2ec', roof: '#3566cc', roofD: '#1f3f8e', finial: GOLD, win: [310, 400], roofH: 200, flag: '#c42a2a', flagL: 70 });
+        std({ wall: '#e4e0d6', shade: '#b4b0aa', light: '#f4f2ec', roof: '#3566cc', roofD: '#1f3f8e', finial: GOLD, win: [282, 352], roofH: 200, flag: '#c42a2a', flagL: 70 });
         break;
       case 'rampart':
-        std({ wall: '#dcd6c0', shade: '#a8a088', light: '#f2eee0', roof: '#4c9a3a', roofD: '#2d6424', finial: GOLD, flare: 0.16, pointed: true, win: [320, 410], roofH: 230, flag: '#3f8f33', flagL: 70 });
+        std({ wall: '#dcd6c0', shade: '#a8a088', light: '#f2eee0', roof: '#4c9a3a', roofD: '#2d6424', finial: GOLD, flare: 0.16, pointed: true, win: [282, 352], roofH: 230, flag: '#3f8f33', flagL: 70 });
         out.push(sh(box(TX - 108, 346, TX + 108, 360), '#8a5a30', 'wood', { flow: 0, line: 1, lines: [ln([[TX - 104, 328], [TX + 104, 328]], 3.4, 0.9, { c: '#5a3a1c' }), ...[-1, -0.5, 0, 0.5, 1].map(q => ln([[TX + q * 100, 346], [TX + q * 100, 328]], 3, 0.9, { c: '#5a3a1c' }))] }));
         out.push(...T.foliage(TX - 70, TG - 40, 50, 36, 4, ['#2f6a24', '#4a8a32', '#5e9e3c', '#76b44a'], 21, { leaf: 0.5 }));
         break;
       case 'tower': {
-        const t = std({ wall: '#eef2f6', shade: '#b8c6d6', light: '#ffffff', roof: '#4f86d0', roofD: '#2a5a9c', top: 'onion', finial: GOLD, winC: '#bfe2ff', winLC: '#2a4a78', win: [310, 400], roofH: 150 });
-        out.push(T.snowcap(TX, t.apex[1] + 70, 60, 1.2), T.snowcap(TX, TG - 300, 96, 1));
+        const t = std({ wall: '#eef2f6', shade: '#b8c6d6', light: '#ffffff', roof: '#4f86d0', roofD: '#2a5a9c', top: 'onion', finial: GOLD, winC: '#bfe2ff', winLC: '#2a4a78', win: [282, 352], roofH: 150 });
+        out.push(T.snowcap(TX, t.apex[1] + 70, 60, 1.2), T.snowcap(TX, TG - 310, 108, 1));
         break;
       }
       case 'inferno': {
         const x = TX;
-        out.push(T.horn(x - 70, TG - 290, -1, 90, '#6a5a50'), T.horn(x + 70, TG - 290, 1, 90, '#6a5a50'));
-        std({ wall: '#40302e', shade: '#221816', light: '#5c4844', top: 'crenel', winC: '#ffa040', winLC: '#2a0a04', pointed: true, win: [320, 410] });
-        out.push(sh(box(x - 52, TG - 336, x + 52, TG - 310), '#2a1e1c', 'steel', { line: 1 }), ...T.flame(x, TG - 330, 48, 110), ...T.flame(x - 30, TG - 330, 22, 60, { c: '#ffa040' }));
+        out.push(T.horn(x - 80, TG - 300, -1, 96, '#6a5a50'), T.horn(x + 80, TG - 300, 1, 96, '#6a5a50'));
+        std({ wall: '#40302e', shade: '#221816', light: '#5c4844', top: 'crenel', winC: '#ffa040', winLC: '#2a0a04', pointed: true, win: [282, 352] });
+        out.push(sh(box(x - 56, TG - 346, x + 56, TG - 320), '#2a1e1c', 'steel', { line: 1 }), ...T.flame(x, TG - 340, 52, 116), ...T.flame(x - 32, TG - 340, 24, 64, { c: '#ffa040' }));
         break;
       }
       case 'necropolis': {
-        const t = std({ wall: '#5a5868', shade: '#33313e', light: '#6e6c7c', roof: '#3e2e4e', roofD: '#1e1628', roofM: 'steel', flare: 0.3, pointed: true, winC: '#b67ae8', winLC: '#1a0e24', win: [320, 410], roofH: 250 });
+        const t = std({ wall: '#5a5868', shade: '#33313e', light: '#6e6c7c', roof: '#3e2e4e', roofD: '#1e1628', roofM: 'steel', flare: 0.3, pointed: true, winC: '#b67ae8', winLC: '#1a0e24', win: [282, 352], roofH: 250 });
         out.push(sh(tube([[TX, t.apex[1] + 14, 5], [TX, t.apex[1] - 44, 1]]), '#34323e', 'steel', { line: 0.6 }), el(TX, t.apex[1] - 6, 9, 9, '#e4dcc6', 'horn', { line: 0.6 }));
         out.push(...T.skull(TX, TG - 250, 22));
         break;
       }
       case 'dungeon': {
-        std({ wall: '#5c4c60', shade: '#342a38', light: '#76667a', roof: '#8a4ac0', roofD: '#4e2a72', finial: '#c890f0', flare: 0.1, pointed: true, winC: '#e090ff', winLC: '#2a0e3a', win: [300, 380], roofH: 220 });
+        std({ wall: '#5c4c60', shade: '#342a38', light: '#76667a', roof: '#8a4ac0', roofD: '#4e2a72', finial: '#c890f0', flare: 0.1, pointed: true, winC: '#e090ff', winLC: '#2a0e3a', win: [282, 352], roofH: 220 });
         out.push(T.rock([P(TX - 130, TG + 4, 1), [TX - 128, TG - 90], [TX - 96, TG - 150], [TX - 60, TG - 110], [TX - 20, TG - 60], [TX + 30, TG - 90], [TX + 80, TG - 170], [TX + 120, TG - 110], P(TX + 132, TG + 4, 1)], '#4a4252', { lines: [ln([[TX - 90, TG - 130], [TX - 70, TG - 40]], 3, 0.5), ln([[TX + 80, TG - 150], [TX + 94, TG - 60]], 3, 0.5)] }));
         for (const [x, h, c, l] of [[TX - 110, 80, '#9a5ae0', -0.15], [TX - 84, 50, '#c890f8', 0.1], [TX + 100, 90, '#b070f0', 0.12], [TX + 124, 54, '#c890f8', 0.25]]) out.push(T.crystal(x, TG, h * 0.24, h, c, l));
         break;
@@ -547,21 +547,21 @@
         break;
       }
       case 'conflux': {
-        const t = std({ wall: '#eef0f6', shade: '#b0b8cc', light: '#ffffff', roof: '#7fd9ea', roofD: '#3a9ab8', roofM: 'gem', pointed: true, winC: '#dcc0ff', winLC: '#4a3a6a', win: [320, 410], roofH: 240 });
-        out.push(sh(box(TX - 100, TG - 306, TX + 100, TG - 290), GOLD, 'gold', { line: 0.8 }));
+        const t = std({ wall: '#eef0f6', shade: '#b0b8cc', light: '#ffffff', roof: '#7fd9ea', roofD: '#3a9ab8', roofM: 'gem', pointed: true, winC: '#dcc0ff', winLC: '#4a3a6a', win: [282, 352], roofH: 240 });
+        out.push(sh(box(TX - 112, TG - 316, TX + 112, TG - 300), GOLD, 'gold', { line: 0.8 }));
         out.push(...T.island(TX + 118, t.apex[1] + 70, 34, '#ff8a3a'));
         break;
       }
       case 'cove': {
-        std({ wall: '#dcc08a', shade: '#a8885a', light: '#eed8a8', roof: '#2a8a8a', roofD: '#16585a', finial: GOLD, win: [410], roofH: 200, flag: '#2a8a8a', flagL: 70 });
+        std({ wall: '#dcc08a', shade: '#a8885a', light: '#eed8a8', roof: '#2a8a8a', roofD: '#16585a', finial: GOLD, win: [352], roofH: 200, flag: '#2a8a8a', flagL: 70 });
         out.push(sh(T.arch(TX, TG - 250, 32, 70), '#1e1610', 'cloth', { ao: 1.4, line: 1.2 }));
         out.push(sh(tube([[TX + 16, TG - 286, 16], [TX - 60, TG - 284, 14], [TX - 82, TG - 284, 16]], { flat0: true, flat1: true }), '#34343c', 'steel', { gloss: 0.9, line: 1 }), el(TX - 82, TG - 284, 5, 14, '#0e0e12', 'flat', { line: 0 }));
         out.push(sh(tube([[TX - 90, TG - 150, 6], [TX, TG - 136, 6], [TX + 90, TG - 150, 6]]), '#c8b080', 'leather', { line: 0.6 }));
         break;
       }
       case 'factory': {
-        std({ wall: '#a8483a', shade: '#6e2a22', light: '#c26050', top: 'dome', roof: '#7a7e88', roofD: '#4a4e56', m: 'cloth', rh: 26, bw: 52, winC: '#ffd070', win: [330, 420], roofH: 90 });
-        out.push(sh(tube([[TX + 60, TG - 330, 16], [TX + 60, TG - 480, 14]], { flat0: true, flat1: true }), '#5a5e66', 'steel', { gloss: 0.8, line: 1, lines: [ln([[TX + 44, TG - 420], [TX + 76, TG - 420]], 5, 0.7)] }), sh(box(TX + 40, TG - 500, TX + 80, TG - 474), '#3a3e46', 'steel', { line: 1 }));
+        std({ wall: '#a8483a', shade: '#6e2a22', light: '#c26050', top: 'dome', roof: '#7a7e88', roofD: '#4a4e56', m: 'cloth', rh: 26, bw: 52, winC: '#ffd070', win: [282, 352], roofH: 90 });
+        out.push(sh(tube([[TX + 66, TG - 340, 16], [TX + 66, TG - 480, 14]], { flat0: true, flat1: true }), '#5a5e66', 'steel', { gloss: 0.8, line: 1, lines: [ln([[TX + 44, TG - 420], [TX + 76, TG - 420]], 5, 0.7)] }), sh(box(TX + 40, TG - 500, TX + 80, TG - 474), '#3a3e46', 'steel', { line: 1 }));
         for (const [x, y, r] of [[TX + 64, TG - 520, 20], [TX + 84, TG - 552, 26], [TX + 110, TG - 590, 30]]) out.push(el(x, y, r, r * 0.8, '#c8c8d0', 'cloth', { op: 0.75, line: 0.6, lc: '#8a8a94' }));
         const rv = []; for (let x = TX - 80; x <= TX + 80; x += 32) rv.push([x, TG - 206, 4], [x, TG - 178, 4]);
         out.push(sh(box(TX - 94, TG - 216, TX + 94, TG - 168), '#7a7e88', 'steel', { gloss: 0.7, line: 1, glint: rv }), ...T.gear(TX - 20, TG - 250, 30, 9, '#b08a3a'));
@@ -586,7 +586,7 @@
       }
     }
     // бойницы на каменных башнях — башня стреляет
-    if (['castle', 'rampart', 'tower', 'inferno', 'necropolis', 'conflux'].includes(f)) out.push(...slit(TX - 46, TG - 120, 56, '#1e1814', { w: 8, cross: true }), ...slit(TX + 46, TG - 120, 56, '#1e1814', { w: 8, cross: true }));
+    if (['castle', 'rampart', 'tower', 'inferno', 'necropolis', 'conflux'].includes(f)) out.push(...slit(TX - 52, TG - 100, 56, '#1e1814', { w: 8, cross: true }), ...slit(TX + 52, TG - 100, 56, '#1e1814', { w: 8, cross: true }));
     return out;
   }
 
@@ -594,34 +594,32 @@
      Вода по форме гекса со скруглёнными углами (соседние гексы рва сливаются в канал), без
      объёма — иначе стыки видны; берег — по левому и правому краю; поверх — приметы фракции. */
   function moatShapes(f) {
-    const m = S[f].moat, out = [], rnd = rngOf(hash(f) + 53), k = 1.08;
-    const hex = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); hex.push([MX + MR * k * Math.cos(a), MY + MR * k * Math.sin(a)]); }
-    const inner = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); inner.push([MX + MR * 0.62 * Math.cos(a), MY + MR * 0.74 * Math.sin(a)]); }
-    out.push(sh(hex, m.c, 'flat', { line: 0 }));
-    out.push(sh(inner, m.deep, 'flat', { line: 0, op: 0.55 }));
-    // берега по вертикальным краям гекса
-    for (const d of [-1, 1]) out.push(sh([P(MX + d * (MW + 14), MY - MR * 0.5, 1), [MX + d * (MW - 8), MY - MR * 0.2], [MX + d * (MW - 12), MY + MR * 0.2], P(MX + d * (MW + 14), MY + MR * 0.5, 1)], m.bank, 'cloth', { line: 0.8, ao: 0.6 }));
+    const m = S[f].moat, out = [], rnd = rngOf(hash(f) + 53);
+    const hexAt = k => { const h = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); h.push(P(MX + MW * k * Math.cos(a) / Math.cos(Math.PI / 6), MY + MR * k * Math.sin(a), 1)); } return h; };
+    out.push(sh(hexAt(1.03), m.c, 'flat', { line: 0 }));
+    // глубина — полоса темнее вдоль канала: у соседних гексов она сходится в одну ленту
+    out.push(sh([P(MX - 44, MY - MR * 1.03, 1), P(MX + 44, MY - MR * 1.03, 1), [MX + 70, MY], P(MX + 44, MY + MR * 1.03, 1), P(MX - 44, MY + MR * 1.03, 1), [MX - 70, MY]], m.deep, 'flat', { line: 0, op: 0.5 }));
     if (m.lava) {
-      for (let i = 0; i < 5; i++) { const x = MX - 80 + i * 40 + rnd() * 16, y = MY - 90 + ((i * 53) % 170); out.push(chunk(x, y, 22 + rnd() * 12, 12 + rnd() * 6, m.crust, rnd, { gloss: 0.1 })); }
-      for (let i = 0; i < 4; i++) out.push(el(MX - 60 + i * 42, MY - 40 + ((i * 71) % 110), 9, 5, '#ffe08a', 'gem', { gloss: 1, rim: 0, line: 0 }));
+      for (const [x, y, rx, ry] of [[MX - 56, MY - 70, 40, 18], [MX + 50, MY + 60, 46, 20]]) out.push(chunk(x, y, rx, ry, m.crust, rnd, { gloss: 0.1, lines: [ln([[x - rx * 0.5, y], [x + rx * 0.4, y - 4]], 3, 0.6, { c: '#ff9a3a' })] }));
+      out.push(sh(tube([[MX - 90, MY + 10, 3], [MX - 30, MY - 6, 4], [MX + 20, MY + 14, 3]]), '#ffe08a', 'flat', { line: 0 }), sh(tube([[MX + 10, MY - 110, 3], [MX + 60, MY - 96, 3]]), '#ffe08a', 'flat', { line: 0 }));
     } else if (m.honey) {
-      out.push(sh(inner, '#f8d060', 'gem', { gloss: 1.2, rim: 0, line: 0, op: 0.5 }));
-      for (let i = 0; i < 4; i++) out.push(sh(T.hexPts(MX - 60 + i * 40, MY - 60 + ((i * 67) % 130), 14), '#e8c060', 'leather', { gloss: 0.5, line: 0.8, lc: '#8a5a08' }));
+      out.push(sh(tube([[MX - 70, MY - 90, 6], [MX - 20, MY - 104, 7], [MX + 30, MY - 92, 6]]), '#fff0a0', 'flat', { line: 0, op: 0.7 }));
+      for (const [x, y] of [[MX - 50, MY + 40], [MX + 56, MY - 30]]) out.push(sh(T.hexPts(x, y, 16), '#e8c060', 'leather', { gloss: 0.5, line: 0.8, lc: '#8a5a08' }));
     } else {
       // блики ряби
-      for (let i = 0; i < 6; i++) { const x = MX - 90 + ((i * 61) % 170), y = MY - 110 + i * 42; out.push(sh(tube([[x, y, 2.6], [x + 26 + (i % 3) * 10, y - 3, 2.6]]), tone(m.c, 0.45), 'flat', { line: 0 })); }
+      for (const [x, y, l] of [[MX - 80, MY - 100, 40], [MX + 10, MY - 40, 34], [MX - 60, MY + 50, 30], [MX + 30, MY + 120, 36]]) out.push(sh(tube([[x, y, 3], [x + l * 0.5, y - 4, 3.4], [x + l, y, 3]]), tone(m.c, 0.5), 'flat', { line: 0, op: 0.8 }));
     }
-    if (m.ice) for (const [x, y, rx] of [[MX - 50, MY - 60, 34], [MX + 40, MY + 30, 40], [MX - 20, MY + 110, 26]]) out.push(chunk(x, y, rx, rx * 0.45, m.ice, rnd, { m: 'gem', gloss: 0.8, lc: '#7a9ab8' }));
-    if (m.lily) for (const [x, y] of [[MX - 70, MY - 40], [MX + 50, MY + 70], [MX + 20, MY - 110]]) out.push(el(x, y, 20, 10, '#4a8a32', 'leather', { line: 0.6, gloss: 0.4 }), el(x + 6, y - 4, 5, 4, '#f4e0f0', 'cloth', { line: 0.4 }));
-    if (m.reeds) for (const x of [MX - MW + 20, MX + MW - 24]) for (let q = -1; q <= 1; q++) out.push(sh(tube([[x + q * 8, MY + 40, 3.5], [x + q * 13, MY - 30 - Math.abs(q) * -10, 2]]), m.reeds, 'leather', { line: 0.5 }), el(x + q * 13, MY - 22 - Math.abs(q) * -10, 4, 10, '#6a4a2a', 'leather', { line: 0.4 }));
-    if (m.bubbles) for (const [x, y] of [[MX - 20, MY + 20], [MX + 30, MY - 50], [MX - 50, MY + 90]]) out.push(el(x, y, 6, 5, tone(m.c, 0.5), 'gem', { gloss: 1, rim: 0, line: 0.4 }));
-    if (m.mist) for (const [x, y, rx] of [[MX - 30, MY - 60, 90], [MX + 40, MY + 50, 80], [MX - 10, MY + 140, 70]]) out.push(el(x, y, rx, 26, m.mist, 'flat', { line: 0, op: 0.32 }));
-    if (m.bones) out.push(sh(tube([[MX - 40, MY + 10, 5], [MX + 10, MY + 20, 5]]), '#e4dcc6', 'horn', { line: 0.6 }), ...T.skull(MX + 40, MY - 20, 12));
-    if (m.shards) for (const [x, y, h, i] of [[MX - 50, MY - 20, 40, 0], [MX + 40, MY + 60, 50, 1], [MX + 10, MY - 90, 30, 0]]) out.push(T.crystal(x, y, h * 0.25, h, m.shards[i], (i - 0.5) * 0.3));
-    if (m.sparkle) for (let i = 0; i < 6; i++) out.push(el(MX - 80 + ((i * 57) % 160), MY - 110 + i * 42, 5, 5, '#ffffff', 'gem', { gloss: 1.2, rim: 0, line: 0, glint: [[MX - 80 + ((i * 57) % 160), MY - 110 + i * 42, 12]] }));
-    if (m.foam) for (let i = 0; i < 4; i++) { const x = MX - 70 + i * 40, y = MY - 80 + ((i * 59) % 160); out.push(sh(tube([[x - 20, y, 3.5], [x, y - 6, 4], [x + 20, y, 3.5]]), '#eef6f8', 'flat', { line: 0 })); }
-    if (m.oil) for (const [x, y, rx] of [[MX - 30, MY - 40, 40], [MX + 30, MY + 80, 34]]) out.push(el(x, y, rx, rx * 0.35, '#6a4a8a', 'gem', { gloss: 1, rim: 0, line: 0, op: 0.35 }));
-    if (m.stakes) for (let i = 0; i < 4; i++) { const x = MX - 60 + i * 40, y = MY + 20 + ((i * 37) % 60) - 30, lean = (i % 3 - 1) * 8; out.push(sh([P(x - 9, y, 1), P(x + lean, y - 70, 1), P(x + 9, y, 1)], m.stakes, f === 'factory' ? 'steel' : 'wood', { flow: -Math.PI / 2, line: 0.9 }), el(x, y, 13, 4, tone(m.c, 0.4), 'flat', { line: 0 })); }
+    if (m.ice) for (const [x, y, rx] of [[MX - 50, MY - 50, 38], [MX + 44, MY + 60, 44]]) out.push(chunk(x, y, rx, rx * 0.45, m.ice, rnd, { m: 'gem', gloss: 0.8, lc: '#7a9ab8' }));
+    if (m.lily) for (const [x, y] of [[MX - 64, MY - 30], [MX + 56, MY + 80]]) out.push(el(x, y, 22, 11, '#4a8a32', 'leather', { line: 0.6, gloss: 0.4 }), el(x + 6, y - 4, 6, 5, '#f4e0f0', 'cloth', { line: 0.4 }));
+    if (m.reeds) for (const [x, y] of [[MX - MW + 26, MY + 20], [MX + MW - 30, MY - 60]]) for (let q = -1; q <= 1; q++) out.push(sh(tube([[x + q * 9, y + 40, 4], [x + q * 15, y - 40 + Math.abs(q) * 14, 2]]), m.reeds, 'leather', { line: 0.5 }), el(x + q * 15, y - 30 + Math.abs(q) * 14, 5, 12, '#6a4a2a', 'leather', { line: 0.4 }));
+    if (m.bubbles) for (const [x, y] of [[MX - 10, MY + 30], [MX + 20, MY - 70], [MX - 40, MY + 100]]) out.push(el(x, y, 7, 6, tone(m.c, 0.5), 'gem', { gloss: 1, rim: 0, line: 0.4 }));
+    if (m.mist) for (const [x, y, rx] of [[MX - 30, MY - 70, 110], [MX + 30, MY + 60, 100]]) out.push(el(x, y, rx, 30, m.mist, 'flat', { line: 0, op: 0.3 }));
+    if (m.bones) out.push(sh(tube([[MX - 50, MY + 10, 6], [MX, MY + 22, 6]]), '#e4dcc6', 'horn', { line: 0.6 }), ...T.skull(MX + 44, MY - 30, 14));
+    if (m.shards) for (const [x, y, h, i] of [[MX - 50, MY - 20, 46, 0], [MX + 44, MY + 70, 56, 1]]) out.push(T.crystal(x, y, h * 0.25, h, m.shards[i], (i - 0.5) * 0.3));
+    if (m.sparkle) for (const [x, y] of [[MX - 70, MY - 90], [MX + 40, MY - 20], [MX - 30, MY + 70], [MX + 60, MY + 120]]) out.push(el(x, y, 5, 5, '#ffffff', 'gem', { gloss: 1.2, rim: 0, line: 0, glint: [[x, y, 14]] }));
+    if (m.foam) for (const [x, y] of [[MX - 60, MY - 80], [MX + 40, MY + 10], [MX - 30, MY + 110]]) out.push(sh(tube([[x - 24, y, 4], [x, y - 8, 5], [x + 24, y, 4]]), '#eef6f8', 'flat', { line: 0 }));
+    if (m.oil) for (const [x, y, rx] of [[MX - 30, MY - 50, 46], [MX + 36, MY + 80, 38]]) out.push(el(x, y, rx, rx * 0.35, '#7a5aa0', 'gem', { gloss: 1, rim: 0, line: 0, op: 0.4 }));
+    if (m.stakes) for (const [x, y, lean] of [[MX - 48, MY - 10, -8], [MX + 4, MY + 16, 4], [MX + 52, MY - 6, 10]]) out.push(sh([P(x - 10, y, 1), P(x + lean, y - 76, 1), P(x + 10, y, 1)], m.stakes, f === 'factory' ? 'steel' : 'wood', { flow: -Math.PI / 2, line: 0.9 }), el(x, y, 15, 5, tone(m.c, 0.4), 'flat', { line: 0 }));
     return out;
   }
 
@@ -655,10 +653,11 @@
     return (V.has(n) || ensure(f)) && V.has(n) ? n : base;
   }
   /** Подсветка гексов рва — под цвет того, что в нём (вода, лава, мёд, туман). */
+  const tints = {};
   function moatTint(f) {
     const m = S[f] && S[f].moat; if (!m || !V.VEC.on) return null;
-    const c = parseInt(m.c.slice(1), 16);
-    return 'rgba(' + (c >> 16 & 255) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ',0.38)';
+    if (!tints[f]) { const c = parseInt(m.c.slice(1), 16); tints[f] = 'rgba(' + (c >> 16 & 255) + ',' + (c >> 8 & 255) + ',' + (c & 255) + ',0.38)'; }
+    return tints[f];
   }
 
   /* ====================================================================== город за стенами

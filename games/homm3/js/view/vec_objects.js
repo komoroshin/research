@@ -144,7 +144,11 @@
     const leafy = cols => (f, r) => [...trunk(...T.tr), ...(T.forks || []), ...crown(cx, cy, rx, ry, k, cols, r)];
     obj(n + '#autumn', leafy(AUTUMN[0]), T.seed);
     obj(n + '#autumn2', leafy(AUTUMN[1]), T.seed);
-    obj(n + '#spring', leafy(SPRING), T.seed);
+    obj(n + '#spring', (f, r) => {   // цветущий сад: розово-белые комья и россыпь лепестков по всей кроне
+      const out = leafy(SPRING)(f, r);
+      for (let i = 0; i < 16; i++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * 0.85; out.push({ e: [cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d, 7, 6], c: r() < 0.5 ? '#ffffff' : '#f8d4e0', m: 'cloth', line: 0.4 }); }
+      return out;
+    }, T.seed);
     obj(n + '#late', (f, r) => bareTree(T.tr, T.cr, r, { left: ['#b8642a', '#d89a34'] }), T.seed);
     obj(n + '#bare', (f, r) => bareTree(T.tr, T.cr, r), T.seed);
     obj(n + '#bud', (f, r) => bareTree(T.tr, T.cr, r, { left: ['#9ad466', '#b8e27a', '#7cc04a'], haze: 'rgba(120,150,80,0.32)' }), T.seed);

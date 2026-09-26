@@ -26,6 +26,11 @@
     const h = U.hashStr('weather:' + st.seed + ':' + Math.floor((st.day - 1) / 2)) % 100;
     return h < 22 ? 'rain' : h < 34 ? 'fog' : 'clear';
   }
+  /** Время года на карте (H3.Season, vec_seasons.js); под землёй сезонов нет. */
+  const seasonOf = st => (st && H3.Season && !V.layer ? H3.Season.of(st.day) : null);
+  /** Зимой дождь идёт снегом (а в конце осени и в начале весны — мокрым снегом с дождём). */
+  const snowfall = st => { const se = seasonOf(st); return !!se && se.snow > 0 && (se.id === 'winter' || se.snow >= 0.3); };
+  const weatherName = st => { const w = weatherOf(st); return w === 'rain' && snowfall(st) ? 'Снегопад' : WEATHER[w].name; };
 
   function init() {
     V.canvas = UI.$('#mapCanvas'); V.ctx = V.canvas.getContext('2d'); V.mini = UI.$('#minimap');
@@ -243,7 +248,9 @@
     const h = a.hero, [hx, hy] = heroDrawPos(h), m = S.lvl(V.state, V.layer);
     const tx = U.clamp(Math.round(hx), 0, m.w - 1), ty = U.clamp(Math.round(hy), 0, m.h - 1);
     const x = hx * TILE + 16, y = hy * TILE + 30, P = painterOf(V.layer);
-    H3.MapPaint.Live.follow(h.id, x, y, ts, { terrain: R.TERRAINS[m.terrain[ty * m.w + tx]], shore: h.boat ? 0 : P.sdf(x, y - 2), boat: !!h.boat, cls: 'hero_' + h.cls, z: V.layer });
+    // зимой по сугробам на траве — те же отпечатки копыт, что в тундре
+    const tr = R.TERRAINS[m.terrain[ty * m.w + tx]], snowy = P.snowAt && P.snowAt(x, y - 2) > 0.5;
+    H3.MapPaint.Live.follow(h.id, x, y, ts, { terrain: snowy ? 'snow' : tr, shore: h.boat ? 0 : P.sdf(x, y - 2), boat: !!h.boat, cls: 'hero_' + h.cls, z: V.layer });
   }
   function heroDrawPos(h) {
     if (V.anim && V.anim.hero.id === h.id) {
@@ -270,7 +277,10 @@
     {
       const cx = Math.max(0, Math.min(m.w - 1, Math.round((V.cam.x + V.w / z / 2) / TILE)));
       const cy = Math.max(0, Math.min(m.h - 1, Math.round((V.cam.y + V.h / z / 2) / TILE)));
-      Sp.setScene(T.sceneLight(st.day, R.TERRAINS[m.terrain[cy * m.w + cx]], V.layer === 1));
+      // в глубокую зиму трава под снегом — и отсвет снизу снежный
+      let bt = R.TERRAINS[m.terrain[cy * m.w + cx]]; const se = seasonOf(st);
+      if (se && se.snow >= 0.85 && (bt === 'grass' || bt === 'dirt' || bt === 'rough')) bt = 'snow';
+      Sp.setScene(T.sceneLight(st.day, bt, V.layer === 1));
     }
     // местность
     if (painted()) { const P = painterOf(V.layer); P.pending = false; P.draw(ctx, x0, y0, x1, y1); if (P.pending) V.dirty = true; ctx.imageSmoothingEnabled = false; }
@@ -456,6 +466,24 @@
   function drawWeather(ctx, st, ts) {
     const w = weatherOf(st); if (w === 'clear' || V.layer) return;
     const W = V.w, H = V.h;
+    if (w === 'rain' && snowfall(st)) {
+      // снегопад: хлопья двумя слоями — дальние мелкие и медленные, ближние крупнее; каждое качается на ветру
+      ctx.save();
+      ctx.fillStyle = 'rgba(200,215,235,0.10)'; ctx.fillRect(0, 0, W, H);
+      const n = Math.round(W * H / 2600);
+      for (let layer = 0; layer < 2; layer++) {
+        ctx.fillStyle = layer ? 'rgba(255,255,255,0.9)' : 'rgba(240,246,255,0.6)'; ctx.beginPath();
+        for (let i = layer; i < n; i += 2) {
+          const seed = i * 97.13, sp = (layer ? 46 : 26) + (i % 5) * 6, r = layer ? 1.4 + (i % 3) * 0.45 : 0.8 + (i % 3) * 0.25;
+          const y = ((seed * 13.3 + ts * sp / 1000) % (H + 20)) - 10;
+          const x = ((seed * 7.7 + ts * 0.012 + Math.sin(ts / 900 + i) * 9) % (W + 40) + W + 40) % (W + 40) - 20;
+          ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
     if (w === 'rain') {
       ctx.save();
       ctx.fillStyle = 'rgba(40,55,80,0.10)'; ctx.fillRect(0, 0, W, H);
@@ -655,7 +683,13 @@
     if (lava && chance(18 * lava / n)) { const x = rnd(X0, X0 + W), y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor(x / TILE); if (R.TERRAINS[m.terrain[ti]] === 'lava' && vis[ti]) fx.add({ x, y, vx: rnd(-4, 4), vy: -rnd(8, 18), ax: 0, ay: 0, ttl: 2500, life: 0, size: rnd(0.8, 1.5), color: ['#ff9a3a', '#ff5a1f', '#f2d34c'][Math.floor(Math.random() * 3)], shape: 'dot', glow: true, shrink: true, sway: true }); }
     if (swamp && chance(3 * swamp / n)) { const x = rnd(X0, X0 + W), y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor(x / TILE); if (R.TERRAINS[m.terrain[ti]] === 'swamp' && vis[ti]) fx.add({ x, y, vx: rnd(2, 6), vy: 0, ax: 0, ay: 0, ttl: 7000, life: 0, size: rnd(10, 18), color: 'rgba(170,200,160,0.2)', shape: 'puff', grow: 0.5 }); }
     if (sand && chance(8 * sand / n)) { const y = rnd(Y0, Y0 + H); const ti = Math.floor(y / TILE) * m.w + Math.floor((X0 + 2) / TILE); if (vis[ti]) fx.add({ x: X0 - 4, y, vx: rnd(40, 70), vy: rnd(-2, 2), ax: 0, ay: 0, ttl: 6000, life: 0, size: 1.2, color: 'rgba(240,220,160,0.55)', shape: 'spark', shrink: false, fade: false }); }
-    if (grass && chance(2.5 * grass / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(6, 16), vy: rnd(14, 24), ax: 0, ay: 0, ttl: 14000, life: 0, size: rnd(1.2, 2), color: ['#5cb84a', '#a67c1c', '#e8792b'][Math.floor(Math.random() * 3)], shape: 'square', shrink: false, fade: false, sway: true });
+    // над травой — по сезону: летом редкий лист, осенью листопад, зимой снег, весной лепестки садов
+    const se = seasonOf(st);
+    if (grass && se && se.snow > 0 && chance(40 * se.snow * grass / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(-8, 8), vy: rnd(18, 34), ax: 0, ay: 0, ttl: 14000, life: 0, size: rnd(0.8, 1.6), color: 'rgba(255,255,255,0.85)', shape: 'dot', shrink: false, fade: false, sway: true });
+    if (grass && se && se.id === 'spring' && chance(9 * se.bloom * grass / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(4, 12), vy: rnd(8, 15), ax: 0, ay: 0, ttl: 16000, life: 0, size: rnd(0.9, 1.4), color: ['#fbe0ea', '#f4b8cc', '#ffffff'][Math.floor(Math.random() * 3)], shape: 'dot', shrink: false, fade: false, sway: true });
+    const leafRate = !se ? 2.5 : se.id === 'winter' ? 0 : se.id === 'autumn' ? 3 + se.leaves * 14 : 1.5 + se.leaves * 5;
+    const LC = se && se.id === 'autumn' ? ['#e0a02a', '#d06a26', '#b8401e', '#ecc444', '#a8741c'] : ['#5cb84a', '#a67c1c', '#e8792b'];
+    if (grass && leafRate && chance(leafRate * grass / n)) fx.add({ x: rnd(X0, X0 + W), y: Y0 - 4, vx: rnd(6, 16), vy: rnd(14, 24), ax: 0, ay: 0, ttl: 14000, life: 0, size: rnd(1.2, 2), color: LC[Math.floor(Math.random() * LC.length)], shape: 'square', shrink: false, fade: false, sway: true });
     // дым из труб: города и шахты в кадре
     for (const id in st.objects) {
       const o = st.objects[id]; if ((o.z || 0) !== V.layer) continue;
@@ -776,9 +810,10 @@
       const cls = prev && p.res[r] !== prev[r] ? (p.res[r] > prev[r] ? ' class="res-up"' : ' class="res-down"') : '';
       return '<span' + cls + ' title="' + UI.esc(O.RES_NAMES[r]) + ': +' + (inc[r] || 0) + ' в день">' + UI.resIcon(r) + '<b>' + U.fmt(p.res[r]) + '</b></span>';
     }).join('') + '<span class="muted" title="Доход в день">' + UI.icon('ic_day') + '+' + U.fmt(inc.gold) + '</span>';
-    const wx = WEATHER[weatherOf(st)].name;
+    const wx = weatherName(st);
     const wkShort = st.week && st.week.short ? ' · ' + st.week.short : '';
-    UI.$('#datebar').textContent = S.dateStr(st.day) + ' · ' + T.daylight(st.day).name + (wx ? ' · ' + wx : '') + wkShort + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
+    const sea = H3.Season ? ' · ' + H3.Season.of(st.day).name : '';   // «Месяц 2, неделя 1, день 3 · осень · …»
+    UI.$('#datebar').textContent = S.dateStr(st.day) + sea + ' · ' + T.daylight(st.day).name + (wx ? ' · ' + wx : '') + wkShort + (p.daysWithoutTown ? ' · без города: ' + p.daysWithoutTown + '/7' : '');
     V.prevRes = { pid: p.id, res: Object.assign({}, p.res) };
     const sel = G.selected();
     const hp = UI.$('#heroPanel');

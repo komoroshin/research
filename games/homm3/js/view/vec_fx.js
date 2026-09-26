@@ -230,7 +230,9 @@
 
   /* ======================= сцена ======================= */
   function scene(fx) {
-    const S = { under: [], over: [], t: 0, rate: 1, waits: [], bounds: { w: 2000, h: 1200 }, size: 26 };
+    // zk — поправка на отдаление камеры (бой ставит её каждый кадр): снаряды, дуги ударов, звёзды
+    // попаданий и молнии рисуются крупнее, чтобы на экране не мельчать; траектории и разлёт — без неё
+    const S = { under: [], over: [], t: 0, rate: 1, waits: [], bounds: { w: 2000, h: 1200 }, size: 26, zk: 1 };
     const ws = () => S.size / 26;
     function push(it) {
       it.t = -(it.delay || 0);
@@ -372,7 +374,7 @@
         br.push(jag(p[0], p[1], p[0] + Math.cos(a) * L, p[1] + Math.sin(a) * L, L * 0.2, 3));
       }
       const alt = o.restrike === false ? null : jag(x1, y1, x2, y2, amp * 0.8, o.depth || 5);
-      return push({ ttl: o.ttl || 420, delay: o.delay, add: true, main, br, alt, wd: (o.w || 2) * w, col: o.col || '#7fc8ff',
+      return push({ ttl: o.ttl || 420, delay: o.delay, add: true, main, br, alt, wd: (o.w || 2) * w * S.zk, col: o.col || '#7fc8ff',
         draw(ctx, k, it) {
           const t = it.t, a = t < 70 ? 1 : t < 115 ? 0.2 : t < 170 ? 0.95 : Math.pow(1 - (t - 170) / Math.max(1, it.ttl - 170), 1.6) * 0.8;
           const pts = t >= 115 && it.alt ? it.alt : it.main;
@@ -384,7 +386,7 @@
         } });
     };
     /** Луч: прямой пульсирующий поток между точками. */
-    sc.beam = (x1, y1, x2, y2, o) => push({ ttl: o.ttl || 450, delay: o.delay, add: true, x1, y1, x2, y2, col: o.col, wd: (o.w || 3) * ws(),
+    sc.beam = (x1, y1, x2, y2, o) => push({ ttl: o.ttl || 450, delay: o.delay, add: true, x1, y1, x2, y2, col: o.col, wd: (o.w || 3) * ws() * S.zk,
       draw(ctx, k, it) { const a = fade(k, 'inout'), puls = 1 + 0.3 * Math.sin(it.t / 25);
         const grow = Math.min(1, k * 5), ex = it.x1 + (it.x2 - it.x1) * grow, ey = it.y1 + (it.y2 - it.y1) * grow;
         ctx.lineCap = 'round'; ctx.strokeStyle = it.col;
@@ -395,7 +397,7 @@
     sc.decal = (x, y, o) => push({ x, y, ttl: o.ttl || 2600, delay: o.delay, under: true, add: false, r: o.r, sq: o.sq || 0.42, tx: decalTex(o.kind), a: o.a === undefined ? 1 : o.a,
       draw(ctx, k, it) { const r = it.r * (k < 0.06 ? 0.6 + 0.4 * k / 0.06 : 1); ctx.globalAlpha = c01(it.a * (k < 0.06 ? k / 0.06 : k > 0.6 ? (1 - k) / 0.4 : 1)); ctx.drawImage(it.tx, it.x - r, it.y - r * it.sq, r * 2, r * 2 * it.sq); } });
     /** Дуга удара: след лезвия проносится и тает. claws — три параллельных следа. */
-    sc.slash = (x, y, o) => push({ x, y, ttl: o.ttl || 260, add: true, dir: o.dir || 1, R: o.R, col: o.col || '#9fd0ff', core: o.core || '#ffffff', wd: (o.w || 3) * ws(), claws: o.claws || 0, tilt: o.tilt === undefined ? rnd(-0.35, 0.2) : o.tilt,
+    sc.slash = (x, y, o) => push({ x, y, ttl: o.ttl || 260, add: true, dir: o.dir || 1, R: o.R * Math.sqrt(S.zk), col: o.col || '#9fd0ff', core: o.core || '#ffffff', wd: (o.w || 3) * ws() * S.zk, claws: o.claws || 0, tilt: o.tilt === undefined ? rnd(-0.35, 0.2) : o.tilt,
       draw(ctx, k, it) {
         const head = eOut(Math.min(1, k / 0.42)), fadeA = k < 0.42 ? 1 : 1 - (k - 0.42) / 0.58;
         ctx.save(); ctx.translate(it.x, it.y); ctx.scale(it.dir, 1); ctx.rotate(it.tilt); ctx.lineCap = 'round';
@@ -414,7 +416,7 @@
         ctx.restore();
       } });
     /** Вспышка попадания: четырёхлучевая звезда + пятно. */
-    sc.star = (x, y, o) => { const w = ws(); sc.glow(x, y, { col: o.col || '#fff0c0', hard: true, r: (o.r || 10) * w * 0.6, r1: (o.r || 10) * w * 1.2, ttl: o.ttl || 200, delay: o.delay });
+    sc.star = (x, y, o) => { const w = ws() * S.zk; sc.glow(x, y, { col: o.col || '#fff0c0', hard: true, r: (o.r || 10) * w * 0.6, r1: (o.r || 10) * w * 1.2, ttl: o.ttl || 200, delay: o.delay });
       return push({ x, y, ttl: o.ttl || 180, delay: o.delay, add: true, r: (o.r || 10) * w, rot: rnd(0, 0.8), col: o.col || '#fff0c0',
         draw(ctx, k, it) { const r = it.r * (0.5 + eOut(k) * 0.9), t = r * 0.13; ctx.globalAlpha = c01(1 - k); ctx.fillStyle = it.col;
           ctx.save(); ctx.translate(it.x, it.y); ctx.rotate(it.rot);
@@ -466,7 +468,7 @@
     sc.projectile = (kind, x1, y1, x2, y2, o) => new Promise(res => {
       o = o || {};
       const w = ws();
-      push({ kind, x1, y1, x2, y2, x: x1, y: y1, ang: Math.atan2(y2 - y1, x2 - x1), ttl: o.ttl || 300, delay: o.delay, arc: (o.arc === undefined ? 20 : o.arc) * w, spin: rnd(0, TAU), s: (o.s || 1) * w, hist: [], add: false, next: 0, col: o.col,
+      push({ kind, x1, y1, x2, y2, x: x1, y: y1, ang: Math.atan2(y2 - y1, x2 - x1), ttl: o.ttl || 300, delay: o.delay, arc: (o.arc === undefined ? 20 : o.arc) * w, spin: rnd(0, TAU), s: (o.s || 1) * w * S.zk, hist: [], add: false, next: 0, col: o.col,
         step(s, it) { const k = Math.min(1, it.t / it.ttl), px = it.x, py = it.y; it.x = it.x1 + (it.x2 - it.x1) * k; it.y = it.y1 + (it.y2 - it.y1) * k - Math.sin(k * Math.PI) * it.arc;
           if (it.x !== px || it.y !== py) it.ang = Math.atan2(it.y - py, it.x - px); it.spin += s * (o.spinRate || 14);
           it.hist.unshift([it.x, it.y]); if (it.hist.length > (o.trailN || 9)) it.hist.pop();

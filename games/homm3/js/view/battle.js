@@ -94,6 +94,8 @@
     V.clouds = [];
     if (V.b.terrain !== 'subter' && !V.bg.s) for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
   }
+  /** Участок осады в стиле фракции города (wall_ok@inferno…); нет своего рисунка — общий. */
+  function siegeSprite(spr) { const SV = H3.SiegeView, f = V.b && V.b.siege && V.b.siege.faction; return SV && f ? SV.name(spr, f) : spr; }
   /** Город, который штурмуют, — на заднике за линией стен (рисунок фракции, дымка, свет дня). */
   function paintSiegeTown(hz) {
     const SV = H3.SiegeView; if (!SV || !V.b.siege.faction) return;
@@ -524,20 +526,47 @@
     V.fx.puff(tx, ty, { n: 6, color: 'rgba(120,110,100,0.5)', size: 7, ttl: spd(700) });
     V.fx.shake(e.result === 'destroy' ? 7 : 3, spd(260));
   }
-  /** Позиция фигуры героя у края поля: [x, земля]. */
-  function heroPos(side) {
-    const [, gy] = Hex.center(0, Bt.GATE_ROW, V.size, V.ox, V.oy);
-    return [side === 0 ? V.ox - V.margin * 0.5 : V.ox + V.fw + V.margin * 0.5, gy + V.size * 0.9];
+  /**
+   * Место героя: верхний угол поля своей стороны, как в оригинале. Всадник стоит над верхним рядом
+   * (гексы и отряды не закрывает — отряды верхнего ряда рисуются перед ним), знамя вкопано в поле-кайму
+   * у края. Масштаб — по запасу высоты над полем; при отдалении герой растёт в мире (~ 1/зум^0.8),
+   * чтобы на экране оставаться заметным: поле тогда стоит ниже середины, над ним свободная сцена.
+   * → { x, y — копыта, s — точек мира на клетку, px, py — основание древка, fwd }
+   */
+  function heroGeom(side) {
+    const h = V.b.sides[side].hero, sz = (BH && h && BH.size('hero_' + h.cls)) || { h: 33, back: 15.5, front: 19.5 };
+    const s0 = U.clamp(Math.min((V.oy - 2) / sz.h, (V.oy + V.size * 0.9 - 3) / ((BH ? BH.POLE : 40) + 7)), 1.2, 3.4);
+    const s = s0 * (V.cam.z < 1 ? Math.min(1.9, Math.pow(1 / V.cam.z, 0.8)) : 1);
+    const fwd = side === 0 ? 1 : -1, edge = side === 0 ? 0 : (V.worldW || V.cw);
+    const px = edge + fwd * Math.max(9, 4.5 * s);
+    return { x: px + fwd * (sz.back + 1.5) * s, y: V.oy + 1, s, px, py: V.oy + V.size * 0.9, fwd };
   }
+  /** Позиция героя: [x, земля] (источник заклинаний, если рисованного всадника нет). */
+  function heroPos(side) { const g = heroGeom(side); return [g.x, g.y]; }
+  const HERO_END = 1300;
   function drawHeroFigure(ctx, side, sc, ts) {
     const h = V.b.sides[side].hero; const name = 'hero_' + h.cls;
     if (!Sp.has(name)) return;
+    const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
+    if (BH && H3.Vec.has(name)) {
+      const G = heroGeom(side), tint = Sp.teamTint(color), cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / (V.heroCastT ? V.heroCastT[side] : 900) : 0;
+      // исход боя: победа — знамя поднято; поражение — приспущено; бегство и сдача — ещё и уезжает
+      let pose = null, pt = 0;
+      const E = V.endPose;
+      if (E) { pt = Math.min(1, E.t / HERO_END); pose = E.winner === side ? 'win' : (E.reason === 'retreat' || E.reason === 'surrender') && E.winner !== side ? 'flee' : E.reason === 'draw' ? 'lose' : 'lose'; }
+      const away = pose === 'flee' ? Math.pow(U.clamp((pt - 0.22) / 0.78, 0, 1), 1.6) : 0;
+      const cur = Bt.current(V.b), myTurn = !E && cur && cur.side === side;
+      BH.banner(ctx, { x: G.px, y: G.py, s: G.s, flip: side === 1, t: ts, key: 'ban' + side, tint, SC: Sp.SCENE, raise: pose === 'win' ? Math.min(1, pt * 3) : 0, lower: pose && pose !== 'win' ? Math.min(1, pt * 3) : 0, vigor: myTurn ? 1.25 : 0.85 });
+      const tip = BH.rider(ctx, { name, x: G.x - G.fwd * away * 26 * G.s, y: G.y, s: G.s, flip: (side === 1) !== (away > 0), t: ts, ph: An.phaseOf('hero' + side), tint, SC: Sp.SCENE, day: V.day,
+        cast, castCol: V.heroCastCol ? V.heroCastCol[side] : null, pose, pt, alpha: 1 - away * away });
+      if (tip) { V.heroTip = V.heroTip || []; V.heroTip[side] = tip; return; }
+    }
     const [x, y] = heroPos(side);
-    const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / 600 : 0;
+    // запасной путь (рисованные выключены, ?vec=0): старый спрайт с процедурной анимацией
+    const cast = V.heroCast[side] > 0 ? 1 - V.heroCast[side] / (V.heroCastT ? V.heroCastT[side] : 900) : 0;
     const ao = { t: ts, phase: An.phaseOf('hero' + side), dir: side === 0 ? 1 : -1, cast, key: 'bh' + side, rate: An.rateOf(name) };
     const st = An.state(ao); ao.st = st;
     ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(x, y - 1, V.size * 0.5, V.size * 0.17, 0, 0, Math.PI * 2); ctx.fill();
-    const color = (H3.Game.state && h.owner >= 0 && H3.Game.state.players[h.owner]) ? H3.Game.state.players[h.owner].color : '#999';
     T.castShadow(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, V.day, 0.8, 0.5);
     An.draw(ctx, name, x, y, Math.max(1, Math.round(sc * 1.3 * 2) / 2), side === 1, ao, Sp.teamTint(color));
     if (cast > 0 && fxOn() && Math.random() < 0.5) V.fx.add({ x: x + rnd(-8, 8), y: y - V.size * 1.6, vx: rnd(-10, 10), vy: -rnd(20, 40), ax: 0, ay: 0, ttl: 400, life: 0, size: 2, color: '#e6a0ff', shape: 'spark', glow: true, shrink: true });
@@ -547,9 +576,15 @@
     const b = V.b;
     if (!fxOn()) { for (const tg of targets) flashUnit(tg, SP.SCHOOL_COLORS[sp.school]); return; }
     const col = SP.SCHOOL_COLORS[sp.school];
-    V.heroCast[e.side] = 600;
+    // герой вскидывает руку с оружием/посохом; заклинание срывается с острия, когда рука наверху
+    V.heroCastT[e.side] = V.heroCast[e.side] = spd(1000); V.heroCastCol[e.side] = col;
+    const drawn = V.showHeroes && BH && b.sides[e.side].hero && H3.Vec.has('hero_' + b.sides[e.side].hero.cls);
+    if (drawn) await wait(spd(270));
+    if (!V.b) return;
     const [hx, hy] = V.showHeroes ? heroPos(e.side) : [e.side === 0 ? V.ox : V.ox + V.fw, V.oy + V.size * 6];
-    const src = [hx, hy - V.size * 1.4];
+    const src = drawn && V.heroTip && V.heroTip[e.side] ? V.heroTip[e.side].slice() : [hx, hy - V.size * 1.4];
+    if (drawn && vOn()) BH.castFx(V.vfx, src[0], src[1], col);
+    else if (drawn) V.fx.burst(src[0], src[1], { n: 12, color: ['#fff', col], speed: 90, ttl: spd(320), shape: 'spark', glow: true });
     const rects = targets.map(unitRect);
     const hex = e.hex ? Hex.center(e.hex[0], e.hex[1], V.size, V.ox, V.oy) : (rects[0] ? [rects[0].x, rects[0].y - V.size * 0.4] : null);
     const id = sp.id, fx = V.fx;
@@ -674,8 +709,10 @@
     for (const f of V.floats.slice()) { f.t += dt; if (f.t >= f.ms) { V.floats.splice(V.floats.indexOf(f), 1); if (f.done) f.done(); } }
     for (const id in V.pos) { const p = V.pos[id]; if (p.shake > 0) p.shake -= dt; if (p.flash > 0) p.flash -= dt; }
     for (let i = 0; i < 2; i++) if (V.heroCast[i] > 0) V.heroCast[i] -= dt;
+    if (V.endPose) V.endPose.t += dt;
     if (V.fx) { V.fx.update(dt); ambient(dt); }
-    if (V.vfx) { V.vfx.S.rate = V.speed === 2 ? 2 : 1; V.vfx.update(dt); }
+    // снаряды и дуги ударов при отдалении растут, чтобы на экране не мельчать (стрела ≥ ~12 точек)
+    if (V.vfx) { V.vfx.S.rate = V.speed === 2 ? 2 : 1; V.vfx.S.zk = U.clamp(0.78 / (V.cam.z * V.size / 26), 1, 2.2); V.vfx.update(dt); }
     for (const c of V.clouds) { c.x += c.v * dt / 1000; if (c.x - c.w > V.worldW) c.x = -c.w; }
     draw(ts);
   }
@@ -684,8 +721,16 @@
     // свет поля боя: небо по времени суток, отсвет земли по местности —
     // на лаве отряды снизу горят оранжевым, на снегу получают холодный подбой
     Sp.setScene(T.sceneLight(V.day || 4, b.terrain, b.terrain === 'subter'));
-    // отдалённое поле короче холста: низ заливаем, иначе там остаются прошлые кадры
-    if (V.cam.z < 1) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#16110c'; ctx.fillRect(0, 0, V.canvas.width, V.canvas.height); }
+    // отдалённое поле короче холста: сверху продолжаем небо (там стоят герои), снизу — землю, уходящую в тень
+    if (V.cam.z < 1) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const cvH = V.canvas.height, top = Math.max(0, Math.round(-V.cam.y * V.cam.z * V.dpr)), bot = Math.min(cvH, Math.round((V.ch - V.cam.y) * V.cam.z * V.dpr));
+      const E = V.bgEdge || { top: '#5f7fa8', bottom: '#2e2a1c' };
+      let g = ctx.createLinearGradient(0, 0, 0, top + 1); g.addColorStop(0, BH ? BH.shade(E.top, -0.35) : E.top); g.addColorStop(1, E.top);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, V.canvas.width, top + 1);
+      g = ctx.createLinearGradient(0, bot - 1, 0, cvH); g.addColorStop(0, E.bottom); g.addColorStop(1, BH ? BH.shade(E.bottom, -0.6) : '#16110c');
+      ctx.fillStyle = g; ctx.fillRect(0, bot - 1, V.canvas.width, cvH - bot + 1);
+    }
     ctx.setTransform(V.dpr * V.cam.z, 0, 0, V.dpr * V.cam.z, -V.cam.x * V.dpr * V.cam.z, -V.cam.y * V.dpr * V.cam.z); ctx.imageSmoothingEnabled = false;
     if (V.fx) { const [sx, sy] = V.fx.shakeOffset(); ctx.translate(Math.round(sx), Math.round(sy)); }
     // параллакс: небо и дальний план отстают от земли, поле получает глубину при панораме
@@ -706,7 +751,7 @@
       let fill = null;
       if (V.reach && V.reach.hexes.has(c + ',' + r) && !(cur && Bt.occupies(cur, c, r))) { const k = V.reach.speed ? V.reach.hexes.get(c + ',' + r).cost / V.reach.speed : 0; fill = 'rgba(120,220,120,' + (0.2 - 0.12 * k).toFixed(2) + ')'; }
       if (V.tactics) { const side = b.tactics.side; if (side === 0 ? c < b.tactics.dist : c >= W - b.tactics.dist) fill = 'rgba(241,207,116,0.22)'; }
-      if (Bt.isMoat(b, c, r)) fill = 'rgba(40,90,180,0.45)';
+      if (Bt.isMoat(b, c, r)) fill = (H3.SiegeView && H3.SiegeView.moatTint(b.siege.faction)) || 'rgba(40,90,180,0.45)';
       if (V.spellMode && V.spellMode.area && V.hover && Hex.dist(c, r, V.hover[0], V.hover[1]) <= (V.spellMode.area === 'ring' ? 1 : V.spellMode.area) && !(V.spellMode.area === 'ring' && Hex.dist(c, r, V.hover[0], V.hover[1]) === 0)) fill = 'rgba(200,80,255,0.25)';
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
       // сетка почти не видна: поле — картина, а не миллиметровка; ярче только там, куда можно пойти
@@ -719,7 +764,7 @@
       for (const [hx, hy] of hexes) {
         const [x, y] = Hex.center(hx, hy, size, V.ox, V.oy); const pts = Hex.polygon(x, y, size - 1);
         ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
-        ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2 * kz(); ctx.stroke();
       }
     }
     if (V.tactics && V.tactics.sel !== null) {
@@ -727,8 +772,11 @@
       ctx.strokeStyle = 'rgba(241,207,116,0.95)'; ctx.lineWidth = 2; ctx.beginPath();
       ctx.ellipse(p.x, p.y + size * 0.55, size * (Bt.isBig(su) ? 1.5 : 0.75), size * 0.32, 0, 0, Math.PI * 2); ctx.stroke();
     }
-    // текущий юнит
-    if (cur) { const p = V.pos[cur.id]; const wide = Bt.isBig(cur) ? 1.5 : 0.75; ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 180)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x, p.y + size * 0.55, size * wide, size * 0.32, 0, 0, Math.PI * 2); ctx.stroke(); }
+    // текущий отряд: ровное золотое пятно с кольцом (без мигания); цель под пальцем/курсором — своим цветом
+    V.curId = cur && !V.tactics ? cur.id : null;
+    if (cur && !V.tactics) { const p = V.pos[cur.id]; const wide = Bt.isBig(cur) ? 1.45 : 0.72; BH.activeMark(ctx, p.x, p.y + size * 0.55, size * wide, size * 0.34, kz()); }
+    const tgt = targetOf(cur);
+    if (tgt) { const p = V.pos[tgt.u.id]; BH.targetMark(ctx, p.x, p.y + size * 0.55, size * (Bt.isBig(tgt.u) ? 1.4 : 0.7), size * 0.33, tgt.col, kz(), ts); }
     if (V.fx) V.fx.drawUnder(ctx);
     if (V.vfx) V.vfx.drawUnder(ctx);
     // препятствия, стены, юниты — по рядам
@@ -743,8 +791,9 @@
       if (Bt.TOWER_ROWS[r]) spr = 'siege_tower';
       else if (r === Bt.GATE_ROW) spr = b.siege.gate > 0 ? 'gate' : 'gate_broken';
       else { const seg = Bt.WALL_SEGMENTS[r]; const st = b.siege.walls[seg]; spr = st === 2 ? 'wall_ok' : st === 1 ? 'wall_dmg' : 'wall_broken'; }
+      spr = siegeSprite(spr);
       items.push({ y: y + 0.5, draw: () => Sp.draw(ctx, spr, x, y + size * 0.75, sc * 0.8) });
-      if (b.siege.moat) { const [mx, my] = Hex.center(Bt.MOAT_COL, r, size, V.ox, V.oy); items.push({ y: my - 100, draw: () => Sp.draw(ctx, 'moat', mx, my + size * 0.5, sc * 0.85) }); }
+      if (b.siege.moat) { const [mx, my] = Hex.center(Bt.MOAT_COL, r, size, V.ox, V.oy), ms = siegeSprite('moat'); items.push({ y: my - 100, draw: () => Sp.draw(ctx, ms, mx, my + size * 0.5, sc * 0.85) }); }
     }
     for (const u of b.units) {
       const p = V.pos[u.id]; if (!p) continue;
@@ -760,12 +809,8 @@
     for (const f of V.floats) {
       const k = f.t / f.ms;
       if (f.hexFlash) { const [x, y] = Hex.center(f.hexFlash[0], f.hexFlash[1], size, V.ox, V.oy); ctx.fillStyle = f.color; ctx.globalAlpha = 0.6 * (1 - k); ctx.beginPath(); ctx.arc(x, y, size * (1 + k * 1.5), 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; continue; }
-      // цифры урона крупнее и с подскоком: сначала вылетают, потом тают
-      const pop = f.big ? 1 + Math.max(0, 0.35 - k) * 1.2 : 1;
-      ctx.globalAlpha = 1 - k * k; ctx.font = 'bold ' + Math.round((f.big ? 17 : 13) * Math.max(1, sc * 0.9) * pop) + 'px Philosopher, sans-serif'; ctx.textAlign = 'center';
-      const yy = f.y - (f.big ? Math.sin(Math.min(1, k * 1.6) * Math.PI / 2) * 30 : k * 24);
-      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineJoin = 'round'; ctx.strokeText(f.text, f.x, yy);
-      ctx.fillStyle = f.color; ctx.fillText(f.text, f.x, yy); ctx.globalAlpha = 1;
+      // цифры урона и потерь — в точках экрана: при отдалении не мельчают, с толстой обводкой
+      BH.floatText(ctx, f, 1 / V.cam.z);
     }
   }
   function drawUnit(ctx, u, p, sc, ts) {
@@ -791,20 +836,36 @@
     // под один гекс, и двойной масштаб залезал бы на соседние ряды
     const scale = Math.max(1, Math.round(sc * (big ? 1.65 : 1.4) * 2) / 2);
     if (u.alive) T.castShadow(ctx, u.cid, x, y - 2, scale, u.side === 1, V.day, 0.8, 0.5);
-    An.draw(ctx, u.cid, x, y - 2, scale, u.side === 1, ao);
+    // активный отряд чуть приподнят над своей тенью — выделяется даже без кольца
+    const act = V.curId === u.id && u.alive, up = act ? 3 * Math.min(1.6, kz()) : 0;
+    An.draw(ctx, u.cid, x, y - 2 - up, scale, u.side === 1, ao);
     if (p.flash > 0) { ctx.globalAlpha = Math.min(0.7, p.flash / 350); ctx.fillStyle = p.flashColor; ctx.beginPath(); ctx.arc(p.x, p.y, V.size * 0.9, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
     if (u.alive) {
-      // счётчик
-      const txt = String(u.count); ctx.font = 'bold 11px sans-serif'; const tw = ctx.measureText(txt).width + 6;
+      // численность — плашка в цвете игрока этой стороны; при отдалении не мельче ~11 точек экрана
+      const bk = Math.max(1, 0.96 / V.cam.z);
       const off = Bt.isBig(u) ? V.size * 0.9 : V.size * 0.25;
-      const bx = p.x + (u.side === 0 ? off : -off - tw), by = y - 2;
-      ctx.fillStyle = u.side === 0 ? '#2f63d8' : '#a03a2c'; ctx.fillRect(bx, by - 11, tw, 12); ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.strokeRect(bx + 0.5, by - 10.5, tw - 1, 11);
-      ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText(txt, bx + 3, by - 2);
+      BH.badge(ctx, p.x + (u.side === 0 ? off : -off), y - 2, String(u.count), sideColor(u.side), u.side === 0, bk, act);
       // эффекты
-      let k = 0; for (const e in u.effects) { const bad = ['slow', 'curse', 'weakness', 'disrupting_ray', 'blind', 'petrify', 'paralyze', 'disease', 'poison', 'aging', 'bound'].includes(e); ctx.fillStyle = bad ? '#ff6a6a' : '#7fd9ea'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6) + k * 5, p.y - V.size * 1.1, 4, 4); k++; }
-      if (u.defended) { ctx.fillStyle = '#c9c9cc'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6), p.y - V.size * 1.2 - 6, 4, 4); }
+      const q = 4 * bk;
+      let k = 0; for (const e in u.effects) { const bad = ['slow', 'curse', 'weakness', 'disrupting_ray', 'blind', 'petrify', 'paralyze', 'disease', 'poison', 'aging', 'bound'].includes(e); ctx.fillStyle = bad ? '#ff6a6a' : '#7fd9ea'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6) + k * (q + 1), p.y - V.size * 1.1, q, q); k++; }
+      if (u.defended) { ctx.fillStyle = '#c9c9cc'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6), p.y - V.size * 1.2 - q - 2, q, q); }
     }
     ctx.globalAlpha = 1;
+  }
+  /** Цвет стороны — цвет её игрока (как попона героя и знамя); нейтралы — серые. */
+  function sideColor(i) {
+    const s = V.b && V.b.sides[i], st = H3.Game && H3.Game.state, pl = s && st && s.player >= 0 && st.players[s.player];
+    return pl && pl.color ? pl.color : (H3.Factions && H3.Factions.NEUTRAL_COLOR) || '#8a8a8a';
+  }
+  /** Цель под пальцем/курсором: { u, col } — удар красным, чары цветом школы, помощь своим зелёным. */
+  function targetOf(cur) {
+    if (!V.hover || !cur || !isHuman(cur.side) || V.tactics) return null;
+    const u = Bt.unitAt(V.b, V.hover[0], V.hover[1]); if (!u || u.id === cur.id) return null;
+    if (V.spellMode) return V.spellMode.area ? null : { u, col: SP.SCHOOL_COLORS[V.spellMode.spell.school] || '#c04fd0' };
+    if (u.side !== cur.side) return { u, col: Bt.isShooterNow(V.b, cur) || attackFrom(cur, u) ? '#ff4a32' : '#8a8a90' };
+    const c = C.get(cur.cid);
+    if (C.hasAb(c, 'healer') || (Bt.abilityOf(cur) && Bt.abilityTargets(V.b, cur).some(t => t.id === u.id))) return { u, col: '#6ae08a' };
+    return null;
   }
   function attackFrom(cur, target) {
     if (!V.reach) return null;
@@ -817,10 +878,11 @@
   function drawAttackHint(ctx, cur) {
     const b = V.b; const t = Bt.unitAt(b, V.hover[0], V.hover[1]);
     if (!t || t.side === cur.side) return;
-    if (Bt.isShooterNow(b, cur)) { const p = V.pos[t.id]; Sp.drawFit(ctx, 'ic_shots', p.x - 8, p.y - V.size * 1.6 - 8, 16, 16); return; }
-    const a = attackFrom(cur, t); if (!a) { const p = V.pos[t.id]; Sp.drawFit(ctx, 'ic_cross', p.x - 8, p.y - V.size * 1.6 - 8, 16, 16); return; }
+    const k = kz(), ic = 16 * Math.min(1.8, k);
+    if (Bt.isShooterNow(b, cur)) { const p = V.pos[t.id]; Sp.drawFit(ctx, 'ic_shots', p.x - ic / 2, p.y - V.size * 1.6 - ic / 2, ic, ic); return; }
+    const a = attackFrom(cur, t); if (!a) { const p = V.pos[t.id]; Sp.drawFit(ctx, 'ic_cross', p.x - ic / 2, p.y - V.size * 1.6 - ic / 2, ic, ic); return; }
     const [x, y] = Hex.center(a.from[0], a.from[1], V.size, V.ox, V.oy);
-    ctx.strokeStyle = '#ffd070'; ctx.lineWidth = 2; const pts = Hex.polygon(x, y, V.size - 2); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.stroke();
+    ctx.strokeStyle = '#ffd070'; ctx.lineWidth = 2 * k; const pts = Hex.polygon(x, y, V.size - 2); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.stroke();
     const tp = V.pos[t.id]; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tp.x, tp.y); ctx.stroke();
   }
 
@@ -899,7 +961,7 @@
     const cur = Bt.current(b);
     const human = cur && isHuman(cur.side);
     // стороны
-    const sideHtml = i => { const s = b.sides[i]; return '<div class="bside"><b>' + UI.esc(s.name) + '</b>' + (s.hero ? '<br><span class="small">' + UI.icon('ic_att') + s.att + ' ' + UI.icon('ic_def') + s.def + ' ' + UI.icon('ic_pow') + s.pow + ' ' + UI.icon('ic_mana') + s.mana + '</span>' : '') + '</div>'; };
+    const sideHtml = i => { const s = b.sides[i]; return '<div class="bside' + (cur && cur.side === i ? ' turn' : '') + '"><span class="sdot" style="background:' + sideColor(i) + '"></span><b>' + UI.esc(s.name) + '</b>' + (s.hero ? '<br><span class="small">' + UI.icon('ic_att') + s.att + ' ' + UI.icon('ic_def') + s.def + ' ' + UI.icon('ic_pow') + s.pow + ' ' + UI.icon('ic_mana') + s.mana + '</span>' : '') + '</div>'; };
     bar.appendChild(UI.el('div', '', sideHtml(0)));
     // очередь
     const q = UI.el('div', ''); q.id = 'queue';
@@ -907,7 +969,7 @@
     if (cur) ids.push(cur.id);
     for (let i = b.pos; i < b.queue.length; i++) if (b.units[b.queue[i]].alive) ids.push(b.queue[i]);
     for (const id of b.waitQueue) ids.push(id);
-    for (const id of ids.slice(0, 12)) { const u = b.units[id]; const d = UI.el('div', 'q' + (cur && id === cur.id ? ' cur' : '') + (u.side === 1 ? ' enemy' : ''), UI.icon(u.cid, 1) + '<i>' + u.count + '</i>'); d.title = C.get(u.cid).name; q.appendChild(d); }
+    for (const id of ids.slice(0, 12)) { const u = b.units[id]; const d = UI.el('div', 'q' + (cur && id === cur.id ? ' cur' : '') + (u.side === 1 ? ' enemy' : ''), UI.icon(u.cid, 1) + '<i>' + u.count + '</i>'); d.title = C.get(u.cid).name; d.style.setProperty('--side', sideColor(u.side)); q.appendChild(d); }
     bar.appendChild(q);
     bar.appendChild(UI.el('div', '', sideHtml(1)));
     const lg = UI.el('div', ''); lg.id = 'battleLog'; lg.innerHTML = V.logLines.slice(-2).map(s => '<div>' + UI.esc(s) + '</div>').join(''); bar.appendChild(lg);
