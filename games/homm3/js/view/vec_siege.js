@@ -599,6 +599,12 @@
     out.push(sh(hexAt(1.03), m.c, 'flat', { line: 0 }));
     // глубина — полоса темнее вдоль канала: у соседних гексов она сходится в одну ленту
     out.push(sh([P(MX - 44, MY - MR * 1.03, 1), P(MX + 44, MY - MR * 1.03, 1), [MX + 70, MY], P(MX + 44, MY + MR * 1.03, 1), P(MX - 44, MY + MR * 1.03, 1), [MX - 70, MY]], m.deep, 'flat', { line: 0, op: 0.5 }));
+    // берег: в чётном ряду канал уходит к соседям правыми косыми гранями, свободны три левые грани
+    // и правая вертикальная (у стены); нечётный ряд рисуется зеркально (flip в battle.js)
+    const V6 = hexAt(1.03).map(p => [p[0], p[1]]), inw = (p, k) => [MX + (p[0] - MX) * k, MY + (p[1] - MY) * k];
+    const bank = (chain, k) => sh([...chain.map((p, i) => P(p[0], p[1], i === 0 || i === chain.length - 1 ? 1 : 0)), ...chain.slice().reverse().map((p, i, a) => P(...inw(p, k), i === 0 || i === a.length - 1 ? 1 : 0))], m.bank, 'cloth',
+      { line: 0.9, lc: tone(m.bank, -0.6), ao: 0.5, lines: [ln(chain.map(p => inw(p, (1 + k) / 2 + 0.03)), 3, 0.5, { light: true })] });
+    out.push(bank([V6[5], V6[4], V6[3], V6[2]], 0.84), bank([V6[0], V6[1]], 0.9));
     if (m.lava) {
       for (const [x, y, rx, ry] of [[MX - 56, MY - 70, 40, 18], [MX + 50, MY + 60, 46, 20]]) out.push(chunk(x, y, rx, ry, m.crust, rnd, { gloss: 0.1, lines: [ln([[x - rx * 0.5, y], [x + rx * 0.4, y - 4]], 3, 0.6, { c: '#ff9a3a' })] }));
       out.push(sh(tube([[MX - 90, MY + 10, 3], [MX - 30, MY - 6, 4], [MX + 20, MY + 14, 3]]), '#ffe08a', 'flat', { line: 0 }), sh(tube([[MX + 10, MY - 110, 3], [MX + 60, MY - 96, 3]]), '#ffe08a', 'flat', { line: 0 }));

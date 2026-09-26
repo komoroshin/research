@@ -793,7 +793,7 @@
       else { const seg = Bt.WALL_SEGMENTS[r]; const st = b.siege.walls[seg]; spr = st === 2 ? 'wall_ok' : st === 1 ? 'wall_dmg' : 'wall_broken'; }
       spr = siegeSprite(spr);
       items.push({ y: y + 0.5, draw: () => Sp.draw(ctx, spr, x, y + size * 0.75, sc * 0.8) });
-      if (b.siege.moat) { const [mx, my] = Hex.center(Bt.MOAT_COL, r, size, V.ox, V.oy), ms = siegeSprite('moat'); items.push({ y: my - 100, draw: () => Sp.draw(ctx, ms, mx, my + size * 0.5, sc * 0.85) }); }
+      if (b.siege.moat) { const [mx, my] = Hex.center(Bt.MOAT_COL, r, size, V.ox, V.oy), ms = siegeSprite('moat'); items.push({ y: my - 100, draw: () => Sp.draw(ctx, ms, mx, my + size * 0.5, sc * 0.85, (r & 1) === 1) }); }   // нечётный ряд — зеркально: берег рва по внешним граням канала
     }
     for (const u of b.units) {
       const p = V.pos[u.id]; if (!p) continue;

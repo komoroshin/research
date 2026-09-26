@@ -49,11 +49,13 @@
         + '<div class="skills">' + Object.keys(h.skills).map(id => '<button class="skill" data-skill="' + id + '">' + UI.icon('sk_' + id) + '<b>' + UI.esc(SK.get(id).name) + '</b> ' + UI.esc(SK.levelName(h.skills[id])) + '</button>').join('') + (Object.keys(h.skills).length ? '' : '<span class="muted small">нет вторичных навыков</span>') + '</div>')
       + '<div class="small muted">Армия · ' + (exch ? 'тап — выбрать, второй тап — переместить к любому герою' : 'тап — выбрать, второй тап — переместить; долгое нажатие — сведения') + '</div>' + UI.armyHtml(h.army, selHere ? cur.sel.i : -1)
       + (selHere ? UI.selBarHtml(h.army[cur.sel.i], cur.split, R.armySize(h.army) > 1) : '')
-      + '<div class="small muted">Артефакты · тап — снять, из рюкзака — надеть; долгое нажатие — описание</div><div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>'
+      + '<div class="small muted">Артефакты · тап — снять, из рюкзака — надеть; долгое нажатие — описание</div>'
+      + (useDoll() ? dollHtml(h) : '<div class="artslots">' + AR.SLOTS.map(s => artSlotHtml(h, s)).join('') + '</div>')
       + setsHtml(h)
       + machinesHtml(h)
-      + '<div class="small muted">Рюкзак</div><div class="artslots" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>'
+      + '<div class="small muted">Рюкзак</div><div class="artslots bpack" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>'
       + (exch || !h.spells.length ? '' : '<div class="small muted">Заклинания · тап — книга</div><div class="hrow" data-book>' + h.spells.map(id => '<span class="chip">' + UI.icon('sp_' + id, 1) + ' ' + UI.esc(SP.get(id).name) + '</span>').join('') + '</div>');
+    const dcv = col.querySelector('canvas.dollcv'); if (dcv) H3.VecDoll.paint(dcv, h);
     UI.bindArmy(col, h.army, (i, e) => onSlot(h.army, i, e.shiftKey));
     const bar = col.querySelector('.selbar');
     if (bar) {

@@ -23,7 +23,9 @@
   /** Плотность, в которой держим части героя и знамени (точек мира на клетку); на экран — масштабом. */
   const S0 = 3;
 
-  /* ============================ знамя ============================ */
+  /* ============================ знамя ============================
+     Имена — «hero_knight.banner0…7», «hero_knight.pole»: деталь настоящего спрайта героя (правило V.def),
+     знамя общее для всех классов, красится цветом игрока через '$b'/'$B'. */
   const FW = 180, FH = 112, NF = 8, POLE = 400, FLAG_Y = -POLE + 16;
   /** Кадр полотнища: волна бежит от древка к краю, ласточкин хвост, звезда, складки. */
   function flagDef(name, ph) {
@@ -61,9 +63,9 @@
     ];
     V.def(name, { w: 1, h: 1, anchor: [0, 0], parts: [{ kind: 'prop', pivot: [0, 0], shapes }] });
   }
-  for (let i = 0; i < NF; i++) flagDef('bhero.flag' + i, i / NF * TAU);
+  for (let i = 0; i < NF; i++) flagDef('hero_knight.banner' + i, i / NF * TAU);
   // древко: тёмное дерево, золотое навершие-копьё, шнур с кистью
-  V.def('bhero.pole', { w: 1, h: 1, anchor: [0, 0], parts: [{ kind: 'prop', pivot: [0, 0], shapes: [
+  V.def('hero_knight.pole', { w: 1, h: 1, anchor: [0, 0], parts: [{ kind: 'prop', pivot: [0, 0], shapes: [
     { p: K.tube([[0, 0, 13], [0, -POLE, 10]], { flat0: true }), c: '#6a4428', m: 'wood', line: 0.7 },
     { p: K.tube([[0, -POLE + 6, 14], [0, -POLE - 6, 14]], { flat0: true, flat1: true }), c: GOLD, m: 'gold', line: 0.6 },
     { e: [0, -POLE - 13, 10, 10], c: GOLD, m: 'gold', line: 0.6, glint: [[-3, -POLE - 17, 3]] },
@@ -106,14 +108,14 @@
     ctx.translate(0, -raise * 30 * u);
     const tilt = fwd * 0.14 * raise - fwd * 0.2 * lower + fwd * 0.02 * Math.sin(o.t / 900);
     ctx.rotate(tilt);
-    img(ctx, 'bhero.pole', 0, 0, o.flip, o.tint, o.SC);
+    img(ctx, 'hero_knight.pole', 0, 0, o.flip, o.tint, o.SC);
     ctx.translate(fwd * 3 * u, (FLAG_Y + lower * POLE * 0.34) * u);
     const flapA = 0.04 * Math.sin(ph * 0.5) * (1 - lower);
     ctx.rotate(fwd * (lower * 1.3 + flapA));
     if (lower) ctx.scale(1 - lower * 0.3, 1);
     const q = ((ph / TAU) * NF % NF + NF) % NF, i0 = Math.floor(q), fr = q - i0;
-    img(ctx, 'bhero.flag' + i0, 0, 0, o.flip, o.tint, o.SC, A);
-    if (fr > 0.02) img(ctx, 'bhero.flag' + ((i0 + 1) % NF), 0, 0, o.flip, o.tint, o.SC, A * fr);
+    img(ctx, 'hero_knight.banner' + i0, 0, 0, o.flip, o.tint, o.SC, A);
+    if (fr > 0.02) img(ctx, 'hero_knight.banner' + ((i0 + 1) % NF), 0, 0, o.flip, o.tint, o.SC, A * fr);
     ctx.restore();
   }
 
