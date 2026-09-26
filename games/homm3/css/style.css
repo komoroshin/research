@@ -243,6 +243,36 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
 .artslot small { position: absolute; bottom: 1px; left: 1px; right: 1px; font-size: 8px; line-height: 1; text-align: center; color: var(--text2); pointer-events: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .artslot.full small { display: none; }
 .artslot.sel { outline: 2px solid var(--gold2); }
+/* ячейка артефакта — резное гнездо: золочёный ободок, тёмное углубление, камешек редкости в углу */
+.artslot { background: radial-gradient(circle at 50% 38%, #46321a, #1c1208 72%); border: 2px solid #8a6a26; border-radius: 7px;
+  box-shadow: inset 0 0 0 1px #2a1a08, inset 0 3px 7px #000d, 0 0 0 1px #2a1a0880, 0 2px 3px #0009; --rk: transparent; }
+.artslot.full { border-color: #c99a3a; background: radial-gradient(circle at 50% 38%, #5a4222, #22160a 74%); }
+.artslot.full::after { content: ''; position: absolute; right: 3px; top: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--rk); box-shadow: 0 0 3px var(--rk), inset 0 -1px 1px #0006; pointer-events: none; }
+.artslot.r-minor { --rk: #7ab0ff; } .artslot.r-major { --rk: #c890ff; } .artslot.r-relic { --rk: #ffd860; }
+.artslot img.ghost { filter: brightness(0) invert(.9) sepia(.6) opacity(.2); }
+.artslot.setdone { animation: setGlow 2.6s ease-in-out infinite; }
+@keyframes setGlow { 0%, 100% { box-shadow: inset 0 0 0 1px #2a1a08, inset 0 3px 7px #000d, 0 0 3px #f1cf7480; } 50% { box-shadow: inset 0 0 0 1px #2a1a08, inset 0 3px 7px #000d, 0 0 10px #f1cf74; } }
+.artslots.bpack { background: linear-gradient(#2a1c0e, #1a1007); border: 1px solid #000; border-radius: 4px; box-shadow: inset 0 0 0 1px #5a4026, inset 0 2px 6px #000a; padding: 5px; min-height: 58px; align-items: center; }
+/* кукла героя: пергамент в резной золочёной раме, фигура в нише, ячейки у своих мест на теле */
+.doll { position: relative; width: 100%; max-width: 380px; margin: 2px auto 4px; aspect-ratio: 360 / 440; border-radius: 12px; overflow: hidden;
+  background: repeating-linear-gradient(93deg, #7a5a2a0a 0 2px, transparent 2px 9px), repeating-linear-gradient(4deg, #7a5a2a08 0 1px, transparent 1px 13px),
+    radial-gradient(120% 85% at 50% 42%, #f4e7c0 0%, #e6d19e 52%, #c7a86a 100%);
+  border: 3px solid #1a1007; box-shadow: inset 0 0 0 2px #c29a3a, inset 0 0 0 4px #5a4018, inset 0 0 0 5px #e8c87090, inset 0 0 40px #6a4a1a99, 0 3px 10px #000b; }
+.doll::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: radial-gradient(circle at 13px 13px, #fff0b0 0 2px, #d6a83f 2.5px 4px, #5a4310 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 13px) 13px, #fff0b0 0 2px, #d6a83f 2.5px 4px, #5a4310 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at 13px calc(100% - 13px), #fff0b0 0 2px, #d6a83f 2.5px 4px, #5a4310 4.5px 5.5px, transparent 6px),
+    radial-gradient(circle at calc(100% - 13px) calc(100% - 13px), #fff0b0 0 2px, #d6a83f 2.5px 4px, #5a4310 4.5px 5.5px, transparent 6px); }
+.doll canvas.dollcv, .doll svg.dlines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.doll svg.dlines { z-index: 1; }
+.doll svg.dlines path { fill: none; stroke: #6a4a18; stroke-width: 1.2; stroke-dasharray: 3 3; opacity: .5; vector-effect: non-scaling-stroke; }
+.doll svg.dlines path.on { stroke: #7a5a14; stroke-dasharray: none; opacity: .85; stroke-width: 1.4; }
+.doll svg.dlines circle { fill: #e8d8a8; stroke: #6a4a18; stroke-width: 1; opacity: .6; vector-effect: non-scaling-stroke; }
+.doll svg.dlines circle.on { fill: #f1cf74; stroke: #5a4310; opacity: 1; }
+.doll .artslot { position: absolute; width: 13.333%; height: 10.909%; z-index: 2; }
+.doll .artslot img { width: 76%; height: 76%; margin: 0; object-fit: contain; }
+.doll .artslot img.ghost { width: 62%; height: 62%; margin-top: -8px; }
+.doll .artslot small { bottom: 2px; font-size: 8px; color: #c8b088; }
 .spells { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 5px; max-height: 50vh; overflow: auto; }
 .mkres { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 .mkres button { padding: 4px 2px; min-height: 40px; display: flex; flex-direction: column; align-items: center; gap: 1px; }
@@ -328,6 +358,7 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
   .spells { grid-template-columns: 1fr; max-height: none; } .spell { min-height: 44px; }
   #townRight .tabs { position: sticky; top: 0; z-index: 2; background: linear-gradient(#3b2915, #2a1a0b); padding: 4px 0; margin: 0 0 6px; }
   .artslot { width: 46px; height: 46px; }
+  .doll .artslot { width: 13.333%; height: 10.909%; }
   .modal.wide { width: 100vw; }
   button.big { min-height: 48px; }
   .bside { min-width: 0; font-size: 11px; }

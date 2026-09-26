@@ -66,7 +66,7 @@
   /** Язык пламени: основание (x, y), высота h, ширина w, наклон lean. */
   const flameP = (x, y, h, w, lean) => [[x - w, y], [x - w * 0.8, y - h * 0.45], [x - w * 0.2 + lean * 0.5, y - h * 0.7], P(x + lean, y - h, 1), [x + w * 0.5 + lean * 0.3, y - h * 0.55], [x + w, y - h * 0.2], [x + w * 0.6, y + w * 0.3], [x - w * 0.4, y + w * 0.35]];
   /** Точки вдоль оружия: at(t, w) — t вдоль от кулака вверх, w поперёк (минус — наружу, от тела). */
-  const D = [-0.12, -1], at = K.along(F, D), atA = (t, w, f) => P(...at(t, w || 0), f);
+  const D = [-0.12, -1], along = K.along(F, D), at = (t, w) => along(t, w || 0), atA = (t, w, f) => P(...at(t, w), f);
 
   /* ---------- слой: свой рисунок в тесной рамке, якорь — ноги куклы ---------- */
   function bbOf(list) {
@@ -388,20 +388,28 @@
     return [...hairBack(o), neck(o.skin), ...CLOTH[kind](o, o.w || { c: '#6a4a2a' }, fem), ...head(o), ...hairFront(o), ...beard(o)];
   }
   /** Кисти: правый кулак сжат (держит оружие), левый — ремень щита. */
-  const FIST = [[52, 293], [62, 290], [71, 292.5], [75, 300], [74, 310], [67, 316.5], [56, 315.5], [50, 308], [49, 299]];
+  const FIST = [[53, 292], [63, 289.5], [71.5, 291.5], [75, 298], [74.5, 309], [68, 315.5], [57, 315.5], [51, 309], [50, 299]];
   function handsOf(o) {
     const sk = o.lizard ? o.skin : o.skin, dk = tone(sk, -0.7);
     const fist = S(FIST, sk, 'skin', { lc: tone(sk, -0.8), lines: [dl([[56.5, 297.5], [73, 298]], 0.45, 1.1), dl([[55, 304], [74, 304.5]], 0.45, 1.1), dl([[56, 310.5], [72, 311]], 0.45, 1.1)],
       sub: [flat([[48, 312], [76, 312], [76, 320], [48, 320]], dk, 0.2)] });
-    const thumb = S([[64, 291], [73, 294], [72, 300], [64, 298]], sk, 'skin', { line: 0.8 });
+    const thumb = S([[75, 293], [76, 299.5], [70, 302], [60, 301.5], [57, 298.5], [61, 295.5], [68, 295.5]], sk, 'skin', { line: 0.8, lines: [dl([[60, 298.5], [66, 298.8]], 0.35, 0.9)] });
     return both([fist, thumb]);
+  }
+  const HOODED = { hood: 'cloth', croc: 'leather', lizardHood: 'leather', hideHood: 'leather', coif: 'mail', antlerHood: 'leather' };
+  /** Изнанка капюшона — за головой (рисуется до тела, только без шлема). */
+  function hoodBackOf(o) {
+    const m = HOODED[o.gear]; if (!m || o.lizard) return null;
+    const c = (o.g && o.g.c) || '#6a4a2a';
+    return [S(symC([[149, 20], [168, 32], [179, 58], [181, 94], [177, 122], [186, 148, 1], [158, 152]], [130, 14], [130, 148]), c, m, { belly: 0.3,
+      sub: [flat(symC([[143, 34], [157, 46], [163, 70], [164, 102], [160, 128]], [130, 30], [130, 132]), tone(c, -0.75), 0.75)] })];
   }
   /** Убор класса — пока не надет шлем. */
   function hatOf(o) {
     const g = o.g || {}, c = g.c || '#6a4a2a', gear = o.gear;
     const hood = (m) => [
-      S(symC([[148, 126], [168, 134], [178, 148], [158, 152]], [130, 118], [130, 158]), c, m || 'cloth', { belly: 0.3 }),
-      S(T2([[104, 118, 16], [100, 86, 18], [106, 52, 20], [118, 34, 22], [130, 30, 24], [142, 34, 22], [154, 52, 20], [160, 86, 18], [156, 118, 16]]), c, m || 'cloth', { lines: [dl([[112, 50], [118, 40], [130, 36], [142, 40], [148, 50]], 0.4)] }),
+      S(T2([[109, 126, 8], [104, 98, 9.5], [105, 66, 10.5], [115, 44, 11.5], [130, 37, 12], [145, 44, 11.5], [155, 66, 10.5], [156, 98, 9.5], [151, 126, 8]]), c, m || 'cloth', { lines: [dl([[108, 70], [116, 48], [130, 41], [144, 48], [152, 70]], 0.35)] }),
+      S(symC([[146, 122], [166, 130], [180, 146], [170, 158], [150, 158]], [130, 120], [130, 164]), c, m || 'cloth', { belly: 0.35, lines: [dl([[112, 140], [130, 150], [148, 140]], 0.3)] }),
     ];
     const brimmed = (rx, cone) => [E(130, 52, rx, 9, c, 'cloth', { belly: 0.4 }), S(cone, c, 'cloth', { lines: [hl([[118, 40], [124, 10]], 0.4)] }),
       S(T2([[108, 48, 7], [130, 50, 7], [152, 48, 7]]), g.c2 || GOLD, g.c2 ? 'cloth' : 'gold', { line: 0.6 })];
@@ -650,7 +658,7 @@
       lines: [dl([[96, 440], [118, 440]], 0.35), hl([[98, 400], [96, 456]], 0.5, 1.4)], sub: [S([[50, 483], [140, 483], [140, 500], [50, 500]], sole, 'leather', { line: 0 })] }));
     out.push(S([[88, 382], [126, 382], [128, 402, 1], [86, 402, 1]], tone(c, 0.12), 'leather', { line: 0.9 }));
     if (s.stars) out.push(S(star(107, 392, 8, 3, 4), s.stars, 'gem', { line: 0.6 }), S(star(84, 462, 5, 1.8, 4), s.stars, 'gem', { line: 0.5 }));
-    if (s.wings) [[-150, 30], [-170, 34], [-190, 28]].forEach(([a, L]) => out.push(S(K.leaf([92, 426], rad(a), L, 12).body, WHITE, 'feather', { line: 0.6, lc: '#8a8a90', texSize: 0.3 })));
+    if (s.wings) [[-128, 30], [-146, 40], [-164, 42], [-182, 34]].forEach(([a, L]) => out.push(S(K.leaf([94, 452], rad(a), L, 13).body, WHITE, 'feather', { line: 0.7, lc: '#6a6a74', texSize: 0.3, lines: [dl(K.leaf([94, 452], rad(a), L, 13).shaft, 0.35, 1)] })));
     return both(out);
   }
   /* ---------- кольца и перчатки ---------- */
@@ -662,7 +670,7 @@
     const c = s.c || '#a07040';
     return both([S(T2([[65, 270, 23], [64, 290, 19]], { flat1: true }), tone(c, -0.1), 'leather', { line: 0.9 }),
       S(FIST.map(q => [62 + (q[0] - 62) * 1.08, 303 + (q[1] - 303) * 1.08]), c, 'leather', { lines: [dl([[56, 297.5], [74, 298]], 0.5, 1.1), dl([[54, 304], [75, 304.5]], 0.5, 1.1), dl([[55, 311], [73, 311.5]], 0.5, 1.1)] }),
-      S([[64, 290.5], [74, 293.5], [73, 300.5], [64, 298.5]], c, 'leather', { line: 0.8 })]);
+      S([[75.5, 292.5], [76.5, 299.5], [70, 302.5], [59.5, 302], [56.5, 298.5], [61, 295], [68, 295]], c, 'leather', { line: 0.8 })]);
   }
   /** Формы надетого артефакта: { front, back } (back — за телом: спина плаща, крылья). */
   function wornShapes(id) {
@@ -708,7 +716,7 @@
       S(T2([[16, 494, 4], ...ARCH.map(q => [q[0] + Math.sign(q[0] - 130) * 1.5, q[1] + 1.5, 4]), [244, 494, 4]]), GOLD, 'gold', { line: 0.5 }),
       S([P(116, -2, 1), P(144, -2, 1), P(139, 30, 1), P(121, 30, 1)], '#b8923a', 'gold', { line: 0.8, sub: [E(130, 12, 5, 5, '#c02a24', 'gem', { line: 0.4 })] }),
       ...both([E(8, 176, 8, 8, '#b8923a', 'gold', { line: 0.7 })]),
-      E(130, 492, 104, 16, '#8a7a5a', 'cloth', { line: 0.8 }), E(130, 486, 96, 11, '#b8a47a', 'cloth', { line: 0.8, lines: [dl(ell(130, 486, 84, 8, 20), 0.25)] }),
+      E(130, 492, 102, 12, '#8a7a5a', 'cloth', { line: 0.8 }), E(130, 487, 94, 9, '#b8a47a', 'cloth', { line: 0.8, lines: [dl(ell(130, 487, 82, 6.5, 20), 0.25)] }),
       fe(130, 486, 62, 7, '#000000', 0.32),
     ]);
   }
@@ -728,6 +736,7 @@
       skirt: skirtOf(o) ? layer(pre + '.skirt', () => skirtOf(o)) : null,
       hands: layer(pre + '.hands', () => handsOf(o)),
       hat: hatShapes.length ? layer(pre + '.hat', () => hatOf(o)) : null,
+      hood: hoodBackOf(o) ? layer(pre + '.hood', () => hoodBackOf(o)) : null,
     };
   }
   function worn(id) {
@@ -746,6 +755,7 @@
     const B = bodyLayers(key, o);
     L.push({ name: niche(), tint: { b: NICHE_C[o.f] || NICHE_C.castle } });
     if (a.cape) L.push({ name: worn(a.cape).back() });
+    if (!a.helm && B.hood) L.push({ name: B.hood });
     L.push({ name: B.body });
     if (a.boots) L.push({ name: worn(a.boots).front() });
     if (B.skirt) L.push({ name: B.skirt });
@@ -760,13 +770,13 @@
     if (a.shield) L.push({ name: worn(a.shield).front() });
     if (a.ring1) L.push({ name: worn(a.ring1).front() });
     if (a.ring2) L.push({ name: worn(a.ring2).left() });
-    const BELT = { misc1: [100, 262], misc2: [160, 262] };
+    const BELT = { misc1: [100, 266], misc2: [158, 268] };
     for (const m of ['misc1', 'misc2']) if (a[m] && specOf(a[m]).k !== 'gloves') L.push({ icon: 'art_' + a[m], at: BELT[m], size: 34 });
     return L.filter(l => l.name || l.icon);
   }
 
   /* ======================= панель: ячейки, нити, рисование ======================= */
-  const PW = 360, PH = 440, SC = 0.85, OX = PW / 2 - CX * SC, OY = PH - 6 - GY * SC, CELL = 48;
+  const PW = 360, PH = 440, SC = 0.85, OX = PW / 2 - CX * SC, OY = PH - 14 - GY * SC, CELL = 48;
   /** Точка на фигуре, к которой тянется нить от ячейки слота (единицы куклы). */
   const AT = { helm: [110, 52], neck: [122, 150], weapon: [44, 190], misc1: [100, 256], ring1: [58, 300], boots: [92, 440],
     cape: [178, 144], armor: [154, 186], shield: [236, 236], misc2: [160, 256], ring2: [202, 300] };

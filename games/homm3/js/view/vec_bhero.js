@@ -263,6 +263,7 @@
     const m = c.match(/[\d.]+/g); return m ? [+m[0], +m[1], +m[2]] : [128, 128, 128];
   }
   function rgba(c, a) { const [r, g, b] = rgbOf(c); return 'rgba(' + r + ',' + g + ',' + b + ',' + c01(a).toFixed(3) + ')'; }
+  function mix(c, d, k) { const a = rgbOf(c), b = rgbOf(d); return '#' + a.map((v, i) => Math.round(v + (b[i] - v) * k).toString(16).padStart(2, '0')).join(''); }
   function shade(c, k) { const q = rgbOf(c); return '#' + q.map(v => Math.round(k > 0 ? v + (255 - v) * k : v * (1 + k)).toString(16).padStart(2, '0')).join(''); }
 
   /** Пятно-подложка под отрядом: мягкое свечение + ровное кольцо. kz — поправка толщины на отдаление. */
@@ -295,19 +296,41 @@
    * Плашка численности в цвете стороны. (x, y) — угол у ног отряда; right: плашка растёт вправо.
    * k — масштаб плашки (1 — 12 точек мира); возвращает её ширину.
    */
+  // плашки кэшируются картинкой: градиент и текст с обводкой каждый кадр на 14 отрядов — заметная доля кадра
+  const BADGES = new Map();
+  function badgeImg(text, col, act, k, R) {
+    const key = text + '|' + col + '|' + (act ? 1 : 0) + '|' + k + '|' + R;
+    let b = BADGES.get(key);
+    if (b) return b;
+    const fs = 11.5 * k, mc = document.createElement('canvas').getContext('2d');
+    mc.font = 'bold ' + fs.toFixed(1) + 'px sans-serif';
+    const w = mc.measureText(text).width + 7 * k, h = fs + 3.5 * k, m = 1;
+    const cv = document.createElement('canvas'); cv.width = Math.ceil((w + 2 * m) * R); cv.height = Math.ceil((h + 2 * m) * R);
+    const c = cv.getContext('2d'); c.scale(R, R); c.translate(m, m);
+    const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, shade(col, 0.28)); g.addColorStop(0.5, col); g.addColorStop(1, shade(col, -0.35));
+    roundRect(c, 0.5, 0.5, w - 1, h - 1, 2.5 * k); c.fillStyle = g; c.fill();
+    c.lineWidth = 1.2 * k; c.strokeStyle = act ? '#ffe08a' : 'rgba(0,0,0,0.85)'; c.stroke();
+    c.font = mc.font; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.lineWidth = 2.4 * k; c.lineJoin = 'round'; c.strokeStyle = 'rgba(0,0,0,0.55)'; c.strokeText(text, w / 2, h / 2 + 0.5 * k);
+    c.fillStyle = '#fff'; c.fillText(text, w / 2, h / 2 + 0.5 * k);
+    b = { cv, w, h, m };
+    BADGES.set(key, b); if (BADGES.size > 400) BADGES.delete(BADGES.keys().next().value);
+    return b;
+  }
+  /**
+   * Плашка численности в цвете стороны. (x, y) — угол у ног отряда; right: плашка растёт вправо.
+   * k — масштаб плашки (1 — 11.5 точек мира на шрифт); возвращает её ширину.
+   */
   function badge(ctx, x, y, text, col, right, k, act) {
-    const fs = 11.5 * k;
-    ctx.font = 'bold ' + fs.toFixed(1) + 'px sans-serif';
-    const tw = ctx.measureText(text).width, w = tw + 7 * k, h = fs + 3.5 * k;
-    const bx = right ? x : x - w, by = y - h;
-    const g = ctx.createLinearGradient(0, by, 0, by + h); g.addColorStop(0, shade(col, 0.28)); g.addColorStop(0.5, col); g.addColorStop(1, shade(col, -0.35));
-    roundRect(ctx, bx, by, w, h, 2.5 * k); ctx.fillStyle = g; ctx.fill();
-    ctx.lineWidth = 1.2 * k; ctx.strokeStyle = act ? '#ffe08a' : 'rgba(0,0,0,0.85)'; ctx.stroke();
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.lineWidth = 2.4 * k; ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(text, bx + w / 2, by + h / 2 + 0.5 * k);
-    ctx.fillStyle = '#fff'; ctx.fillText(text, bx + w / 2, by + h / 2 + 0.5 * k);
-    ctx.textBaseline = 'alphabetic';
-    return w;
+    // плотность картинки — по текущему масштабу холста, ступенями, чтобы при щипке не плодить кэш
+    const tr = ctx.getTransform(), dev = Math.hypot(tr.a, tr.b) || 1;
+    const kq = Math.round(k * 8) / 8, R = Math.max(1, Math.ceil(dev * kq / k * 2) / 2);
+    const b = badgeImg(text, col, act, kq, R);
+    const bx = right ? x : x - b.w, by = y - b.h;
+    const sm0 = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(b.cv, bx - b.m, by - b.m, b.cv.width / R, b.cv.height / R);
+    ctx.imageSmoothingEnabled = sm0;
+    return b.w;
   }
   /**
    * Всплывающая надпись в точках экрана: iz = 1 / масштаб камеры (размер не зависит от зума).
@@ -331,5 +354,5 @@
     ctx.restore();
   }
 
-  H3.BHero = { S0, banner, rider, size, geo, castFx, activeMark, targetMark, groundMark, badge, floatText, rgba, shade, castLift, POLE: POLE / U };
+  H3.BHero = { S0, banner, rider, size, geo, castFx, activeMark, targetMark, groundMark, badge, floatText, rgba, shade, mix, castLift, POLE: POLE / U };
 })(typeof window !== 'undefined' ? window : globalThis);

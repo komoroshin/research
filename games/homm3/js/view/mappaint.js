@@ -71,7 +71,13 @@
   const SPRING_FLOWERS = ['#f6e27a', '#ffffff', '#ee93b8', '#a8c8ff', '#f7a8cc', '#c8a0f0', '#fff4b0'];
   // лужи: тень под кромкой, верх и низ воды, блик
   const PUDDLE = { swamp: ['rgba(20,34,28,0.55)', '#5e8e8a', '#2a4a44'], sky: ['rgba(40,32,22,0.5)', '#a8c8e4', '#4e6e8e', 'rgba(255,255,255,0.7)'], ice: ['rgba(50,70,84,0.35)', '#eef8fc', '#a4c8dc', 'rgba(255,255,255,0.95)'] };
-  const pal3 = (P3, v) => v < 0.5 ? mix(P3[0], P3[1], v * 2) : mix(P3[1], P3[2], (v - 0.5) * 2);
+  // смешение на месте (без новых массивов: точек на кусок ~17 тыс., мусор тормозит сборку)
+  const blend = (c, d, t) => { c[0] += (d[0] - c[0]) * t; c[1] += (d[1] - c[1]) * t; c[2] += (d[2] - c[2]) * t; return c; };
+  const blend3 = (c, P3, v, t) => {
+    const lo = v < 0.5, a = lo ? P3[0] : P3[1], b = lo ? P3[1] : P3[2], u = lo ? v * 2 : (v - 0.5) * 2;
+    c[0] += (a[0] + (b[0] - a[0]) * u - c[0]) * t; c[1] += (a[1] + (b[1] - a[1]) * u - c[1]) * t; c[2] += (a[2] + (b[2] - a[2]) * u - c[2]) * t; return c;
+  };
+  const SC = [0, 0, 0];
   const hexMix = (a, b, t) => '#' + mix(rgb(a), rgb(b), t).map(x => Math.round(x).toString(16).padStart(2, '0')).join('');
   /** Поле сугробов, ~0..1: крупные пятна (низины) и мелкая рябь по их краю. */
   const snowField = (x, y, seed) => vnoise(x / 46, y / 46, seed + 61) * 0.6 + vnoise(x / 13, y / 13, seed + 62) * 0.4;
@@ -122,40 +128,46 @@
     function tone(tt, edge, v, s, dLand, dWater, f, aN) {
       const P = PAL[tt] || PAL.grass;
       let c = v < 0.5 ? mix(P.rgb[0], P.rgb[1], v * 2) : mix(P.rgb[1], P.rgb[2], (v - 0.5) * 2);
-      c = mix(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
+      blend(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
       const sea = SEASONAL[tt] && SE.id !== 'none';
+      // снег: k — сугроб, dust — пороша у его края. Где сугроб сплошной, под ним ничего не считаем
+      let k = 0, dust = 0;
+      if (sea && SE.snow && f >= 0) {
+        const fs = f + (tt === 'swamp' ? 0.06 : 0);
+        k = sstep(thr + 0.02, thr - 0.02, fs); dust = SE.id === 'spring' ? 0 : 0.28 * sstep(thr + 0.045, thr + 0.008, fs) * (1 - k);
+        if (k >= 1) { blend3(c, PAL.snow.rgb, v, 1); return blend(c, s < 0.5 ? PAL.snow.rgb[0] : PAL.snow.rgb[2], Math.abs(s - 0.5) * 0.35); }
+      }
       if (sea) {
         if (tt === 'swamp') {
-          if (SE.fall) c = mix(c, pal3(SPAL.swampA, v), SE.fall * 0.7);
-          if (SE.snow) c = mix(c, pal3(SPAL.swampW, v), Math.min(1, SE.snow * 1.4) * 0.75);
+          if (SE.fall) blend3(c, SPAL.swampA, v, SE.fall * 0.7);
+          if (SE.snow) blend3(c, SPAL.swampW, v, Math.min(1, SE.snow * 1.4) * 0.75);
         } else {
           const g = tt === 'grass' ? 1 : 0.3;   // сколько в местности травы
-          if (SE.fresh) c = mix(c, pal3(SPAL.spring, v), SE.fresh * 0.75 * g);
+          if (SE.fresh) blend3(c, SPAL.spring, v, SE.fresh * 0.75 * g);
           if (SE.fall) {
-            c = mix(c, pal3(SPAL.autumn, v), Math.min(1, SE.fall * g * (0.5 + 0.7 * aN)));
-            if (g === 1) c = mix(c, SPAL.rust, SE.fall * 0.4 * sstep(0.6, 0.78, aN));
+            blend3(c, SPAL.autumn, v, Math.min(1, SE.fall * g * (0.5 + 0.7 * aN)));
+            if (g === 1 && aN > 0.6) blend(c, SPAL.rust, SE.fall * 0.4 * sstep(0.6, 0.78, aN));
           }
-          if (SE.dormant) c = mix(c, pal3(SPAL.dormant, v), SE.dormant * 0.85 * g);
+          if (SE.dormant) blend3(c, SPAL.dormant, v, SE.dormant * 0.85 * g);
         }
         // талая вода: темнеет земля у кромки снега (и в сырых низинах)
-        if (SE.wet && f >= 0) c = mix(c, SPAL.mud, 0.55 * Math.min(1, SE.wet * 1.4) * sstep(mudThr + 0.015, mudThr - 0.015, f) * sstep(thr, thr + 0.02, f));
+        if (SE.wet && f >= 0 && f < mudThr + 0.015) blend(c, SPAL.mud, 0.55 * Math.min(1, SE.wet * 1.4) * sstep(mudThr + 0.015, mudThr - 0.015, f) * sstep(thr, thr + 0.02, f));
       }
       if (tt === 'water') {
         // глубина: чем ближе суша, тем светлее; у самой кромки — пена
         const dl = edge ? 0 : dLand;
-        if (SE.snow) c = mix(c, SPAL.winterSea, 0.35 * SE.snow);
-        c = mix(c, SHALLOW, 0.6 * sstep(13, 3, dl) * (1 - 0.3 * SE.snow));
-        c = mix(c, FOAM, (0.35 + 0.35 * s) * sstep(5, 0.5, dl));
+        if (SE.snow) blend(c, SPAL.winterSea, 0.35 * SE.snow);
+        blend(c, SHALLOW, 0.6 * sstep(13, 3, dl) * (1 - 0.3 * SE.snow));
+        blend(c, FOAM, (0.35 + 0.35 * s) * sstep(5, 0.5, dl));
       } else if (tt !== 'lava' && tt !== 'rock' && tt !== 'snow' && tt !== 'subter') {
-        c = mix(c, BEACH, 0.7 * sstep(7, 3, edge ? 0 : dWater));   // пляж у воды
+        if (dWater < 7 || edge) blend(c, BEACH, 0.7 * sstep(7, 3, edge ? 0 : dWater));   // пляж у воды
       }
       // снег — последним, поверх пляжа; по краю сугроба — голубая тень
-      if (sea && SE.snow && f >= 0) {
-        const fs = f + (tt === 'swamp' ? 0.06 : 0), k = sstep(thr + 0.02, thr - 0.02, fs), dust = SE.id === 'spring' ? 0 : 0.28 * sstep(thr + 0.045, thr + 0.008, fs) * (1 - k);
-        if (k > 0 || dust > 0) {   // сугроб, по краю — голубая тень; вокруг — пороша, сквозь которую видна земля
-          const S3 = PAL.snow.rgb; let sc = pal3(S3, v); sc = mix(sc, s < 0.5 ? S3[0] : S3[2], Math.abs(s - 0.5) * 0.35);
-          c = mix(mix(c, sc, k + dust * (0.6 + s * 0.8)), S3[0], 1.3 * k * (1 - k));
-        }
+      if (k > 0 || dust > 0) {
+        const S3 = PAL.snow.rgb, sc = SC; sc[0] = c[0]; sc[1] = c[1]; sc[2] = c[2];
+        c[0] = c[1] = c[2] = 0; blend3(c, S3, v, 1); blend(c, s < 0.5 ? S3[0] : S3[2], Math.abs(s - 0.5) * 0.35);   // c — цвет снега
+        const t = k + dust * (0.6 + s * 0.8); c[0] = sc[0] + (c[0] - sc[0]) * t; c[1] = sc[1] + (c[1] - sc[1]) * t; c[2] = sc[2] + (c[2] - sc[2]) * t;
+        blend(c, S3[0], 1.3 * k * (1 - k));
       }
       return c;
     }
@@ -176,13 +188,24 @@
         for (let oy = -1; oy <= 1 && same; oy++) for (let ox = -1; ox <= 1; ox++) if (tAt(tx + ox, ty + oy) !== t) { same = 0; break; }
         uni[uy * UW + ux] = same;
       }
-      const needF = SE.snow > 0 || SE.wet > 0, needA = SE.fall > 0;
+      // плавные поля (крупная волна кромки, пятна света, сугробы, пятна осени) меняются медленно —
+      // считаем их через точку (шаг 4 пикс.) и берём средним соседей: вчетверо меньше шума на кусок
+      const needF = SE.snow > 0 || SE.wet > 0, needA = SE.fall > 0, M = (N >> 1) + 1, MM = M * M;
+      const CV = new Float32Array(MM), CW1 = new Float32Array(MM), CW2 = new Float32Array(MM), CF = needF ? new Float32Array(MM) : null, CA = needA ? new Float32Array(MM) : null;
+      for (let cj = 0; cj < M; cj++) for (let ci = 0; ci < M; ci++) {
+        const x = X0 + ci * ST * 2, y = Y0 + cj * ST * 2, q = cj * M + ci;
+        CV[q] = fbm(x / 110, y / 110, seed + 7, 3);
+        CW1[q] = (vnoise(x / 44, y / 44, seed) * 2 - 1) * 14; CW2[q] = (vnoise(x / 44 + 40, y / 44, seed + 1) * 2 - 1) * 14;
+        if (CF) CF[q] = snowField(x, y, seed);
+        if (CA) CA[q] = vnoise(x / 46, y / 46, seed + 63);
+      }
+      const co = (A, i, j) => { const b = (j >> 1) * M + (i >> 1); if (!(i & 1)) return (j & 1) ? (A[b] + A[b + M]) * 0.5 : A[b]; return (j & 1) ? (A[b] + A[b + 1] + A[b + M] + A[b + M + 1]) * 0.25 : (A[b] + A[b + 1]) * 0.5; };
       for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
         const x = X0 + i * ST, y = Y0 + j * ST, k = (j * N + i) * 4;
         if (x >= W || y >= H) { d[k + 3] = 0; continue; }
         // граница местностей: крупная волна ±14 и мелкая ±6 — углы клеток скругляются, сетка не читается
-        const n1 = (vnoise(x / 44, y / 44, seed) * 2 - 1) * 14 + (vnoise(x / 13, y / 13, seed + 3) * 2 - 1) * 6;
-        const n2 = (vnoise(x / 44 + 40, y / 44, seed + 1) * 2 - 1) * 14 + (vnoise(x / 13 + 9, y / 13, seed + 4) * 2 - 1) * 6;
+        const n1 = co(CW1, i, j) + (vnoise(x / 13, y / 13, seed + 3) * 2 - 1) * 6;
+        const n2 = co(CW2, i, j) + (vnoise(x / 13 + 9, y / 13, seed + 4) * 2 - 1) * 6;
         const px = x + n1, py = y + n2;
         const tx = Math.floor(px / TILE), ty = Math.floor(py / TILE), t = tAt(tx, ty);
         // расстояния до соседних клеток другой местности и до воды/суши — непрерывные,
@@ -197,8 +220,8 @@
           if (dd < dOther) { dOther = dd; tOther = nt; }
           if (nt === 'water') dWater = Math.min(dWater, dd); else dLand = Math.min(dLand, dd);
         }
-        const v = fbm(x / 110, y / 110, seed + 7, 3), s = vnoise(x / 8, y / 8, seed + 9);
-        const f = needF ? snowField(x, y, seed) : -1, aN = needA ? vnoise(x / 46, y / 46, seed + 63) : 0.5;
+        const v = co(CV, i, j), s = vnoise(x / 8, y / 8, seed + 9);
+        const f = CF ? co(CF, i, j) : -1, aN = CA ? co(CA, i, j) : 0.5;
         let c = tone(t, false, v, s, dLand, dWater, f, aN);
         // на самой границе обе стороны сходятся к середине: у воды шов ±2.5 точки, между сушей — шире, как мазок
         const BW = t === 'water' || tOther === 'water' ? 2.5 : 7;
@@ -344,12 +367,15 @@
 
     function build(cx, cy) {
       const cv = document.createElement('canvas'); cv.width = CPX * RS; cv.height = CPX * RS;
-      const ctx = cv.getContext('2d');
+      const ctx = cv.getContext('2d'), pf = painter.prof, t0 = performance.now();
       paintBase(ctx, cx, cy);
+      const t1 = performance.now();
       ctx.setTransform(RS, 0, 0, RS, -cx * CPX * RS, -cy * CPX * RS);
       paintDetails(ctx, cx, cy);
       paintRoads(ctx, cx, cy);
+      const t2 = performance.now();
       paintObstacles(ctx, cx, cy);
+      pf.n++; pf.base += t1 - t0; pf.det += t2 - t1; pf.obs += performance.now() - t2;   // замер сборки: земля / детали и дороги / препятствия
       if (z) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#5b5568'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.globalCompositeOperation = 'source-over'; }
       return cv;
     }
@@ -511,7 +537,7 @@
       return s;
     }
     const painter = { draw, get, sdf, shore, frame: () => { shoreBudget = 1; }, tAt, clear: () => { chunks.clear(); order.length = 0; shores.clear(); stale = null; fades.clear(); }, pending: false, z, map, seed,
-      snowAt, season: () => SE };
+      snowAt, season: () => SE, prof: { n: 0, base: 0, det: 0, obs: 0 } };
     return painter;
   }
 

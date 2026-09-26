@@ -77,7 +77,10 @@
     try { return JSON.parse(root.localStorage.getItem(SET_KEY) || '{}').vecArt === false; } catch (e) { return false; }
   }
   /** Подключить пиксельные файлы синхронно, пока страница ещё разбирается (вызов из index.html). */
-  function writePixel() { for (const src of H3.Sprites.pixelFiles || []) document.write('<script src="' + src + '"><\/script>'); }
+  function writePixel() {
+    if (document.readyState !== 'loading') return loadPixel();   // страница уже разобрана — document.write стёр бы её
+    for (const src of H3.Sprites.pixelFiles || []) document.write('<script src="' + src + '"><\/script>');
+  }
   let pixelLoading = null;
   /** Догрузить пиксельные спрайты (переключение настройки на лету). Promise; повторный вызов — тот же. */
   function loadPixel() {
