@@ -274,7 +274,7 @@
   /** Улучшение из базового: те же формы с заменой красок (recolor), без форм с id из drop,
       с добавленными формами (add: [{ part: индекс, shapes, back: true — под остальными }]). */
   function variant(d) {
-    const b = DEFS[d.base]; if (!b) throw new Error('Vec: нет базового ' + d.base);
+    const b = get(d.base); if (!b) throw new Error('Vec: нет базового ' + d.base);
     const map = {}; for (const k in d.recolor || {}) map[k.toLowerCase()] = d.recolor[k];
     const rc = c => (c && map[c.toLowerCase()]) || c;
     const cp = s => { const o = Object.assign({}, s); o.c = rc(s.c); if (s.lc) o.lc = rc(s.lc);
@@ -284,7 +284,16 @@
     for (const a of d.add || []) { const p = parts[a.part]; p.shapes = a.back ? a.shapes.concat(p.shapes) : p.shapes.concat(a.shapes); }
     return { w: b.w, h: b.h, anchor: b.anchor, parts };
   }
-  function def(name, d) {
+  /* Описания готовятся по требованию: при загрузке их ~1000, а на экране — десятки. def только запоминает,
+     первое обращение (has не в счёт) собирает формы, рамку и холст. */
+  const RAW = Object.create(null);
+  function def(name, d) { RAW[name] = d; delete DEFS[name]; return d; }
+  function get(name) {
+    const d = DEFS[name]; if (d) return d;
+    const r = RAW[name]; if (!r) return undefined;
+    delete RAW[name]; return finish(name, r);
+  }
+  function finish(name, d) {
     if (d.base) d = variant(d);
     for (const p of d.parts) p.shapes.forEach(compile);
     // холст растёт под рисунок: крыло или плюмаж могут выходить за рамку старого спрайта
@@ -295,7 +304,7 @@
     DEFS[name] = d;
     return d;
   }
-  function has(name) { return VEC.on && !!DEFS[name]; }
+  function has(name) { return VEC.on && (name in DEFS || name in RAW); }
   /** Холст одной части (или всего существа) при S пикселях на клетку. */
   /** Рамка части в пикселях полного холста: часть хранится обрезанной — память телефона не резиновая. */
   function partRect(d, part, px, W, flip) {
@@ -326,7 +335,7 @@
   function base(name, S, tint) {
     const key = name + '|' + S + (tint ? '|' + JSON.stringify(tint) : '');
     let b = baseCache.get(key); if (b) return b;
-    const d = DEFS[name]; if (!d) return null;
+    const d = get(name); if (!d) return null;
     b = { d, W: Math.max(1, Math.round(d.W * S / U)), H: Math.max(1, Math.round(d.H * S / U)), parts: d.parts.map((p, i) => paintPart(d, p, S, i, tint)) };
     baseCache.set(key, b);
     if (baseCache.size > 300) baseCache.delete(baseCache.keys().next().value);
@@ -375,7 +384,16 @@
   }
 
   /** Служебные точки рисунка (флаг, дым, огни, анимация) — как их задал автор, с якорем и масштабом: смещение от якоря в точках = (x − anchor) / U. */
-  function meta(name) { const d = VEC.on && DEFS[name]; return d && d.meta ? { m: d.meta, ax: d.anchor[0], ay: d.anchor[1], U } : null; }
+  function meta(name) { const d = VEC.on && get(name); return d && d.meta ? { m: d.meta, ax: d.anchor[0], ay: d.anchor[1], U } : null; }
 
-  H3.Vec = { VEC, def, has, meta, render, image, parts, setOn, smooth, ellipse, tone, names: () => Object.keys(DEFS), _defs: DEFS };
+  const names = () => Object.keys(DEFS).concat(Object.keys(RAW));
+  // _defs — для файлов, что читают описание напрямую (d.oy, d.parts): обращение собирает его так же, как рендер
+  const defsView = new Proxy(DEFS, {
+    get: (t, n) => typeof n === 'string' ? get(n) : undefined,
+    has: (t, n) => n in DEFS || n in RAW,
+    ownKeys: () => names(),
+    getOwnPropertyDescriptor: (t, n) => (n in DEFS || n in RAW) ? { value: get(n), enumerable: true, configurable: true, writable: true } : undefined,
+  });
+
+  H3.Vec = { VEC, def, has, meta, render, image, parts, setOn, smooth, ellipse, tone, names, _defs: defsView };
 })(typeof window !== 'undefined' ? window : globalThis);

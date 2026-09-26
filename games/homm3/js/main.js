@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '4.2.1';
+  const VERSION = '4.3';
   /* Пауза: PAUSED = true убирает с первой страницы все кнопки — партию из интерфейса не запустить.
      Включая обратно, не забудь поднять версию здесь, в sw.js и в index.html: иначе телефон отдаст старый кеш.
      Отладочные прогоны не ломаются и на паузе: ?dev=1 открывает обычное меню (скрипты в dev/ его дописывают). */
@@ -151,7 +151,13 @@
     box.querySelector('#oQuick').onchange = e => { st.quickBattle = e.target.checked; saveSettings(); };
     box.querySelector('#oDetail').onchange = e => { st.detailSprites = e.target.checked; saveSettings(); Sp.setDetail(st.detailSprites); AV.invalidate(); refresh(false); };
     box.querySelector('#oLiving').onchange = e => { st.livingSprites = e.target.checked; saveSettings(); H3.Anim.setParts(st.livingSprites); AV.invalidate(); refresh(false); };
-    box.querySelector('#oVec').onchange = e => { st.vecArt = e.target.checked; saveSettings(); H3.Vec.setOn(st.vecArt); AV.invalidate(); refresh(false); };
+    // пиксельные спрайты при рисованной графике не грузятся: выключили её — сначала догружаем, потом переключаем и перерисовываем
+    box.querySelector('#oVec').onchange = e => {
+      const on = e.target.checked, cb = e.target;
+      st.vecArt = on; saveSettings();
+      (on ? Promise.resolve() : Sp.loadPixel()).then(() => { H3.Vec.setOn(st.vecArt); AV.invalidate(); refresh(false); },
+        () => { st.vecArt = true; cb.checked = true; saveSettings(); UI.toast('Пиксельная графика не загрузилась — нужна сеть', 'warn'); });
+    };
     box.querySelectorAll('[data-sp]').forEach(b => { b.onclick = () => { H3.Audio.play('click'); st.animSpeed = +b.dataset.sp; saveSettings(); box.querySelectorAll('[data-sp]').forEach(x => x.classList.toggle('on', x === b)); }; });
   }
   function settingsDialog() {
@@ -751,7 +757,8 @@
     // рисованная графика (по умолчанию включена): ссылка ?vec=0 / ?vec=1 переключает и запоминает выбор
     const vq = /[?&]vec=([01])\b/.exec(location.search);
     if (vq) { settings().vecArt = vq[1] === '1'; saveSettings(); }
-    if (H3.Vec) H3.Vec.setOn(settings().vecArt !== false);
+    // пиксельные файлы при выключенной подключает index.html (Sprites.wantPixel); не дошли (офлайн, нет в кеше) — остаёмся на рисованной
+    if (H3.Vec) H3.Vec.setOn(settings().vecArt !== false || !Sp.pixelReady());
     AV.init(); BV.init();
     window.addEventListener('keydown', keys);
     window.addEventListener('error', e => { console.error(e.error || e.message); try { UI.toast('Ошибка: ' + (e.message || 'см. консоль'), 'warn'); } catch (x) { /* ignore */ } });

@@ -262,7 +262,11 @@
       c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(0, y0 + 8, W, 1.5);
     }
     function drawProp(c, p) {
-      if (p.kind === 'tree' && Sp.has(p.sprite)) Sp.draw(c, p.sprite, p.x, p.y, p.s);
+      if (p.kind === 'tree' && Sp.has(p.sprite)) {
+        // деревья сцены — по времени года, как на карте (у пещерных городов сезонов нет)
+        const S = H3.Season && !sc.cave ? H3.Season.of(scene.bgDay || 1) : null;
+        Sp.draw(c, S ? H3.Season.tree(p.sprite, S, p.x | 0, p.y | 0, S.snow || 0) : p.sprite, p.x, p.y, p.s);
+      }
       else if (p.kind === 'rock') propRock(c, p.x, p.y, p.s);
       else if (p.kind === 'grave') propGrave(c, p.x, p.y);
       else if (p.kind === 'stake') propStake(c, p.x, p.y);

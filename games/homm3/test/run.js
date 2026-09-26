@@ -1289,5 +1289,52 @@ test('рисованные существа: описаны для настоя�
   }
 });
 
+test('таблица рамок (sprite_frames.js) совпадает с пиксельными спрайтами; без них рисованная графика не теряет ничего', () => {
+  const fs = require('fs'), path = require('path'), vm = require('vm');
+  const root = path.join(__dirname, '..'), dir = path.join(root, 'js', 'view');
+  const GF = require('../dev/genframes.js');
+  // 1. файл собран из текущих данных (иначе: node dev/genframes.js)
+  assert.equal(fs.readFileSync(GF.OUT, 'utf8'), GF.source(GF.build()), 'sprite_frames.js устарел — запусти node dev/genframes.js');
+  // 2. независимая сверка: отдельные «страницы» — только таблица и таблица + пиксели
+  const page = files => { const c = { console }; c.globalThis = c; c.window = c; vm.createContext(c); for (const f of files) vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), c, { filename: f }); return c.H3; };
+  const pixel = GF.pixelFiles();
+  const T = page(['sprites.js', 'sprite_frames.js']).Sprites, P = page(['sprites.js', ...pixel]).Sprites;
+  const TP = page(['sprites.js', 'sprite_frames.js', ...pixel]).Sprites;
+  assert.deepEqual(T.names().sort(), P.names().sort(), 'в таблице другой набор спрайтов');
+  assert.ok(!T.pixelReady() && P.pixelReady() && TP.pixelReady(), 'pixelReady: без пикселей — нет, с ними — да');
+  const oldFrame = sp => {   // прежний VK.frameOf по пиксельным данным
+    const u = sp.unit || 1, h = sp.rows.length / u, w = Math.max(...sp.rows.map(r => r.length)) / u;
+    const a = sp.anchor ? [sp.anchor[0] / u, sp.anchor[1] / u] : [w / 2, h];
+    return { w: Math.round(w * 10), h: Math.round(h * 10), anchor: [Math.round(a[0] * 10), Math.round(a[1] * 10)] };
+  };
+  const yCells = sp => { const u = sp.unit || 1, out = []; for (let y = 0; y < sp.rows.length; y += u) for (let x = 0; x < sp.rows[y].length; x += u) if (sp.rows[y][x] === 'y') out.push(x + ',' + y); return out.join(' '); };
+  for (const n of P.names()) {
+    const sp = P.resolve(n), sk = T.resolve(n);
+    assert.ok(T.has(n), n + ': has() без пиксельных данных');
+    assert.deepEqual(T.frame(n), oldFrame(sp), n + ': рамка из таблицы не совпадает с пиксельной');
+    assert.deepEqual(TP.frame(n), oldFrame(sp), n + ': рамка с загруженными пикселями');
+    assert.ok(sk && sk.skeleton, n + ': resolve без пикселей должен дать скелет');
+    assert.equal(sk.rows.length, sp.rows.length, n + ': рост скелета (темп дыхания в anim.js)');
+    assert.equal(sk.unit || 1, sp.unit || 1, n + ': unit'); assert.equal(!!sk.hd, !!sp.hd, n + ': hd');
+    assert.deepEqual(sk.anchor || null, sp.anchor || null, n + ': якорь');
+    if (sp.hd && GF.WIN_RE.test(n)) assert.equal(yCells(sk), yCells(sp), n + ': окна постройки (townscene.js)');
+    assert.ok(!TP.resolve(n).skeleton, n + ': с загруженными пикселями resolve отдаёт настоящие данные');
+  }
+  assert.equal(T.frame('нет_такого'), null);
+  // 3. у каждого пиксельного спрайта есть рисованный — иначе при рисованной графике он пропадёт
+  const vecFiles = fs.readFileSync(path.join(root, 'index.html'), 'utf8').match(/js\/view\/(vector|vec_[a-z0-9_]+)\.js/g).map(s => s.slice(8));
+  const V = page(['sprites.js', 'sprite_frames.js', ...vecFiles]).Vec;
+  const bare = P.names().filter(n => !V._defs[n]);
+  assert.deepEqual(bare, [], 'нет рисованной версии — такие спрайты надо грузить сразу: ' + bare.join(', '));
+  // 4. index.html: таблица раньше рисованных (они зовут frameOf при загрузке), пиксельные — только списком для ленивой загрузки
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const at = s => index.indexOf(s);
+  assert.ok(at('src="js/view/sprites.js') >= 0 && at('src="js/view/sprites.js') < at('src="js/view/sprite_frames.js'), 'sprite_frames.js после sprites.js');
+  assert.ok(at('src="js/view/sprite_frames.js') < at('src="js/view/vector.js'), 'sprite_frames.js раньше рисованных');
+  assert.ok(!/<script src="js\/view\/sprites_/.test(index), 'пиксельные спрайты подключены тегом — они грузятся лениво (H3.Sprites.pixelFiles)');
+  const onDisk = fs.readdirSync(dir).filter(f => /^sprites_.*\.js$/.test(f)), listed = pixel;
+  assert.deepEqual(onDisk.filter(f => !listed.includes(f)), [], 'пиксельный файл не в списке H3.Sprites.pixelFiles');
+});
+
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
