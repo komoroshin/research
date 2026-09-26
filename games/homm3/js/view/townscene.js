@@ -56,7 +56,13 @@
     let data; try { data = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; } catch (e) { return null; }
     const w = cv.width, h = cv.height, top = new Int16Array(w).fill(-1), windows = [];
     for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) { if (data[(y * w + x) * 4 + 3] > 40) { top[x] = y; break; } }
-    const def = Sp.resolve(sprite);
+    const def = Sp.resolve(sprite), M = H3.Vec && H3.Vec.meta(sprite);
+    if (M && M.m.lights) {
+      // рисованная постройка: окна задал художник (meta.lights, в единицах рисунка)
+      for (const p of M.m.lights) windows.push([Math.round(cv._anchor[0] * SC + (p[0] - M.ax) / M.U * SC), Math.round(cv._anchor[1] * SC + (p[1] - M.ay) / M.U * SC)]);
+      sh = { w, h, top, windows: windows.slice(0, 16), ax: cv._anchor[0] * SC, ay: cv._anchor[1] * SC };
+      shapeCache.set(key, sh); return sh;
+    }
     if (def && def.hd) {
       // крупная сетка: окна — буква y в исходной сетке (конвейер затеняет цвет, по пикселям их не поймать)
       const u = def.unit || 1;
@@ -164,7 +170,11 @@
     function rebuild() {
       const t = town, has = id => !!t.buildings[id], items = [];
       const stt = opts.state || H3.Game.state;
-      const push = (o) => { const sh = shapeOf(o.sprite, o.tint === null ? undefined : tint); if (!sh) return; o.shape = sh; o.bx = o.pos[0] - sh.ax; o.by = o.pos[1] - sh.ay; items.push(o); };
+      const push = (o) => {
+        // своя постройка фракции ('bld_tavern@inferno'), если нарисована; иначе общая в цветах фракции
+        const own = o.sprite + '@' + t.faction; if (H3.Vec && H3.Vec.has(own)) { o.sprite = own; o.own = true; }
+        const sh = shapeOf(o.sprite, o.tint === null ? undefined : tint); if (!sh) return; o.shape = sh; o.bx = o.pos[0] - sh.ax; o.by = o.pos[1] - sh.ay; items.push(o);
+      };
       const next = (id) => { if (opts.static) return null; const chk = R.canBuild(stt, t, id); const b = B.get(t.faction, id); return b ? { id, name: b.name, cost: b.cost, ok: chk.ok, reason: chk.reason } : null; };
       // ратуша (всегда) и её улучшение
       const hall = R.townHallLevel(t);
@@ -270,6 +280,7 @@
     /** Черты фракции поверх постройки: снег на крышах, шипы, черепа, плющ, кристаллы. */
     function ornaments(c, it, ts) {
       const sh = it.shape, fid = town.faction;
+      if (it.own) return;   // у своей постройки фракции черты уже нарисованы
       // линия крыши в координатах сцены (каждые step точек)
       const ridge = step => { const pts = []; for (let x = 0; x < sh.w; x += step) { const y = sh.top[x]; if (y >= 0) pts.push([it.bx + x, it.by + y]); } return pts; };
       const peak = () => { let px = -1, py = 1e9; for (let x = 0; x < sh.w; x++) if (sh.top[x] >= 0 && sh.top[x] < py) { py = sh.top[x]; px = x; } return px < 0 ? null : [it.bx + px, it.by + py]; };
