@@ -511,7 +511,7 @@
       return;
     }
     if (o.type === 'mine') { drawMine(ctx, st, o, px, py, ts); return; }
-    if (o.type === 'dwelling') { Sp.draw(ctx, dwellSprite(o), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
+    if (o.type === 'dwelling') { const dn = dwellSprite(o), DM = H3.Vec && H3.Vec.meta(dn); Sp.draw(ctx, dn, px, py, 1); if (o.owner >= 0) { const [fx_, fy] = DM && DM.m.flag ? metaAt(DM, px, py, DM.m.flag) : [px + 12, py - 19]; drawFlag(ctx, fx_, fy - 9, st.players[o.owner].color, true); } An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'monster') { An.draw(ctx, o.cid, px, py - 2, 1, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
     if (o.type === 'artifact') { Sp.draw(ctx, 'artifact', px, py - 8, 1); return; }
@@ -695,7 +695,8 @@
       let spots = null;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
       if (o.type === 'town') { const TM = H3.Vec && H3.Vec.meta(townSprite(st.towns[o.townId])); spots = TM && TM.m.lights ? TM.m.lights.map(p => metaAt(TM, px, py - 2, p)) : [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]]; }
-      else if (o.type === 'dwelling' || o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
+      else if (o.type === 'dwelling') { const DM = H3.Vec && H3.Vec.meta(dwellSprite(o)); spots = DM && DM.m.lights ? DM.m.lights.map(p => metaAt(DM, px, py, p)) : [[px - 4, py - 12], [px + 5, py - 10]]; }
+      else if (o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
       else if (o.type === 'mine') { const M = H3.Vec && H3.Vec.meta(mineSprite(st, o)); spots = M ? (M.m.lights || []).map(p => metaAt(M, px, py, p)) : [[px + 1, py - 8]]; }
       else if (o.type === 'keymaster') spots = [[px, py - 8]];
       if (!spots) continue;
