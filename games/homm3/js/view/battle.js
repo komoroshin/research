@@ -84,6 +84,7 @@
     // горизонт проходит чуть выше верхнего ряда гексов: поле стоит на земле, а не висит в небе
     const hz = U.clamp((V.oy - V.size * 0.8) / V.ch, 0.10, 0.5);
     V.bg = makeBgLayers(V.b.terrain, V.worldW, V.ch, V.day, hz);
+    if (V.b.siege) paintSiegeTown(hz);   // осада: за стенами на горизонте виден город фракции
     V.bgEdge = bgEdgeColors(V.bg);
     V.boxWH = bw + 'x' + bh;
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
@@ -92,6 +93,12 @@
     // облака над полем (под землёй неба нет)
     V.clouds = [];
     if (V.b.terrain !== 'subter' && !V.bg.s) for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
+  }
+  /** Город, который штурмуют, — на заднике за линией стен (рисунок фракции, дымка, свет дня). */
+  function paintSiegeTown(hz) {
+    const SV = H3.SiegeView; if (!SV || !V.b.siege.faction) return;
+    const P = H3.BattleBg && H3.BattleBg.PAL[V.b.terrain], [wx] = Hex.center(Bt.WALL_COL, 0, V.size, V.ox, V.oy);
+    try { SV.paintTown(V.bg, V.b.siege.faction, { x: wx, hz: V.ch * hz, size: V.size, w: V.worldW, h: V.ch, day: V.day, haze: P ? P.sky[2] : null }); } catch (e) { console.warn('siege town: ' + e.message); }
   }
   /** Задник тремя слоями: небо и дальняя гряда, силуэты среднего плана, земля. Слои едут с разной скоростью. */
   function makeBgLayers(terrain, w, h, day, hz) {
@@ -400,7 +407,8 @@
       V.anims.push({ p, lunge: [0, -1], fx: p.x, fy: p.y, tx: p.x + dx, ty: p.y + dy, t: 0, ms: ms / 2, done: () => { V.anims.push({ p, lunge: [1, 0], fx: p.x, fy: p.y, tx: p.x - dx, ty: p.y - dy, t: 0, ms: ms / 2, done: () => { p.lunge = 0; r(); } }); } });
     });
   }
-  function float(u, text, color, big, dy) { const p = V.pos[u.id]; if (!p) return; V.floats.push({ text, color, big, x: p.x + (Math.random() * 10 - 5), y: p.y - 30 + (dy || 0), t: 0, ms: V.speed === 0 ? 1 : (big ? 1100 : 900) }); }
+  /** Всплывающая надпись над отрядом: y — мир (над головой), dy — сдвиг в точках экрана (размер не зависит от зума). */
+  function float(u, text, color, big, dy) { const p = V.pos[u.id]; if (!p) return; const kill = !big && dy !== undefined; V.floats.push({ text, color, big, kill, x: p.x + (Math.random() * 8 - 4), y: p.y - V.size * 0.95, dy: dy ? dy * 1.6 : 0, t: 0, ms: V.speed === 0 ? 1 : (big || kill ? 1250 : 1000) }); }
   function shake(u) { const p = V.pos[u.id]; if (p) p.shake = V.speed === 0 ? 0 : 180; }
   function flashUnit(u, color) { const p = V.pos[u.id]; if (p) { p.flash = 350; p.flashColor = color; } }
   function flashHex(hex, color) { V.floats.push({ hexFlash: hex, color, t: 0, ms: 450 }); }
