@@ -52,12 +52,17 @@
     if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
+    V.paper = V.paperKey = V.paperRect = V.paperBusy = V.fogCompKey = null;   // пергамент прежней партии
+    if (H3.MapPaint && H3.MapPaint.Live) H3.MapPaint.Live.reset();
     resize(); V.dirty = true;
   }
   function invalidate() { V.pf = null; V.dirty = true; }
   /** Полотно слоя рисуется лениво: подземелье — только когда туда спустились. */
   /** Рисованная земля (куски по 8×8 клеток); ?map=0 — прежнее пиксельное полотно. */
   const painted = () => !!H3.MapPaint && !/[?&]map=0\b/.test(location.search);
+  /** Живая карта (прибой, след героя, скачка, туман-пергамент); ?live=0 — выключить, земля остаётся рисованной. */
+  const LIVE_ON = typeof location !== 'undefined' && !/[?&]live=0\b/.test(location.search);
+  const live = () => LIVE_ON && painted() && !!H3.MapPaint.Live;
   function painterOf(z) { if (!V.painter[z]) V.painter[z] = H3.MapPaint.create(V.state, z); return V.painter[z]; }
   function layerCanvas(z) {
     if (!V.mapCanvas[z]) V.mapCanvas[z] = T.renderMap(V.state, z);
@@ -223,8 +228,22 @@
     V.ts = ts;
     if (V.fx) { V.fx.update(dt); ambient(dt); }
     // idle-анимация требует перерисовки и без событий; вне движения — 30 к/с
-    if (V.dirty || V.anim) { draw(ts); V.dirty = false; V.lastDraw = ts; }
-    else if (ts - (V.lastDraw || 0) >= 33) { draw(ts); V.lastDraw = ts; }
+    if (V.dirty || V.anim) { drawTimed(ts); V.dirty = false; V.lastDraw = ts; }
+    else if (ts - (V.lastDraw || 0) >= 33) { drawTimed(ts); V.lastDraw = ts; }
+  }
+  /** Кадр карты; для замеров (dev): V.perf = [] — сюда пишется время каждого кадра, мс. */
+  function drawTimed(ts) {
+    if (!V.perf) { draw(ts); return; }
+    const t0 = performance.now(); draw(ts); V.perf.push(performance.now() - t0);
+    if (V.perf.length > 5000) V.perf.splice(0, 1000);
+  }
+  /** След идущего героя: пыль, брызги, отпечатки на снегу, кильватер лодки (см. MapPaint.Live). */
+  function trailFollow(ts) {
+    const a = V.anim; if (!a || !a.hero || (a.hero.z || 0) !== V.layer) return;
+    const h = a.hero, [hx, hy] = heroDrawPos(h), m = S.lvl(V.state, V.layer);
+    const tx = U.clamp(Math.round(hx), 0, m.w - 1), ty = U.clamp(Math.round(hy), 0, m.h - 1);
+    const x = hx * TILE + 16, y = hy * TILE + 30, P = painterOf(V.layer);
+    H3.MapPaint.Live.follow(h.id, x, y, ts, { terrain: R.TERRAINS[m.terrain[ty * m.w + tx]], shore: h.boat ? 0 : P.sdf(x, y - 2), boat: !!h.boat, cls: 'hero_' + h.cls, z: V.layer });
   }
   function heroDrawPos(h) {
     if (V.anim && V.anim.hero.id === h.id) {
@@ -256,7 +275,15 @@
     // местность
     if (painted()) { const P = painterOf(V.layer); P.pending = false; P.draw(ctx, x0, y0, x1, y1); if (P.pending) V.dirty = true; ctx.imageSmoothingEnabled = false; }
     else ctx.drawImage(layerCanvas(V.layer), x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
-    drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
+    const LV = live() ? H3.MapPaint.Live : null;
+    if (LV) {
+      // живая вода: прибой вдоль нарисованной кромки, рябь и блики, редкие рыбы и змей; следы героя
+      ctx.imageSmoothingEnabled = true;
+      LV.drawSurf(ctx, painterOf(V.layer), x0, y0, x1, y1, ts);
+      LV.drawWater(ctx, m, vis, R.TERRAIN_INDEX.water, x0, y0, x1, y1, ts, V.layer === 1);
+      trailFollow(ts);
+      LV.drawGround(ctx, ts, V.layer, x0, y0, x1, y1);
+    } else drawWater(ctx, m, vis, x0, y0, x1, y1, ts);
     drawCloudShadows(ctx, st, ts, x0, y0, x1, y1);
     V.view = { x0, y0, x1, y1 };
     // выделение героя
@@ -276,6 +303,7 @@
       if (it.o) drawObject(ctx, st, it.o, vis, ts);
       else drawHero(ctx, st, it.h, it.px, it.py, ts);
     }
+    if (LV) LV.drawAir(ctx, ts, V.layer);
     if (V.fx) V.fx.drawOver(ctx, 0, 0);
     // свет дня: неделя проживается от прохладного утра к закату (под землёй неба нет)
     if (!V.layer) T.applyDaylight(ctx, st.day, x0 * TILE, y0 * TILE, (x1 - x0 + 1) * TILE, (y1 - y0 + 1) * TILE);
@@ -321,15 +349,66 @@
     fc.putImageData(img, 0, 0);
     }
     const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
+    if (!(live() && drawParchment(ctx, st, vis, x0, y0, x1, y1, cv, w / S4, h / S4))) ctx.drawImage(cv, (x0 - 1) * TILE, (y0 - 1) * TILE, (w / S4) * TILE, (h / S4) * TILE);
     ctx.imageSmoothingEnabled = prev;
+  }
+  /**
+   * Неразведанное как старая карта: поверх тёмной маски — пергамент (под землёй — камень)
+   * с обгоревшей кромкой и значками. Слой строится на область с запасом, выровненную по 4 клетки,
+   * и пересобирается только при сдвиге этой области, смене масштаба или новом открытом.
+   */
+  function drawParchment(ctx, st, vis, x0, y0, x1, y1, mask, mw, mh) {
+    const m = S.lvl(st, V.layer), Q = 4;
+    const rx0 = Math.floor((x0 - 2) / Q) * Q, ry0 = Math.floor((y0 - 2) / Q) * Q, rx1 = Math.ceil((x1 + 3) / Q) * Q - 1, ry1 = Math.ceil((y1 + 3) / Q) * Q - 1;
+    const sc = Math.min(2, V.cam.z * V.dpr);
+    let hsh = 0, hidden = 0;
+    for (let y = Math.max(0, ry0 - 1); y <= Math.min(m.h - 1, ry1 + 1); y++) for (let x = Math.max(0, rx0 - 1); x <= Math.min(m.w - 1, rx1 + 1); x++) { const v = vis[y * m.w + x] ? 1 : 0; hidden += 1 - v; hsh = (hsh * 31 + v) | 0; }
+    if (!hidden && rx0 >= 0 && ry0 >= 0 && rx1 < m.w && ry1 < m.h) return false;   // всё открыто — хватит тёмной маски
+    const key = rx0 + ',' + ry0 + ',' + rx1 + ',' + ry1 + ',' + V.layer + ',' + sc + ',' + hsh + ',' + st.seed;
+    // бумага строится вне кадра (в паузе браузера), пока рисуется прежняя — прокрутка не дёргается
+    if (V.paperKey !== key && V.paperBusy !== key) {
+      V.paperBusy = key;
+      const z = V.layer, lvl = m;
+      (root.requestIdleCallback ? f => root.requestIdleCallback(f, { timeout: 80 }) : f => setTimeout(f, 0))(() => {
+        if (V.paperBusy !== key) return;
+        V.paperBusy = null;
+        if (!V.state || V.state !== st) return;
+        V.paper = H3.MapPaint.Live.fogLayer(st.players[st.turn].vis[z], lvl, z, rx0, ry0, rx1, ry1, sc, V.paper);
+        V.paperKey = key; V.paperRect = [rx0, ry0, rx1, ry1, z]; V.fogCompKey = null; V.dirty = true;
+      });
+    }
+    const P = V.paper, PR = V.paperRect;
+    if (!P || !PR || PR[4] !== V.layer) return false;   // ещё не готово — пока хватит тёмной маски
+    const X0 = PR[0] * TILE, Y0 = PR[1] * TILE, WM = (PR[2] - PR[0] + 1) * TILE, HM = (PR[3] - PR[1] + 1) * TILE;
+    if (V.paperKey !== key) {   // прежняя бумага на своём месте, маска отдельно
+      ctx.drawImage(mask, (x0 - 1) * TILE, (y0 - 1) * TILE, mw * TILE, mh * TILE);
+      ctx.drawImage(P, X0, Y0, WM, HM);
+      return true;
+    }
+    // тёмная маска и пергамент сводятся в один холст — на кадр одна заливка экрана, а не две;
+    // сведение повторяется, только когда меняется маска (сдвиг на клетку, новое открытое) или бумага
+    const ck = key + '|' + V.fogKey;
+    let C = V.fogComp;
+    if (V.fogCompKey !== ck) {
+      V.fogCompKey = ck;
+      if (!C) C = V.fogComp = document.createElement('canvas');
+      if (C.width !== P.width || C.height !== P.height) { C.width = P.width; C.height = P.height; }
+      const c = C.getContext('2d'), k = P.width / WM;
+      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, C.width, C.height);
+      c.imageSmoothingEnabled = true;
+      c.setTransform(k, 0, 0, k, -X0 * k, -Y0 * k);
+      c.drawImage(mask, (x0 - 1) * TILE, (y0 - 1) * TILE, mw * TILE, mh * TILE);
+      c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(P, 0, 0);
+    }
+    ctx.drawImage(C, X0, Y0, WM, HM);
+    return true;
   }
   /* ---------- атмосфера: падающие тени, тени облаков, погода, виньетка ---------- */
   /** Что и где рисуется у объекта — нужно и для спрайта, и для его тени. */
   function objSprite(st, o) {
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
-    if (o.type === 'town') return { name: 'town_' + st.towns[o.townId].faction, x: px, y: py - 2 };
+    if (o.type === 'town') return { name: townSprite(st.towns[o.townId]), x: px, y: py - 2 };
     if (o.type === 'mine') return { name: mineSprite(st, o), x: px, y: py };
     if (o.type === 'dwelling') return { name: 'dwelling_' + Math.min(7, C.get(o.cid).tier), x: px, y: py };
     if (o.type === 'monster') return { name: o.cid, x: px, y: py - 2 };
@@ -418,13 +497,17 @@
     ctx.drawImage(cv, 0, 0);
   }
 
+  /** Рисунок города по отстройке: поселение / форт / цитадель / замок (+ Капитолий); без рисованной графики — прежний спрайт. */
+  function townSprite(tw) { return H3.TownGrow ? H3.TownGrow.sprite(tw) : 'town_' + tw.faction; }
   function drawObject(ctx, st, o, vis, ts) {
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
     if (o.type === 'town') {
-      const tw = st.towns[o.townId];
-      Sp.draw(ctx, 'town_' + tw.faction, px, py - 2, 1);
-      drawFlag(ctx, px, py - 48, tw.owner >= 0 ? st.players[tw.owner].color : '#999');
+      const tw = st.towns[o.townId], name = townSprite(tw), M = H3.Vec && H3.Vec.meta(name);
+      Sp.draw(ctx, name, px, py - 2, 1);
+      // флажок владельца — на макушке главного здания ступени (древко 12 точек вниз от верха)
+      const [fx, fy] = M && M.m.flag ? metaAt(M, px, py - 2, M.m.flag) : [px, py - 36];
+      drawFlag(ctx, fx, fy - 12, tw.owner >= 0 ? st.players[tw.owner].color : '#999');
       return;
     }
     if (o.type === 'mine') { drawMine(ctx, st, o, px, py, ts); return; }
@@ -574,6 +657,13 @@
       if (o.type !== 'town' && o.type !== 'mine') continue;
       if (o.x < view.x0 || o.x > view.x1 || o.y < view.y0 || o.y > view.y1 || !vis[o.y * m.w + o.x]) continue;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
+      if (o.type === 'town') {   // рисованный город: дым из труб своей ступени отстройки (meta.smoke; у улья и подземелья его нет)
+        const TM = H3.Vec && H3.Vec.meta(townSprite(st.towns[o.townId]));
+        if (TM && TM.m.smoke) {
+          for (const sm of TM.m.smoke) { if (!chance(sm.rate || 6)) continue; const [sx, sy] = metaAt(TM, px, py - 2, sm.at); fx.add({ x: sx + rnd(-1, 1), y: sy, vx: rnd(3, 8), vy: -rnd(6, 12), ax: 0, ay: 0, ttl: 2600, life: 0, size: rnd(2, 3.5), color: 'rgba(' + sm.c + ',0.32)', shape: 'puff', grow: 1.6 }); }
+          continue;
+        }
+      }
       const M = o.type === 'mine' && H3.Vec && H3.Vec.meta(mineSprite(st, o));
       if (M) {   // у рисованной шахты дым идёт из своих мест: труба лаборатории, жерла серы; у штольни и лесопилки его нет
         for (const sm of M.m.smoke || []) {
@@ -599,7 +689,7 @@
       const o = it.o; if (!o) continue;
       let spots = null;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
-      if (o.type === 'town') spots = [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]];
+      if (o.type === 'town') { const TM = H3.Vec && H3.Vec.meta(townSprite(st.towns[o.townId])); spots = TM && TM.m.lights ? TM.m.lights.map(p => metaAt(TM, px, py - 2, p)) : [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]]; }
       else if (o.type === 'dwelling' || o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
       else if (o.type === 'mine') { const M = H3.Vec && H3.Vec.meta(mineSprite(st, o)); spots = M ? (M.m.lights || []).map(p => metaAt(M, px, py, p)) : [[px + 1, py - 8]]; }
       else if (o.type === 'keymaster') spots = [[px, py - 8]];
@@ -618,6 +708,8 @@
     const x = px * TILE + 16, y = py * TILE + 30;
     const walking = !!(V.anim && V.anim.hero.id === h.id);
     const ao = { t: ts, phase: An.phaseOf(h.id), dir: h.facing === 'l' ? -1 : 1, moving: walking, key: h.id, rate: An.rateOf('hero_' + h.cls) };
+    // живая карта: скакун идёт не шагом, а скачкой; цикл короче на быстрой анимации
+    if (walking && live()) ao.gallop = V.anim.dur <= 45 ? 160 : 210;
     const a = An.state(ao); ao.st = a;
     if (h.boat) {
       // под парусом: герой стоит в лодке, лодка покачивается на волне
@@ -699,7 +791,7 @@
       d.onclick = () => { if (sel && sel.id === h.id) { G.openHero(h); return; } G.selectHero(h.id); centerOn(h.x, h.y); }; ol.appendChild(d);
     }
     for (const t of S.townsOf(st, p.id)) {
-      const d = UI.el('div', 'obj' + (t.builtToday ? ' done' : ''), UI.icon('town_' + t.faction, 1)); d.title = t.name + (t.builtToday ? ' (сегодня уже строили)' : '');
+      const d = UI.el('div', 'obj' + (t.builtToday ? ' done' : ''), UI.icon(townSprite(t), 1)); d.title = t.name + (t.builtToday ? ' (сегодня уже строили)' : '');
       d.onclick = () => { centerOn(t.x, t.y); G.openTown(t); }; ol.appendChild(d);
     }
     const ab = UI.$('#advButtons'); ab.innerHTML = '';

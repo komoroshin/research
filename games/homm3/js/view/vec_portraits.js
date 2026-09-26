@@ -242,8 +242,8 @@
     // глаза
     const eh = (fem ? 0.105 : 0.095) * (age === 2 ? 0.9 : 1) * (age === 0 ? 1.06 : 1), ew = fem ? 0.22 : 0.21;
     const lash = fem ? 4.4 : 3.4;
-    S.push(...eye(F, R, 0.1, -0.08, ew, eh, o, false, { skin, lash, fem, age }));
-    S.push(...eye(F, R, 0.67, -0.1, ew * 0.66, eh * 0.96, o, true, { skin, lash: lash * 0.9, fem, age }));
+    S.push(...eye(F, R, 0.1, -0.08, ew, eh, o, false, { skin, lash, fem, age, closed: o.closed }));
+    S.push(...eye(F, R, 0.67, -0.1, ew * 0.66, eh * 0.96, o, true, { skin, lash: lash * 0.9, fem, age, closed: o.closed }));
     // брови
     const bw = (fem ? 0.055 : 0.1 + cr * 0.04) * R * (age === 2 ? 1.15 : 1);
     S.push(stroke([F(-0.2, -0.27 - bt * 0.03), F(0.04, -0.4 + (fem ? -0.02 : 0)), F(0.34, -0.33 + bt * 0.09)], bw, browC));
@@ -283,6 +283,15 @@
   function eye(F, R, u, v, w, h, o, near, c) {
     const X = (a, b) => F(u + a * w, v + b * h);
     const S = [], oc = near ? 1 : -1;
+    if (c.closed) {   // моргание: веко цвета кожи поверх глаза, ресницы дугой вниз, складка века мягче
+      const lc = c.fem ? '#1a0e0a' : tone(c.skin, -0.85);
+      S.push({ p: [X(-1.18, 0.16), X(-0.6, -0.98), X(0.2, -1.16), X(0.84, -0.72), X(1.16, 0.06), X(0.58, 0.82), X(-0.3, 0.84)], c: tone(c.skin, -0.05), m: 'skin', line: 0, rim: 0, ao: 0.25 });
+      S.push(stroke([X(-1.1, 0.16), X(-0.5, 0.5), X(0.2, 0.6), X(0.82, 0.4), X(1.1, 0.06)], c.lash, lc, 0.95));
+      if (c.fem) S.push(stroke([X(oc * 0.9, 0.3), X(oc * 1.25, 0.52), X(oc * 1.42, 0.58)], c.lash * 0.7, lc, 0.85));
+      S.push(stroke([X(-0.85, -0.7), X(0.1, -1.05), X(0.9, -0.62)], 1.5, tone(c.skin, -0.55), 0.45));
+      if (c.age === 2) S.push(stroke([X(-0.7, 1.35), X(0.1, 1.7), X(0.8, 1.3)], 1.4, tone(c.skin, -0.6), 0.4));
+      return S;
+    }
     const sclera = o.sclera || (o.glow ? tone(o.glow, -0.55) : c.age === 2 ? '#e6dccc' : '#f2ece2');
     const ir = h * R * 1.02, irx = ir * (near ? 0.78 : 1);
     const [ix, iy] = X(near ? 0.34 : 0.22, 0.08);
@@ -716,6 +725,32 @@
     const ring = { d: 'M4 4L' + (W - 4) + ' 4L' + (W - 4) + ' ' + (H - 4) + 'L4 ' + (H - 4) + 'Z M10 10L10 ' + (H - 10) + 'L' + (W - 10) + ' ' + (H - 10) + 'L' + (W - 10) + ' 10Z', c: RIM, m: 'gold', line: 0.6, lc: FRAME };
     V.def(name, { w: W, h: H, anchor: fr.anchor, parts: [{ kind: 'torso', pivot: [W / 2, H * 0.7], shapes: [bg, ring] }] });
   }
+
+  /* ---------- живой портрет ----------
+     Тот же портрет тремя слоями одного размера: фон с рамкой, фигура (обрезана по внутреннему
+     краю рамки) и фигура с сомкнутыми веками. Интерфейс кладёт их стопкой: фигура «дышит»
+     CSS-трансформом, веки раз в несколько секунд на миг проступают поверх — моргание.
+     Слои определяются лениво — только для тех портретов, что реально показаны крупно. */
+  const LIVE = {};
+  function live(name) {
+    if (LIVE[name] !== undefined) return LIVE[name];
+    const o = T[String(name).replace(/^portrait_/, '')];
+    if (!o) return (LIVE[name] = null);
+    const fr = frameOf(name) || { w: 240, h: 300, anchor: [120, 246] };
+    const W = fr.w, H = fr.h, k = H / 300, dx = (W - 240 * k) / 2;
+    const f = (x, y) => [dx + x * k, y * k];
+    const sc = SCENES[o.f] || SCENES.castle;
+    const rect = [P(4, 4, 1), P(W - 4, 4, 1), P(W - 4, H - 4, 1), P(4, H - 4, 1)], inner = [P(10, 10, 1), P(W - 10, 10, 1), P(W - 10, H - 10, 1), P(10, H - 10, 1)];
+    const bg = { p: rect, c: sc.c, m: 'flat', line: 4, lc: FRAME, sub: [{ p: rect, c: sc.c, m: 'cloth', line: 0, rim: 0, ao: 1.4, hi: 1.6, lo: 1.1 }, ...mapShapes(sc.f(), f, k)] };
+    const ring = { d: 'M4 4L' + (W - 4) + ' 4L' + (W - 4) + ' ' + (H - 4) + 'L4 ' + (H - 4) + 'Z M10 10L10 ' + (H - 10) + 'L' + (W - 10) + ' ' + (H - 10) + 'L' + (W - 10) + ' 10Z', c: RIM, m: 'gold', line: 0.6, lc: FRAME };
+    const fig = oo => ({ p: inner, c: 'rgba(0,0,0,0)', m: 'flat', line: 0, sub: mapShapes(build(oo), f, k) });
+    const one = shapes => ({ w: W, h: H, anchor: fr.anchor, parts: [{ kind: 'torso', pivot: [W / 2, H * 0.7], shapes }] });
+    V.def(name + '.bg', one([bg, ring]));
+    V.def(name + '.fig', one([fig(o)]));
+    if (!o.lizard) V.def(name + '.shut', one([fig(Object.assign({}, o, { closed: true }))]));
+    return (LIVE[name] = { bg: name + '.bg', fig: name + '.fig', shut: o.lizard ? null : name + '.shut' });
+  }
+  H3.VecPortraits = { live };
 
   /* ---------- 52 портрета ---------- */
   const SK = { fair: '#ecc3a0', light: '#f2d0b4', rosy: '#eebca0', tan: '#d49a6c', olive: '#c8905c', swarthy: '#b07a4e', brown: '#8a5634', dark: '#5e3a24', pale: '#eedad0',

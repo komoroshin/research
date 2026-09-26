@@ -65,11 +65,21 @@
     const t = o.t || 0, ph = o.phase || 0, dir = o.dir || 1;
     let dx = 0, dy = 0, sx = 1, sy = 1, skew = 0;
 
+    let pitch = 0;
     if (o.flying) {
       // парение + взмах: тело чуть сжимается по вертикали в такт крыльям
       const w = Math.sin(t / (o.moving ? 130 : 260) + ph);
       dy -= 3 + w * (o.moving ? 3 : 2);
       sy += w * 0.05; sx -= w * 0.045;
+    } else if (o.moving && o.gallop) {
+      // скачка (o.gallop — период цикла, мс): один толчок за цикл. sin(g) — насколько вынесены
+      // вперёд передние ноги; при сборе ног под корпусом (sin → −1) — фаза полёта, корпус взлетает.
+      // Качание «на себя — от себя» опережает подъём на четверть цикла: нос идёт вверх на взлёте.
+      const g = gallopPhase(o), F = Math.sin(g), lift = Math.pow((1 - F) / 2, 1.5);
+      dy -= lift * 2.8;
+      sy += lift * 0.03 - (1 - lift) * 0.015; sx -= lift * 0.02;
+      pitch = dir * 0.075 * Math.cos(g);
+      skew += pitch * 0.6;   // для цельного спрайта (без разбора на части) качание — сдвигом
     } else if (o.moving) {
       // шаг: подскок вдвое чаще наклона, корпус подаётся вперёд
       const s = Math.sin(t / 105 + ph);
@@ -90,7 +100,7 @@
     // хвост движения: то, чем тело уже двигает, а придаток ещё догоняет.
     // Считаем здесь один раз за кадр — drawParts берёт готовое значение из o._trail
     {
-      const wk = o.moving ? Math.sin(t / 105 + ph) : 0;
+      const wk = o.moving ? (o.gallop ? Math.sin(gallopPhase(o)) : Math.sin(t / 105 + ph)) : 0;
       const fl = o.flying ? Math.sin(t / (o.moving ? 130 : 260) + ph) : 0;
       const drive = (o.lunge || 0) * 0.85 + wk * 0.30 + fl * 0.35 - (o.hurt || 0) * 0.5;
       o._trail = o.key !== undefined ? lagOf(o.key, drive, t) : 0;
@@ -113,8 +123,10 @@
       const f = Math.max(0, o.dead);
       sy = 0.3 + 0.7 * f; sx = 1 + (1 - f) * 0.15; skew += dir * (1 - f) * 0.35;
     }
-    return { dx, dy, sx, sy, skew, alpha: o.dead !== undefined ? Math.max(0, Math.min(1, o.dead)) : 1 };
+    return { dx, dy, sx, sy, skew, pitch, alpha: o.dead !== undefined ? Math.max(0, Math.min(1, o.dead)) : 1 };
   }
+  /** Фаза скачки в радианах: период o.gallop мс. */
+  function gallopPhase(o) { return (o.t || 0) / (o.gallop || 300) * Math.PI * 2 + (o.phase || 0); }
 
   /* ============================ разбор спрайта на части ============================
      Спрайт нарисован одним куском, но двигаться должен как существо: ноги шагают,
@@ -280,7 +292,8 @@
     const k = P.k, u = scale || 1;
     const ax = P.anchor[0] * u, ay = P.anchor[1] * u;
     const t = o.t || 0, ph = o.phase || 0, fwd = flip ? -1 : 1;
-    const walk = o.moving ? Math.sin(t / 105 + ph) : 0;
+    const gal = o.moving && o.gallop && !o.flying ? gallopPhase(o) : null;
+    const walk = o.moving && gal === null ? Math.sin(t / 105 + ph) : 0;
     const breath = Math.sin(t / (720 * (o.rate || 1)) + ph);
     const lunge = o.lunge || 0, hurt = o.hurt || 0, cast = o.cast || 0;
     const flap = o.flying ? Math.sin(t / (o.moving ? 130 : 260) + ph) : 0;
@@ -291,6 +304,9 @@
     ctx.save();
     ctx.globalAlpha *= st.alpha === undefined ? 1 : st.alpha;
     ctx.translate(Math.round(x + st.dx), Math.round(y + st.dy));
+    // скачка: вся фигура качается вокруг середины корпуса («на себя — от себя»)
+    if (gal !== null && st.pitch) { const cy = -ay * 0.5; ctx.translate(0, cy); ctx.rotate(st.pitch); ctx.translate(0, -cy); }
+    let heads = 0;
     if (P.vec) ctx.imageSmoothingEnabled = true; else if (Sp.smoothFor) Sp.smoothFor(ctx, k);
     // рисованные существа задают порядок слоёв сами (дальнее крыло — за телом, ближнее — перед ним)
     const order = P.ordered ? [null] : o.flying ? ['prop', 'leg', 'legs', 'torso', 'head'] : ['leg', 'legs', 'torso', 'head', 'prop'];
@@ -298,6 +314,26 @@
       if (kind !== null && p.kind !== kind) continue;
       const kd = p.kind;
       let dx = 0, dy = 0, ang = 0;
+      if (gal !== null) {
+        // скачка: передняя пара выносится вперёд, пока задняя отталкивается назад, и наоборот;
+        // дальняя нога каждой пары чуть запаздывает. Нога, идущая вперёд, поджимается вверх.
+        if (kd === 'leg') {
+          const front = (p.pivot[0] * k - ax) * fwd > 0, lag = p.side > 0 ? 0.45 : 0;
+          if (front) { const g = gal + lag; ang = -fwd * 0.5 * Math.sin(g); dy = -Math.max(0, Math.cos(g)) * 1.3 * u; }
+          else { const g = gal + 0.55 + lag; ang = fwd * 0.42 * Math.sin(g); dy = -Math.max(0, -Math.cos(g)) * 1.1 * u; }
+        } else if (kd === 'legs') { ang = -fwd * 0.3 * Math.sin(gal); }
+        else if (kd === 'head') {
+          // первая «голова» у всадника — голова скакуна (кивает в такт), вторая — самого седока
+          ang = heads++ === 0 ? fwd * 0.1 * Math.sin(gal + 1.2) : -(st.pitch || 0) * 0.6;
+        } else if (kd === 'prop') { ang = fwd * 0.07 * Math.sin(gal - 0.8) - trail * 0.4 * fwd; }
+        else if (kd === 'torso') { dy = -breath * 0.15 * u; }
+        const px = -ax + p.pivot[0] * k, py = -ay + p.pivot[1] * k;
+        ctx.save();
+        if (ang) { ctx.translate(px, py); ctx.rotate(ang); ctx.translate(-px, -py); }
+        ctx.drawImage(p.cv, -ax + p.x * k + Math.round(dx), -ay + p.y * k + Math.round(dy), p.cv.width * k, p.cv.height * k);
+        ctx.restore();
+        continue;
+      }
       if (kd === 'leg') {
         const sgn = p.side * (flip ? -1 : 1);
         dx = walk * 1.3 * u * sgn * fwd; dy = -Math.max(0, walk * sgn) * 0.9 * u;

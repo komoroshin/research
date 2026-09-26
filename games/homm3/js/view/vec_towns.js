@@ -223,7 +223,9 @@
   const CX = 283, G = 433;   // канон города на карте: центр и земля
   function one(name, shapes, fr) { V.def(name, { w: fr.w, h: fr.h, anchor: fr.anchor, parts: [{ kind: 'torso', pivot: fr.anchor.slice(), shapes }] }); }
   /** Город: рисуем в каноне 567×437 (центр CX, земля G) и сдвигаем к якорю рамки старого спрайта. */
+  const FULL = {};   // полные рисунки городов (ступень «замок») — для vec_towngrow.js
   function town(name, build) {
+    FULL[name.slice(5)] = build;
     const fr = frameOf(name) || { w: 567, h: 437, anchor: [CX, G] };
     const dx = fr.anchor[0] - CX, dy = fr.anchor[1] - G;
     let shapes = build(fr);
@@ -922,4 +924,9 @@
     { p: box(150, 150, 262, 160), c: DS.shade, m: 'cloth', line: 1 },
     ...door(206, G2, 20, 66), ...sqwin(114, 266, 12, 15),
   ], frameOf('dwelling_7') || { w: 320, h: 313, anchor: [160, 310] });
+
+  /* ---------- набор для ступеней города (vec_towngrow.js): помощники, канон и полные рисунки ---------- */
+  H3.VTownKit = { WIN, WIN_LC, GOLD, IRON, DOOR, HOLE, CX, G, FULL, one, box, trap, arch, masonry, planks, win, flag, cone, dome, onion, merlons, gate, voussoirs, tower, cwall,
+    rngOf, foliage, trunk, palisade, skull, flame, crystal, gear, water, gable, snowcap, spikes, horn, rock, tent, stakeSkull, lizardTotem, island, pylon, hexPts, combLines, skep, spire };
+  if (H3.TownGrow && H3.TownGrow.init) H3.TownGrow.init(H3.VTownKit);   // в node файлы грузятся по алфавиту: ступени могли прийти раньше
 })(typeof window !== 'undefined' ? window : globalThis);

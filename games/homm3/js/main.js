@@ -6,7 +6,7 @@
   'use strict';
   const H3 = root.H3 || (root.H3 = {});
   const U = H3.U, R = H3.Rules, S = H3.State, A = H3.Adventure, C = H3.Creatures, F = H3.Factions, HE = H3.Heroes, O = H3.Objects, AR = H3.Artifacts, SK = H3.Skills, SP = H3.Spells, UI = H3.UI, Sp = H3.Sprites, AV = H3.AdvView, BV = H3.BattleView, TV = H3.TownView, HV = H3.HeroView, Bt = H3.Battle;
-  const VERSION = '4.1';
+  const VERSION = '4.2';
   /* Пауза: PAUSED = true убирает с первой страницы все кнопки — партию из интерфейса не запустить.
      Включая обратно, не забудь поднять версию здесь, в sw.js и в index.html: иначе телефон отдаст старый кеш.
      Отладочные прогоны не ломаются и на паузе: ?dev=1 открывает обычное меню (скрипты в dev/ его дописывают). */
@@ -64,12 +64,19 @@
     return { scr, body, foot, setFoot(html) { foot.innerHTML = html || ''; foot.classList.toggle('hidden', !html); } };
   }
 
-  /* сцена города фоном главного меню: полностью отстроенный город случайной фракции, освещение по времени суток */
+  /* живая сцена фоном главного меню: небо, горы, город случайной фракции, всадник и крылатый над долиной;
+     слои сдвигаются параллаксом от наклона и касания (H3.Scenes.menu), освещение — по времени суток */
   let menuArt = null;
   function stopMenuArt() { if (menuArt) { menuArt.stop = true; if (menuArt.scene) menuArt.scene.destroy(); menuArt = null; } }
-  function startMenuArt(canvas) {
-    if (!H3.TownScene) { canvas.remove(); return; }
+  function startMenuArt(host) {
     if (!G.menuFaction) G.menuFaction = F.LIST[Math.floor(Math.random() * F.LIST.length)].id;
+    if (H3.Scenes) {
+      const hr = new Date().getHours(), mood = hr < 6 ? 'night' : hr < 9 ? 'dawn' : hr < 17 ? 'day' : hr < 21 ? 'dusk' : 'night';
+      try { menuArt = { stop: false, scene: H3.Scenes.menu(host, { faction: G.menuFaction, color: F.PLAYER_COLORS[0], mood, active: () => G.screen === 'menu' }) }; } catch (e) { console.error(e); }
+      return;
+    }
+    if (!H3.TownScene) { host.remove(); return; }
+    const canvas = UI.el('canvas', 'px'); canvas.id = 'menuArt'; host.appendChild(canvas);
     const fid = G.menuFaction, f = F.get(fid);
     const buildings = {};
     for (const id of ['hall_1', 'hall_2', 'hall_3', 'hall_4', 'fort', 'citadel', 'castle', 'tavern', 'market', 'blacksmith', 'silo']) buildings[id] = true;
@@ -106,13 +113,13 @@
       return;
     }
     const auto = slotInfo('auto');
-    const art = UI.el('canvas', 'px'); art.id = 'menuArt';
+    const art = UI.el('div', 'mpar');
     sh.scr.insertBefore(art, sh.body);
     sh.scr.insertBefore(UI.el('div', 'mtitle', '<h1>Герои Эрафии</h1><div class="sub">Стратегия в духе Heroes of Might and Magic III</div>'), sh.body);
     const btn = (id, icon, label, sub, cls) => '<button class="mbtn ' + (cls || '') + '" id="' + id + '">' + UI.icon(icon, 1) + '<span><b>' + label + '</b>' + (sub ? '<small>' + UI.esc(sub) + '</small>' : '') + '</span></button>';
     sh.body.classList.add('mmenu');
     sh.body.innerHTML = (auto ? btn('btnCont', 'ic_arrow_r', 'Продолжить', S.dateStr(auto.day) + (auto.faction ? ' · ' + F.get(auto.faction).name : ''), 'primary') : '')
-      + btn('btnNew', 'ic_flag', 'Новая игра', 'случайная карта, 8 фракций', auto ? '' : 'primary')
+      + btn('btnNew', 'ic_flag', 'Новая игра', 'случайная карта, 13 фракций', auto ? '' : 'primary')
       + btn('btnCamp', 'ic_hero', 'Кампания', campSub())
       + btn('btnMaps', 'ic_town', 'Свои карты', 'редактор и импорт')
       + btn('btnLoad', 'ic_save', 'Загрузить')
@@ -346,6 +353,7 @@
     start(st);
   }
   function start(st) {
+    stopMenuArt(); UI.$('#menu').innerHTML = '';   // живая сцена меню не нужна в партии: её слои — несколько МБ памяти
     G.state = st; G.selHero = null;
     // застава, до ключника которой не дойти, — тупик; такие превращаем в стражей (и в старых сейвах тоже)
     if (A.sanitizeGates(st)) AV.invalidate();
@@ -554,12 +562,11 @@
       const priName = { att: 'Атака', def: 'Защита', pow: 'Сила магии', kno: 'Знание' }[opt.pri];
       H3.Audio.play('levelup');
       let choice = null;
-      if (opt.choices.length) {
-        const id = await UI.choose(hero.name + ' достигает ' + (hero.level + 1) + ' уровня!', '<div class="row">' + UI.heroPortrait(hero, 3) + '<div>' + UI.icon('ic_' + opt.pri) + ' <b>' + priName + ' +1</b><br>Выберите вторичный навык:</div></div>',
-          opt.choices.map(c => ({ id: c.id, label: SK.get(c.id).name + ' — ' + SK.levelName(c.lvl), desc: SK.describe(c.id, c.lvl) })));
-        choice = opt.choices.find(c => c.id === id) || opt.choices[0];
-      } else await UI.alert(hero.name + ' достигает ' + (hero.level + 1) + ' уровня!', UI.icon('ic_' + opt.pri) + ' <b>' + priName + ' +1</b>');
+      // картина уровня: портрет в сиянии, навыки карточками (выбор тот же: тап — навык, мимо окна — первый)
+      const id = await UI.levelUp(hero, { level: hero.level + 1, pri: opt.pri, priName, choices: opt.choices });
+      if (opt.choices.length) choice = opt.choices.find(c => c.id === id) || opt.choices[0];
       R.applyLevelUp(hero, opt.pri, choice);
+      UI.flashHero(hero);
       refresh(false);
     }
   }
@@ -594,17 +601,19 @@
     } finally { ov.classList.add('hidden'); G.busy = false; AV.V.busy = false; }
     const day = st.day;
     showScreen('adv'); AV.invalidate(); refresh(false);
-    if (S.dayOfWeek(day) === 1) {
-      H3.Audio.play('week');
-      const wk = st.week;
-      UI.toast(wk ? wk.name + (wk.id === 'plain' ? '. Прирост существ в городах.' : ' — ' + wk.desc) : 'Новая неделя! Прирост существ в городах.', '', 'ic_day');
-    }
+    const monday = S.dayOfWeek(day) === 1;
+    if (monday) H3.Audio.play('week');
     else UI.toast(S.dateStr(day), '', 'ic_day');
     const p = st.players[st.turn];
     const hs = S.heroesOf(st, p.id);
     if (hs.length && !(selected() && !selected().dead)) selectHero(hs[0].id);
     if (selected()) AV.centerOn(selected().x, selected().y);
     save('auto');
+    // открытка недели (в первый день месяца — парадная): что за неделя и что она меняет
+    if (monday && st.winner === null) {
+      const me = st.players.find(x => !x.isAI) || p, h = selected() || S.heroesOf(st, me.id)[0];
+      try { await UI.weekCard({ day, week: st.week, faction: me.faction, heroCls: h ? h.cls : null, color: me.color }); } catch (e) { console.error(e); }
+    }
     checkEnd();
   }
   async function defendBattle(b) {
@@ -636,11 +645,12 @@
       : [{ value: 'menu', label: 'В меню', cls: 'primary' }];
     // картина финала: то же небо, тот же город — только исход другой
     const box = UI.el('div', 'col');
-    const art = UI.el('canvas', 'px finale'); box.appendChild(art);
+    const art = UI.el('canvas', H3.Scenes ? 'finale' : 'px finale'); box.appendChild(art);
     const body = UI.el('div', ''); body.innerHTML = extra; box.appendChild(body);
     const me = st.players[0];
+    const lead = S.heroesOf(st, 0).sort((a, b) => b.level - a.level)[0];   // на картине — сильнейший свой герой (или герой фракции)
     const ch = await UI.modal({ title: won ? 'Победа!' : 'Поражение', html: box, buttons, closable: false,
-      onOpen: () => { try { H3.Art.finale(art, { won, faction: me.faction, color: me.color, seed: st.seed }); } catch (e) { console.error(e); art.remove(); } } });
+      onOpen: () => { try { (H3.Scenes ? H3.Scenes.finale : H3.Art.finale)(art, { won, faction: me.faction, color: me.color, seed: st.seed, heroCls: lead ? lead.cls : null }); } catch (e) { console.error(e); art.remove(); } } });
     try { localStorage.removeItem(SAVE_KEY + 'auto'); } catch (e) { /* ignore */ }
     G.state = null;
     if (ch === 'next' && camp && camp.next) { startScenario(camp.camp.id, camp.next.id); return; }

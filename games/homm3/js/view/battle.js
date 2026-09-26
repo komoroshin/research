@@ -82,6 +82,7 @@
     V.bg = makeBgLayers(V.b.terrain, V.worldW, V.ch, V.day, hz);
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
     if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
+    if (V.vfx) { V.vfx.S.bounds = { w: V.worldW, h: V.ch }; V.vfx.S.size = V.size; VFx.warm(V.size); }
     // облака над полем (под землёй неба нет)
     V.clouds = [];
     if (V.b.terrain !== 'subter' && !V.bg.s) for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
@@ -206,6 +207,7 @@
       V.b = b; V.human = (opts && opts.human) || []; V.auto = false; V.done = false; V.resolve = resolve; V.floats = []; V.anims = []; V.spellMode = null; V.hover = null; V.reach = null; V.tapTarget = null;
       V.speed = H3.Game ? H3.Game.settings().animSpeed : 1; V.logLines = [];
       V.fx = Fx.scene(); V.heroCast = [0, 0];
+      V.vfx = NEWFX ? VFx.scene(V.fx) : null;
       H3.Game.showScreen('battle');
       layout(); renderBar();
       H3.Audio.play(b.siege ? 'siege' : 'turn');
@@ -265,6 +267,7 @@
     await wait(V.speed === 0 ? 0 : 500);
     const res = V.b.result; const r = V.resolve; V.resolve = null; V.b = null;
     if (V.fx) V.fx.clear();
+    if (V.vfx) V.vfx.clear();
     r(res);
   }
   function focusUnit(u) { followUnit(u); }
@@ -288,7 +291,7 @@
         case 'hit': case 'shoot': case 'retaliate': {
           const a = b.units[e.unit], t = b.units[e.target]; if (!a || !t) break;
           if (e.t === 'shoot') { H3.Audio.play('shoot'); await shotFx(a, t); }
-          else { await lunge(a, t, spd(140)); H3.Audio.play('hit'); hitFx(t, Bt.isBig(a)); if (Bt.isBig(a) && fxOn()) V.fx.shake(3, 160); }
+          else { await lunge(a, t, spd(140)); H3.Audio.play('hit'); if (NEWFX) meleeFx(a, t); else hitFx(t, Bt.isBig(a)); if (Bt.isBig(a) && fxOn()) V.fx.shake(3, 160); }
           if (e.t === 'retaliate') log(unitName(a) + ' отвечает');
           break;
         }
@@ -305,7 +308,7 @@
         }
         case 'manaChannel': { log('Фамильяры перехватили ' + e.mana + ' маны'); break; }
         case 'tent': { const t = b.units[e.target]; if (t) { float(t, '+' + e.amount, '#7fe08a'); healFx(t); log('Палатка лечит ' + unitName(t) + ': +' + e.amount + ' HP'); } await wait(spd(220)); break; }
-        case 'death': { const u = b.units[e.unit]; H3.Audio.play('death'); log(unitName(u) + ' уничтожены'); deathFx(u); await fade(u, spd(420)); break; }
+        case 'death': { const u = b.units[e.unit]; H3.Audio.play('death'); log(unitName(u) + ' уничтожены'); const ms = deathFx(u); await fade(u, spd(ms || 420)); break; }
         case 'luck': { const u = b.units[e.unit]; float(u, 'Удача! ×2', '#9be07f'); H3.Audio.play('luck'); log(unitName(u) + ': удача — двойной урон'); if (fxOn()) { const r = unitRect(u); V.fx.rise(r.x, r.y, r.w, r.h, { n: 16, color: ['#f2d34c', '#fff', '#9be07f'], ttl: 600 }); } await wait(spd(250)); break; }
         case 'morale': { const u = b.units[e.unit]; float(u, e.good ? 'Мораль: доп. ход' : 'Мораль: замешательство', e.good ? '#9be07f' : '#ff8a6a'); H3.Audio.play('morale'); log(unitName(u) + (e.good ? ' воодушевлены — ещё один ход' : ' растеряны и пропускают ход')); if (fxOn()) { const r = unitRect(u); if (e.good) V.fx.rise(r.x, r.y, r.w, r.h, { n: 14, color: ['#f2d34c', '#ffe9a0'], ttl: 600 }); else V.fx.fall(r.x, r.y, r.w, r.h, { n: 10, color: ['#4b4d54', '#8b8d94'], ttl: 700 }); } await wait(spd(400)); break; }
         case 'wait': log(unitName(b.units[e.unit]) + ' ждут'); break;
@@ -325,10 +328,11 @@
         case 'ability': {
           const a = b.units[e.unit], t = e.target !== undefined ? b.units[e.target] : null;
           if (e.ab === 'resurrect' && t) { resurrectFx(t, '#ffe9a0'); float(t, 'воскрешение', '#ffe9a0'); log(unitName(a) + ' воскрешает ' + unitName(t)); await wait(spd(420)); break; }
-          if (e.ab === 'raiseDemons' && t) { if (fxOn()) { const r = unitRect(t); V.fx.burst(r.x, r.y - 6, { n: 26, color: ['#ff5a1f', '#e8792b', '#7a1a14'], speed: 60, ttl: 700, grav: -80, shape: 'puff', size: 4 }); V.fx.ring(r.x, r.y, { r0: 4, r1: V.size * 1.4, color: '#ff5a1f', ttl: 450 }); } float(t, '+' + e.n + ' демонов', '#ffb060'); log(unitName(a) + ' поднимает демонов: ' + e.n); await wait(spd(420)); break; }
+          if (e.ab === 'raiseDemons' && t) { if (vOn()) VFx.ability(V.vfx, 'raiseDemons', vRect(t)); else if (fxOn()) { const r = unitRect(t); V.fx.burst(r.x, r.y - 6, { n: 26, color: ['#ff5a1f', '#e8792b', '#7a1a14'], speed: 60, ttl: 700, grav: -80, shape: 'puff', size: 4 }); V.fx.ring(r.x, r.y, { r0: 4, r1: V.size * 1.4, color: '#ff5a1f', ttl: 450 }); } float(t, '+' + e.n + ' демонов', '#ffb060'); log(unitName(a) + ' поднимает демонов: ' + e.n); await wait(spd(420)); break; }
           if (e.ab === 'cast' && t) { buffFx(t, '#9ad0ff'); log(unitName(a) + ' колдует на ' + unitName(t)); await wait(spd(300)); break; }
           const nm = { deathStare: 'Взгляд смерти', fireShield: 'Огненный щит', lightning: 'Молния' }[e.ab] || e.ab;
-          if (t && fxOn()) {
+          if (t && vOn()) VFx.ability(V.vfx, e.ab, vRect(t));
+          else if (t && fxOn()) {
             const r = unitRect(t);
             if (e.ab === 'lightning') { V.fx.bolt(r.x + rnd(-30, 30), -10, r.x, r.y - r.h * 0.5, { ttl: spd(260) }); V.fx.burst(r.x, r.y - r.h * 0.5, { n: 10, color: ['#fff', '#7fd9ea'], speed: 100, ttl: 300, shape: 'spark', glow: true }); }
             else if (e.ab === 'fireShield') V.fx.burst(r.x, r.y - r.h * 0.4, { n: 18, color: ['#ff5a1f', '#f2d34c', '#e8792b'], speed: 70, ttl: 450, grav: -60, shape: 'puff', size: 3 });
@@ -385,6 +389,12 @@
      Все эффекты — параметры для H3.Fx; ассетов нет. При скорости «мгновенно»
      не запускаются вовсе, при «быстро» длятся вдвое короче (spd). */
   const fxOn = () => !!V.fx && V.speed !== 0;
+  // рисованные эффекты (js/view/vec_fx.js); ?fx=0 — старые частицы
+  const VFx = H3.VFx, NEWFX = !!VFx && !(typeof location !== 'undefined' && /[?&]fx=0\b/.test(location.search));
+  const vOn = () => fxOn() && !!V.vfx;
+  /** Прямоугольник отряда для рисованных эффектов (+ id существа). */
+  function vRect(u) { const r = unitRect(u); r.cid = u.cid; return r; }
+  function meleeFx(a, t) { if (!vOn()) return; VFx.melee(V.vfx, a.cid, t.cid, vRect(a), vRect(t), { big: Bt.isBig(a), terrain: V.b.terrain }); }
   /** Экранный прямоугольник стека: x — центр, y — земля, w/h — габарит. */
   function unitRect(u) { const p = V.pos[u.id]; const big = Bt.isBig(u); return { x: p.x, y: p.y + V.size * 0.55, w: V.size * (big ? 2.2 : 1.3), h: V.size * 1.8 }; }
   function bloodColor(u) {
@@ -401,13 +411,14 @@
     V.fx.burst(r.x, r.y - r.h * 0.45, { n: heavy ? 18 : 9, color: bloodColor(t), speed: 85, ttl: spd(480), size: 2, grav: 280, angle: -Math.PI / 2, spread: Math.PI * 1.3 });
   }
   function stepDust(u) { if (!fxOn() || C.isFlyer(C.get(u.cid))) return; const p = V.pos[u.id]; const col = { snow: 'rgba(255,255,255,0.5)', sand: 'rgba(230,200,140,0.45)', lava: 'rgba(120,60,30,0.4)', swamp: 'rgba(90,120,80,0.4)' }[V.b.terrain] || 'rgba(120,100,70,0.35)'; V.fx.puff(p.x, p.y + V.size * 0.5, { n: 2, color: col, size: 3, ttl: spd(380), under: true, grow: 1.4 }); }
-  function healFx(u) { if (!fxOn()) return; const r = unitRect(u); V.fx.rise(r.x, r.y, r.w, r.h, { n: 16, color: ['#7fe08a', '#bfe36b', '#ffffff'], ttl: spd(700) }); V.fx.ring(r.x, r.y, { r0: 3, r1: V.size * 1.1, color: '#7fe08a', ttl: spd(400) }); }
-  function buffFx(u, color) { if (!fxOn()) return; const r = unitRect(u); V.fx.rise(r.x, r.y, r.w, r.h, { n: 14, color: [color, '#ffffff'], ttl: spd(650) }); V.fx.ring(r.x, r.y, { r0: 3, r1: V.size * 1.1, color, ttl: spd(380), width: 2 }); }
+  function healFx(u) { if (vOn()) { VFx.heal(V.vfx, vRect(u)); return; } if (!fxOn()) return; const r = unitRect(u); V.fx.rise(r.x, r.y, r.w, r.h, { n: 16, color: ['#7fe08a', '#bfe36b', '#ffffff'], ttl: spd(700) }); V.fx.ring(r.x, r.y, { r0: 3, r1: V.size * 1.1, color: '#7fe08a', ttl: spd(400) }); }
+  function buffFx(u, color) { if (vOn()) { VFx.ability(V.vfx, 'cast', vRect(u), { col: color }); return; } if (!fxOn()) return; const r = unitRect(u); V.fx.rise(r.x, r.y, r.w, r.h, { n: 14, color: [color, '#ffffff'], ttl: spd(650) }); V.fx.ring(r.x, r.y, { r0: 3, r1: V.size * 1.1, color, ttl: spd(380), width: 2 }); }
   function debuffFx(u, color) { if (!fxOn()) return; const r = unitRect(u); V.fx.fall(r.x, r.y, r.w, r.h, { n: 14, color: [color, '#101828', '#4b4d54'], ttl: spd(700) }); flashUnit(u, color); }
-  function resurrectFx(u, color) { if (!fxOn()) return; const r = unitRect(u); V.fx.ring(r.x, r.y, { r0: V.size * 1.6, r1: 3, color, ttl: spd(450), width: 3, fill: color }); V.fx.rise(r.x, r.y, r.w, r.h * 1.3, { n: 26, color: [color, '#ffffff', '#f2d34c'], ttl: spd(900) }); V.fx.flash({ color, alpha: 0.12, ttl: spd(300) }); }
+  function resurrectFx(u, color) { if (vOn()) { VFx.raise(V.vfx, vRect(u)); return; } if (!fxOn()) return; const r = unitRect(u); V.fx.ring(r.x, r.y, { r0: V.size * 1.6, r1: 3, color, ttl: spd(450), width: 3, fill: color }); V.fx.rise(r.x, r.y, r.w, r.h * 1.3, { n: 26, color: [color, '#ffffff', '#f2d34c'], ttl: spd(900) }); V.fx.flash({ color, alpha: 0.12, ttl: spd(300) }); }
   /** Гибель: спрайт рассыпается на пиксели, которые уносит вверх. */
   function deathFx(u) {
     if (!fxOn()) return;
+    if (vOn()) return VFx.death(V.vfx, u.cid, vRect(u), { big: Bt.isBig(u), terrain: V.b.terrain });
     const p = V.pos[u.id], c = C.get(u.cid);
     const sc = V.size / 14, scale = Math.max(1, Math.round(sc * (Bt.isBig(u) ? 1.65 : 1.4) * 2) / 2);
     const cv = Sp.render(u.cid, scale, u.side === 1);
@@ -428,6 +439,10 @@
   async function shotFx(a, t) {
     const p = V.pos[a.id], q = V.pos[t.id];
     if (!fxOn()) return;
+    if (vOn()) {
+      p.lunge = -0.6; setTimeout(() => { if (V.pos[a.id]) V.pos[a.id].lunge = 0; }, spd(160));
+      await VFx.shot(V.vfx, a.cid, vRect(a), vRect(t), { terrain: V.b.terrain }); return;
+    }
     const kind = shotKind(a.cid), ms = spd(kind === 'stone' ? 380 : kind === 'axe' ? 300 : 230);
     const y1 = p.y - V.size * 0.5, y2 = q.y - V.size * 0.4;
     // замах-выпад стрелка — та же деформация, что и у ближнего боя, только короче
@@ -454,6 +469,7 @@
     const q = V.pos[t.id];
     const row = t.y < Bt.GATE_ROW ? 2 : 8;
     const [x, y] = Hex.center(Bt.WALL_COL, row, V.size, V.ox, V.oy);
+    if (vOn()) { await VFx.shot(V.vfx, 'ballista', { x, y: y - V.size * 0.6, w: V.size, h: V.size * 1.6 }, vRect(t), { terrain: V.b.terrain }); return; }
     await V.fx.missile(x, y - V.size * 1.6, q.x, q.y - V.size * 0.4, { kind: 'dart', ttl: spd(220), arc: 12, size: Math.max(0.8, V.size / 26) });
     hitFx(t, false);
   }
@@ -463,6 +479,16 @@
     const [tx, ty] = Hex.center(Bt.WALL_COL, row, V.size, V.ox, V.oy);
     const [sx, sy] = Hex.center(0, Bt.GATE_ROW, V.size, V.ox, V.oy);
     const missY = e.result === 'miss' ? ty + V.size * 0.6 : ty - V.size * 0.5;
+    if (vOn()) {
+      const w = V.size / 26, vx = V.vfx, gx = tx + (e.result === 'miss' ? V.size : 0);
+      await vx.projectile('rock', sx, sy - V.size, gx, missY, { ttl: 560, arc: 90, s: 1.4, spinRate: 5 });
+      if (e.result === 'miss') { vx.smoke(gx, missY, { n: 4, col: '#8a7458', size: 8 * w, ttl: 1000, out: 40, a: 0.7 }); VFx.impact(vx, 'pebble', gx, missY, missY + 4 * w); return; }
+      const big = e.result === 'destroy';
+      vx.star(tx, ty - V.size * 0.4, { r: big ? 26 : 16, col: '#fff0d0' });
+      vx.debris(tx, ty - V.size * 0.4, { names: ['stone_golem.rock', 'earth_elemental.rock', 'cyclops.rock'], n: big ? 12 : 6, s: 0.3, speed: 170, ground: ty + V.size * 0.7, ttl: 1300 });
+      vx.smoke(tx, ty - V.size * 0.2, { n: big ? 8 : 4, col: '#9a8e80', size: 10 * w, ttl: 1500, out: 50, vy: -14 * w, a: 0.8 });
+      V.fx.shake(big ? 7 : 3, spd(260)); return;
+    }
     await V.fx.missile(sx, sy - V.size, tx + (e.result === 'miss' ? V.size : 0), missY, { kind: 'stone', ttl: spd(560), arc: 90, size: Math.max(1, V.size / 22) });
     if (e.result === 'miss') { V.fx.puff(tx + V.size, missY, { n: 5, color: 'rgba(120,100,70,0.45)', size: 5, ttl: spd(500) }); return; }
     V.fx.burst(tx, ty - V.size * 0.4, { n: e.result === 'destroy' ? 30 : 14, color: ['#8b8d94', '#c9c9cc', '#4b4d54'], speed: 110, ttl: spd(600), shape: 'square', size: 3, angle: -Math.PI / 2, spread: 2.4 });
@@ -498,6 +524,13 @@
     const rects = targets.map(unitRect);
     const hex = e.hex ? Hex.center(e.hex[0], e.hex[1], V.size, V.ox, V.oy) : (rects[0] ? [rects[0].x, rects[0].y - V.size * 0.4] : null);
     const id = sp.id, fx = V.fx;
+    if (vOn()) {
+      const hexes = [];
+      if (e.hex && sp.area) for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const d = Hex.dist(c, r, e.hex[0], e.hex[1]); if (d > 0 && d <= (sp.area === 'ring' ? 1 : sp.area)) hexes.push(Hex.center(c, r, V.size, V.ox, V.oy)); }
+      if (id === 'meteor_shower' && e.hex) hexes.unshift(hex);
+      await VFx.spell(V.vfx, sp, { size: V.size, src, hex, hexes, rects: targets.map(vRect), terrain: b.terrain, field: { x0: V.ox, y0: V.oy, w: V.fw, h: V.size * (1.5 * H + 0.5) } });
+      return;
+    }
     const FIRE = ['#ff5a1f', '#f2d34c', '#e8792b', '#ff9a3a'], ICE = ['#9ad0ff', '#ffffff', '#4d7fe0'], STONE = ['#4b4d54', '#8b8d94', '#b0843c'];
     const fireBurst = (x, y, big) => { fx.burst(x, y, { n: big ? 44 : 22, color: FIRE, speed: big ? 110 : 70, ttl: spd(520), grav: -60, shape: 'puff', size: big ? 4 : 3 }); fx.burst(x, y, { n: 12, color: ['#fff', '#f2d34c'], speed: 140, ttl: spd(320), shape: 'spark', glow: true }); fx.puff(x, y - 6, { n: 6, color: 'rgba(40,30,20,0.45)', size: 7, ttl: spd(800) }); };
     if (id === 'lightning_bolt' || id === 'titans_bolt' || id === 'chain_lightning') {
@@ -613,6 +646,7 @@
     for (const id in V.pos) { const p = V.pos[id]; if (p.shake > 0) p.shake -= dt; if (p.flash > 0) p.flash -= dt; }
     for (let i = 0; i < 2; i++) if (V.heroCast[i] > 0) V.heroCast[i] -= dt;
     if (V.fx) { V.fx.update(dt); ambient(dt); }
+    if (V.vfx) { V.vfx.S.rate = V.speed === 2 ? 2 : 1; V.vfx.update(dt); }
     for (const c of V.clouds) { c.x += c.v * dt / 1000; if (c.x - c.w > V.worldW) c.x = -c.w; }
     draw(ts);
   }
@@ -667,6 +701,7 @@
     // текущий юнит
     if (cur) { const p = V.pos[cur.id]; const wide = Bt.isBig(cur) ? 1.5 : 0.75; ctx.strokeStyle = 'rgba(241,207,116,' + (0.6 + 0.3 * Math.sin(ts / 180)) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x, p.y + size * 0.55, size * wide, size * 0.32, 0, 0, Math.PI * 2); ctx.stroke(); }
     if (V.fx) V.fx.drawUnder(ctx);
+    if (V.vfx) V.vfx.drawUnder(ctx);
     // препятствия, стены, юниты — по рядам
     const sc = size / 14; // масштаб спрайтов
     const items = [];
@@ -688,6 +723,7 @@
       items.push({ y: p.y, draw: () => drawUnit(ctx, u, p, sc, ts) });
     }
     items.sort((a, b2) => a.y - b2.y); for (const it of items) it.draw();
+    if (V.vfx) V.vfx.drawOver(ctx);
     if (V.fx) V.fx.drawOver(ctx, V.worldW * 2, V.ch * 2);
     // подсказка урона / стрелка направления
     if (V.hover && cur && isHuman(cur.side) && !V.spellMode) drawAttackHint(ctx, cur);
