@@ -843,6 +843,16 @@
     if (root.requestAnimationFrame) root.requestAnimationFrame(() => setTimeout(go, 0)); else setTimeout(go, 0);
     return cv;
   }
+  /** Где на фигуре лежит надетое (единицы куклы, круги [x, y, r]); мелкое проверяется первым. */
+  const HIT = [['ring1', [[62, 302, 13]]], ['ring2', [[198, 302, 13]]], ['misc1', [[100, 266, 17]]], ['misc2', [[158, 268, 17]]], ['neck', [[130, 160, 16]]],
+    ['helm', [[130, 62, 34]]], ['shield', [[210, 250, 44]]], ['weapon', [...[-10, 25, 60, 95, 130, 165].map(t => [...at(t, -4), 20]), [...at(150, -30), 26], [22, 250, 22]]],
+    ['boots', [[104, 452, 28], [156, 452, 28]]], ['armor', [[130, 196, 40]]], ['cape', [[80, 160, 20], [180, 160, 20], [190, 360, 30], [70, 360, 30]]]];
+  /** Слот по точке на панели (доли ширины и высоты). Пустой слот тоже находится (тап покажет подсказку), кроме плаща — его места по бокам фигуры. */
+  function hit(hero, fx, fy) {
+    const x = (fx * PW - OX) / SC, y = (fy * PH - OY) / SC, a = hero.arts || {};
+    for (const [slot, rs] of HIT) if (rs.some(([cx, cy, r]) => (x - cx) ** 2 + (y - cy) ** 2 <= r * r) && (a[slot] || slot !== 'cape')) return slot;
+    return null;
+  }
   /** Все рисунки куклы заранее (для проверок): тела всех портретов и все известные артефакты. */
   function defineAll() {
     niche();
@@ -851,5 +861,5 @@
     for (const id of ids) { const w = worn(id); w.front(); w.back(); w.left(); }
   }
 
-  H3.VecDoll = { PW, PH, SC, CELL, AT, HINT, LEFT, RIGHT, layout, layers, paint, paintSoon, ready, toPanel, defineAll, looks: TBL };
+  H3.VecDoll = { PW, PH, SC, CELL, AT, HINT, LEFT, RIGHT, layout, layers, paint, paintSoon, ready, hit, toPanel, defineAll, looks: TBL };
 })(typeof window !== 'undefined' ? window : globalThis);

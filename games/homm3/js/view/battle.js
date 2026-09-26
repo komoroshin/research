@@ -719,7 +719,7 @@
     if (V.endPose) V.endPose.t += dt;
     if (V.fx) { V.fx.update(dt); ambient(dt); }
     // снаряды и дуги ударов при отдалении растут, чтобы на экране не мельчать (стрела ≥ ~12 точек)
-    if (V.vfx) { V.vfx.S.rate = V.speed === 2 ? 2 : 1; V.vfx.S.zk = U.clamp(0.78 / (V.cam.z * V.size / 26), 1, 2.2); V.vfx.update(dt); }
+    if (V.vfx) { V.vfx.S.rate = V.speed === 2 ? 2 : 1; V.vfx.S.zk = U.clamp(0.9 / (V.cam.z * V.size / 26), 1, 2.2); V.vfx.update(dt); }
     for (const c of V.clouds) { c.x += c.v * dt / 1000; if (c.x - c.w > V.worldW) c.x = -c.w; }
     draw(ts);
   }
