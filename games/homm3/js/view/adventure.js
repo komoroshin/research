@@ -330,7 +330,7 @@
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
     if (o.type === 'town') return { name: 'town_' + st.towns[o.townId].faction, x: px, y: py - 2 };
-    if (o.type === 'mine') return { name: 'mine_' + o.res, x: px, y: py };
+    if (o.type === 'mine') return { name: mineSprite(st, o), x: px, y: py };
     if (o.type === 'dwelling') return { name: 'dwelling_' + Math.min(7, C.get(o.cid).tier), x: px, y: py };
     if (o.type === 'monster') return { name: o.cid, x: px, y: py - 2 };
     if (o.type === 'resource' || o.type === 'artifact') return null;   // лежит на земле — тень не нужна
@@ -427,7 +427,7 @@
       drawFlag(ctx, px, py - 48, tw.owner >= 0 ? st.players[tw.owner].color : '#999');
       return;
     }
-    if (o.type === 'mine') { Sp.draw(ctx, 'mine_' + o.res, px, py, 1); drawFlag(ctx, px + 12, py - 26, o.owner >= 0 ? st.players[o.owner].color : '#999', true); return; }
+    if (o.type === 'mine') { drawMine(ctx, st, o, px, py, ts); return; }
     if (o.type === 'dwelling') { Sp.draw(ctx, 'dwelling_' + Math.min(7, C.get(o.cid).tier), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'monster') { An.draw(ctx, o.cid, px, py - 2, 1, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
@@ -435,6 +435,60 @@
     if (t.bank && o.empty) { ctx.globalAlpha = 0.55; Sp.draw(ctx, t.sprite, px, py, 1); ctx.globalAlpha = 1; return; }
     if (o.type === 'keymaster' || o.type === 'border_guard') { const kc = H3.Quest.KEY_COLORS[o.color]; Sp.draw(ctx, t.sprite, px, py, 1, false, kc ? { r: kc.hex } : undefined); return; }
     if (t.sprite) Sp.draw(ctx, t.sprite, px, py, 1);
+  }
+  /* ---------- шахты: вариант по местности, подвижные детали, искры, свечение ---------- */
+  /** Рисунок шахты для карты: '#g' обычная земля, '#s' снег, '#u' подземелье; без рисованной графики — прежний спрайт. */
+  function mineSprite(st, o) {
+    const m = S.lvl(st, o.z || 0), t = R.TERRAINS[m.terrain[o.y * m.w + o.x]];
+    const name = 'mine_' + o.res + '#' + ((o.z || 0) ? 'u' : t === 'snow' ? 's' : 'g');
+    return H3.Vec && H3.Vec.has(name) ? name : 'mine_' + o.res;
+  }
+  /** Служебные точки рисунка → координаты карты. */
+  function metaAt(M, px, py, p) { return [px + (p[0] - M.ax) / M.U, py + (p[1] - M.ay) / M.U]; }
+  function drawMine(ctx, st, o, px, py, ts) {
+    const name = mineSprite(st, o), color = o.owner >= 0 ? st.players[o.owner].color : null;
+    const M = H3.Vec && H3.Vec.meta(name);
+    Sp.draw(ctx, name, px, py, 1, false, color ? Sp.teamTint(color) : undefined);
+    if (!M) { drawFlag(ctx, px + 12, py - 26, color || '#999', true); return; }
+    const m = M.m, T = ts / 1000, ph = (o.x * 7 + o.y * 13) % 10;
+    const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
+    // свечение из глубины пещеры
+    if (m.glow) {
+      const [gx, gy] = metaAt(M, px, py, m.glow.at), r = m.glow.r / M.U, a = 0.22 + 0.12 * Math.sin(T * 1.7 + ph);
+      const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, r);
+      g.addColorStop(0, 'rgba(' + m.glow.c + ',' + a.toFixed(3) + ')'); g.addColorStop(1, 'rgba(' + m.glow.c + ',0)');
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(gx - r, gy - r, r * 2, r * 2); ctx.restore();
+    }
+    // подвижные детали: колесо и пила крутятся, бадья ходит на канате, пламя дрожит
+    for (const a of m.anim || []) {
+      const [x, y] = metaAt(M, px, py, a.at);
+      ctx.save(); ctx.translate(x, y);
+      if (a.spin) ctx.rotate((T * a.spin) % (Math.PI * 2));
+      if (a.bob) {
+        const dy = -(0.5 - 0.5 * Math.cos(T * 0.9 + ph)) * a.bob / M.U;
+        if (m.rope) { const [rx, ry] = metaAt(M, px, py, m.rope.from); ctx.strokeStyle = '#d8c8a0'; ctx.lineWidth = 0.35; ctx.beginPath(); ctx.moveTo(rx - x, ry - y); ctx.lineTo(0, dy); ctx.stroke(); }
+        ctx.translate(0, dy);
+      }
+      if (a.flicker) ctx.scale(1 + 0.08 * Math.sin(T * 11 + ph), 0.8 + 0.25 * Math.abs(Math.sin(T * 7.3 + ph * 2)));
+      Sp.draw(ctx, a.name, 0, 0, 1);
+      ctx.restore();
+    }
+    // искры на камнях и кристаллах: короткая четырёхлучевая вспышка по очереди
+    if (m.sparkle && m.sparkle.length) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = 'rgba(255,255,245,0.9)'; ctx.lineCap = 'round';
+      m.sparkle.forEach((p, i) => {
+        const k = Math.pow(Math.max(0, Math.sin(T * 1.3 + i * 2.39 + ph)), 12); if (k < 0.05) return;
+        const [x, y] = metaAt(M, px, py, p), L = 1.7 * k;
+        ctx.globalAlpha = k * 0.85; ctx.lineWidth = 0.3;
+        ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L); ctx.lineTo(x, y + L); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.arc(x, y, 0.5 * k, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.restore();
+    }
+    ctx.imageSmoothingEnabled = prev;
+    // флажок владельца — на своём месте: на коньке, на козлах, на скале
+    const [fx_, fy] = metaAt(M, px, py, m.flag || [283, 113]);
+    drawFlag(ctx, fx_, fy - 9, color || '#999', true);
   }
   /** Покой существа на карте: дыхание, у летающих — парение. */
   function creatureIdle(cid, key, ts) {
@@ -519,8 +573,17 @@
       const o = st.objects[id]; if ((o.z || 0) !== V.layer) continue;
       if (o.type !== 'town' && o.type !== 'mine') continue;
       if (o.x < view.x0 || o.x > view.x1 || o.y < view.y0 || o.y > view.y1 || !vis[o.y * m.w + o.x]) continue;
-      if (!chance(o.type === 'town' ? 6 : 2.5)) continue;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
+      const M = o.type === 'mine' && H3.Vec && H3.Vec.meta(mineSprite(st, o));
+      if (M) {   // у рисованной шахты дым идёт из своих мест: труба лаборатории, жерла серы; у штольни и лесопилки его нет
+        for (const sm of M.m.smoke || []) {
+          if (!chance(sm.rate || 2.5)) continue;
+          const [sx, sy] = metaAt(M, px, py, sm.at), b = sm.big || 1;
+          fx.add({ x: sx + rnd(-1, 1), y: sy, vx: rnd(1, 5), vy: -rnd(6, 11), ax: 0, ay: 0, ttl: 2600, life: 0, size: rnd(1.6, 2.8) * b, color: 'rgba(' + sm.c + ',0.4)', shape: 'puff', grow: 1.5 });
+        }
+        continue;
+      }
+      if (!chance(o.type === 'town' ? 6 : 2.5)) continue;
       const [sx, sy] = o.type === 'town' ? [px - 6 + rnd(-2, 2), py - 42] : [px + 7, py - 22];
       fx.add({ x: sx, y: sy, vx: rnd(3, 8), vy: -rnd(6, 12), ax: 0, ay: 0, ttl: 2600, life: 0, size: rnd(2, 3.5), color: 'rgba(200,200,210,0.32)', shape: 'puff', grow: 1.6 });
     }
@@ -538,7 +601,7 @@
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
       if (o.type === 'town') spots = [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]];
       else if (o.type === 'dwelling' || o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
-      else if (o.type === 'mine') spots = [[px + 1, py - 8]];
+      else if (o.type === 'mine') { const M = H3.Vec && H3.Vec.meta(mineSprite(st, o)); spots = M ? (M.m.lights || []).map(p => metaAt(M, px, py, p)) : [[px + 1, py - 8]]; }
       else if (o.type === 'keymaster') spots = [[px, py - 8]];
       if (!spots) continue;
       for (const [x, y] of spots) {
