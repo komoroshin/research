@@ -43,7 +43,7 @@
   function closeTop(value) { const bg = stack[stack.length - 1]; if (bg && bg._opts.closable !== false) bg._close(value === undefined ? null : value); }
   function alert(title, html, icon) { return modal({ title, html: dlgHtml(icon, html) }); }
   function confirm(title, html, yes, no, icon) { return modal({ title, html: dlgHtml(icon, html), buttons: [{ label: yes || 'Да', cls: 'primary', value: true }, { label: no || 'Нет', value: false }], cancelValue: false }); }
-  function dlgHtml(icon, html) { return '<div class="dlg">' + (icon && Sp.has(icon) ? Sp.img(icon, 3, 'big') : '') + '<div class="grow">' + html + '</div></div>'; }
+  function dlgHtml(icon, html) { return '<div class="dlg">' + (icon && (Sp.has(icon) || (H3.Vec && H3.Vec.has(icon))) ? Sp.img(icon, 3, 'big') : '') + '<div class="grow">' + html + '</div></div>'; }
   /** Диалог с вариантами: choices [{id,label,desc,disabled}] → Promise<id|null> */
   function choose(title, html, choices, icon) {
     const box = el('div', 'choice');
@@ -60,7 +60,7 @@
     });
   }
   function toast(text, cls, icon) {
-    const t = el('div', 'toast ' + (cls || ''), (icon && Sp.has(icon) ? Sp.img(icon, 2) : '') + '<span>' + text + '</span>');
+    const t = el('div', 'toast ' + (cls || ''), (icon && (Sp.has(icon) || (H3.Vec && H3.Vec.has(icon))) ? Sp.img(icon, 2) : '') + '<span>' + text + '</span>');
     $('#toasts').appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .4s'; setTimeout(() => t.remove(), 400); }, 2600);
   }
@@ -77,7 +77,7 @@
   function hideTip() { if (tipEl) tipEl.classList.add('hidden'); }
 
   /* ---------- разметка ---------- */
-  const icon = (name, scale, cls) => Sp.has(name) ? Sp.img(name, scale || 2, cls) : '';
+  const icon = (name, scale, cls) => (Sp.has(name) || (H3.Vec && H3.Vec.has(name))) ? Sp.img(name, scale || 2, cls) : '';   // рисованные ступени города ('town_x#2') пиксельного спрайта не имеют
   const resIcon = r => icon('ic_' + r, 2);
   function costHtml(cost, have) {
     return '<span class="cost">' + U.RES.filter(r => cost[r]).map(r => '<span class="' + (have && (have[r] || 0) < cost[r] ? 'lack' : '') + '">' + resIcon(r) + cost[r] + '</span>').join('') + '</span>';
