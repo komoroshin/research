@@ -82,7 +82,7 @@
     const make = (k, ox, oy) => V.def(name, { w: fr.w, h: fr.h, anchor: fr.anchor,
       parts: [{ kind: 'torso', pivot: [fr.w / 2, fr.h / 2], shapes: xf(src, (x, y) => [ox + x * k, oy + y * k], k).map(darkRim) }] });
     const k = (Math.min(fr.w, fr.h) - 2 * M) / 100, ox = (fr.w - 100 * k) / 2, oy = (fr.h - 100 * k) / 2;
-    const d = make(k, ox, oy);
+    make(k, ox, oy); const d = V._defs[name];   // описание собирается при обращении — здесь нужна готовая рамка
     if (d.W === fr.w && d.H === fr.h) return;
     // рисунок вылез за рамку (толстая трубка, луч) — холст вырос бы и иконка встала бы не на место: ужимаем внутрь рамки
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
