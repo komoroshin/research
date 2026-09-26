@@ -1,0 +1,20 @@
+code,name_en,name_ru,unit,price_aed,seen_min,seen_max,n_quotes,note
+dismantle_ballast,"Dismantling of slabs, crushed stone, geotextile and penoplex","Демонтаж плит, щебня, геотекстиля и пеноплекса",sqm,60,40,70,6,Только кровли с гравием. Цена 40/60/70 — от чего зависит?
+dismantle_cbp,Dismantling of CBP boards around the perimeter,Демонтаж ЦСП-плит по периметру,sqm,50,50,50,1,
+remove_old_wp,Complete dismantling of the old peeled off waterproofing,Снятие старой отслоившейся гидроизоляции,sqm,5,5,5,1,
+drains,Checking and cleaning the drainage funnels and drainage system,Проверка и чистка дренажных воронок,set,1500,1200,1800,9,Основная кровля. Для гаража/малой кровли 600–1000
+drain_leak_fix,"Dismantling the drainage funnel, fixing the leakage, re-installing",Демонтаж воронки и устранение протечки,set,1700,1700,1700,1,
+ac_penetrations,Sealing the AC shafts and pipe penetrations with a silicone sealant,Герметизация шахт кондиционеров и проходок,set,1300,800,2000,10,Разброс 800–2000 — видимо от числа кондиционеров
+prep,Preparation of the base for a new waterproofing (removal of dirt and dust),Подготовка основания,set,500,300,2000,10,Основная кровля. Для гаража/малой 200–500. 2000 на 403 м²
+cracks_set,Repair of the cracks and sealing the joints with a silicone sealant,Ремонт трещин и герметизация швов (комплект),set,1000,500,1300,4,Альтернатива joints_lm
+joints_lm,Sealing all shrinkage/expansion joints with a silicone sealant,Герметизация деформационных швов,lm,50,50,50,2,
+perimeter_cracks_lm,Repair the cracks around perimeter and applying waterproofing,Ремонт трещин по периметру с гидроизоляцией,lm,100,100,100,1,
+primer,Applying PVA primer on the prepared surface,Грунтовка ПВА,sqm,5,5,5,1,
+liquid_rubber,Installation of a new liquid rubber waterproofing in 2 coats with reinforcement mesh,Жидкая резина в 2 слоя с армирующей сеткой,sqm,100,100,130,10,"Базовая 100. 120 и 130 встречались — почему?"
+install_cbp,Installation of new CBP boards around the perimeter,Монтаж новых ЦСП-плит по периметру,sqm,100,100,100,1,
+tiles_replace,Replacement of damaged terracotta tiles (including materials),Замена битой терракотовой плитки,set,800,800,800,1,
+dismantle_frame,Dismantling of unused roof frame,Демонтаж неиспользуемого каркаса,set,500,500,500,1,
+skirting_remove,Dismantling the old skirting around perimeter,Демонтаж старого плинтуса,set,300,300,300,1,
+skirting_install,Installing a new skirting,Монтаж нового плинтуса,set,1000,1000,1000,1,
+water_test,Testing of new waterproofing with water,Испытание водой,set,0,0,0,15,Всегда 0 — маркетинговая строка
+debris,Disposal of debris from the site,Вывоз мусора,trip,500,500,500,4,
