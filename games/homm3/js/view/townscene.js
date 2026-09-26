@@ -154,6 +154,15 @@
       // дорога к воротам: мягкая колея
       const g = c.createLinearGradient(0, 270, 0, 400); g.addColorStop(0, 'rgba(140,116,80,0.35)'); g.addColorStop(1, 'rgba(150,124,86,0.75)');
       c.fillStyle = g; c.beginPath(); c.moveTo(440, 268); c.quadraticCurveTo(480, 262, 522, 268); c.quadraticCurveTo(560, 330, 606, 400); c.lineTo(354, 400); c.quadraticCurveTo(402, 330, 440, 268); c.fill();
+      if (sc.fog) {   // мрачная фракция: небо свинцовое, краски выцветшие, над землёй стелется туман
+        c.globalCompositeOperation = 'multiply';
+        const gm = c.createLinearGradient(0, 0, 0, H); gm.addColorStop(0, '#5a5c74'); gm.addColorStop(0.42, '#8a90a0'); gm.addColorStop(0.6, '#9aa29a'); gm.addColorStop(1, '#a4a49c');
+        c.fillStyle = gm; c.fillRect(0, 0, W, H);
+        c.globalCompositeOperation = 'saturation'; c.fillStyle = 'rgba(128,128,128,0.55)'; c.fillRect(0, 0, W, H);
+        c.globalCompositeOperation = 'source-over';
+        const gf = c.createLinearGradient(0, 200, 0, 300); gf.addColorStop(0, 'rgba(190,205,195,0)'); gf.addColorStop(0.5, 'rgba(190,205,195,0.28)'); gf.addColorStop(1, 'rgba(190,205,195,0)');
+        c.fillStyle = gf; c.fillRect(0, 200, W, 100);
+      }
       return cv;
     }
     function paintWater(c, night) {

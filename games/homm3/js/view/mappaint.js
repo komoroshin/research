@@ -399,9 +399,10 @@
     }
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     strokeBuckets(ctx, body, '200,236,255', 0.2, 2.8);     // светлый вал волны перед пеной
-    ctx.setLineDash(DASH_A); strokeBuckets(ctx, foam, '240,250,255', 0.85, 0.65);
-    ctx.setLineDash(DASH_A2); ctx.lineDashOffset = 1.3; strokeBuckets(ctx, foam, '240,250,255', 0.6, 0.95);
-    ctx.setLineDash(DASH_B); ctx.lineDashOffset = 0; strokeBuckets(ctx, lace, '240,250,255', 0.75, 0.8);
+    strokeBuckets(ctx, foam, '236,248,255', 0.42, 1.5);   // сплошная мягкая полоса пены — рваное кружево лежит поверх, а не висит пунктиром
+    ctx.setLineDash(DASH_A); strokeBuckets(ctx, foam, '240,250,255', 0.55, 0.6);
+    ctx.setLineDash(DASH_A2); ctx.lineDashOffset = 1.3; strokeBuckets(ctx, foam, '240,250,255', 0.35, 0.9);
+    ctx.setLineDash(DASH_B); ctx.lineDashOffset = 0; strokeBuckets(ctx, lace, '240,250,255', 0.45, 0.7);
     ctx.restore();
   }
 
