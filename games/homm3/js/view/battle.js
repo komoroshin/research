@@ -54,6 +54,8 @@
     V.canvas.addEventListener('pointerleave', () => { V.hover = null; UI.hideTip(); });
     V.canvas.addEventListener('contextmenu', e => { e.preventDefault(); const h = hexAt(e.offsetX, e.offsetY); const u = h && Bt.unitAt(V.b, h[0], h[1]); if (u) unitInfo(u); });
     window.addEventListener('resize', () => { if (V.b) layout(); });
+    // панель под полем меняет высоту (строки журнала, кнопки тактики) — канва иначе обрезалась бы сверху и снизу
+    if (window.ResizeObserver) new ResizeObserver(() => { const box = UI.$('#battleMain'); if (V.b && box.clientWidth && V.boxWH !== box.clientWidth + 'x' + box.clientHeight) layout(); }).observe(UI.$('#battleMain'));
     requestAnimationFrame(loop);
   }
   function layout() {
@@ -192,7 +194,19 @@
   }
   /* ---------- камера ---------- */
   function toWorld(px, py) { return [px / V.cam.z + V.cam.x, py / V.cam.z + V.cam.y]; }
-  function clampCam() { const z = V.cam.z; V.cam.x = U.clamp(V.cam.x, 0, Math.max(0, (V.worldW || V.cw) - V.cw / z)); V.cam.y = U.clamp(V.cam.y, 0, Math.max(0, V.ch - V.ch / z)); }
+  function clampCam() {
+    const z = V.cam.z; V.cam.x = U.clamp(V.cam.x, 0, Math.max(0, (V.worldW || V.cw) - V.cw / z));
+    // отдалённое поле ниже экрана по высоте — ставим его чуть ниже середины: сверху остаётся сцена для героев
+    V.cam.y = z < 1 ? (V.ch - V.ch / z) * 0.56 : U.clamp(V.cam.y, 0, Math.max(0, V.ch - V.ch / z));
+  }
+  /** Цвета краёв задника (верх неба, низ земли): ими продолжаем картину, когда поле отдалено. */
+  function bgEdgeColors(bg) {
+    const px = (cv, y) => { try { const d = cv.getContext('2d').getImageData(Math.floor(cv.width / 2), y, 1, 1).data; return 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')'; } catch (e) { return null; } };
+    return { top: px(bg.sky, 0) || '#5f7fa8', bottom: px(bg.ground, bg.ground.height - 1) || '#2e2a1c' };
+  }
+  const BH = H3.BHero;
+  /** Обратный масштаб камеры не меньше 1: линии и плашки не тоньше своих точек при отдалении. */
+  const kz = () => Math.max(1, 1 / V.cam.z);
   /** Масштаб так, чтобы точка мира (wx, wy) осталась под экранной точкой (px, py). Минимум — всё поле в кадре. */
   function setZoom(z, px, py, wx, wy) { V.cam.z = U.clamp(z, Math.min(1, V.zFit || 1), 3); V.cam.x = wx - px / V.cam.z; V.cam.y = wy - py / V.cam.z; clampCam(); }
   /** Поле шире экрана или приближено — камера следует за ходящим отрядом. */
