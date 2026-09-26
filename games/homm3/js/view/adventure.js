@@ -410,7 +410,7 @@
     const t = O.get(o.type);
     if (o.type === 'town') return { name: townSprite(st.towns[o.townId]), x: px, y: py - 2 };
     if (o.type === 'mine') return { name: mineSprite(st, o), x: px, y: py };
-    if (o.type === 'dwelling') return { name: 'dwelling_' + Math.min(7, C.get(o.cid).tier), x: px, y: py };
+    if (o.type === 'dwelling') return { name: dwellSprite(o), x: px, y: py };
     if (o.type === 'monster') return { name: o.cid, x: px, y: py - 2 };
     if (o.type === 'resource' || o.type === 'artifact') return null;   // лежит на земле — тень не нужна
     if (t.bank && o.empty) return null;
@@ -511,7 +511,7 @@
       return;
     }
     if (o.type === 'mine') { drawMine(ctx, st, o, px, py, ts); return; }
-    if (o.type === 'dwelling') { Sp.draw(ctx, 'dwelling_' + Math.min(7, C.get(o.cid).tier), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
+    if (o.type === 'dwelling') { Sp.draw(ctx, dwellSprite(o), px, py, 1); if (o.owner >= 0) drawFlag(ctx, px + 12, py - 28, st.players[o.owner].color, true); An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'monster') { An.draw(ctx, o.cid, px, py - 2, 1, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
     if (o.type === 'artifact') { Sp.draw(ctx, 'artifact', px, py - 8, 1); return; }
@@ -572,6 +572,11 @@
     // флажок владельца — на своём месте: на коньке, на козлах, на скале
     const [fx_, fy] = metaAt(M, px, py, m.flag || [283, 113]);
     drawFlag(ctx, fx_, fy - 9, color || '#999', true);
+  }
+  /** Жилище на карте: своё у каждого существа ('dwelling_4@swordsman', улучшенные живут у базового), иначе общее по уровню. */
+  function dwellSprite(o) {
+    const c = C.get(o.cid), gen = 'dwelling_' + Math.min(7, Math.max(1, c.tier || 1)), own = gen + '@' + (c.base || c.id);
+    return H3.Vec && H3.Vec.has(own) ? own : gen;
   }
   /** Покой существа на карте: дыхание, у летающих — парение. */
   function creatureIdle(cid, key, ts) {
