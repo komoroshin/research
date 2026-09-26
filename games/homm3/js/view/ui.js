@@ -140,7 +140,7 @@
       box.appendChild(b);
     }
     if (o.choices.length) wrap.appendChild(box);
-    return modal({ title: hero.name + ' — ' + o.level + ' уровень', html: wrap, buttons: o.choices.length ? [] : [{ label: 'Дальше', cls: 'primary', value: null }],
+    return modal({ title: 'Новый уровень!', html: wrap, buttons: o.choices.length ? [] : [{ label: 'Дальше', cls: 'primary', value: null }],
       onOpen: (bx, close) => { closeFn = close; bx.classList.add('lvlmodal'); } });
   }
 
@@ -152,13 +152,14 @@
   function weekCard(o) {
     const wk = o.week, Sc = H3.Scenes;
     const name = Sc ? Sc.weekName(wk) : (wk && wk.name) || 'Новая неделя';
-    const desc = !wk || wk.id === 'plain' ? 'Прирост существ в городах — самое время нанять новых.' : (wk.id === 'creature' ? wk.desc + ' Прирост остальных — как обычно.' : wk.desc + ' Прирост существ в городах.');
+    const desc = !wk || wk.id === 'plain' ? 'Прирост существ в городах — самое время нанять новых.'
+      : wk.id === 'creature' ? wk.desc + ' Прирост остальных — как обычно.' : wk.id === 'plague' ? wk.desc : wk.desc + ' Прирост существ в городах — как обычно.';
     if (!Sc) { toast(esc(name + ' — ' + desc), '', 'ic_day'); return Promise.resolve(); }
     const m = Math.floor((o.day - 1) / 28) + 1, month = (o.day - 1) % 28 === 0 && o.day > 1;
     const box = el('div', 'wkcard' + (month ? ' month' : ''));
     box.innerHTML = '<div class="wkpic"><canvas class="wkart"></canvas>'
       + (month ? '<div class="wkmonth"><small>начинается</small>' + esc((MONTHS[m - 1] || m + '-й') + ' месяц') + '</div>' : '')
-      + '<div class="wkribbon"><span>' + esc(name) + '</span></div></div>'
+      + '</div><div class="wkribbon"><span>' + esc(name) + '</span></div>'
       + '<div class="wkdesc parch"><p>' + esc(desc) + '</p><div class="small wkdate">' + esc(H3.State.dateStr(o.day)) + '</div></div>';
     return modal({ title: month ? 'Новый месяц' : 'Новая неделя', html: box, buttons: [{ label: month ? 'Вперёд!' : 'В путь', cls: 'primary' }],
       onOpen: bx => {

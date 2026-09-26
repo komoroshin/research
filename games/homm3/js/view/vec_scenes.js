@@ -191,8 +191,9 @@
       x.fillStyle = o.snowShade; x.fill(snow);
       x.save(); x.clip(litPath); x.fillStyle = o.snowLit; x.fill(snow); x.restore();
     }
-    x.strokeStyle = rgba(o.shadeLine, 0.3); x.lineWidth = Math.max(1, p.ph * 0.012);
-    for (let k = 0; k < 3; k++) { const c = crest[1 + Math.floor(rnd() * 3)]; x.beginPath(); x.moveTo(c[0] - p.wl * 0.1, c[1]); x.lineTo(c[0] - p.wl * (0.25 + rnd() * 0.2), c[1] + p.ph * (0.2 + rnd() * 0.2)); x.stroke(); }
+    // промоины: мягкие тёмные складки вниз по освещённому склону
+    x.strokeStyle = rgba(o.shadeLine, 0.16); x.lineWidth = Math.max(1, p.ph * 0.02); x.lineCap = 'round';
+    for (let k = 0; k < 3; k++) { const c = crest[1 + Math.floor(rnd() * 3)], ex = c[0] - p.wl * (0.25 + rnd() * 0.2), ey = c[1] + p.ph * (0.2 + rnd() * 0.2); x.beginPath(); x.moveTo(c[0] - p.wl * 0.08, c[1]); x.quadraticCurveTo(c[0] - p.wl * 0.12, (c[1] + ey) / 2, ex, ey); x.stroke(); }
     x.restore();
     // солнечная кромка по левому гребню
     x.strokeStyle = rgba(o.rim, 0.55); x.lineWidth = Math.max(1, p.ph * 0.012); x.lineJoin = 'round';
@@ -202,7 +203,7 @@
   function paintRange(ctx, w, h, M, rnd, o) {
     const c = mk(w, h), x = c.getContext('2d');
     const base = o.c || M.far;
-    const opt = { base: o.base, snow: o.snow, shade: mix(base, M.shade, 0.35), lit: mix(base, M.light, 0.3), shadeLine: M.shade, rim: M.light,
+    const opt = { base: o.base, snow: o.snow, shade: mix(base, M.shade, 0.35), lit: mix(base, M.light, 0.22), shadeLine: M.shade, rim: M.light,
       snowLit: mix('#f6f8fc', M.light, 0.25), snowShade: mix('#c4d0e4', M.shade, 0.3) };
     const peaks = [];
     for (let i = 0; i < o.n; i++) { const ph = o.hMin + (o.hMax - o.hMin) * rnd(); peaks.push({ x: (-0.12 + 1.24 * (i + 0.2 + rnd() * 0.6) / o.n) * w, ph, wl: ph * (1.1 + rnd() * 0.9), wr: ph * (1.1 + rnd() * 0.9) }); }
@@ -214,6 +215,12 @@
     g.addColorStop(0, rgba(M.haze, o.hazeTop || 0.05)); g.addColorStop(1, rgba(M.haze, o.hazeA === undefined ? 0.6 : o.hazeA));
     x.fillStyle = g; x.fillRect(0, 0, w, h);
     ctx.drawImage(c, 0, 0);
+  }
+
+  /** Дальняя равнина у подножия гор: земля, растворённая в дымке. */
+  function plain(ctx, w, h, y, M, Ld) {
+    const g = ctx.createLinearGradient(0, y, 0, h); g.addColorStop(0, mix(mix(Ld.far, M.haze, 0.6), M.light, 0.12)); g.addColorStop(0.25, mix(Ld.far, M.haze, 0.4)); g.addColorStop(1, mix(Ld.mid, M.shade, 0.2));
+    ctx.fillStyle = g; ctx.fillRect(0, y, w, h - y);
   }
 
   /* ---------- холмы ---------- */
@@ -434,6 +441,7 @@
     paintSky(ctx, w, h, M, rnd, h * (o.hz || 0.66));
     paintClouds(ctx, w, h, M, rnd, { n: o.clouds === undefined ? 4 : o.clouds, wMin: 0.18, wMax: 0.34, yMin: 0.14, yMax: 0.4, alpha: 0.92 });
     paintRange(ctx, w, h, M, rnd, { base: h * 0.6, hMin: h * 0.12, hMax: h * 0.3, n: 6, snow: o.snow === undefined ? 0.28 : o.snow, hazeA: 0.55 });
+    plain(ctx, w, h, h * 0.6, M, Ld);
     paintRange(ctx, w, h, M, rnd, { base: h * 0.64, hMin: h * 0.06, hMax: h * 0.14, n: 8, snow: 0, c: mix(Ld.far, M.far, 0.5), hazeA: 0.45 });
     const s = h / 300;
     let fMid = null;
@@ -444,6 +452,7 @@
     }, { c: M.haze, a: 0.3, a2: 0.05, y0: h * 0.5, y1: h * 0.8 });
     ctx.drawImage(mid, 0, 0);
     const fNear = paintHill(ctx, w, h, rnd, { y: h * (o.nearY || 0.82), amp: h * 0.035, tilt: o.nearTilt || 0, c0: mix(Ld.near, M.light, 0.12), c1: mix(Ld.near, M.shade, 0.45), lit: Ld.lit, dark: Ld.dark, rim: M.light, tex: 420, s: s * 1.6, shade: 0.35, bumps: o.nearBumps || [] });
+    if (Ld.flowers) { ctx.save(); ctx.clip(fNear.path); for (let i = 0; i < 60; i++) { const X = rnd() * w, Y = fNear(X) + h * (0.03 + rnd() * 0.2); ctx.fillStyle = Ld.flowers[Math.floor(rnd() * Ld.flowers.length)]; ctx.beginPath(); ctx.arc(X, Y, h * (0.003 + rnd() * 0.004), 0, Math.PI * 2); ctx.fill(); } ctx.restore(); }
     return { fMid, fNear, s };
   }
   const warmGrade = (M, right) => ({ lit: rgba(M.light, 0.22), shade: rgba(M.shade, 0.22), right });
@@ -504,14 +513,14 @@
       const px = w * 0.84, py = fNear(px) + h * 0.06;
       ctx.fillStyle = '#5a3a1e'; ctx.fillRect(px - h * 0.008, py - h * 0.2, h * 0.016, h * 0.2);
       for (const [dy, dir] of [[0.18, 1], [0.12, -1]]) { const y = py - h * dy; ctx.fillStyle = '#9a7040'; ctx.beginPath(); ctx.moveTo(px, y - h * 0.018); ctx.lineTo(px + dir * h * 0.08, y - h * 0.018); ctx.lineTo(px + dir * h * 0.1, y); ctx.lineTo(px + dir * h * 0.08, y + h * 0.018); ctx.lineTo(px, y + h * 0.018); ctx.fill(); ctx.strokeStyle = '#3a2410'; ctx.lineWidth = h * 0.003; ctx.stroke(); }
-      figure(ctx, heroOf(fid, o.heroCls), w * 0.42, h * 0.9, h * 0.42, { tint: tintOf(o.color), grade: warmGrade(M), sa: 0.45 });
+      figure(ctx, heroOf(fid, o.heroCls), w * 0.42, h * 0.84, h * 0.42, { tint: tintOf(o.color), grade: warmGrade(M), sa: 0.45 });
     } else {   // мирная неделя: свой город вдали и первые существа прироста
       const M = MOOD.dawn, Ld = landOf(fid);
       const { fNear } = landscape(ctx, w, h, M, Ld, rnd, { treeSkip: [[w * 0.56, w * 0.86]], midBump: [w * 0.7, h * 0.03, w * 0.14], mid: (x, f) => figure(x, 'town_' + fid, w * 0.7, f(w * 0.7) + h * 0.015, h * 0.3, { sa: 0.3, grade: warmGrade(M) }) });
       rays(ctx, w * 0.2, h * 0.34, h * 1.2, 10, M.light, 0.1, rnd, 1.2, 0.2);
       const cs = creaturesOf(fid, [1, 2]);
-      if (cs[0]) figure(ctx, cs[0], w * 0.24, fNear(w * 0.24) + h * 0.08, h * 0.3, { grade: warmGrade(M), sa: 0.4 });
-      if (cs[1]) figure(ctx, cs[1], w * 0.42, fNear(w * 0.42) + h * 0.12, h * 0.34, { grade: warmGrade(M), sa: 0.4 });
+      if (cs[0]) figure(ctx, cs[0], w * 0.22, fNear(w * 0.22) + h * 0.03, h * 0.3, { grade: warmGrade(M), sa: 0.4 });
+      if (cs[1]) figure(ctx, cs[1], w * 0.4, fNear(w * 0.4) + h * 0.05, h * 0.34, { grade: warmGrade(M), sa: 0.4 });
     }
     if (o.month) parade(ctx, w, h, rnd, o.color);
     vignette(ctx, w, h, 0.45);
@@ -586,8 +595,9 @@
      сдвигают камеру; без них она сама медленно «дышит». */
   function menu(host, o) {
     o = o || {};
-    const q = /[?&]mood=(\w+)/.exec(root.location ? location.search : '');
-    const M = MOOD[q && MOOD[q[1]] ? q[1] : o.mood] || MOOD.day, fid = o.faction || 'castle', Ld = landOf(fid);
+    // для проверки: ?mood=dawn|day|dusk|night и ?menuf=<фракция> в адресе
+    const q = /[?&]mood=(\w+)/.exec(root.location ? location.search : ''), qf = /[?&]menuf=(\w+)/.exec(root.location ? location.search : '');
+    const M = MOOD[q && MOOD[q[1]] ? q[1] : o.mood] || MOOD.day, fid = qf && H3.Factions && H3.Factions.get(qf[1]) ? qf[1] : o.faction || 'castle', Ld = landOf(fid);
     const dpr = DPR(), W0 = Math.max(200, host.clientWidth || 390), H0 = Math.max(120, host.clientHeight || 270);
     const ox = Math.round(W0 * 0.05), oy = Math.round(H0 * 0.04), LW = W0 + ox * 2, LH = H0 + oy * 2;
     const w = Math.round(LW * dpr), h = Math.round(LH * dpr), s = h / 300;
@@ -608,9 +618,9 @@
     let clouds = null, rider = null, flyer = null, fNear = null;
     const steps = [
       () => {   // облака: полоса вдвое шире слоя, повтор с периодом в ширину — плывут без шва
-        const L = layer(0.08, 'mp-clouds'), c = canvasIn(L.el, LW * 2, LH), x = c.getContext('2d');
-        const band = mk(w, h), bx = band.getContext('2d');
-        paintClouds(bx, w, h, M, rnd, { n: 6, x0: 0, x1: w, wMin: 0.16, wMax: 0.3, yMin: 0.12, yMax: 0.42, alpha: 0.9, wrap: w });
+        const L = layer(0.08, 'mp-clouds'), c = canvasIn(L.el, LW * 2, Math.round(LH * 0.5)), x = c.getContext('2d');
+        const band = mk(w, h * 0.5), bx = band.getContext('2d');
+        paintClouds(bx, w, h, M, rnd, { n: 6, x0: 0, x1: w, wMin: 0.16, wMax: 0.3, yMin: 0.12, yMax: 0.36, alpha: 0.9, wrap: w });
         for (let i = 0; i < 5; i++) bird(bx, w * (0.3 + i * 0.03 + rnd() * 0.02), h * (0.22 + rnd() * 0.05), h * 0.012, rgba(M.shade, 0.7), rnd());
         x.drawImage(band, 0, 0); x.drawImage(band, w, 0);
         clouds = { el: c, speed: LW / 150 };   // слой за 150 с
@@ -618,6 +628,7 @@
       () => {
         const L = layer(0.18), c = canvasIn(L.el, LW, LH), x = c.getContext('2d');
         paintRange(x, w, h, M, rnd, { base: h * 0.58, hMin: h * 0.12, hMax: h * 0.3, n: 6, snow: Ld === LAND.sand ? 0.08 : 0.3, hazeA: 0.55, peakAt: [[0.8, 1]] });
+        plain(x, w, h, h * 0.585, M, Ld);
         paintRange(x, w, h, M, rnd, { base: h * 0.63, hMin: h * 0.05, hMax: h * 0.13, n: 9, snow: 0, c: mix(Ld.far, M.far, 0.5), hazeA: 0.4 });
       },
       () => {   // крылатый над долиной — между горами и замком
@@ -653,9 +664,9 @@
         rider = { el: rc, ctx: rc.getContext('2d'), name: heroOf(fid, o.heroCls), rh, rw, x: LW * 0.2, a: LW * 0.12, b: LW * 0.42, dir: 1, wait: 0, road, tint: tintOf(o.color) };
       },
       () => {   // рамка: крона тёмного дерева в левом верхнем углу
-        const L = layer(1.1), c = canvasIn(L.el, LW, LH), x = c.getContext('2d');
-        figure(x, Ld === LAND.sand ? 'tree_palm' : Ld === LAND.snow ? 'tree_snow' : Ld.trees.includes('tree_1') ? 'tree_1' : Ld.trees[0], -w * 0.01, h * 1.02, h * 0.98,
-          { shadow: false, grade: { lit: rgba(M.light, 0.08), shade: rgba(M.shade, 0.35), dark: rgba(M.shade, 0.25) } });
+        const L = layer(1.1), c = canvasIn(L.el, Math.round(LW * 0.42), LH), x = c.getContext('2d');
+        const lush = Ld === LAND.grass || Ld === LAND.swamp, tree = Ld === LAND.sand ? 'tree_palm' : Ld === LAND.snow ? 'tree_snow' : lush ? 'tree_2' : 'tree_dead';
+        figure(x, tree, lush ? w * 0.0 : w * 0.05, h * 1.04, h * (lush ? 0.86 : 0.8), { shadow: false, grade: { lit: rgba(M.light, 0.1), shade: rgba(M.shade, 0.4), dark: rgba(M.shade, 0.2) } });
       },
     ];
     // лёгкая раскачка камеры: наклон, палец, мышь; без них — медленное «дыхание»
@@ -684,6 +695,7 @@
     const DOE = root.DeviceOrientationEvent;
     if (DOE && typeof DOE.requestPermission !== 'function') root.addEventListener('deviceorientation', onTilt);
 
+    const calm = !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches);
     let last = 0, lastDraw = 0;
     function drawRider(ts, dt) {
       const R = rider, A = H3.Anim; if (!R) return;
@@ -714,6 +726,7 @@
       raf = requestAnimationFrame(frame);
       if (!host.isConnected) { destroy(); return; }
       if (document.visibilityState === 'hidden' || (o.active && !o.active())) { last = ts; return; }
+      if (calm) { if (ts - lastDraw > 500) { lastDraw = ts; drawRider(0, 0); if (flyer) drawFlyer(flyer.t0 + 15000); } return; }
       const dt = Math.min(100, ts - (last || ts)); last = ts;
       if (inp.on && ts - inp.t > 2500) inp.on = false;
       const tx = inp.on ? inp.x : Math.sin(ts / 9000) * 0.45, ty = inp.on ? inp.y : Math.sin(ts / 13000) * 0.25;

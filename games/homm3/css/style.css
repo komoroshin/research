@@ -494,7 +494,7 @@ button.edb img { width: 20px; height: 20px; }
 .wkpic { position: relative; border: 3px solid #1a1007; border-radius: 4px; overflow: hidden; background: #2a3a5a; box-shadow: 0 0 0 1px #8a6a1f, 0 4px 14px #000a; }
 .wkpic::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(241,207,116,.6); border-radius: 2px; pointer-events: none; box-shadow: inset 0 0 22px rgba(0,0,0,.35); }
 .wkart { display: block; width: 100%; aspect-ratio: 16 / 10; }
-.wkribbon { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); max-width: 90%; z-index: 1; }
+.wkribbon { position: relative; align-self: center; max-width: 84%; margin: -32px 0 -2px; z-index: 1; }   /* лента лежит на нижнем крае картины */
 .wkribbon span { position: relative; z-index: 1; display: block; padding: 6px 22px 7px; font: 700 20px/1.1 var(--font-d); color: #fff3c7; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   text-shadow: 0 1px 0 #3a0a06, 0 0 8px rgba(0,0,0,.45); background: linear-gradient(#c23a30, #7a1a14); border: 2px solid #e8c05a; border-radius: 2px; box-shadow: 0 3px 8px #000a, inset 0 1px 0 rgba(255,220,180,.45); }
 .wkribbon::before, .wkribbon::after { content: ''; position: absolute; top: 9px; border: 15px solid #5e120c; }

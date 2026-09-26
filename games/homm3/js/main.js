@@ -76,7 +76,7 @@
       return;
     }
     if (!H3.TownScene) { host.remove(); return; }
-    const canvas = UI.el('canvas', 'px'); host.appendChild(canvas);
+    const canvas = UI.el('canvas', 'px'); canvas.id = 'menuArt'; host.appendChild(canvas);
     const fid = G.menuFaction, f = F.get(fid);
     const buildings = {};
     for (const id of ['hall_1', 'hall_2', 'hall_3', 'hall_4', 'fort', 'citadel', 'castle', 'tavern', 'market', 'blacksmith', 'silo']) buildings[id] = true;
@@ -119,7 +119,7 @@
     const btn = (id, icon, label, sub, cls) => '<button class="mbtn ' + (cls || '') + '" id="' + id + '">' + UI.icon(icon, 1) + '<span><b>' + label + '</b>' + (sub ? '<small>' + UI.esc(sub) + '</small>' : '') + '</span></button>';
     sh.body.classList.add('mmenu');
     sh.body.innerHTML = (auto ? btn('btnCont', 'ic_arrow_r', 'Продолжить', S.dateStr(auto.day) + (auto.faction ? ' · ' + F.get(auto.faction).name : ''), 'primary') : '')
-      + btn('btnNew', 'ic_flag', 'Новая игра', 'случайная карта, 8 фракций', auto ? '' : 'primary')
+      + btn('btnNew', 'ic_flag', 'Новая игра', 'случайная карта, 13 фракций', auto ? '' : 'primary')
       + btn('btnCamp', 'ic_hero', 'Кампания', campSub())
       + btn('btnMaps', 'ic_town', 'Свои карты', 'редактор и импорт')
       + btn('btnLoad', 'ic_save', 'Загрузить')
@@ -353,6 +353,7 @@
     start(st);
   }
   function start(st) {
+    stopMenuArt(); UI.$('#menu').innerHTML = '';   // живая сцена меню не нужна в партии: её слои — несколько МБ памяти
     G.state = st; G.selHero = null;
     // застава, до ключника которой не дойти, — тупик; такие превращаем в стражей (и в старых сейвах тоже)
     if (A.sanitizeGates(st)) AV.invalidate();
