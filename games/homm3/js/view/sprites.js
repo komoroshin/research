@@ -29,15 +29,81 @@
 
   function define(name, def) { registry[name] = def; return def; }
   function defineMany(obj) { for (const k in obj) define(k, obj[k]); }
-  function has(name) { return !!registry[name]; }
-  function names() { return Object.keys(registry); }
 
-  function resolve(name, depth) {
+  /* ---------- таблица рамок и ленивая загрузка пиксельных спрайтов ----------
+     Пиксельные спрайты весят ~3,2 МБ, а при рисованной графике (по умолчанию) сами не рисуются:
+     от них нужны только рамка/якорь (VK.frameOf — рисунок встаёт в тот же гекс), признак
+     «спрайт есть» (has) и пара мелочей через resolve (рост для темпа дыхания, окна построек).
+     Всё это лежит в js/view/sprite_frames.js (собирает dev/genframes.js, тест сверяет с данными),
+     а сами пиксельные файлы грузятся только при выключенной рисованной графике.
+     Запись таблицы: [W, H, ax, ay, unit, hd, окна] — W×H сетка символов, якорь в клетках сетки
+     (null — низ-центр), unit по умолчанию 1, окна — [x, y, …] в номинальных пикселях (буква y). */
+  const FRAMES = Object.create(null);
+  function setFrames(obj) { Object.assign(FRAMES, obj); }
+  function has(name) { return !!registry[name] || !!FRAMES[name]; }
+  function names() { const s = new Set(Object.keys(FRAMES)); for (const k in registry) s.add(k); return [...s]; }
+  /** Рамка спрайта в дизайн-единицах (×10 номинальных пикселей) — как её считал VK.frameOf по данным. */
+  function frame(name) {
+    const e = FRAMES[name];
+    if (!e) { const sp = resolveReal(name); return sp && sp.rows ? frameOfDef(sp) : null; }
+    const u = e[4] || 1, w = e[0] / u, h = e[1] / u, a = e[2] !== null ? [e[2] / u, e[3] / u] : [w / 2, h];
+    return { w: Math.round(w * 10), h: Math.round(h * 10), anchor: [Math.round(a[0] * 10), Math.round(a[1] * 10)] };
+  }
+  function frameOfDef(sp) {
+    const u = sp.unit || 1, h = sp.rows.length / u, w = Math.max(...sp.rows.map(r => r.length)) / u;
+    const a = sp.anchor ? [sp.anchor[0] / u, sp.anchor[1] / u] : [w / 2, h];
+    return { w: Math.round(w * 10), h: Math.round(h * 10), anchor: [Math.round(a[0] * 10), Math.round(a[1] * 10)] };
+  }
+  /* Скелет спрайта из таблицы, пока пиксельных данных нет: размеры, якорь, unit, hd и окна (буква y)
+     на своих местах, остальное прозрачное. Рисовать его нельзя (render берёт только настоящие данные);
+     он для тех, кто читает resolve ради размеров: темп дыхания (anim.js), окна построек (townscene.js). */
+  const skelCache = new Map();
+  function skeleton(name) {
+    let s = skelCache.get(name); if (s) return s;
+    const e = FRAMES[name]; if (!e) return null;
+    const [W, H, ax, ay] = e, u = e[4] || 1, blank = '.'.repeat(W), rows = new Array(H).fill(blank), win = e[6] || [];
+    for (let i = 0; i < win.length; i += 2) { const x = win[i] * u, y = win[i + 1] * u; rows[y] = rows[y].slice(0, x) + 'y' + rows[y].slice(x + 1); }
+    s = { rows, pal: {}, anchor: ax !== null ? [ax, ay] : undefined, unit: e[4] || undefined, hd: !!e[5] || undefined, skeleton: true };
+    skelCache.set(name, s); return s;
+  }
+  /** Все ли пиксельные спрайты из таблицы загружены. */
+  function pixelReady() { let any = false; for (const n in FRAMES) { any = true; if (!registry[n]) return false; } return any || Object.keys(registry).length > 0; }
+  /* Список файлов задаёт index.html (H3.Sprites.pixelFiles) — там же, где остальные <script>, с тем же ?v=. */
+  const SET_KEY = 'homm3.settings';   // тот же ключ, что в main.js
+  /** Нужна ли пиксельная графика на старте: ?vec=0 или выключенная настройка vecArt (логика как в main.js boot). */
+  function wantPixel() {
+    const q = /[?&]vec=([01])\b/.exec(root.location ? root.location.search : '');
+    if (q) return q[1] === '0';
+    try { return JSON.parse(root.localStorage.getItem(SET_KEY) || '{}').vecArt === false; } catch (e) { return false; }
+  }
+  /** Подключить пиксельные файлы синхронно, пока страница ещё разбирается (вызов из index.html). */
+  function writePixel() { for (const src of H3.Sprites.pixelFiles || []) document.write('<script src="' + src + '"><\/script>'); }
+  let pixelLoading = null;
+  /** Догрузить пиксельные спрайты (переключение настройки на лету). Promise; повторный вызов — тот же. */
+  function loadPixel() {
+    if (pixelReady()) return Promise.resolve();
+    if (pixelLoading) return pixelLoading;
+    const files = H3.Sprites.pixelFiles || [];
+    pixelLoading = new Promise((ok, fail) => {
+      if (!files.length) { fail(new Error('нет списка пиксельных спрайтов')); return; }
+      let left = files.length, bad = false;
+      for (const src of files) {
+        const s = document.createElement('script');
+        s.src = src; s.async = false;   // async=false: исполняются по порядку (_hd после базовых)
+        s.onload = () => { if (--left === 0 && !bad) { clearAll(); ok(); } };
+        s.onerror = () => { if (!bad) { bad = true; pixelLoading = null; fail(new Error('не загрузился ' + src)); } };
+        document.head.appendChild(s);
+      }
+    });
+    return pixelLoading;
+  }
+
+  function resolveReal(name, depth) {
     const def = registry[name];
     if (!def) return null;
     if (def.rows) return def;
     if (def.base) {
-      const b = resolve(def.base, (depth || 0) + 1);
+      const b = resolveReal(def.base, (depth || 0) + 1);
       if (!b || (depth || 0) > 8) return null;
       const pal = Object.assign({}, b.pal || {}, def.pal || {});
       const tint = def.tint || {};
@@ -51,6 +117,8 @@
     }
     return null;
   }
+  /** Описание спрайта; пока пиксельные данные не загружены — скелет из таблицы рамок (sp.skeleton). */
+  function resolve(name) { return resolveReal(name) || skeleton(name); }
 
   function colorOf(ch, pal) {
     if (ch === '.' || ch === ' ') return null;
@@ -473,7 +541,7 @@
     const key = name + '|' + scale + '|' + (flip ? 1 : 0) + '|' + (extraTint ? JSON.stringify(extraTint) : '') + '|' + SCENE.id;
     let cv = cache.get(key);
     if (cv) return cv;
-    const sp = resolve(name);
+    const sp = resolveReal(name);
     if (!sp) return null;
     const h = sp.rows.length, w = Math.max(...sp.rows.map(r => r.length));
     const unit = sp.unit || 1, ps = scale / unit;   // масштаб на исходный пиксель сетки
@@ -513,7 +581,7 @@
   function image(name, scale, flip, extraTint) {
     scale = scale || 1;
     if (vecOf(name)) return H3.Vec.image(name, scale, flip, extraTint, SCENE);
-    const bs = baseScale(resolve(name));
+    const bs = baseScale(resolveReal(name));
     if (DETAIL.on && scale < bs && !DETAIL.skip.test(name)) { const cv = render(name, bs, flip, extraTint); return cv ? { cv, k: scale / bs } : null; }
     const cv = render(name, scale, flip, extraTint); return cv ? { cv, k: 1 } : null;
   }
@@ -603,5 +671,5 @@
     if (!t) { const c = mix(parseColor(color), -0.42); t = { b: color, B: '#' + c.toString(16).padStart(6, '0') }; teamCache.set(color, t); }
     return t;
   }
-  H3.Sprites = { PAL, define, defineMany, has, names, resolve, render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, setMaterials, setScene, SCENE, DETAIL, PAINT, MATS, MAT_OF, MAT_PROFILE, matProfile, _registry: registry };
+  H3.Sprites = { PAL, define, defineMany, has, names, resolve, frame, setFrames, pixelReady, wantPixel, writePixel, loadPixel, pixelFiles: [], render, image, smoothFor, draw, drawFit, url, img, silhouette, teamTint, setDetail, setPaint, setPaintVolume, setMaterials, setScene, SCENE, DETAIL, PAINT, MATS, MAT_OF, MAT_PROFILE, matProfile, _registry: registry };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -11,7 +11,7 @@
   function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   /** Описание-картинка: одна часть, рамка старого спрайта; build(fr, rnd) — формы в координатах рамки. */
   function obj(name, build, seed) {
-    const fr = frameOf(name) || { w: 200, h: 300, anchor: [100, 296] };
+    const fr = frameOf(name.split('#')[0]) || { w: 200, h: 300, anchor: [100, 296] };   // 'tree_1#autumn' — рамка своего дерева
     V.def(name, { w: fr.w, h: fr.h, anchor: fr.anchor, parts: [{ kind: 'torso', pivot: fr.anchor.slice(), shapes: build(fr, rngOf(seed || name.length * 7919)) }] });
   }
   /** Крона из комьев листвы: задние темнее, передние светлее; листва — мелкие перья-чешуйки. */
@@ -59,12 +59,14 @@
   obj('tree_snow', () => pine(97, 296, 18, 70, ['#2a4a3a', '#30543e', '#365c44', '#3e664a'], true), 6);
 
   /* ---------- сухое, болотное, пальма ---------- */
-  obj('tree_dead', () => {
+  function deadTree(snow) {
     const c = '#6a5a4a', out = [...trunk(97, 256, 120, 12, c, 4)];
-    const br = (pts, w) => out.push({ p: tube(pts.map((p, i) => [p[0], p[1], w * (1 - i / pts.length * 0.7)])), c, m: 'wood', line: 0.8 });
+    const br = (pts, w) => { out.push({ p: tube(pts.map((p, i) => [p[0], p[1], w * (1 - i / pts.length * 0.7)])), c, m: 'wood', line: 0.8 }); if (snow) out.push(...snowRidge(pts, w)); };
     br([[100, 150], [72, 118], [54, 104], [40, 80]], 8); br([[72, 118], [66, 90]], 4); br([[101, 132], [128, 100], [146, 84], [156, 60]], 8); br([[128, 100], [148, 104]], 4); br([[100, 124], [98, 80], [106, 50]], 7);
+    if (snow) out.push(snowDrift(97, 258, 34));
     return out;
-  }, 7);
+  }
+  obj('tree_dead', () => deadTree(false), 7);
   obj('tree_swamp', (f, r) => {
     const out = [...trunk(120, 303, 170, 18, '#4a4232', -4), ...crown(120, 130, 100, 70, 7, ['#2e4428', '#4a6034', '#5a6e3a', '#6a7a44'], r)];
     for (let i = 0; i < 9; i++) { const x = 40 + i * 20 + r() * 8; out.push({ p: tube([[x, 150 + r() * 20, 5], [x + 2, 200 + r() * 30, 3], [x - 1, 230 + r() * 30, 1.5]]), c: '#7a8a5a', m: 'fur', furLen: 0.5, line: 0.4 }); }
@@ -79,6 +81,89 @@
     for (let i = 0; i < 3; i++) out.push({ e: [124 + i * 9, 116 + (i % 2) * 6, 7, 7], c: '#6a4a24', m: 'wood', line: 0.6 });
     return out;
   });
+
+  /* ---------- времена года: варианты деревьев ----------
+     'имя#autumn' / '#autumn2' — золотая / багряная крона, '#bare' — облетевшее, '#winter' — голое
+     под снегом (ель — в снегу), '#spring' — цветущее. Какой вариант где — решает H3.Season.tree
+     (vec_seasons.js), запекает в куски карты MapPaint. Сид тот же, что у летнего дерева, —
+     комья кроны лежат на тех же местах, меняется только цвет: смена сезона не «переставляет» лес. */
+  /** Снежный валик по верху ветки: та же осевая линия, чуть выше и тоньше; на отвесном сучке снег не держится. */
+  function snowRidge(pts, w) {
+    const out = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+      if (Math.abs(y1 - y0) > Math.abs(x1 - x0) * 2.4) continue;
+      const t0 = w * (1 - i / pts.length * 0.7), t1 = w * (1 - (i + 1) / pts.length * 0.7);
+      out.push({ p: tube([[x0, y0 - t0 * 0.5, t0 * 0.8], [x1, y1 - t1 * 0.5, t1 * 0.7]]), c: '#f6f9fc', m: 'flat', line: 0.5, lc: '#9ab0c6' });
+    }
+    return out;
+  }
+  /** Сугроб у комля. */
+  function snowDrift(x, y, r) { return { p: [P(x - r, y + 3, 1), [x - r * 0.55, y - 7], [x - r * 0.1, y - 11], [x + r * 0.5, y - 8], P(x + r, y + 3, 1), [x, y + 7]], c: '#f4f8fc', m: 'cloth', line: 0.6, lc: '#8aa0b8' }; }
+  /**
+   * Голое лиственное дерево в рамке своей летней кроны: сучья веером до края кроны, на них — ветки.
+   * Сзади — полупрозрачная «дымка» мелких веток по силуэту кроны: издали голое дерево читается
+   * именно ею, иначе на карте (20×30 точек) остаются одни палки.
+   */
+  function bareTree(tr, cr, rnd, o) {
+    o = o || {};
+    const [x, y0, y1, w, c, bend] = tr, [cx, cy, rx, ry] = cr, out = [];
+    out.push({ p: ell(cx, cy + ry * 0.08, rx * 0.8, ry * 0.76, 14), c: o.haze || 'rgba(92,66,52,0.30)', m: 'flat', line: 0 });
+    out.push(...trunk(x, y0, y1, w, c, bend));
+    const sx0 = x + (bend || 0), sy0 = y1 + 12, n = 5;
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI / 2 + (i - (n - 1) / 2) * 0.6 + (rnd() - 0.5) * 0.18;
+      const sx = sx0 + (i - 2) * w * 0.12, sy = sy0 + Math.abs(i - 2) * 9;
+      const ex = cx + Math.cos(a) * rx * 0.86, ey = cy + Math.sin(a) * ry * 0.86;
+      const mx = (sx + ex) / 2 + (rnd() - 0.5) * 14, my = (sy + ey) / 2 + 5;
+      out.push({ p: tube([[sx, sy, w * 0.8], [mx, my, w * 0.48], [ex, ey, w * 0.2]]), c, m: 'wood', line: 0.7 });
+      if (o.snow) out.push(...snowRidge([[sx, sy], [mx, my], [ex, ey]], w * 0.62));
+      // ветки: от середины сучка и ближе к концу, в обе стороны
+      for (const [bx, by, k] of [[mx, my, 0.42], [(mx + ex) / 2, (my + ey) / 2, 0.28]]) for (const s of [-1, 1]) {
+        if (rnd() < 0.2) continue;
+        const L = Math.hypot(ex - sx, ey - sy), ta = a + s * (0.55 + rnd() * 0.35), tl = L * k * (0.6 + rnd() * 0.4);
+        const tx = bx + Math.cos(ta) * tl, ty = by + Math.sin(ta) * tl;
+        out.push({ p: tube([[bx, by, w * 0.3], [tx, ty, w * 0.1]]), c, m: 'wood', line: 0.5 });
+        if (o.snow && Math.abs(ty - by) < Math.abs(tx - bx) * 2.4) out.push({ p: tube([[bx, by - w * 0.14, w * 0.26], [tx, ty - w * 0.06, w * 0.12]]), c: '#f6f9fc', m: 'flat', line: 0.4, lc: '#9ab0c6' });
+        if (o.left) for (let j = 0; j < 2; j++) if (rnd() < 0.6) out.push({ e: [tx + (rnd() - 0.5) * 14, ty + (rnd() - 0.5) * 10, 6, 4.5], c: o.left[(rnd() * o.left.length) | 0], m: 'leather', line: 0.4 });
+      }
+    }
+    if (o.snow) out.push(snowDrift(x, y0, w * 2.6));
+    return out;
+  }
+  const AUTUMN = [['#7a4a18', '#d88a24', '#ecbc3c', '#c8642a'], ['#6a2814', '#c8482a', '#e2802e', '#b8341e']];   // золото, багрянец
+  const SPRING = ['#4e8a34', '#f4bcd0', '#fde8ef', '#8ac654'];                                               // сад в цвету
+  const LEAFT = {
+    tree_1: { tr: [100, 283, 190, 16, '#6a4a2c', 2], cr: [100, 140, 94, 92, 8], seed: 11 },
+    tree_2: { tr: [120, 316, 190, 20, '#5e4228', -3], cr: [118, 150, 116, 104, 10], seed: 23,
+      forks: [{ p: tube([[118, 220, 8], [80, 180, 5], [60, 160, 3]]), c: '#5e4228', m: 'wood' }, { p: tube([[122, 210, 8], [160, 176, 5], [182, 162, 3]]), c: '#5e4228', m: 'wood' }] },
+    tree_3: { tr: [97, 266, 180, 13, '#6e4e30', 1], cr: [97, 150, 86, 84, 7], seed: 37 },
+  };
+  for (const n in LEAFT) {
+    const T = LEAFT[n], [cx, cy, rx, ry, k] = T.cr;
+    const leafy = cols => (f, r) => [...trunk(...T.tr), ...(T.forks || []), ...crown(cx, cy, rx, ry, k, cols, r)];
+    obj(n + '#autumn', leafy(AUTUMN[0]), T.seed);
+    obj(n + '#autumn2', leafy(AUTUMN[1]), T.seed);
+    obj(n + '#spring', leafy(SPRING), T.seed);
+    obj(n + '#late', (f, r) => bareTree(T.tr, T.cr, r, { left: ['#b8642a', '#d89a34'] }), T.seed);
+    obj(n + '#bare', (f, r) => bareTree(T.tr, T.cr, r), T.seed);
+    obj(n + '#bud', (f, r) => bareTree(T.tr, T.cr, r, { left: ['#9ad466', '#b8e27a', '#7cc04a'], haze: 'rgba(120,150,80,0.32)' }), T.seed);
+    obj(n + '#winter', (f, r) => bareTree(T.tr, T.cr, r, { snow: true, haze: 'rgba(92,66,52,0.2)' }), T.seed);
+  }
+  // болотное: осенью бурое, зимой голое с бородами мха и снегом
+  function swampTree(r, o) {
+    const out = o.bare ? bareTree([120, 303, 170, 18, '#4a4232', -4], [120, 130, 100, 70], r, o) : [...trunk(120, 303, 170, 18, '#4a4232', -4), ...crown(120, 130, 100, 70, 7, o.cols, r)];
+    for (let i = 0; i < 9; i++) { const x = 40 + i * 20 + r() * 8; out.push({ p: tube([[x, 150 + r() * 20, 5], [x + 2, 200 + r() * 30, 3], [x - 1, 230 + r() * 30, 1.5]]), c: o.moss, m: 'fur', furLen: 0.5, line: 0.4 }); }
+    return out;
+  }
+  obj('tree_swamp#autumn', (f, r) => swampTree(r, { cols: ['#4a3a1c', '#7a6a2a', '#9a7a34', '#8a5a26'], moss: '#8a8a5a' }), 8);
+  obj('tree_swamp#autumn2', (f, r) => swampTree(r, { cols: ['#4a2e1a', '#7a4a24', '#94642e', '#6a5a28'], moss: '#8a845a' }), 8);
+  obj('tree_swamp#bare', (f, r) => swampTree(r, { bare: true, moss: '#8a8a6a', haze: 'rgba(80,74,56,0.3)' }), 8);
+  obj('tree_swamp#late', (f, r) => swampTree(r, { bare: true, moss: '#8a8a5a', haze: 'rgba(80,74,56,0.3)', left: ['#8a6a2a', '#a07a34'] }), 8);
+  obj('tree_swamp#winter', (f, r) => swampTree(r, { bare: true, snow: true, moss: '#9aa09a', haze: 'rgba(80,74,56,0.2)' }), 8);
+  // хвойные зимой в снегу, сухое — со снегом на сучьях
+  obj('tree_pine#winter', () => [...pine(97, 296, 18, 70, ['#1e4a2a', '#265a32', '#2e663a', '#367042'], true), snowDrift(97, 296, 34)], 5);
+  obj('tree_dead#winter', () => deadTree(true), 7);
 
   /* ---------- горы ---------- */
   function mountain(pk, cols, o) {

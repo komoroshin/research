@@ -45,14 +45,120 @@
   /** Плавная ступенька: 0 при x=e0, 1 при x=e1 (e0 может быть больше e1). */
   const sstep = (e0, e1, x) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
 
+  /* ---------- времена года (модель — H3.Season, vec_seasons.js) ----------
+     Сезон перекрашивает только «живую» землю: траву, грязь, бездорожье, болото. Песок, лава,
+     камень, подземелье и тундра живут вне сезонов (на воде зимой — лишь холоднее тон).
+     Снег ложится по полю «сугробов»: крупный шум плюс мелкий. Порог выбирается по квантилю
+     поля, поэтому доля снега на карте равна season.snow: 0.35 — пятна в низинах, 1 — всё белое;
+     весной тот же порог идёт назад — остаются проталины, у кромки снега темнеет мокрая земля. */
+  const SPAL = {
+    spring:  ['#3a862a', '#5cb03a', '#98d866'].map(rgb),           // свежая трава
+    autumn:  ['#6e5a1c', '#a8862c', '#d4b056'].map(rgb),           // жухлая, золотая
+    rust:    rgb('#b0582a'),                                       // рыжие пятна палой листвы
+    dormant: ['#58523a', '#7c7452', '#a09874'].map(rgb),           // прошлогодняя, бурая
+    swampA:  ['#4a4826', '#6e6a38', '#948a54'].map(rgb),           // болото осенью
+    swampW:  ['#5a6a66', '#8a9c9a', '#bccccc'].map(rgb),           // болото зимой: иней и лёд
+    mud:     rgb('#4a3a2a'),
+    winterSea: rgb('#24466e'),
+  };
+  // травинки по сезону: осенью золотые, после снега бурые, весной свежие
+  const BLADES = {
+    autumn:  ['#6a5418', '#9a7a26', '#c49c3a', '#e2c464'],
+    dormant: ['#4e4a2a', '#6e6640', '#8e8456', '#aaa070'],
+    spring:  ['#2e6a1c', '#4a9a2c', '#7cc44a', '#b8e47a'],
+  };
+  const LEAVES = ['#e0a02a', '#d06a26', '#b8401e', '#ecc444', '#a8741c'];
+  const SPRING_FLOWERS = ['#f6e27a', '#ffffff', '#ee93b8', '#a8c8ff', '#f7a8cc', '#c8a0f0', '#fff4b0'];
+  // лужи: тень под кромкой, верх и низ воды, блик
+  const PUDDLE = { swamp: ['rgba(20,34,28,0.55)', '#5e8e8a', '#2a4a44'], sky: ['rgba(40,32,22,0.5)', '#a8c8e4', '#4e6e8e', 'rgba(255,255,255,0.7)'], ice: ['rgba(50,70,84,0.35)', '#eef8fc', '#a4c8dc', 'rgba(255,255,255,0.95)'] };
+  const pal3 = (P3, v) => v < 0.5 ? mix(P3[0], P3[1], v * 2) : mix(P3[1], P3[2], (v - 0.5) * 2);
+  const hexMix = (a, b, t) => '#' + mix(rgb(a), rgb(b), t).map(x => Math.round(x).toString(16).padStart(2, '0')).join('');
+  /** Поле сугробов, ~0..1: крупные пятна (низины) и мелкая рябь по их краю. */
+  const snowField = (x, y, seed) => vnoise(x / 46, y / 46, seed + 61) * 0.6 + vnoise(x / 13, y / 13, seed + 62) * 0.4;
+  let SNOWQ = null;
+  /** Порог поля, под которым лежит доля c земли (квантиль по выборке; распределение шума от сида не зависит). */
+  function snowThr(c) {
+    if (c <= 0) return -1; if (c >= 1) return 2;
+    if (!SNOWQ) { SNOWQ = new Float32Array(4096); let k = 0; for (let j = 0; j < 64; j++) for (let i = 0; i < 64; i++) SNOWQ[k++] = snowField(i * 53.3 + 7, j * 47.9 + 3, 999); SNOWQ.sort(); }
+    return SNOWQ[Math.min(4095, Math.floor(c * 4096))];
+  }
+  const SEASONAL = { grass: 1, dirt: 1, rough: 1, swamp: 1 };
+
   /** Художник одного слоя карты. */
   function create(state, z) {
     const map = H3.State.lvl(state, z), T = H3.Rules.TERRAINS, Sp = H3.Sprites, seed = (state.seed || 1) >>> 0;
     const RS = Math.min(2, Math.max(1, Math.round(root.devicePixelRatio || 1)));
-    const chunks = new Map(), order = [];
+    let chunks = new Map(), stale = null;   // stale — куски прежнего сезона: видны, пока не готовы новые
+    const order = [], fades = new Map();
     const MAX = 64;   // кусков в памяти (≈1 МБ каждый при ×2)
     const tAt = (tx, ty) => T[map.terrain[Math.max(0, Math.min(map.h - 1, ty)) * map.w + Math.max(0, Math.min(map.w - 1, tx))]];
     const land = t => t !== 'water';
+
+    /* ---------- сезон ---------- */
+    const NONE = H3.Season ? H3.Season.NONE : { id: 'none', key: 'none', snow: 0, fall: 0, bare: 0, bloom: 0.2, wet: 0, fresh: 0, dormant: 0, leaves: 0 };
+    const seasonNow = () => (!z && H3.Season ? H3.Season.of(state.day) : NONE);
+    let SE = seasonNow(), thr = -1, mudThr = -1, blades = {};
+    function setSeason(S) {
+      SE = S; thr = snowThr(S.snow); mudThr = snowThr(Math.min(1, S.snow + 0.35 * S.wet));
+      // травинки: летние, подкрашенные к сезонным
+      blades = {};
+      for (const tt of ['grass', 'dirt', 'rough', 'swamp']) {
+        const B = PAL[tt].blade, g = tt === 'grass' ? 1 : 0.5;
+        const tint = (arr, to, k) => k > 0 ? arr.map((c, i) => hexMix(c, to[Math.min(to.length - 1, i)], Math.min(1, k))) : arr;
+        let b = tint(B, BLADES.spring, S.fresh * 0.7 * g);
+        b = tint(b, BLADES.autumn, S.fall * 0.9 * g);
+        b = tint(b, BLADES.dormant, S.dormant * 0.85 * g);
+        blades[tt] = b;
+      }
+    }
+    setSeason(SE);
+    /** Доля снега в точке карты (0..1): только на «живой» земле, на болоте меньше. */
+    function snowAt(x, y) {
+      if (SE.snow <= 0) return 0;
+      const t = tAt(Math.floor(x / TILE), Math.floor(y / TILE)); if (!SEASONAL[t]) return 0;
+      return sstep(thr + 0.025, thr - 0.025, snowField(x, y, seed) + (t === 'swamp' ? 0.06 : 0));
+    }
+    /** Цвет точки местности tt: пятна света v, мелкая рябь s; f — поле сугробов, aN — пятна осени. */
+    function tone(tt, edge, v, s, dLand, dWater, f, aN) {
+      const P = PAL[tt] || PAL.grass;
+      let c = v < 0.5 ? mix(P.rgb[0], P.rgb[1], v * 2) : mix(P.rgb[1], P.rgb[2], (v - 0.5) * 2);
+      c = mix(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
+      const sea = SEASONAL[tt] && SE.id !== 'none';
+      if (sea) {
+        if (tt === 'swamp') {
+          if (SE.fall) c = mix(c, pal3(SPAL.swampA, v), SE.fall * 0.7);
+          if (SE.snow) c = mix(c, pal3(SPAL.swampW, v), Math.min(1, SE.snow * 1.4) * 0.75);
+        } else {
+          const g = tt === 'grass' ? 1 : 0.3;   // сколько в местности травы
+          if (SE.fresh) c = mix(c, pal3(SPAL.spring, v), SE.fresh * 0.75 * g);
+          if (SE.fall) {
+            c = mix(c, pal3(SPAL.autumn, v), Math.min(1, SE.fall * g * (0.5 + 0.7 * aN)));
+            if (g === 1) c = mix(c, SPAL.rust, SE.fall * 0.4 * sstep(0.6, 0.78, aN));
+          }
+          if (SE.dormant) c = mix(c, pal3(SPAL.dormant, v), SE.dormant * 0.85 * g);
+        }
+        // талая вода: темнеет земля у кромки снега (и в сырых низинах)
+        if (SE.wet && f >= 0) c = mix(c, SPAL.mud, 0.55 * Math.min(1, SE.wet * 1.4) * sstep(mudThr + 0.015, mudThr - 0.015, f) * sstep(thr, thr + 0.02, f));
+      }
+      if (tt === 'water') {
+        // глубина: чем ближе суша, тем светлее; у самой кромки — пена
+        const dl = edge ? 0 : dLand;
+        if (SE.snow) c = mix(c, SPAL.winterSea, 0.35 * SE.snow);
+        c = mix(c, SHALLOW, 0.6 * sstep(13, 3, dl) * (1 - 0.3 * SE.snow));
+        c = mix(c, FOAM, (0.35 + 0.35 * s) * sstep(5, 0.5, dl));
+      } else if (tt !== 'lava' && tt !== 'rock' && tt !== 'snow' && tt !== 'subter') {
+        c = mix(c, BEACH, 0.7 * sstep(7, 3, edge ? 0 : dWater));   // пляж у воды
+      }
+      // снег — последним, поверх пляжа; по краю сугроба — голубая тень
+      if (sea && SE.snow && f >= 0) {
+        const fs = f + (tt === 'swamp' ? 0.06 : 0), k = sstep(thr + 0.02, thr - 0.02, fs), dust = 0.3 * sstep(thr + 0.07, thr + 0.01, fs) * (1 - k);
+        if (k > 0 || dust > 0) {   // сугроб, по краю — голубая тень; вокруг — пороша, сквозь которую видна земля
+          const S3 = PAL.snow.rgb; let sc = pal3(S3, v); sc = mix(sc, s < 0.5 ? S3[0] : S3[2], Math.abs(s - 0.5) * 0.35);
+          c = mix(mix(c, sc, k + dust * (0.6 + s * 0.8)), S3[0], 1.3 * k * (1 - k));
+        }
+      }
+      return c;
+    }
 
     /** Земля куска: по точке на пиксель карты, затем ×RS со сглаживанием. */
     function paintBase(ctx, cx, cy) {
@@ -62,6 +168,15 @@
       const low = document.createElement('canvas'); low.width = N; low.height = N;
       const lc = low.getContext('2d'), img = lc.createImageData(N, N), d = img.data;
       const W = map.w * TILE, H = map.h * TILE;
+      // клетки, у которых все восемь соседей той же местности: для их точек поиск кромки не нужен
+      // (точка сдвинута шумом не дальше 20 пикс., поэтому хватает поля в клетку вокруг куска)
+      const UX0 = cx * CH - 1, UY0 = cy * CH - 1, UW = CH + 3, uni = new Uint8Array(UW * UW);
+      for (let uy = 0; uy < UW; uy++) for (let ux = 0; ux < UW; ux++) {
+        const tx = UX0 + ux, ty = UY0 + uy, t = tAt(tx, ty); let same = 1;
+        for (let oy = -1; oy <= 1 && same; oy++) for (let ox = -1; ox <= 1; ox++) if (tAt(tx + ox, ty + oy) !== t) { same = 0; break; }
+        uni[uy * UW + ux] = same;
+      }
+      const needF = SE.snow > 0 || SE.wet > 0, needA = SE.fall > 0;
       for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
         const x = X0 + i * ST, y = Y0 + j * ST, k = (j * N + i) * 4;
         if (x >= W || y >= H) { d[k + 3] = 0; continue; }
@@ -73,7 +188,8 @@
         // расстояния до соседних клеток другой местности и до воды/суши — непрерывные,
         // поэтому кромка не повторяет сетку выборки и при увеличении не идёт лесенкой
         let dOther = 99, tOther = null, dWater = 99, dLand = 99;
-        for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
+        const ux = tx - UX0, uy = ty - UY0;
+        if (!(ux >= 0 && uy >= 0 && ux < UW && uy < UW && uni[uy * UW + ux])) for (let oy = -1; oy <= 1; oy++) for (let ox = -1; ox <= 1; ox++) {
           if (!ox && !oy) continue;
           const nt = tAt(tx + ox, ty + oy); if (nt === t) continue;
           const rx0 = (tx + ox) * TILE, ry0 = (ty + oy) * TILE;
@@ -81,29 +197,25 @@
           if (dd < dOther) { dOther = dd; tOther = nt; }
           if (nt === 'water') dWater = Math.min(dWater, dd); else dLand = Math.min(dLand, dd);
         }
-        const tone = (tt, edge) => {
-          const P = PAL[tt] || PAL.grass;
-          let c = v < 0.5 ? mix(P.rgb[0], P.rgb[1], v * 2) : mix(P.rgb[1], P.rgb[2], (v - 0.5) * 2);
-          c = mix(c, s < 0.5 ? P.rgb[0] : P.rgb[2], Math.abs(s - 0.5) * 0.35);
-          if (tt === 'water') {
-            // глубина: чем ближе суша, тем светлее; у самой кромки — пена
-            const dl = edge ? 0 : dLand;
-            c = mix(c, SHALLOW, 0.6 * sstep(13, 3, dl));
-            c = mix(c, FOAM, (0.35 + 0.35 * s) * sstep(5, 0.5, dl));
-          } else if (tt !== 'lava' && tt !== 'rock' && tt !== 'snow' && tt !== 'subter') {
-            c = mix(c, BEACH, 0.7 * sstep(7, 3, edge ? 0 : dWater));   // пляж у воды
-          }
-          return c;
-        };
         const v = fbm(x / 110, y / 110, seed + 7, 3), s = vnoise(x / 8, y / 8, seed + 9);
-        let c = tone(t, false);
+        const f = needF ? snowField(x, y, seed) : -1, aN = needA ? vnoise(x / 46, y / 46, seed + 63) : 0.5;
+        let c = tone(t, false, v, s, dLand, dWater, f, aN);
         // на самой границе обе стороны сходятся к середине: у воды шов ±2.5 точки, между сушей — шире, как мазок
         const BW = t === 'water' || tOther === 'water' ? 2.5 : 7;
-        if (dOther < BW) c = mix(c, tone(tOther, true), 0.5 * sstep(BW, 0, dOther));
+        if (dOther < BW) c = mix(c, tone(tOther, true, v, s, dLand, dWater, f, aN), 0.5 * sstep(BW, 0, dOther));
         d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
       ctx.save(); ctx.setTransform(RS * ST, 0, 0, RS * ST, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, -0.5, -0.5); ctx.restore();
+    }
+
+    /** Лужа: болотная (тёмная), талая (в ней небо) или замёрзшая (лёд с бликом). */
+    function puddle(ctx, x, y, r, kind) {
+      const C = PUDDLE[kind];
+      ctx.fillStyle = C[0]; ctx.beginPath(); ctx.ellipse(x + 0.6, y + 0.8, r * 1.6 + 1, r * 0.7 + 1, 0, 0, Math.PI * 2); ctx.fill();
+      const g = ctx.createLinearGradient(0, y - r, 0, y + r); g.addColorStop(0, C[1]); g.addColorStop(1, C[2]); ctx.fillStyle = g;
+      ctx.beginPath(); ctx.ellipse(x, y, r * 1.6, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+      if (C[3]) { ctx.strokeStyle = C[3]; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(x - r * 0.9, y - r * 0.15); ctx.lineTo(x + r * 0.2, y - r * 0.32); ctx.stroke(); }
     }
 
     /** Детали по клеткам (с полем в клетку вокруг куска — чтобы на стыке ничего не обрезалось). */
@@ -112,23 +224,56 @@
       const B = {};   // пучки штрихов по цвету — один stroke на цвет
       const path = c => B[c] || (B[c] = new Path2D());
       ctx.lineCap = 'round';
+      // сезон: под снегом травы и цветов не видно; весной цветов больше, осенью их сменяет палая листва.
+      // Сезонные мелочи берут свой генератор — летние пучки и камни остаются на своих местах в любой сезон
+      const sea = SE.id !== 'none', snowy = SE.snow > 0;
+      const flowerK = !sea ? 1 : SE.id === 'spring' ? 0.3 + SE.bloom * 1.9 : SE.id === 'summer' ? 1 + SE.bloom : SE.id === 'autumn' ? Math.max(0, 1 - SE.fall * 1.5) : 0;
+      const FLW = SE.id === 'spring' ? SPRING_FLOWERS : null;
+      const treeAt = (x, y) => x >= 0 && y >= 0 && x < map.w && y < map.h && map.obs[y * map.w + x] === 1;
       for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
         if (tx < 0 || ty < 0 || tx >= map.w || ty >= map.h) continue;
         const t = tAt(tx, ty), P = PAL[t]; if (!P) continue;
         const rnd = rngOf(hash(tx, ty, seed + 101) * 4294967296);
-        const bx = tx * TILE, by = ty * TILE;
+        const bx = tx * TILE, by = ty * TILE, live = sea && SEASONAL[t], BL = (live && blades[t]) || P.blade;
         if (P.tuft) for (let i = 0; i < P.tuft; i++) {
           const x = bx + rnd() * TILE, y = by + rnd() * TILE, L = fbm(x / 110, y / 110, seed + 7, 3), n = 3 + (rnd() * 3 | 0);
+          const hide = live && snowy && snowAt(x, y) > 0.5;
           for (let b = 0; b < n; b++) {
             const h = (1.6 + rnd() * 2.0) * (P.reeds && rnd() < 0.2 ? 2.4 : 1), lean = (rnd() - 0.5) * 1.1, x0 = x + (rnd() - 0.5) * 3;
-            const ci = Math.max(0, Math.min(P.blade.length - 1, Math.floor(L * P.blade.length * 1.2 + (rnd() - 0.5) * 1.8) - (b === 0 ? 1 : 0)));
-            const p = path(P.blade[ci]); p.moveTo(x0, y); p.quadraticCurveTo(x0 + lean * h * 0.3, y - h * 0.6, x0 + lean * h, y - h);
+            const ci = Math.max(0, Math.min(BL.length - 1, Math.floor(L * BL.length * 1.2 + (rnd() - 0.5) * 1.8) - (b === 0 ? 1 : 0)));
+            if (hide) continue;
+            const p = path(BL[ci]); p.moveTo(x0, y); p.quadraticCurveTo(x0 + lean * h * 0.3, y - h * 0.6, x0 + lean * h, y - h);
           }
         }
-        if (P.flowers && rnd() < 0.18) { ctx.fillStyle = P.flowers[(rnd() * P.flowers.length) | 0]; const x = bx + 4 + rnd() * 24, y = by + 4 + rnd() * 24; for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(x + (rnd() - 0.5) * 5, y + (rnd() - 0.5) * 3, 0.9, 0, Math.PI * 2); ctx.fill(); } }
+        if (P.flowers && rnd() < 0.18 * flowerK) {
+          const F = FLW || P.flowers; ctx.fillStyle = F[(rnd() * F.length) | 0]; const x = bx + 4 + rnd() * 24, y = by + 4 + rnd() * 24;
+          if (!(snowy && snowAt(x, y) > 0.3)) for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(x + (rnd() - 0.5) * 5, y + (rnd() - 0.5) * 3, 0.9, 0, Math.PI * 2); ctx.fill(); }
+        }
+        if (live) {
+          const r2 = rngOf(hash(tx, ty, seed + 131) * 4294967296);
+          // палая листва: пятнышками по траве, гуще у стволов; под снегом её уже не видно
+          const lf = SE.fall * (t === 'grass' ? 1 : 0.6) * (SE.id === 'winter' ? 0 : 1);
+          if (lf > 0.05) {
+            const under = treeAt(tx, ty) || treeAt(tx - 1, ty) || treeAt(tx + 1, ty) || treeAt(tx, ty + 1) || treeAt(tx, ty - 1);
+            const n = Math.round(lf * (under ? 10 : 2.5) * (0.5 + r2()));
+            for (let i = 0; i < n; i++) {
+              const x = bx + r2() * TILE, y = by + r2() * TILE, c = LEAVES[(r2() * LEAVES.length) | 0], a = r2() * Math.PI;
+              if (snowy && snowAt(x, y) > 0.4) continue;
+              ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(x, y, 1.15, 0.65, a, 0, Math.PI * 2); ctx.fill();
+            }
+          }
+          // искры на снегу
+          if (snowy) { ctx.fillStyle = 'rgba(255,255,255,0.95)'; for (let i = 0; i < 3; i++) { const x = bx + r2() * TILE, y = by + r2() * TILE; if (snowAt(x, y) > 0.7) ctx.fillRect(x, y, 0.6, 0.6); } }
+          // весна: лужи талой воды у кромки снега и в сырых низинах — в них отражается небо
+          if (SE.wet > 0.05 && t !== 'swamp' && r2() < 0.6 * SE.wet) {
+            const x = bx + 6 + r2() * 20, y = by + 6 + r2() * 20, r = 2 + r2() * 3, f = snowField(x, y, seed);
+            if (f > thr + 0.015 && f < mudThr + 0.04) puddle(ctx, x, y, r, 'sky');
+          }
+        }
         if (P.stones) for (let i = 0; i < P.stones; i++) {
           if (rnd() > 0.45) continue;
           const x = bx + rnd() * TILE, y = by + rnd() * TILE, s = 0.8 + rnd() * 1.8, base = PAL[t].rgb[2];
+          if (live && snowy && snowAt(x, y) > 0.55) continue;   // камешки замело
           ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(x + s * 0.5, y + s * 0.4, s * 1.3, s * 0.6, 0, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = 'rgb(' + mix(base, [255, 255, 255], 0.15).map(v => v | 0).join(',') + ')'; ctx.beginPath(); ctx.ellipse(x, y - s * 0.2, s * 1.2, s * 0.8, 0, 0, Math.PI * 2); ctx.fill();
         }
@@ -137,9 +282,7 @@
         if (P.sparkle) { ctx.fillStyle = 'rgba(255,255,255,0.95)'; for (let i = 0; i < 4; i++) ctx.fillRect(bx + rnd() * TILE, by + rnd() * TILE, 0.6, 0.6); }
         if (P.puddles && rnd() < 0.35) {
           const x = bx + 6 + rnd() * 20, y = by + 6 + rnd() * 20, r = 3 + rnd() * 5;
-          ctx.fillStyle = 'rgba(20,34,28,0.55)'; ctx.beginPath(); ctx.ellipse(x + 0.6, y + 0.8, r * 1.6 + 1, r * 0.7 + 1, 0, 0, Math.PI * 2); ctx.fill();
-          const g = ctx.createLinearGradient(0, y - r, 0, y + r); g.addColorStop(0, '#5e8e8a'); g.addColorStop(1, '#2a4a44'); ctx.fillStyle = g;
-          ctx.beginPath(); ctx.ellipse(x, y, r * 1.6, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+          puddle(ctx, x, y, r, sea && SE.snow > 0.25 ? 'ice' : 'swamp');   // зимой болото подо льдом
         }
         if (P.glow && rnd() < 0.5) {
           let x = bx + rnd() * TILE, y = by + rnd() * TILE; ctx.beginPath(); ctx.moveTo(x, y);
@@ -172,6 +315,9 @@
       if (!any) return;
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       for (const [c, w] of [['rgba(60,44,28,0.35)', 16], ['#7a6040', 12], ['#b49a70', 9], ['rgba(230,210,170,0.35)', 3]]) { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.stroke(P); }
+      // зимой дорогу заметает, посередине — накатанная колея; весной она раскисает
+      if (SE.snow > 0) { ctx.strokeStyle = 'rgba(238,244,250,' + (0.6 * SE.snow).toFixed(2) + ')'; ctx.lineWidth = 13; ctx.stroke(P); ctx.strokeStyle = 'rgba(150,128,96,' + (0.55 * SE.snow).toFixed(2) + ')'; ctx.lineWidth = 4; ctx.stroke(P); }
+      if (SE.wet > 0) { ctx.strokeStyle = 'rgba(80,58,36,' + (0.35 * SE.wet).toFixed(2) + ')'; ctx.lineWidth = 8; ctx.stroke(P); }
       for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
         if (!roadAt(x, y)) continue; const rnd = rngOf(hash(x, y, seed + 303) * 4294967296);
         ctx.fillStyle = 'rgba(110,90,60,0.8)'; for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(x * TILE + 11 + rnd() * 10, y * TILE + 11 + rnd() * 10, 0.9, 0, Math.PI * 2); ctx.fill(); }
@@ -184,7 +330,9 @@
       for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
         if (x < 0 || y < 0 || x >= map.w || y >= map.h) continue;
         const obs = map.obs[y * map.w + x]; if (!obs) continue;
-        const sp = H3.Terrain.obstacleSprite(T[map.terrain[y * map.w + x]], obs, x, y); if (!sp) continue;
+        const sp0 = H3.Terrain.obstacleSprite(T[map.terrain[y * map.w + x]], obs, x, y); if (!sp0) continue;
+        // дерево по сезону: осенью желтеет и облетает, зимой в снегу, весной цветёт (H3.Season.tree)
+        const sp = SE.id !== 'none' && H3.Season ? H3.Season.tree(sp0, SE, x, y, snowAt(x * TILE + 16, y * TILE + 28)) : sp0;
         const px = x * TILE + 16 + ((x * 3 + y) % 3) - 1, py = y * TILE + 31;
         const g = ctx.createRadialGradient(px, py - 2, 1, px, py - 2, obs === 2 ? 22 : 13);
         g.addColorStop(0, 'rgba(10,14,20,0.35)'); g.addColorStop(1, 'rgba(10,14,20,0)');
@@ -211,8 +359,21 @@
       if (cv) return cv;
       if (!force) return null;
       cv = build(cx, cy); chunks.set(key, cv); order.push(key);
+      if (stale && stale.has(key)) fades.set(key, performance.now());
       while (order.length > MAX) chunks.delete(order.shift());
       return cv;
+    }
+    /* Смена сезона: ключ меняется раз в неделю (осенью, зимой, весной) и с новым месяцем.
+       Куски пересобираются лениво, как при прокрутке; пока новый не готов, виден прежний,
+       а готовый проявляется поверх него за FADE мс — снег «ложится», а не щёлкает. */
+    const FADE = 700;
+    let seasonDay = state.day;
+    function checkSeason() {
+      if (state.day === seasonDay) return;
+      seasonDay = state.day;
+      const S = seasonNow(); if (S.key === SE.key) return;
+      setSeason(S);
+      stale = chunks; chunks = new Map(); order.length = 0; fades.clear(); idleQ = null;
     }
     /** Вывести видимые клетки; недорисованные куски — по два за кадр, остальное — ровным цветом (дорисуется). */
     let idleQ = null;
@@ -227,14 +388,24 @@
       (root.requestIdleCallback || (f => setTimeout(f, 30)))(step);
     }
     function draw(ctx, x0, y0, x1, y1) {
-      let budget = 1;
+      checkSeason();
+      let budget = 1, usedStale = false;
       const prev = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true;
       for (let cy = Math.floor(y0 / CH); cy <= Math.floor(y1 / CH); cy++) for (let cx = Math.floor(x0 / CH); cx <= Math.floor(x1 / CH); cx++) {
         let cv = get(cx, cy, false);
         if (!cv && budget > 0) { budget--; cv = get(cx, cy, true); }
-        if (cv) ctx.drawImage(cv, cx * CPX, cy * CPX, CPX, CPX);
+        const old = stale && stale.get(cx + ',' + cy);
+        if (cv) {
+          const f0 = old && fades.get(cx + ',' + cy), k = f0 === undefined || !old ? 1 : (performance.now() - f0) / FADE;
+          if (k < 1) {   // проявление нового сезона поверх прежнего
+            ctx.drawImage(old, cx * CPX, cy * CPX, CPX, CPX);
+            ctx.globalAlpha = sstep(0, 1, k); ctx.drawImage(cv, cx * CPX, cy * CPX, CPX, CPX); ctx.globalAlpha = 1;
+            painter.pending = true; usedStale = true;
+          } else ctx.drawImage(cv, cx * CPX, cy * CPX, CPX, CPX);
+        } else if (old) { ctx.drawImage(old, cx * CPX, cy * CPX, CPX, CPX); painter.pending = true; usedStale = true; }
         else { ctx.fillStyle = (PAL[tAt(cx * CH + 4, cy * CH + 4)] || PAL.grass).c[1]; ctx.fillRect(cx * CPX, cy * CPX, CPX, CPX); painter.pending = true; }
       }
+      if (stale && !usedStale) { stale = null; fades.clear(); }   // смена сезона на экране закончилась — прежние куски не держим
       ctx.imageSmoothingEnabled = prev;
       prefetch(Math.floor(x0 / CH), Math.floor(y0 / CH), Math.floor(x1 / CH), Math.floor(y1 / CH));
     }
@@ -339,7 +510,8 @@
       if (shores.size > 400) shores.delete(shores.keys().next().value);
       return s;
     }
-    const painter = { draw, get, sdf, shore, frame: () => { shoreBudget = 1; }, tAt, clear: () => { chunks.clear(); order.length = 0; shores.clear(); }, pending: false, z, map, seed };
+    const painter = { draw, get, sdf, shore, frame: () => { shoreBudget = 1; }, tAt, clear: () => { chunks.clear(); order.length = 0; shores.clear(); stale = null; fades.clear(); }, pending: false, z, map, seed,
+      snowAt, season: () => SE };
     return painter;
   }
 

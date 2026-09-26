@@ -70,9 +70,11 @@
     V.size = Math.max(14, size);
     const fw = Math.sqrt(3) * V.size * (W + 0.5), fh = V.size * (1.5 * H + 0.5);
     V.fw = fw;
-    V.cw = narrow ? bw : Math.min(bw, Math.round(fw + 2 * M)); V.ch = narrow ? bh : Math.min(bh, Math.round(fh + 80));
+    V.cw = narrow ? bw : Math.min(bw, Math.round(fw + 2 * M)); V.ch = narrow ? bh : Math.min(bh, Math.round(fh + 110));
     V.worldW = Math.max(V.cw, Math.round(fw + 2 * M));
-    V.ox = Math.round((V.worldW - fw) / 2); V.oy = Math.round((V.ch - fh) / 2) + 14;   // запас сверху: высокие спрайты верхнего ряда
+    // поле прижато книзу: весь запас высоты — сверху, там у углов поля стоят герои со знамёнами
+    // (и высокие спрайты верхнего ряда); снизу хватает нескольких точек под ноги нижнего ряда
+    V.ox = Math.round((V.worldW - fw) / 2); V.oy = Math.max(Math.round((V.ch - fh) / 2) + 14, Math.round(V.ch - fh - (narrow ? 4 : 8)));
     V.canvas.width = V.cw * V.dpr; V.canvas.height = V.ch * V.dpr; V.canvas.style.width = V.cw + 'px'; V.canvas.style.height = V.ch + 'px';
     V.zFit = V.cw / V.worldW;
     V.cam = { x: 0, y: 0, z: 1 }; clampCam();
@@ -80,6 +82,8 @@
     // горизонт проходит чуть выше верхнего ряда гексов: поле стоит на земле, а не висит в небе
     const hz = U.clamp((V.oy - V.size * 0.8) / V.ch, 0.10, 0.5);
     V.bg = makeBgLayers(V.b.terrain, V.worldW, V.ch, V.day, hz);
+    V.bgEdge = bgEdgeColors(V.bg);
+    V.boxWH = bw + 'x' + bh;
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
     if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
     if (V.vfx) { V.vfx.S.bounds = { w: V.worldW, h: V.ch }; V.vfx.S.size = V.size; VFx.warm(V.size); }

@@ -92,9 +92,12 @@
     const f = (x, y) => [ax + (x - gx) * k, ay + (y - gy) * k];
     return { w: to.w, h: to.h, anchor: to.anchor, parts: mapParts(parts, f, k) };
   }
-  /** Рамка старого пиксельного спрайта ×10 — чтобы рисованное встало в тот же гекс. */
+  /** Рамка старого пиксельного спрайта ×10 — чтобы рисованное встало в тот же гекс.
+      Сначала таблица рамок (js/view/sprite_frames.js): пиксельные данные при рисованной графике не грузятся. */
   function frameOf(name) {
-    const Sp = H3.Sprites, sp = Sp && Sp.resolve && Sp.resolve(name);
+    const Sp = H3.Sprites;
+    if (Sp && Sp.frame) return Sp.frame(name);
+    const sp = Sp && Sp.resolve && Sp.resolve(name);
     if (!sp || !sp.rows) return null;
     const u = sp.unit || 1, h = sp.rows.length / u, w = Math.max(...sp.rows.map(r => r.length)) / u;
     const a = sp.anchor ? [sp.anchor[0] / u, sp.anchor[1] / u] : [w / 2, h];
