@@ -374,5 +374,8 @@
     if (H3.Anim && H3.Anim.setParts) H3.Anim.setParts(H3.Anim.PARTS.on);   // нарезка частей строилась из прежних картинок
   }
 
-  H3.Vec = { VEC, def, has, render, image, parts, setOn, smooth, ellipse, tone, names: () => Object.keys(DEFS), _defs: DEFS };
+  /** Служебные точки рисунка (флаг, дым, огни, анимация) — как их задал автор, с якорем и масштабом: смещение от якоря в точках = (x − anchor) / U. */
+  function meta(name) { const d = VEC.on && DEFS[name]; return d && d.meta ? { m: d.meta, ax: d.anchor[0], ay: d.anchor[1], U } : null; }
+
+  H3.Vec = { VEC, def, has, meta, render, image, parts, setOn, smooth, ellipse, tone, names: () => Object.keys(DEFS), _defs: DEFS };
 })(typeof window !== 'undefined' ? window : globalThis);

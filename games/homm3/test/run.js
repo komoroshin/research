@@ -1275,7 +1275,8 @@ test('рисованные существа: описаны для настоя�
   const KINDS = ['leg', 'legs', 'torso', 'head', 'prop'];
   for (const n of names) {
     const cr = H3.Creatures.get(n);
-    assert.ok(cr || Sp.has(n), n + ' — нет такого существа или спрайта');
+    // 'имя#вариант' (шахта на снегу, под землёй) и 'имя.деталь' (крутящееся колесо) — дополнения к настоящему спрайту
+    assert.ok(cr || Sp.has(n.split(/[#.]/)[0]), n + ' — нет такого существа или спрайта');
     const d = Vc._defs[n];
     if (cr) assert.ok(d.parts.some(p => p.kind === 'torso'), n + ': нужен корпус');
     for (const p of d.parts) { assert.ok(KINDS.includes(p.kind), n + ': часть ' + p.kind); assert.ok(p.pivot && p.pivot.every(Number.isFinite) && p.shapes.length, n + ': у части нет крепления или форм'); }
