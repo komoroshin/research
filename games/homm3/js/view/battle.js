@@ -227,7 +227,8 @@
       V.fx = Fx.scene(); V.heroCast = [0, 0];
       V.vfx = NEWFX ? VFx.scene(V.fx) : null;
       H3.Game.showScreen('battle');
-      layout(); renderBar();
+      V.endPose = null; V.heroCastT = [1, 1]; V.heroCastCol = ['#e6a0ff', '#e6a0ff'];
+      renderBar(); layout();   // сначала панель: её высота нужна, чтобы канва встала ровно в остаток экрана
       H3.Audio.play(b.siege ? 'siege' : 'turn');
       // начальные события (башни, катапульта первого раунда)
       const ev = b.events.slice(); b.events = [];
@@ -282,7 +283,9 @@
   }
   async function finishUp() {
     if (V.done) return; V.done = true;
-    await wait(V.speed === 0 ? 0 : 500);
+    // герои показывают исход: победитель поднимает знамя, проигравший его приспускает (или уезжает)
+    V.endPose = { winner: V.b.winner, reason: V.b.reason, t: 0 };
+    await wait(V.speed === 0 ? 0 : V.showHeroes && V.b.sides.some(s => s.hero) ? 1300 : 500);
     const res = V.b.result; const r = V.resolve; V.resolve = null; V.b = null;
     if (V.fx) V.fx.clear();
     if (V.vfx) V.vfx.clear();

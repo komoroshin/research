@@ -151,7 +151,7 @@
       }
       // снег — последним, поверх пляжа; по краю сугроба — голубая тень
       if (sea && SE.snow && f >= 0) {
-        const fs = f + (tt === 'swamp' ? 0.06 : 0), k = sstep(thr + 0.02, thr - 0.02, fs), dust = 0.3 * sstep(thr + 0.07, thr + 0.01, fs) * (1 - k);
+        const fs = f + (tt === 'swamp' ? 0.06 : 0), k = sstep(thr + 0.02, thr - 0.02, fs), dust = SE.id === 'spring' ? 0 : 0.28 * sstep(thr + 0.045, thr + 0.008, fs) * (1 - k);
         if (k > 0 || dust > 0) {   // сугроб, по краю — голубая тень; вокруг — пороша, сквозь которую видна земля
           const S3 = PAL.snow.rgb; let sc = pal3(S3, v); sc = mix(sc, s < 0.5 ? S3[0] : S3[2], Math.abs(s - 0.5) * 0.35);
           c = mix(mix(c, sc, k + dust * (0.6 + s * 0.8)), S3[0], 1.3 * k * (1 - k));
