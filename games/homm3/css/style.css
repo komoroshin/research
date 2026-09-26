@@ -70,8 +70,14 @@ input[type=range] { width: 100%; }
 .mfoot button { flex: 1; min-height: 48px; font-size: 17px; white-space: normal; }
 .mfoot .msum { width: 100%; text-align: center; }
 .note { margin: 2px 0 4px; }
-/* главное меню: сцена города сверху, заголовок поверх её края, стек крупных кнопок */
-#menuArt { display: block; width: 100%; height: 34vh; max-height: 300px; object-fit: cover; object-position: 50% 100%; flex: none; -webkit-mask-image: linear-gradient(#000 65%, transparent); mask-image: linear-gradient(#000 65%, transparent); }
+/* главное меню: живая сцена сверху (слои-параллакс, см. vec_scenes.js), заголовок поверх её края, стек крупных кнопок */
+.mpar { position: relative; display: block; width: 100%; height: 34vh; max-height: 300px; flex: none; overflow: hidden; background: #26324a; -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }
+.mpar > canvas, .mpar .mp-l { position: absolute; }
+.mpar > canvas.px { position: static; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }   /* запасной фон — сцена города */
+.mpar .mp-l { opacity: 0; transition: opacity .7s ease-out; will-change: transform; pointer-events: none; }
+.mpar .mp-l.in { opacity: 1; }
+.mpar .mp-l > canvas { position: absolute; left: 0; top: 0; }
+.mpar .mp-l > canvas.mp-actor, .mpar .mp-clouds > canvas { will-change: transform; }
 .mtitle { text-align: center; margin: -48px 12px 6px; position: relative; flex: none; }
 .mscreen.main.paused .mtitle { margin-top: 20px; }   /* пауза: картины города нет, наезжать не на что */
 .mtitle h1 { font-size: 34px; letter-spacing: .04em; text-shadow: 0 2px 0 #000, 0 0 18px #000, 0 0 30px #000; }
@@ -151,6 +157,7 @@ input[type=range] { width: 100%; }
 .army7 .slot i { position: absolute; right: 1px; bottom: 0; font-style: normal; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000, 1px 1px 0 #000; }
 .army7 .slot.sel { outline: 2px solid var(--gold2); }
 #heroPanel .hp-head > img { width: 40px; height: 40px; border: 1px solid #7a5a34; flex: none; }
+#heroPanel .hp-head > .lport { width: 32px !important; height: 40px !important; border: 1px solid #7a5a34; }
 .bar { height: 5px; background: #0008; border: 1px solid #000; border-radius: 3px; margin-top: 3px; overflow: hidden; }
 .bar div { height: 100%; background: linear-gradient(#9be07f, #4a9a2f); }
 .bar.mana div { background: linear-gradient(#8fb6ff, #3b5fd0); }
@@ -290,7 +297,7 @@ button.skill:hover { border-color: var(--gold); background: #0008; }
   .mhead { padding-top: calc(8px + env(safe-area-inset-top)); }
   .mfoot { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   .mscreen.main .mbody { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
-  #menuArt { height: 32vh; max-height: none; }
+  .mpar { height: 32vh; max-height: none; }
   .mmenu { gap: 6px; } .mbtn { min-height: 50px; font-size: 17px; }
   .factions, .heroes4 { grid-template-columns: repeat(4, 1fr); gap: 3px; }
   .factions button img { width: 36px; height: 32px; } .heroes4 button img { width: 36px; height: 36px; }
@@ -428,4 +435,88 @@ button.edb img { width: 20px; height: 20px; }
   #edBrushes { display: inline-block; }
   #edTop { font-size: 12px; gap: 4px; padding: 4px; }
   #edTop .edname { font-size: 14px; }
+}
+
+/* ---------- живые портреты: дыхание, моргание, вспышка нового уровня ---------- */
+.lport { position: relative; display: inline-block; flex: none; line-height: 0; overflow: hidden; border-radius: 2px; vertical-align: top; }
+.lport img { display: block; width: 100%; height: 100%; }
+.lport.still { width: auto; }
+.lport .lp-f { position: absolute; inset: 0; transform-origin: 50% 100%; animation: lpBreath 4.6s ease-in-out infinite; animation-delay: var(--br, 0s); }
+.lport .lp-f img { position: absolute; left: 0; top: 0; }
+.lport .lp-shut { opacity: 0; animation: lpBlink var(--bk, 5s) linear infinite; animation-delay: var(--bd, 0s); }
+@keyframes lpBreath { 0%, 100% { transform: none; } 50% { transform: translateY(-.7%) scale(1.014); } }
+@keyframes lpBlink { 0%, 95.9% { opacity: 0; } 96%, 98.3% { opacity: 1; } 98.4%, 100% { opacity: 0; } }
+.lport.flash { animation: lpGlow 1.3s ease-out 2; }
+.lport.flash::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; box-shadow: inset 0 0 0 2px #fff6c0, inset 0 0 14px 4px rgba(255,214,110,.9); animation: lpFlash 1.3s ease-out 2; }
+@keyframes lpGlow { 0% { box-shadow: 0 0 0 0 rgba(255,220,120,0); } 18% { box-shadow: 0 0 0 2px #fff0b0, 0 0 22px 6px rgba(255,206,100,.85); } 100% { box-shadow: 0 0 0 1px rgba(241,207,116,0), 0 0 0 0 rgba(255,206,100,0); } }
+@keyframes lpFlash { 0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- новый уровень: портрет в сиянии, навыки карточками ---------- */
+.modal.lvlmodal, .modal.wkmodal { width: min(96vw, 540px); }
+.lvlup { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.lvlpic { position: relative; width: 100%; height: 178px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 6px;
+  background: radial-gradient(circle at 50% 55%, #8a6020 0%, #4a2e0c 45%, #1c1206 100%); box-shadow: inset 0 0 0 1px #8a6a1f, inset 0 0 30px #000b; }
+.lvlrays { position: absolute; left: 50%; top: 55%; width: 560px; height: 560px; margin: -280px 0 0 -280px; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255,224,150,.3) 0deg 5deg, rgba(255,224,150,0) 5deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 8%, transparent 60%); mask-image: radial-gradient(circle, #000 8%, transparent 60%); animation: lvlSpin 48s linear infinite; }
+.lvlglow { position: absolute; left: 50%; top: 55%; width: 230px; height: 230px; margin: -115px 0 0 -115px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,242,200,.8), rgba(255,200,90,.28) 45%, rgba(255,200,90,0) 70%); animation: lvlPulse 2.6s ease-in-out infinite; }
+.lvlsparks i { position: absolute; left: var(--x); top: var(--y); width: 4px; height: 4px; border-radius: 50%; background: #fff6c8; box-shadow: 0 0 6px 2px rgba(255,220,120,.8); opacity: 0; animation: lvlSpark 2.4s ease-in-out infinite; animation-delay: var(--d); }
+.lvlport { position: relative; z-index: 1; padding: 4px; background: linear-gradient(#f6dc92, #9a7422); border-radius: 4px; box-shadow: 0 4px 14px #000c, 0 0 0 1px #3a2408; }
+.lvlbadge { position: absolute; right: -18px; bottom: -12px; width: 42px; height: 42px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #fff3c7, #d6a83f 55%, #7a5a1a); color: #3a2408; font: 700 19px/1 var(--font-d); box-shadow: 0 2px 6px #000c, inset 0 0 0 2px #8a6a1f; }
+.lvlbadge small { font: 400 9px/1 var(--font-b); margin-bottom: 1px; }
+.lvlhead { text-align: center; }
+.lvlname { font-family: var(--font-d); font-size: 22px; color: var(--gold2); text-shadow: 0 1px 0 #000, 0 0 12px rgba(241,207,116,.35); }
+.lvlsub { color: var(--text2); font-style: italic; }
+.lvlpri { display: inline-flex; align-items: center; gap: 6px; margin-top: 5px; padding: 3px 14px; border-radius: 14px; background: linear-gradient(#4a3418, #22160a); border: 1px solid var(--gold3); color: var(--gold2); font-family: var(--font-d); box-shadow: 0 0 10px rgba(241,207,116,.25); }
+.lvlpri img { width: 20px; height: 20px; }
+.lvlask { font-family: var(--font-d); color: var(--text2); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; margin-top: 4px; }
+.choice.lvlcards { width: 100%; }
+.choice .skcard { display: flex; align-items: flex-start; gap: 10px; min-width: 220px; padding: 10px 12px; white-space: normal; text-align: left; position: relative;
+  background: linear-gradient(#f1e3ba, #d6bc84); color: var(--ink); text-shadow: none; border: 2px solid #8a6a1f;
+  box-shadow: inset 0 0 0 1px #fff3c7, inset 0 0 18px rgba(150,110,50,.35), 0 3px 8px #000a; }
+.choice .skcard:hover { background: linear-gradient(#f8ecc8, #dcc48f); border-color: #c89a35; }
+.choice .skcard:active { box-shadow: inset 0 0 0 1px #fff3c7, inset 0 2px 10px rgba(90,60,20,.5); }
+.skcard .skic { flex: none; width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 40% 35%, #6a4a24, #1e1408); box-shadow: 0 0 0 2px #d6a83f, 0 0 0 3px #5a4310, 0 2px 6px #0008; }
+.skcard .skic img { width: 40px; height: 40px; }
+.skcard .sktx { display: block; min-width: 0; }
+.choice .skcard b { display: block; font-family: var(--font-d); font-size: 16px; color: #4a2c08; }
+.skcard em { display: inline-block; font-style: normal; font-size: 11px; color: #fff3c7; background: linear-gradient(#8a5a1c, #5a3a0e); padding: 0 7px 1px; border-radius: 8px; margin: 2px 0 4px; }
+.choice .skcard small { display: block; color: #4a3a22; font-size: 12px; line-height: 1.3; }
+@keyframes lvlSpin { to { transform: rotate(360deg); } }
+@keyframes lvlPulse { 0%, 100% { transform: scale(.94); opacity: .85; } 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes lvlSpark { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.2); } }
+
+/* ---------- открытка недели и месяца ---------- */
+.wkcard { display: flex; flex-direction: column; gap: 8px; }
+.wkpic { position: relative; border: 3px solid #1a1007; border-radius: 4px; overflow: hidden; background: #2a3a5a; box-shadow: 0 0 0 1px #8a6a1f, 0 4px 14px #000a; }
+.wkpic::after { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(241,207,116,.6); border-radius: 2px; pointer-events: none; box-shadow: inset 0 0 22px rgba(0,0,0,.35); }
+.wkart { display: block; width: 100%; aspect-ratio: 16 / 10; }
+.wkribbon { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); max-width: 90%; z-index: 1; }
+.wkribbon span { position: relative; z-index: 1; display: block; padding: 6px 22px 7px; font: 700 20px/1.1 var(--font-d); color: #fff3c7; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 0 #3a0a06, 0 0 8px rgba(0,0,0,.45); background: linear-gradient(#c23a30, #7a1a14); border: 2px solid #e8c05a; border-radius: 2px; box-shadow: 0 3px 8px #000a, inset 0 1px 0 rgba(255,220,180,.45); }
+.wkribbon::before, .wkribbon::after { content: ''; position: absolute; top: 9px; border: 15px solid #5e120c; }
+.wkribbon::before { left: -18px; border-left-color: transparent; }
+.wkribbon::after { right: -18px; border-right-color: transparent; }
+.wkcard.month .wkribbon span { background: linear-gradient(#f6dc92, #b8862f); color: #3a2408; text-shadow: 0 1px 0 rgba(255,245,200,.6); border-color: #fff3c7; }
+.wkcard.month .wkribbon::before, .wkcard.month .wkribbon::after { border-color: #7a5410; }
+.wkcard.month .wkribbon::before { border-left-color: transparent; } .wkcard.month .wkribbon::after { border-right-color: transparent; }
+.wkcard.month .wkpic { box-shadow: 0 0 0 1px #f1cf74, 0 0 18px rgba(241,207,116,.45), 0 4px 14px #000a; }
+.wkmonth { position: absolute; left: 0; right: 0; top: 12px; text-align: center; font: 700 26px/1 var(--font-d); color: #fff3c7; letter-spacing: .04em; z-index: 1;
+  text-shadow: 0 2px 0 #000, 0 0 16px rgba(0,0,0,.8), 0 0 30px rgba(255,200,90,.6); }
+.wkmonth small { display: block; font: italic 400 13px/1.2 var(--font-b); color: #f1dca8; letter-spacing: .12em; margin-bottom: 2px; }
+.wkdesc { text-align: center; }
+.wkdesc p { margin: 0 0 3px; font-size: 15px; }
+.wkdate { color: #6a5230; }
+@media (max-width: 640px) {
+  .modal.lvlmodal, .modal.wkmodal { width: 100vw; }
+  .lvlpic { height: 164px; }
+  .choice .skcard { min-width: 0; width: 100%; flex: none; }
+  .wkribbon span { font-size: 18px; padding: 5px 16px 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lport .lp-f, .lvlrays, .lvlglow, .lvlsparks i { animation: none !important; }
+  .mpar .mp-l { transition: none; }
 }

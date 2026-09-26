@@ -162,6 +162,13 @@
       c.fillStyle = col[0];
       if (kind === 'river' || kind === 'lava') { c.beginPath(); c.moveTo(0, 300); c.bezierCurveTo(120, 280, 180, 340, 120, 400); c.lineTo(0, 400); c.fill(); c.beginPath(); c.moveTo(W, 330); c.bezierCurveTo(880, 320, 900, 380, W - 60, 400); c.lineTo(W, 400); c.fill(); }
       else { c.beginPath(); c.ellipse(W - 110, 262, 110, 26, 0, 0, Math.PI * 2); c.fill(); c.beginPath(); c.ellipse(90, 380, 120, 24, 0, 0, Math.PI * 2); c.fill(); }
+      // те же очертания — для блеска воды (точки искр выбираются внутри)
+      if (typeof Path2D !== 'undefined' && !scene.waterPaths) {
+        const a = new Path2D(), b = new Path2D();
+        if (kind === 'river' || kind === 'lava') { a.moveTo(0, 300); a.bezierCurveTo(120, 280, 180, 340, 120, 400); a.lineTo(0, 400); a.closePath(); b.moveTo(W, 330); b.bezierCurveTo(880, 320, 900, 380, W - 60, 400); b.lineTo(W, 400); b.closePath(); }
+        else { a.ellipse(W - 110, 262, 106, 23, 0, 0, Math.PI * 2); b.ellipse(90, 380, 116, 21, 0, 0, Math.PI * 2); }
+        scene.waterPaths = [a, b];
+      }
       scene.waterColor = col[1]; scene.waterKind = kind;
       if (kind === 'lava') { c.globalAlpha = 0.35; c.fillStyle = '#ff9a3a'; c.beginPath(); c.moveTo(0, 300); c.bezierCurveTo(120, 280, 180, 340, 120, 400); c.lineTo(0, 400); c.fill(); c.globalAlpha = 1; }
     }
@@ -178,7 +185,7 @@
       const next = (id) => { if (opts.static) return null; const chk = R.canBuild(stt, t, id); const b = B.get(t.faction, id); return b ? { id, name: b.name, cost: b.cost, ok: chk.ok, reason: chk.reason } : null; };
       // ратуша (всегда) и её улучшение
       const hall = R.townHallLevel(t);
-      push({ key: 'hall', sprite: 'bld_hall_' + hall, pos: LAYOUT.hall, name: B.BY_ID['hall_' + hall].name, tab: 'build', upgrade: hall < 4 ? next('hall_' + (hall + 1)) : null, smoke: true });
+      push({ key: 'hall', sprite: 'bld_hall_' + hall, pos: LAYOUT.hall, name: B.BY_ID['hall_' + hall].name, tab: 'build', upgrade: hall < 4 ? next('hall_' + (hall + 1)) : null, smoke: 'meta' });
       const fl = R.fortLevel(t);
       if (fl) push({ key: 'walls', sprite: ['', 'bld_fort', 'bld_citadel', 'bld_castle'][fl], pos: LAYOUT.walls, name: B.BY_ID[['fort', 'citadel', 'castle'][fl - 1]].name, tab: 'build', wide: true, upgrade: fl < 3 ? next(['citadel', 'castle'][fl - 1]) : null });
       else push({ key: 'walls', sprite: 'bld_fort', pos: LAYOUT.walls, name: 'Форт', ghost: next('fort'), wide: true });
@@ -207,6 +214,9 @@
       }
       items.sort((a, b) => a.pos[1] - b.pos[1]);
       scene.items = items;
+      // общий порядок по глубине: постройки и реквизит (дерево перед ратушей закрывает её, а за воротами — нет)
+      scene.depth = items.map(it => ({ y: it.pos[1], it })).concat(scene.props.map(p => ({ y: p.y, prop: p }))).sort((a, b) => a.y - b.y);
+      if (scene.life) scene.life.setDoors(items);
     }
 
     /* ---------- рисование ---------- */
@@ -242,16 +252,25 @@
       c.stroke();
       c.fillStyle = 'rgba(255,255,255,0.18)'; c.fillRect(0, y0 + 8, W, 1.5);
     }
-    function drawProps(c, layer) {
-      for (const p of scene.props) {
-        if ((p.y < 262) !== (layer === 0)) continue;   // за ратушей / перед
-        if (p.kind === 'tree' && Sp.has(p.sprite)) Sp.draw(c, p.sprite, p.x, p.y, p.s);
-        else if (p.kind === 'rock') propRock(c, p.x, p.y, p.s);
-        else if (p.kind === 'grave') propGrave(c, p.x, p.y);
-        else if (p.kind === 'stake') propStake(c, p.x, p.y);
-        else if (p.kind === 'reed') propReed(c, p.x, p.y);
-        else if (p.kind === 'crystal' && Sp.has('crystal_rock')) Sp.draw(c, 'crystal_rock', p.x, p.y, 1.5);
+    function drawProp(c, p) {
+      if (p.kind === 'tree' && Sp.has(p.sprite)) Sp.draw(c, p.sprite, p.x, p.y, p.s);
+      else if (p.kind === 'rock') propRock(c, p.x, p.y, p.s);
+      else if (p.kind === 'grave') propGrave(c, p.x, p.y);
+      else if (p.kind === 'stake') propStake(c, p.x, p.y);
+      else if (p.kind === 'reed') propReed(c, p.x, p.y);
+      else if (p.kind === 'crystal' && Sp.has('crystal_rock')) Sp.draw(c, 'crystal_rock', p.x, p.y, 1.5);
+    }
+    /** Постройки, реквизит, жители и детали — одним проходом по глубине (низ рисунка = y). */
+    function drawDepth(c, ts, night) {
+      const extra = life ? life.depth() : [];
+      if (extra.length > 1) extra.sort((a, b) => a.y - b.y);
+      let j = 0;
+      for (const e of scene.depth) {
+        while (j < extra.length && extra[j].y <= e.y) life.drawDepth(c, extra[j++], ts);
+        if (e.it) drawItem(c, e.it, ts, night); else drawProp(c, e.prop);
       }
+      while (j < extra.length) life.drawDepth(c, extra[j++], ts);
+      c.imageSmoothingEnabled = false;
     }
     function drawItem(c, it, ts, night) {
       const sh = it.shape, hover = scene.hover === it;
@@ -271,6 +290,9 @@
       }
       Sp.draw(c, it.sprite, it.pos[0], it.pos[1], SC, false, it.tint === null ? undefined : tint);
       ornaments(c, it, ts);
+      // флаг владельца там, где его поставил художник (meta.flag своей постройки), — полощется на ветру
+      const fp = it.key !== 'hall' && metaPoint(it, 'flag'), own = st.players[town.owner];
+      if (fp && own && H3.AdvView) { H3.AdvView.V.ts = ts; H3.AdvView.drawFlag(c, fp[0], fp[1], own.color, true); }
       if (it.upg) Sp.draw(c, 'bld_upg', it.pos[0] + sh.w / 2 - 8, it.by + 6, SC);
       if (it.upgrade && it.upgrade.ok) { c.fillStyle = '#9be07f'; c.font = 'bold 12px sans-serif'; c.textAlign = 'center'; c.fillText('▲', it.pos[0] + sh.w / 2 - 6, it.by + 12); }
       if (hover) { c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.25; Sp.draw(c, it.sprite, it.pos[0], it.pos[1], SC, false, it.tint === null ? undefined : tint); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; }
@@ -314,6 +336,13 @@
         if (p && pk && it.key !== 'hall') { const [x, y] = pk; c.strokeStyle = '#2a1a10'; c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y - 9); c.stroke(); const wv = Math.sin(ts / 150 + x) * 1.5; c.fillStyle = p.color; c.beginPath(); c.moveTo(x + 0.5, y - 9); c.quadraticCurveTo(x + 3, y - 9 + wv, x + 7, y - 7.5 + wv); c.quadraticCurveTo(x + 3, y - 6 + wv, x + 0.5, y - 6); c.fill(); }
       }
     }
+    /** Служебная точка рисунка постройки (meta.flag, meta.door…) в координатах сцены. */
+    function metaPoint(it, key) {
+      const M = it.own && H3.Vec && H3.Vec.meta(it.sprite), p = M && M.m[key];
+      if (!p) return null;
+      const q = Array.isArray(p[0]) ? p[0] : p;
+      return [it.pos[0] + (q[0] - M.ax) / M.U * SC, it.pos[1] + (q[1] - M.ay) / M.U * SC];
+    }
     function drawLights(c, night, ts) {
       if (!night) return;
       c.save(); c.globalCompositeOperation = 'lighter';
@@ -328,13 +357,6 @@
       }
       c.restore();
     }
-    function drawWaterGlints(c, ts) {
-      if (!scene.waterKind || scene.waterKind === 'ice') return;
-      c.fillStyle = scene.waterColor; const t = ts / 1200;
-      const spots = scene.waterKind === 'river' || scene.waterKind === 'lava' ? [[0, 300, 140, 100], [W - 120, 330, 120, 70]] : [[W - 220, 240, 220, 44], [0, 358, 210, 44]];
-      for (const [x0, y0, w, h] of spots) for (let i = 0; i < 14; i++) { const f = (t + i * 0.37) % 1; const x = x0 + ((i * 53) % w), y = y0 + ((i * 29) % h); c.globalAlpha = 0.25 + 0.25 * Math.sin(f * Math.PI); c.fillRect(x + f * 12, y, 5, 1); }
-      c.globalAlpha = 1;
-    }
     function ambient(dt) {
       const fx = scene.fx; if (fx.S.p.length > 200) return;
       const k = dt / 1000, chance = per => Math.random() < per * k;
@@ -344,15 +366,111 @@
       if (sc.dust && chance(4)) fx.add({ x: -6, y: rnd(200, H), vx: rnd(40, 70), vy: rnd(-2, 2), ax: 0, ay: 0, ttl: 6000, life: 0, size: 1.2, color: 'rgba(230,210,170,0.5)', shape: 'spark', shrink: false, fade: false });
       if (sc.cave && chance(6)) fx.add({ x: rnd(0, W), y: rnd(0, H), vx: rnd(-3, 3), vy: rnd(-5, 2), ax: 0, ay: 0, ttl: 4000, life: 0, size: 1.2, color: 'rgba(210,190,230,0.5)', shape: 'dot', shrink: false });
       if (sc.forest && chance(2)) fx.add({ x: rnd(0, W), y: -4, vx: rnd(6, 14), vy: rnd(12, 22), ax: 0, ay: 0, ttl: 16000, life: 0, size: rnd(1.5, 2.5), color: ['#5cb84a', '#a67c1c', '#e8792b'][Math.floor(Math.random() * 3)], shape: 'square', shrink: false, fade: false, sway: true });
-      // дым из труб: ратуша, таверна, кузница — с самой высокой точки крыши
+      // искры из трубы кузницы (сам дым — мягкими клубами, см. smokeStep)
       for (const it of scene.items) {
-        if (it.ghost || !it.smoke || !chance(3)) continue;
-        let px = -1, py = 1e9; for (let x = 0; x < it.shape.w; x++) if (it.shape.top[x] >= 0 && it.shape.top[x] < py) { py = it.shape.top[x]; px = x; }
-        if (px < 0) continue;
-        fx.add({ x: it.bx + px + rnd(-3, 3), y: it.by + py + 4, vx: rnd(3, 8), vy: -rnd(8, 14), ax: 0, ay: 0, ttl: 2800, life: 0, size: rnd(2, 3.5), color: 'rgba(200,200,210,0.35)', shape: 'puff', grow: 1.6 });
-        if (it.key === 'blacksmith' && Math.random() < 0.5) fx.add({ x: it.bx + px, y: it.by + py + 4, vx: rnd(-8, 8), vy: -rnd(10, 30), ax: 0, ay: 60, ttl: 500, life: 0, size: 1.5, color: '#ff9a3a', shape: 'spark', glow: true, shrink: true });
+        if (it.ghost || it.key !== 'blacksmith' || !chance(1.5)) continue;
+        for (const [x, y] of chimneys(it)) fx.add({ x, y, vx: rnd(-8, 8), vy: -rnd(10, 30), ax: 0, ay: 60, ttl: 500, life: 0, size: 1.2, color: '#ff9a3a', shape: 'spark', glow: true, shrink: true });
       }
       for (const it of scene.items) if (it.magic && !it.ghost && chance(4)) fx.add({ x: it.bx + rnd(4, it.shape.w - 4), y: it.by + rnd(0, 20), vx: rnd(-6, 6), vy: -rnd(8, 20), ax: 0, ay: 0, ttl: 900, life: 0, size: 1.6, color: ['#e6a0ff', '#7fd9ea', '#ffffff'][Math.floor(Math.random() * 3)], shape: 'spark', glow: true, shrink: true });
+    }
+
+    /* ---------- дым из труб: мягкие клубы, сносит ветром ----------
+       Труба — meta.smoke рисунка (точки в единицах рисунка); без неё ищем по линии крыши узкий
+       выступ (труба шире шпиля и уже конька). Клуб — готовое мягкое пятно, рисуется одним drawImage. */
+    function chimneys(it) {
+      if (it._chim) return it._chim;
+      const sh = it.shape, M = H3.Vec && H3.Vec.meta(it.sprite), out = [];
+      if (M && M.m.smoke && M.m.smoke.length) for (const p of M.m.smoke) out.push([it.pos[0] + (p[0] - M.ax) / M.U * SC, it.pos[1] + (p[1] - M.ay) / M.U * SC]);
+      else if (it.smoke === true) {
+        let best = null;
+        for (let x0 = 0; x0 < sh.w; x0++) {
+          const y = sh.top[x0]; if (y < 0) continue;
+          let x1 = x0; while (x1 + 1 < sh.w && sh.top[x1 + 1] >= 0 && Math.abs(sh.top[x1 + 1] - y) <= 2) x1++;
+          const w = x1 - x0 + 1, l = sh.top[Math.max(0, x0 - 3)], r = sh.top[Math.min(sh.w - 1, x1 + 3)];
+          if (w >= 4 && w <= 16 && (l < 0 || l - y >= 5) && (r < 0 || r - y >= 5) && (!best || y < best[1])) best = [it.bx + (x0 + x1) / 2, it.by + y + 1];
+          x0 = x1;
+        }
+        if (best) out.push(best);
+      }
+      return (it._chim = out);
+    }
+    const blobCache = {};
+    function blob(rgb) {
+      if (blobCache[rgb]) return blobCache[rgb];
+      const cv = document.createElement('canvas'); cv.width = cv.height = 48; const c = cv.getContext('2d');
+      const g = c.createRadialGradient(20, 20, 2, 24, 24, 24); g.addColorStop(0, 'rgba(' + rgb + ',1)'); g.addColorStop(0.45, 'rgba(' + rgb + ',0.7)'); g.addColorStop(1, 'rgba(' + rgb + ',0)');
+      c.fillStyle = g; c.fillRect(0, 0, 48, 48);
+      return (blobCache[rgb] = cv);
+    }
+    scene.smoke = [];
+    function smokeStep(dt, ts) {
+      const k = dt / 1000, wind = 5 + Math.sin(ts / 5000) * 2.5;
+      for (const it of scene.items) {
+        if (it.ghost || !it.smoke) continue;
+        for (const [x, y] of chimneys(it)) {
+          if (Math.random() > k * (it.key === 'blacksmith' ? 3.2 : 2.4)) continue;
+          scene.smoke.push({ x: x + rnd(-1, 1), y, vx: rnd(-1, 1), vy: -rnd(7, 11), age: 0, life: rnd(3.2, 4.6), s0: rnd(1.6, 2.4), s1: rnd(7, 10), dark: it.key === 'blacksmith', rot: rnd(0, 6.28) });
+        }
+      }
+      for (const p of scene.smoke) { p.age += k; p.x += (p.vx + wind * Math.min(1, p.age / 1.2)) * k; p.y += p.vy * k; p.vy *= 1 - 0.18 * k; }
+      if (scene.smoke.length) scene.smoke = scene.smoke.filter(p => p.age < p.life);
+    }
+    function drawSmoke(c, night) {
+      if (!scene.smoke.length) return;
+      const hell = town.faction === 'inferno' || town.faction === 'factory';
+      const light = blob(night > 0.5 ? '120,124,140' : hell ? '120,104,96' : '228,228,232'), dark = blob(night > 0.5 ? '80,80,92' : hell ? '70,58,52' : '150,150,158');
+      c.save(); c.imageSmoothingEnabled = true;
+      for (const p of scene.smoke) {
+        const f = p.age / p.life, r = p.s0 + (p.s1 - p.s0) * Math.sqrt(f);
+        c.globalAlpha = Math.min(1, p.age / 0.35) * (1 - f) * (1 - f) * 0.75;
+        c.drawImage(p.dark ? dark : light, p.x - r, p.y - r, r * 2, r * 2);
+      }
+      c.restore();
+    }
+
+    /* ---------- блеск воды: искры солнца (луны), рябь; у лавы — вздохи жара, у болота — пузыри ---------- */
+    function waterSpots() {
+      if (scene.waterPts || !scene.waterPaths) return scene.waterPts || [];
+      const tc = document.createElement('canvas').getContext('2d'), pts = [], r = new U.RNG(17);
+      for (let i = 0; i < 400 && pts.length < 48; i++) {
+        const x = r.int(0, W), y = r.int(150, 356);
+        if (scene.waterPaths.some(p => tc.isPointInPath(p, x, y))) pts.push([x, y, r.int(0, 1000) / 1000 * 6.28]);
+      }
+      return (scene.waterPts = pts);
+    }
+    function drawWaterGlints(c, ts, night) {
+      const kind = scene.waterKind; if (!kind) return;
+      const pts = waterSpots(); if (!pts.length) return;
+      c.save();
+      if (kind === 'lava') {
+        c.globalCompositeOperation = 'lighter';
+        for (const [x, y, ph] of pts) { const p = Math.max(0, Math.sin(ts / 1400 + ph * 3)); if (p < 0.2) continue; const g = c.createRadialGradient(x, y, 0, x, y, 7); g.addColorStop(0, 'rgba(255,200,90,' + (0.5 * p).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,90,20,0)'); c.fillStyle = g; c.fillRect(x - 7, y - 7, 14, 14); }
+      } else if (kind === 'swamp') {
+        c.strokeStyle = 'rgba(200,230,210,0.7)'; c.lineWidth = 0.5;
+        for (let i = 0; i < pts.length; i += 3) { const [x, y, ph] = pts[i], f = (ts / 2600 + ph) % 1; if (f > 0.5) continue; const rr = 0.6 + f * 3; c.globalAlpha = 1 - f * 2; c.beginPath(); c.ellipse(x, y, rr, rr * 0.55, 0, 0, Math.PI * 2); c.stroke(); }
+      } else {
+        // рябь: короткие светлые штрихи дрейфуют по течению
+        c.strokeStyle = scene.waterColor; c.lineWidth = 0.9; c.lineCap = 'round';
+        const t = ts / 1600;
+        for (let i = 0; i < pts.length; i++) {
+          if (kind === 'ice' && i % 3) continue;
+          const [x, y, ph] = pts[i], f = (t + ph) % 1;
+          c.globalAlpha = (kind === 'ice' ? 0.25 : 0.45) * Math.sin(f * Math.PI);
+          c.beginPath(); c.moveTo(x - 3 + f * 6, y); c.quadraticCurveTo(x + f * 6, y - 0.8, x + 3 + f * 6, y); c.stroke();
+        }
+        // искры: крестик-звёздочка на миг вспыхивает там, где на воду падает свет
+        c.globalCompositeOperation = 'lighter'; c.globalAlpha = 1;
+        const moon = night > 0.5, col = moon ? '200,215,255' : kind === 'cave' ? '170,190,255' : '255,250,225';
+        for (let i = 0; i < pts.length; i += 2) {
+          const [x, y, ph] = pts[i], p = Math.sin(ts / (kind === 'ice' ? 900 : 520) + ph * 7);
+          if (p < 0.82) continue;
+          const a = (p - 0.82) / 0.18 * (moon ? 0.5 : kind === 'cave' ? 0.45 : 0.95), rr = 1.2 + a * 1.6;
+          c.fillStyle = 'rgba(' + col + ',' + a.toFixed(2) + ')';
+          c.beginPath(); c.moveTo(x - rr, y); c.lineTo(x, y - 0.35); c.lineTo(x + rr, y); c.lineTo(x, y + 0.35); c.closePath(); c.fill();
+          c.beginPath(); c.moveTo(x, y - rr * 0.7); c.lineTo(x + 0.3, y); c.lineTo(x, y + rr * 0.7); c.lineTo(x - 0.3, y); c.closePath(); c.fill();
+        }
+      }
+      c.restore();
     }
 
     let lastTs = 0;
@@ -360,17 +478,18 @@
       const day = st.day, night = NIGHT[(day - 1) % 7];
       if (!scene.bg || scene.bgDay !== day) { scene.bg = paintBg(day); scene.bgDay = day; }
       const dt = Math.min(80, ts - (lastTs || ts)); lastTs = ts;
-      scene.fx.update(dt); ambient(dt);
+      scene.fx.update(dt); ambient(dt); smokeStep(dt, ts);
+      if (life) life.update(dt, ts, night);
       for (const cl of scene.clouds) { cl.x += cl.v * dt / 1000; if (cl.x - cl.w > W) cl.x = -cl.w; }
       ctx.setTransform(RS, 0, 0, RS, 0, 0);
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(scene.bg, 0, 0, W, H);
       ctx.imageSmoothingEnabled = false;
       if (!sc.cave && !scene.painted) for (const cl of scene.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + cl.a + ')'; ctx.beginPath(); ctx.ellipse(cl.x, cl.y, cl.w / 2, cl.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(cl.x - cl.w * 0.25, cl.y + 3, cl.w / 3.2, cl.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(cl.x + cl.w * 0.22, cl.y + 2, cl.w / 3.5, cl.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
-      drawWaterGlints(ctx, ts);
-      drawProps(ctx, 0);
-      for (const it of scene.items) drawItem(ctx, it, ts, night);
-      drawProps(ctx, 1);
+      drawWaterGlints(ctx, ts, night);
+      drawDepth(ctx, ts, night);
+      drawSmoke(ctx, night);
+      if (life) life.drawSky(ctx, ts);
       // герой-гость стоит у ворот
       const hero = town.visiting ? st.heroes[town.visiting] : null;
       if (hero && Sp.has('hero_' + hero.cls)) { const p = st.players[hero.owner]; An.draw(ctx, 'hero_' + hero.cls, 430, 392, SC, false, { t: ts, phase: An.phaseOf('h' + hero.id) }, Sp.teamTint(p ? p.color : '#999')); }
@@ -379,9 +498,12 @@
       // в пещере неба нет — ночь там не темнее вечера
       if (night) { ctx.fillStyle = 'rgba(10,10,40,' + (0.32 * (sc.cave ? Math.min(night, 0.4) : night)) + ')'; ctx.fillRect(0, 0, W, H); }
       drawLights(ctx, night, ts);
+      if (life) life.drawLights(ctx, ts, night);
       // флаг владельца на ратуше
       const hall = scene.items.find(i => i.key === 'hall'); const p = st.players[town.owner];
-      if (hall && p) { let px = -1, py = 1e9; for (let x = 0; x < hall.shape.w; x++) if (hall.shape.top[x] >= 0 && hall.shape.top[x] < py) { py = hall.shape.top[x]; px = x; } H3.AdvView.V.ts = ts; H3.AdvView.drawFlag(ctx, hall.bx + px, hall.by + py - 12, p.color); }
+      const hf = hall && metaPoint(hall, 'flag');
+      if (hf && p) { H3.AdvView.V.ts = ts; H3.AdvView.drawFlag(ctx, hf[0], hf[1], p.color); }
+      else if (hall && p) { let px = -1, py = 1e9; for (let x = 0; x < hall.shape.w; x++) if (hall.shape.top[x] >= 0 && hall.shape.top[x] < py) { py = hall.shape.top[x]; px = x; } H3.AdvView.V.ts = ts; H3.AdvView.drawFlag(ctx, hall.bx + px, hall.by + py - 12, p.color); }
     }
     function hit(x, y) {
       const list = scene.items.slice().sort((a, b) => b.pos[1] - a.pos[1]);
@@ -391,6 +513,8 @@
       }
       return null;
     }
+    // жизнь сцены: жители на улицах, птицы, мельница (js/view/vec_citizens.js)
+    const life = scene.life = H3.TownLife && !/[?&]life=0\b/.test(root.location ? root.location.search : '') ? H3.TownLife.create({ W, H, L: LAYOUT, faction: town.faction, water: sc.cave ? 'cave' : sc.water, RS }) : null;
     rebuild();
     scene.draw = draw; scene.hit = hit; scene.rebuild = rebuild; scene.destroy = () => { scene.fx.clear(); };
     return scene;

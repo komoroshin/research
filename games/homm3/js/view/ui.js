@@ -99,7 +99,75 @@
       + '<tr><td>Урон</td><td class="num">' + c.dmg[0] + '–' + c.dmg[1] + '</td><td>Цена</td><td class="num">' + costHtml(c.cost) + '</td></tr></table>'
       + (abs.length ? '<div class="small muted">' + abs.map(esc).join(' · ') + '</div>' : '') + (extra || '') + '</div></div>';
   }
-  function heroPortrait(hero, scale) { return icon(hero.portrait, scale || 2); }
+  /* ---------- живой портрет ----------
+     Крупный портрет героя (масштаб 2 и больше) — стопка из трёх рисунков: фон с рамкой, фигура и
+     фигура с сомкнутыми веками (H3.VecPortraits.live). Фигура «дышит» CSS-трансформом, веки на миг
+     проступают раз в 4–7 с — моргание. У каждого героя свой темп и фаза, чтобы в списке не моргали хором.
+     flashHero(hero) — вспышка по рамке после нового уровня (держится 2,6 с на всех его портретах). */
+  const flashT = {};
+  function flashHero(hero) { if (hero) flashT[hero.id] = Date.now() + 2600; }
+  const hashOf = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+  function heroPortrait(hero, scale, o) {
+    scale = scale || 2;
+    const flash = (o && o.flash) || (flashT[hero.id] || 0) > Date.now();
+    const VP = H3.VecPortraits, L = scale >= 2 && VP && H3.Vec && H3.Vec.has(hero.portrait) ? VP.live(hero.portrait) : null;
+    if (!L) return flash ? '<span class="lport still flash">' + icon(hero.portrait, scale) + '</span>' : icon(hero.portrait, scale);
+    const one = H3.Vec.render(L.bg, 1), w = Math.round(one._w * scale), h = Math.round(one._h * scale);
+    const k = hashOf(hero.portrait + ':' + hero.id), per = 4.2 + (k % 29) / 10, bd = -((k >> 5) % 4000) / 1000, br = -((k >> 9) % 4000) / 1000;
+    return '<span class="lport' + (flash ? ' flash' : '') + '" style="width:' + w + 'px;height:' + h + 'px;--bk:' + per.toFixed(1) + 's;--bd:' + bd + 's;--br:' + br + 's">'
+      + Sp.img(L.bg, scale) + '<span class="lp-f">' + Sp.img(L.fig, scale) + (L.shut ? Sp.img(L.shut, scale, 'lp-shut') : '') + '</span></span>';
+  }
+
+  /**
+   * Новый уровень героя: портрет в золотом сиянии, прибавка к первичному навыку, вторичные — карточками.
+   * o: { level, pri ('att'|'def'|'pow'|'kno'), priName, choices: [{ id, lvl }] } → Promise<id|null>.
+   * Механика та же, что у choose(): тап по карточке — выбор; закрыть окно мимо — null (как раньше).
+   */
+  function levelUp(hero, o) {
+    const S = H3.Skills;
+    const wrap = el('div', 'lvlup');
+    let sparks = ''; for (let i = 0; i < 10; i++) sparks += '<i style="--x:' + (8 + (i * 37) % 84) + '%;--y:' + (10 + (i * 53) % 70) + '%;--d:' + (i * 0.37).toFixed(2) + 's"></i>';
+    wrap.innerHTML = '<div class="lvlpic"><div class="lvlrays"></div><div class="lvlglow"></div><div class="lvlsparks">' + sparks + '</div>'
+      + '<div class="lvlport">' + heroPortrait(hero, 4, { flash: true }) + '<div class="lvlbadge"><small>ур.</small>' + o.level + '</div></div></div>'
+      + '<div class="lvlhead"><div class="lvlname">' + esc(hero.name) + '</div><div class="lvlsub">достигает ' + o.level + ' уровня</div>'
+      + '<div class="lvlpri">' + icon('ic_' + o.pri, 2) + '<b>' + esc(o.priName) + ' +1</b></div></div>'
+      + (o.choices.length ? '<div class="lvlask">Выберите навык</div>' : '');
+    const box = el('div', 'choice lvlcards');
+    let closeFn = null;
+    for (const c of o.choices) {
+      const b = el('button', 'skcard', '<span class="skic">' + icon('sk_' + c.id, 3) + '</span><span class="sktx"><b>' + esc(S.get(c.id).name) + '</b><em>' + esc(S.levelName(c.lvl)) + '</em><small>' + esc(S.describe(c.id, c.lvl)) + '</small></span>');
+      b.onclick = () => { H3.Audio.play('click'); if (closeFn) closeFn(c.id); };
+      box.appendChild(b);
+    }
+    if (o.choices.length) wrap.appendChild(box);
+    return modal({ title: hero.name + ' — ' + o.level + ' уровень', html: wrap, buttons: o.choices.length ? [] : [{ label: 'Дальше', cls: 'primary', value: null }],
+      onOpen: (bx, close) => { closeFn = close; bx.classList.add('lvlmodal'); } });
+  }
+
+  /**
+   * Открытка начала недели; в первый день месяца — парадная. Рисунок — H3.Scenes.week.
+   * o: { day, week (state.week), faction, heroCls, color } → Promise.
+   */
+  const MONTHS = ['Первый', 'Второй', 'Третий', 'Четвёртый', 'Пятый', 'Шестой', 'Седьмой', 'Восьмой', 'Девятый', 'Десятый', 'Одиннадцатый', 'Двенадцатый'];
+  function weekCard(o) {
+    const wk = o.week, Sc = H3.Scenes;
+    const name = Sc ? Sc.weekName(wk) : (wk && wk.name) || 'Новая неделя';
+    const desc = !wk || wk.id === 'plain' ? 'Прирост существ в городах — самое время нанять новых.' : (wk.id === 'creature' ? wk.desc + ' Прирост остальных — как обычно.' : wk.desc + ' Прирост существ в городах.');
+    if (!Sc) { toast(esc(name + ' — ' + desc), '', 'ic_day'); return Promise.resolve(); }
+    const m = Math.floor((o.day - 1) / 28) + 1, month = (o.day - 1) % 28 === 0 && o.day > 1;
+    const box = el('div', 'wkcard' + (month ? ' month' : ''));
+    box.innerHTML = '<div class="wkpic"><canvas class="wkart"></canvas>'
+      + (month ? '<div class="wkmonth"><small>начинается</small>' + esc((MONTHS[m - 1] || m + '-й') + ' месяц') + '</div>' : '')
+      + '<div class="wkribbon"><span>' + esc(name) + '</span></div></div>'
+      + '<div class="wkdesc parch"><p>' + esc(desc) + '</p><div class="small wkdate">' + esc(H3.State.dateStr(o.day)) + '</div></div>';
+    return modal({ title: month ? 'Новый месяц' : 'Новая неделя', html: box, buttons: [{ label: month ? 'Вперёд!' : 'В путь', cls: 'primary' }],
+      onOpen: bx => {
+        bx.classList.add('wkmodal');
+        const cv = bx.querySelector('canvas.wkart');
+        try { Sc.week(cv, { kind: wk ? wk.id : 'plain', cid: wk && wk.cid, faction: o.faction, heroCls: o.heroCls, color: o.color, month: month ? m : 0, seed: o.day }); }
+        catch (e) { console.error(e); cv.remove(); }
+      } });
+  }
   function skillHtml(id, lvl) { const s = H3.Skills.get(id); return '<span class="skill" title="' + esc(H3.Skills.describe(id, lvl)) + '">' + icon('sk_' + id) + '<b>' + esc(s.name) + '</b> ' + esc(H3.Skills.levelName(lvl)) + '</span>'; }
 
   /**
@@ -142,5 +210,5 @@
     return modal({ title, html: wrap, buttons: [{ label: 'OK', cls: 'primary', value: 'ok' }, { label: 'Отмена', value: null }] }).then(v => v === 'ok' ? +num.value : null);
   }
 
-  H3.UI = { $, el, esc, modal, closeTop, alert, confirm, choose, toast, tip, hideTip, icon, resIcon, costHtml, resLine, slotHtml, armyHtml, countWord, creatureCard, heroPortrait, skillHtml, askNumber, dlgHtml, press, bindArmy, selBarHtml, stackDepth: () => stack.length };
+  H3.UI = { $, el, esc, modal, closeTop, alert, confirm, choose, toast, tip, hideTip, icon, resIcon, costHtml, resLine, slotHtml, armyHtml, countWord, creatureCard, heroPortrait, flashHero, levelUp, weekCard, skillHtml, askNumber, dlgHtml, press, bindArmy, selBarHtml, stackDepth: () => stack.length };
 })(typeof window !== 'undefined' ? window : globalThis);
