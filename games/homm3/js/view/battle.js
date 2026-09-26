@@ -206,7 +206,7 @@
   function clampCam() {
     const z = V.cam.z; V.cam.x = U.clamp(V.cam.x, 0, Math.max(0, (V.worldW || V.cw) - V.cw / z));
     // отдалённое поле ниже экрана по высоте — ставим его чуть ниже середины: сверху остаётся сцена для героев
-    V.cam.y = z < 1 ? (V.ch - V.ch / z) * 0.56 : U.clamp(V.cam.y, 0, Math.max(0, V.ch - V.ch / z));
+    V.cam.y = z < 1 ? (V.ch - V.ch / z) * 0.7 : U.clamp(V.cam.y, 0, Math.max(0, V.ch - V.ch / z));
   }
   /** Цвета краёв задника (верх неба, низ земли): ими продолжаем картину, когда поле отдалено. */
   function bgEdgeColors(bg) {
@@ -536,7 +536,7 @@
   function heroGeom(side) {
     const h = V.b.sides[side].hero, sz = (BH && h && BH.size('hero_' + h.cls)) || { h: 33, back: 15.5, front: 19.5 };
     const s0 = U.clamp(Math.min((V.oy - 2) / sz.h, (V.oy + V.size * 0.9 - 3) / ((BH ? BH.POLE : 40) + 7)), 1.2, 3.4);
-    const s = s0 * (V.cam.z < 1 ? Math.min(1.9, Math.pow(1 / V.cam.z, 0.8)) : 1);
+    const s = s0 * (V.cam.z < 1 ? Math.min(2.3, 1 / V.cam.z) : 1);
     const fwd = side === 0 ? 1 : -1, edge = side === 0 ? 0 : (V.worldW || V.cw);
     const px = edge + fwd * Math.max(9, 4.5 * s);
     return { x: px + fwd * (sz.back + 1.5) * s, y: V.oy + 1, s, px, py: V.oy + V.size * 0.9, fwd };
@@ -726,7 +726,8 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       const cvH = V.canvas.height, top = Math.max(0, Math.round(-V.cam.y * V.cam.z * V.dpr)), bot = Math.min(cvH, Math.round((V.ch - V.cam.y) * V.cam.z * V.dpr));
       const E = V.bgEdge || { top: '#5f7fa8', bottom: '#2e2a1c' };
-      let g = ctx.createLinearGradient(0, 0, 0, top + 1); g.addColorStop(0, BH ? BH.shade(E.top, -0.35) : E.top); g.addColorStop(1, E.top);
+      const zen = !BH ? E.top : b.terrain === 'subter' || b.terrain === 'lava' ? BH.shade(E.top, -0.5) : BH.mix(E.top, '#4a78c0', 0.75);   // зенит глубже горизонта
+      let g = ctx.createLinearGradient(0, 0, 0, top + 1); g.addColorStop(0, zen); g.addColorStop(1, E.top);
       ctx.fillStyle = g; ctx.fillRect(0, 0, V.canvas.width, top + 1);
       g = ctx.createLinearGradient(0, bot - 1, 0, cvH); g.addColorStop(0, E.bottom); g.addColorStop(1, BH ? BH.shade(E.bottom, -0.6) : '#16110c');
       ctx.fillStyle = g; ctx.fillRect(0, bot - 1, V.canvas.width, cvH - bot + 1);
@@ -800,7 +801,9 @@
       if (!u.alive && !(p.fade > 0)) continue;
       items.push({ y: p.y, draw: () => drawUnit(ctx, u, p, sc, ts) });
     }
+    V.badgeQ = [];
     items.sort((a, b2) => a.y - b2.y); for (const it of items) it.draw();
+    for (const f of V.badgeQ) f(); ctx.globalAlpha = 1; V.badgeQ = [];
     if (V.vfx) V.vfx.drawOver(ctx);
     if (V.fx) V.fx.drawOver(ctx, V.worldW * 2, V.ch * 2);
     // подсказка урона / стрелка направления
@@ -844,7 +847,9 @@
       // численность — плашка в цвете игрока этой стороны; при отдалении не мельче ~11 точек экрана
       const bk = Math.max(1, 0.96 / V.cam.z);
       const off = Bt.isBig(u) ? V.size * 0.9 : V.size * 0.25;
-      BH.badge(ctx, p.x + (u.side === 0 ? off : -off), y - 2, String(u.count), sideColor(u.side), u.side === 0, bk, act);
+      // плашки кладутся отдельным проходом поверх всех отрядов: соседний грифон не закроет число
+      const ga = ctx.globalAlpha, bx = p.x + (u.side === 0 ? off : -off), by = y - 2 - up * 0.5;
+      (V.badgeQ || (V.badgeQ = [])).push(() => { ctx.globalAlpha = ga; BH.badge(ctx, bx, by, String(u.count), sideColor(u.side), u.side === 0, bk, act); });
       // эффекты
       const q = 4 * bk;
       let k = 0; for (const e in u.effects) { const bad = ['slow', 'curse', 'weakness', 'disrupting_ray', 'blind', 'petrify', 'paralyze', 'disease', 'poison', 'aging', 'bound'].includes(e); ctx.fillStyle = bad ? '#ff6a6a' : '#7fd9ea'; ctx.fillRect(p.x - V.size * (Bt.isBig(u) ? 1.2 : 0.6) + k * (q + 1), p.y - V.size * 1.1, q, q); k++; }

@@ -110,7 +110,7 @@
     dungeon:    { kind: 'rock', wall: '#564a5e', cap: '#4a4052', hole: '#120e16', top: 'rock', rh: 0, pointed: true, ring: '#3a3442', door: 'maw', doorC: '#3e2e46', holeC: '#0e0a12', slitC: '#e090ff', crystals: ['#9a5ae0', '#c890f8', '#b070f0'], emblem: 'none',
                   moat: { c: '#2c2640', deep: '#18142a', bank: '#3a3442', shards: ['#b070f0', '#c890f8'] } },
     stronghold: { kind: 'pal', wood: '#7e5432', woodD: '#5a3a1c', clay: '#b67a4a', band: '#4a3420', hole: '#1e140c', pointed: false, door: 'logs', doorC: '#6a4424', emblem: 'bull',
-                  moat: { c: '#6a5a36', deep: '#4a3e22', bank: '#8a6a40', stakes: '#5a3a1c' } },
+                  moat: { c: '#4e5436', deep: '#343a22', bank: '#8a6a40', stakes: '#5a3a1c' } },
     fortress:   { kind: 'logs', wood: '#7a5a34', pile: '#4a3a24', thatch: '#b8a060', moss: '#5a8a3a', hole: '#1a1610', door: 'logs', doorC: '#6a4a28', emblem: 'lizard',
                   moat: { c: '#3e6446', deep: '#2a4632', bank: '#4a5a30', lily: 1, reeds: '#7aa040', bubbles: 1 } },
     conflux:    { kind: 'stone', wall: '#eef0f6', cap: '#f6f8fc', hole: '#2a2a44', top: 'crystal', crystal: ['#ff8a3a', '#5ab0ff', '#9ae8f8', '#8ad060'], rh: 48, bw: 84, pointed: true, ring: '#e0e4ee', band: GOLD, door: 'crystal', doorC: '#7fd9ea', emblem: 'gem',
