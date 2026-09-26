@@ -8,7 +8,7 @@
      вверх, конь привстаёт, знамя поднято; поражение — голова опущена, знамя
      клонится к земле; бегство/сдача — герой разворачивается и уезжает.
    • Знамя в цвете игрока: древко и полотнище нарисованы конвейером (V.def),
-     полотнище — 8 кадров волны с плавным переходом между ними.
+     полотнище — 12 кадров волны (прогреваются в начале боя).
    • Читаемость боя: подсветка активного отряда и цели, всплывающие цифры и
      плашки численности — в точках экрана, т. е. не мельчают при отдалении.
    Бой (battle.js) передаёт только геометрию и состояние: H3.BHero.*
@@ -24,9 +24,9 @@
   const S0 = 3;
 
   /* ============================ знамя ============================
-     Имена — «hero_knight.banner0…7», «hero_knight.pole»: деталь настоящего спрайта героя (правило V.def),
+     Имена — «hero_knight.banner0…11», «hero_knight.pole»: деталь настоящего спрайта героя (правило V.def),
      знамя общее для всех классов, красится цветом игрока через '$b'/'$B'. */
-  const FW = 180, FH = 112, NF = 8, POLE = 400, FLAG_Y = -POLE + 16;
+  const FW = 180, FH = 112, NF = 12, POLE = 400, FLAG_Y = -POLE + 16;
   /** Кадр полотнища: волна бежит от древка к краю, ласточкин хвост, звезда, складки. */
   function flagDef(name, ph) {
     const amp = 13, N = 12, kx = 5.4;
@@ -103,19 +103,19 @@
     ctx.translate(o.x, o.y); ctx.scale(f, f);
     // тень древка на земле — короткий мазок
     ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(0, 0, 16 * u, 5 * u, 0, 0, TAU); ctx.fill();
-    // поднятое знамя: древко выдвинуто и чуть наклонено к полю, полотнище рвётся на ветру;
-    // опущенное — приспущено до середины древка и обвисло, древко клонится назад
-    ctx.translate(0, -raise * 30 * u);
-    const tilt = fwd * 0.14 * raise - fwd * 0.2 * lower + fwd * 0.02 * Math.sin(o.t / 900);
+    // поднятое знамя: древко выдвинуто вверх, полотнище рвётся на ветру над головой героя;
+    // опущенное — приспущено до середины древка и обвисло. Древко не клоним: у края холста оно ушло бы за экран
+    ctx.translate(0, -raise * 60 * u);
+    const tilt = fwd * 0.02 * Math.sin(o.t / 900);
     ctx.rotate(tilt);
     img(ctx, 'hero_knight.pole', 0, 0, o.flip, o.tint, o.SC);
     ctx.translate(fwd * 3 * u, (FLAG_Y + lower * POLE * 0.34) * u);
     const flapA = 0.04 * Math.sin(ph * 0.5) * (1 - lower);
     ctx.rotate(fwd * (lower * 1.3 + flapA));
     if (lower) ctx.scale(1 - lower * 0.3, 1);
-    const q = ((ph / TAU) * NF % NF + NF) % NF, i0 = Math.floor(q), fr = q - i0;
+    // 12 кадров волны без перекрёстного наплыва: одна картинка на кадр дешевле, а шаг кадров глаз не ловит
+    const i0 = Math.floor(((ph / TAU) * NF % NF + NF) % NF);
     img(ctx, 'hero_knight.banner' + i0, 0, 0, o.flip, o.tint, o.SC, A);
-    if (fr > 0.02) img(ctx, 'hero_knight.banner' + ((i0 + 1) % NF), 0, 0, o.flip, o.tint, o.SC, A * fr);
     ctx.restore();
   }
 
@@ -124,7 +124,10 @@
   const GEO = new Map();
   function geo(name) {
     if (GEO.has(name)) return GEO.get(name);
-    const d = V._defs && V._defs[name];
+    // описание берём у движка; если он собирает описания лениво — сначала просим картинку, это его соберёт
+    let d = V._defs && V._defs[name];
+    if (!d && V.has(name)) { try { V.render(name, 1); } catch (e) { /* нет DOM */ } d = V._defs && V._defs[name]; }
+    if (!d) return null;   // промах не кэшируем: рисунок мог ещё не описаться
     let g = null;
     if (d) {
       const idx = { legs: [], torso: -1, heads: [], prop: -1 };
@@ -174,7 +177,7 @@
       // рука: при касте и победе — вверх (против часовой у смотрящего вправо), при поражении — опущена
       armA: -fwd * (0.8 * arm + 0.1 * win * Math.sin(t / 140)) + fwd * 0.4 * lose * (1 - arm) + fwd * 0.02 * br,
       armDy: -arm * 2.2 * u,
-      rear: win * (0.085 + 0.015 * Math.sin(t / 260)),
+      rear: win * (0.05 + 0.012 * Math.sin(t / 260)),
     };
     return P;
   }
@@ -243,6 +246,18 @@
     }
     ctx.restore();
     return tip || [o.x, o.y - g.h * o.s];
+  }
+  /** Прогрев в начале боя: кадры знамени и части всадника в обоих зеркалах — первый каст не дёрнет кадр. */
+  function warm(list, SC) {
+    try {
+      for (const it of list) {
+        for (const flip of [false, true]) {
+          for (let i = 0; i < NF; i++) V.image('hero_knight.banner' + i, S0, flip, it.tint, SC);
+          V.image('hero_knight.pole', S0, flip, it.tint, SC);
+          if (it.name && V.has(it.name)) V.parts(it.name, S0, flip, it.tint, SC);
+        }
+      }
+    } catch (e) { /* без DOM — нечего греть */ }
   }
   /** Габарит героя в клетках: { h, back, front } — чтобы бой нашёл ему место. */
   function size(name) { const g = geo(name); return g ? { h: g.h, back: g.back, front: g.front } : null; }
@@ -350,5 +365,5 @@
     ctx.restore();
   }
 
-  H3.BHero = { S0, banner, rider, size, geo, castFx, activeMark, targetMark, groundMark, badge, floatText, rgba, shade, mix, castLift, POLE: POLE / U };
+  H3.BHero = { S0, banner, rider, size, geo, warm, castFx, activeMark, targetMark, groundMark, badge, floatText, rgba, shade, mix, castLift, POLE: POLE / U };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -259,21 +259,20 @@
   const ARM = (w, fem) => { const k = fem ? 0.88 : 1; return T2([[93, 146, 30 * k * w], [82, 186, 26 * k * w], [72, 224, 23 * k * w], [66, 258, 20 * k * w], [64, 284, 18 * k * w]], { flat1: true }); };
   function legs(c, m, shoe) {
     const leg = S(T2([[113, 254, 38], [110, 316, 32], [108, 372, 27], [106, 446, 21]], { flat0: true }), c, m || 'cloth', { lines: [dl([[102, 368], [114, 372]], 0.4)] });
-    const foot = S([[94, 436], [118, 436], [120, 460], [118, 476], [110, 488.5, 1], [78, 488.5, 1], [74, 481], [86, 470], [94, 458]], shoe || '#4a3020', 'leather', { lines: [dl([[76, 482], [108, 482]], 0.4)] });
+    const foot = S([[95, 452], [117, 452], [119, 466], [117, 478], [110, 488.5, 1], [78, 488.5, 1], [74, 481], [86, 472], [94, 464]], shoe || '#4a3020', 'leather', { lines: [dl([[76, 482], [108, 482]], 0.4), dl([[97, 458], [116, 458]], 0.5, 1.6)] });
     return both([leg]).concat(both([foot]));
   }
   const belt = (c, buckle, y) => { y = y || 236; return S([[95, y], [165, y], [166, y + 12], [94, y + 12]], c || LEATHER, 'leather', { sub: [S([P(124, y - 1, 1), P(136, y - 1, 1), P(136, y + 13, 1), P(124, y + 13, 1)], buckle || GOLD, 'gold')] }); };
   const neck = (sk) => S(T2([[130, 92, 21], [130, 132, 25]], { flat1: true }), sk, 'skin', { sub: [flat([[110, 92], [150, 92], [150, 108], [130, 112], [110, 108]], tone(sk, -0.8), 0.25)] });
-  const wrist = sk => both([S(T2([[65, 276, 15], [62.5, 296, 14]]), sk, 'skin', { line: 0.8 })]);
+  const wrist = sk => both([S(T2([[64.5, 280, 13.5], [62.5, 296, 13]]), sk, 'skin', { line: 0.8 })]);
   const CLOTH = {
     robe(o, w, fem) {   // верх мантии; подол — отдельным слоем поверх сапог
       const c = w.c, c2 = w.c2 || tone(c, -0.4), c3 = w.c3 || GOLD;
       return [
         ...legs(tone(c2, -0.1), 'cloth', '#3a2818'),
         S(TORSO(262, 0, fem), c, 'cloth', { sub: [S([[125, 120], [135, 120], [135, 270], [125, 270]], c3, o.wear === 'robe' ? 'cloth' : 'gold', { line: 0.6 })], lines: [dl([[112, 150], [116, 230]], 0.3), dl([[148, 150], [144, 230]], 0.3)] }),
-        ...both([S(T2([[93, 146, 30], [82, 190, 27], [74, 230, 28], [67, 270, 38]], { flat1: true }), c, 'cloth', { belly: 0.3, lines: [dl([[80, 200], [72, 262]], 0.35)],
-          sub: [S([[40, 262], [100, 262], [100, 290], [40, 290]], c3, 'cloth', { line: 0.5 })] })]),
-        ...wrist(o.skin),
+        ...both([S(T2([[93, 146, 30], [82, 190, 27], [74, 232, 29], [68, 281, 38]], { flat1: true }), c, 'cloth', { belly: 0.3, lines: [dl([[80, 200], [73, 272]], 0.35)],
+          sub: [S([[40, 272], [100, 272], [100, 300], [40, 300]], c3, 'cloth', { line: 0.5 })] })]),
         S(symC([[140, 122], [150, 128], [142, 150]], [130, 120], [130, 160]), c2, 'cloth', { line: 0.8 }),
         o.w.amulet ? E(130, 150, 5, 6, o.w.amulet, 'gem', { line: 0.6, glint: [[128.5, 148, 1.6]] }) : null,
       ];
@@ -287,7 +286,6 @@
         S(symC([[146, 126], [158, 134], [158, 200], [155, 238], [160, 344, 1], [140, 348]], [130, 138], [130, 346]), tab, 'cloth', { belly: 0.25,
           sub: [S([[0, 332], [260, 332], [260, 360], [0, 360]], trim, 'gold', { line: 0 }), S(star(130, 188, 14, 5, 4), trim, 'gold', { line: 0.6 })], lines: [dl([[138, 246], [144, 340]], 0.35), dl([[122, 246], [116, 340]], 0.35)] }),
         belt('#3a2818', trim),
-        ...wrist(o.skin),
       ];
     },
     tunic(o, w, fem, hem) {
@@ -296,7 +294,7 @@
         ...legs(c2, 'cloth', '#4a3020'),
         S(TORSO(hem || 316, 4, fem), c, 'cloth', { belly: 0.2, lines: [dl([[130, 128], [130, 150]], 0.5), dl([[116, 250], [110, 310]], 0.3), dl([[144, 250], [150, 310]], 0.3)] }),
         ...both([S(ARM(1, fem), c, 'cloth', { lines: [dl([[70, 226], [80, 228]], 0.35)] }), S(T2([[65, 272, 20], [64, 288, 19]], { flat0: true, flat1: true }), tone(c, -0.3), 'leather')]),
-        belt(), ...wrist(o.skin),
+        belt(),
       ];
     },
     fur(o, w, fem) {   // варвар: меховая безрукавка, голые руки
@@ -320,7 +318,7 @@
         ...both([S([[122, 126], [110, 130], [106, 176], [118, 214], [124, 170]], c2, 'cloth', { line: 0.8 })]),
         ...[160, 184, 208].map(y => E(118, y, 2.6, 2.6, c3, 'gold', { line: 0.4 })), ...[160, 184, 208].map(y => E(142, y, 2.6, 2.6, c3, 'gold', { line: 0.4 })),
         ...both([S(ARM(1, fem), c, 'cloth'), S(T2([[65, 266, 21], [64, 286, 20]], { flat0: true, flat1: true }), c2, 'cloth', { sub: [S([[40, 262], [100, 262], [100, 268], [40, 268]], c3, 'gold', { line: 0 })] })]),
-        belt('#2a1a10', c3, 240), ...wrist(o.skin),
+        belt('#2a1a10', c3, 240),
       ];
     },
     vest(o, w, fem) {
@@ -332,7 +330,7 @@
         ...both([S([[134, 128], [158, 130], [170, 150], [166, 200], [160, 248, 1], [134, 254, 1], [140, 190]], c, 'leather', { line: 1, lines: [dl([[150, 140], [152, 240]], 0.3)] })]),
         ...[176, 200, 224].map(y => E(137, y, 2.2, 2.2, c3, 'gold', { line: 0.4 })),
         w.tie ? S([[124, 124], [136, 124], [134, 132], [140, 158, 1], [130, 150], [120, 158, 1], [126, 132]], w.tie, 'cloth', { line: 0.6 }) : null,
-        belt('#3a2414', c3, 244), ...wrist(o.skin),
+        belt('#3a2414', c3, 244),
       ];
     },
     apron(o, w, fem) {
@@ -385,7 +383,7 @@
   }
   function bodyOf(o) {
     const fem = o.sex === 'f', kind = WEAR[o.wear] || 'tunic';
-    return [...hairBack(o), neck(o.skin), ...CLOTH[kind](o, o.w || { c: '#6a4a2a' }, fem), ...head(o), ...hairFront(o), ...beard(o)];
+    return [...hairBack(o), neck(o.skin), ...wrist(o.skin), ...CLOTH[kind](o, o.w || { c: '#6a4a2a' }, fem), ...head(o), ...hairFront(o), ...beard(o)];
   }
   /** Кисти: правый кулак сжат (держит оружие), левый — ремень щита. */
   const FIST = [[53, 292], [63, 289.5], [71.5, 291.5], [75, 298], [74.5, 309], [68, 315.5], [57, 315.5], [51, 309], [50, 299]];
@@ -636,11 +634,14 @@
       ...[116, 144].map(x => E(x, 135, 6, 6, GOLD, 'gold', { line: 0.6, sub: [E(x, 135, 3, 3, trim, 'gem', { line: 0 })], glint: [[x - 2, 133, 1.6]] }))];
   }
   function wings() {
-    const out = [], root = [150, 168];
-    const prim = [[-78, 118], [-62, 142], [-46, 158], [-30, 164], [-14, 160], [2, 150], [18, 134], [34, 112]];
-    prim.forEach(([a, L]) => out.push(S(K.leaf(root, rad(a), L, 30).body, WHITE, 'feather', { texSize: 0.45, line: 0.8, lc: '#8a8a90', lines: [dl(K.leaf(root, rad(a), L, 30).shaft, 0.3, 1.2)] })));
-    [[-70, 70], [-48, 84], [-26, 88], [-4, 82], [18, 66]].forEach(([a, L]) => out.push(S(K.leaf([152, 160], rad(a), L, 30).body, '#f2eee4', 'feather', { texSize: 0.4, line: 0.7, lc: '#8a8a90' })));
-    out.push(E(156, 158, 20, 24, '#f6f2e8', 'feather', { texSize: 0.4, line: 0.7, lc: '#8a8a90' }));
+    // Крыло: «рука» из лопатки вверх-наружу до сгиба, с неё свисают маховые перья — длиннее к концу крыла.
+    const arm = [[150, 172], [176, 134], [204, 104], [228, 90]];
+    const on = t => { const k = t * (arm.length - 1), i = Math.min(arm.length - 2, Math.floor(k)), f = k - i; return [arm[i][0] + (arm[i + 1][0] - arm[i][0]) * f, arm[i][1] + (arm[i + 1][1] - arm[i][1]) * f]; };
+    const feather = (B, a, L, w, c, lc) => { const l = K.leaf(B, rad(a), L, w); return S(l.body, c, 'feather', { texSize: 0.4, line: 0.7, lc, lines: [dl(l.shaft, 0.3, 1)] }); };
+    const out = [];
+    for (let i = 0; i < 9; i++) { const t = 0.12 + i * 0.11; out.push(feather(on(t), 100 - i * 7.5, 70 + i * 11, 24, i % 2 ? '#f4f0e6' : WHITE, '#7a7a84')); }
+    for (let i = 0; i < 7; i++) { const t = 0.1 + i * 0.14; out.push(feather(on(t), 96 - i * 7, 40 + i * 5, 22, '#f8f4ea', '#8a8a92')); }
+    out.push(S(T2([[150, 174, 30], [176, 136, 26], [204, 106, 20], [230, 90, 10]]), '#fbf8f0', 'feather', { texSize: 0.35, line: 0.7, lc: '#8a8a92' }));
     return both(out);
   }
   /* ---------- ожерелья ---------- */
@@ -706,17 +707,26 @@
     fortress: '#46563a', conflux: '#3a5a6a', cove: '#2e5068', hive: '#56562a', bastion: '#5a4630', factory: '#5a4636' };
   const ARCH = [[14, 170], [26, 104], [54, 54], [92, 26], [130, 17], [168, 26], [206, 54], [234, 104], [246, 170]];
   function niche() {
+    // Всё плоское: у движка объём больших форм — размытая внутренняя тень во всю рамку формы, на арке это дорого.
+    // Глубину даёт ступенчатый свет к середине и тёмная кромка под рамкой.
+    const arch = (k, dy) => [P(130 - 116 * k, 494, 1), ...ARCH.map(q => [130 + (q[0] - 130) * k, q[1] + (1 - k) * 120 + (dy || 0)]), P(130 + 116 * k, 494, 1)];
+    const brick = [];
+    for (let i = 0; i < 7; i++) {
+      const y = 214 + i * 40, o = i % 2 ? 30 : 0;
+      brick.push(flat([[14, y], [246, y], [246, y + 2], [14, y + 2]], '#000000', 0.1));
+      for (const x of [40 + o, 100 + o, 160 + o, 220 + o]) if (x < 246) brick.push(flat([[x, y - 38], [x + 2, y - 38], [x + 2, y], [x, y]], '#000000', 0.08));
+    }
     return layer('ic_hero.niche', () => [
-      S([P(14, 494, 1), ...ARCH, P(246, 494, 1)], '$b:#46587a', 'cloth', { line: 0, rim: 0, ao: 1.5, hi: 0.4, lo: 1.2,
-        sub: [fe(130, 190, 96, 150, '#fff2c8', 0.1), fe(130, 150, 60, 90, '#fff2c8', 0.08),
-          ...[0, 1, 2, 3, 4, 5, 6].map(i => flat([[14, 214 + i * 40], [246, 214 + i * 40], [246, 216 + i * 40], [14, 216 + i * 40]], '#000000', 0.08)),
-          ...[0, 1, 2, 3, 4, 5, 6].map(i => flat([[70 + (i % 2) * 60, 176 + i * 40], [72 + (i % 2) * 60, 176 + i * 40], [72 + (i % 2) * 60, 214 + i * 40], [70 + (i % 2) * 60, 214 + i * 40]], '#000000', 0.07)),
-          ...[0, 1, 2, 3, 4, 5, 6].map(i => flat([[190 - (i % 2) * 60, 176 + i * 40], [192 - (i % 2) * 60, 176 + i * 40], [192 - (i % 2) * 60, 214 + i * 40], [190 - (i % 2) * 60, 214 + i * 40]], '#000000', 0.07))] }),
-      S(T2([[8, 496, 14], ...ARCH.map(q => [q[0] - Math.sign(q[0] - 130) * 6, q[1] - 6, 14]), [252, 496, 14]]), '#8a6a34', 'wood', { line: 1, flow: 0 }),
-      S(T2([[16, 494, 4], ...ARCH.map(q => [q[0] + Math.sign(q[0] - 130) * 1.5, q[1] + 1.5, 4]), [244, 494, 4]]), GOLD, 'gold', { line: 0.5 }),
+      S(arch(1), '$b:#46587a', 'flat', { line: 0, sub: [
+        ...brick,
+        ...[0.9, 0.8, 0.7, 0.6, 0.5, 0.4].map((k, i) => flat(arch(k, 6 + i * 7), '#fff0c8', 0.035)), fe(130, 170, 50, 80, '#fff0c8', 0.04),
+        flat(T2([[16, 500, 22], ...ARCH.map(q => [q[0] + Math.sign(q[0] - 130) * 1, q[1] + 2, 22]), [244, 500, 22]]), '#000000', 0.3),
+        flat([[0, 400], [260, 400], [260, 500], [0, 500]], '#000000', 0.12)] }),
+      S(T2([[8, 496, 14], ...ARCH.map(q => [q[0] - Math.sign(q[0] - 130) * 6, q[1] - 6, 14]), [252, 496, 14]]), '#8a6a34', 'wood', { line: 1, ao: 0, rim: 0, flow: 0 }),
+      S(T2([[16, 494, 4], ...ARCH.map(q => [q[0] + Math.sign(q[0] - 130) * 1.5, q[1] + 1.5, 4]), [244, 494, 4]]), GOLD, 'gold', { line: 0.5, ao: 0, rim: 0, gloss: 0 }),
       S([P(116, -2, 1), P(144, -2, 1), P(139, 30, 1), P(121, 30, 1)], '#b8923a', 'gold', { line: 0.8, sub: [E(130, 12, 5, 5, '#c02a24', 'gem', { line: 0.4 })] }),
       ...both([E(8, 176, 8, 8, '#b8923a', 'gold', { line: 0.7 })]),
-      E(130, 492, 102, 12, '#8a7a5a', 'cloth', { line: 0.8 }), E(130, 487, 94, 9, '#b8a47a', 'cloth', { line: 0.8, lines: [dl(ell(130, 487, 82, 6.5, 20), 0.25)] }),
+      E(130, 492, 102, 12, '#8a7a5a', 'cloth', { line: 0.8, ao: 0.3 }), E(130, 487, 94, 9, '#b8a47a', 'cloth', { line: 0.8, ao: 0.3, lines: [dl(ell(130, 487, 82, 6.5, 20), 0.25)] }),
       fe(130, 486, 62, 7, '#000000', 0.32),
     ]);
   }
@@ -797,14 +807,20 @@
     }
     return out;
   }
+  const seen = new Set();   // слои, уже нарисованные движком в этой плотности (дальше — из его кэша)
+  const dprOf = dpr => Math.min(3, Math.max(1, dpr || root.devicePixelRatio || 1));
+  const keyOf = (l, Sk) => (l.name || l.icon) + '|' + Sk + '|' + (l.tint ? l.tint.b : '');
+  /** Все слои куклы уже в кэше — рисование мгновенное. */
+  function ready(hero, dpr) { const Sk = SC * dprOf(dpr) * 10; return layers(hero).every(l => seen.has(keyOf(l, Sk))); }
   /** Нарисовать куклу героя на холст (размер панели PW×PH, плотность dpr). */
   function paint(cv, hero, dpr) {
-    dpr = Math.min(3, Math.max(1, dpr || root.devicePixelRatio || 1));
+    dpr = dprOf(dpr);
     const Pk = SC * dpr, Sk = Pk * 10;
     cv.width = Math.round(PW * dpr); cv.height = Math.round(PH * dpr);
     const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, cv.width, cv.height);
     const AX = (OX + CX * SC) * dpr, AY = (OY + GY * SC) * dpr;
     for (const l of layers(hero)) {
+      seen.add(keyOf(l, Sk));
       if (l.icon) {
         const d = V._defs[l.icon]; if (!d) continue;
         const k = l.size / Math.max(d.w, d.h), r = V.render(l.icon, k * Sk); if (!r) continue;
@@ -819,6 +835,14 @@
     }
     return cv;
   }
+  /** Нарисовать сразу, если всё в кэше; иначе — кадром позже (окно открывается без задержки, кукла проявляется). */
+  function paintSoon(cv, hero, dpr) {
+    if (ready(hero, dpr)) return paint(cv, hero, dpr);
+    cv.classList.add('fresh');
+    const go = () => { if (!cv.isConnected) return; paint(cv, hero, dpr); cv.classList.add('shown'); };
+    if (root.requestAnimationFrame) root.requestAnimationFrame(() => setTimeout(go, 0)); else setTimeout(go, 0);
+    return cv;
+  }
   /** Все рисунки куклы заранее (для проверок): тела всех портретов и все известные артефакты. */
   function defineAll() {
     niche();
@@ -827,5 +851,5 @@
     for (const id of ids) { const w = worn(id); w.front(); w.back(); w.left(); }
   }
 
-  H3.VecDoll = { PW, PH, SC, CELL, AT, HINT, LEFT, RIGHT, layout, layers, paint, toPanel, defineAll, looks: TBL };
+  H3.VecDoll = { PW, PH, SC, CELL, AT, HINT, LEFT, RIGHT, layout, layers, paint, paintSoon, ready, toPanel, defineAll, looks: TBL };
 })(typeof window !== 'undefined' ? window : globalThis);

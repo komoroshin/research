@@ -86,12 +86,19 @@
     V.bg = makeBgLayers(V.b.terrain, V.worldW, V.ch, V.day, hz);
     if (V.b.siege) paintSiegeTown(hz);   // осада: за стенами на горизонте виден город фракции
     V.bgEdge = bgEdgeColors(V.bg);
+    if (BH && V.showHeroes) {   // кадры знамени и всадника — заранее, при свете этого боя
+      Sp.setScene(T.sceneLight(V.day || 4, V.b.terrain, V.b.terrain === 'subter'));
+      const st = H3.Game.state;
+      BH.warm(V.b.sides.filter(s => s.hero).map(s => ({ name: 'hero_' + s.hero.cls, tint: Sp.teamTint(st && s.hero.owner >= 0 && st.players[s.hero.owner] ? st.players[s.hero.owner].color : '#999') })), Sp.SCENE);
+    }
     V.boxWH = bw + 'x' + bh;
     for (const u of V.b.units) { const [x, y] = centerOf(u); V.pos[u.id] = { x, y, phase: An.phaseOf(u.id + ':' + u.cid) }; }
     if (V.fx) V.fx.S.bounds = { w: V.worldW, h: V.ch };
     if (V.vfx) { V.vfx.S.bounds = { w: V.worldW, h: V.ch }; V.vfx.S.size = V.size; VFx.warm(V.size); }
     // облака над полем (под землёй неба нет)
     V.clouds = [];
+    // облака высокого неба — видны только при отдалении, над полем (мировые y < 0)
+    V.hiClouds = V.b.terrain === 'subter' || V.b.terrain === 'lava' ? [] : Array.from({ length: 5 }, (_, i) => ({ x: (i + rnd(0, 0.6)) * V.worldW / 5, y: -V.ch * rnd(0.1, 0.55), w: rnd(90, 180), h: rnd(18, 30), v: rnd(3, 7), a: rnd(0.2, 0.38) }));
     if (V.b.terrain !== 'subter' && !V.bg.s) for (let i = 0; i < 4; i++) V.clouds.push({ x: rnd(0, V.worldW), y: rnd(8, V.ch * 0.22), w: rnd(50, 110), h: rnd(10, 18), v: rnd(4, 9), a: rnd(0.12, 0.26) });
   }
   /** Участок осады в стиле фракции города (wall_ok@inferno…); нет своего рисунка — общий. */
@@ -742,6 +749,8 @@
     ctx.drawImage(V.bg.mid, Math.round(cx * 0.34), 0, V.bg.mid.width / bs, V.bg.mid.height / bs);
     ctx.drawImage(V.bg.ground, 0, 0, V.bg.ground.width / bs, V.bg.ground.height / bs);
     ctx.imageSmoothingEnabled = false;
+    // при отдалении над полем открывается небо — те же облака, повыше и крупнее
+    if (V.cam.z < 1 && V.hiClouds) for (const c of V.hiClouds) { const w = c.w, h = c.h, x = (c.x + ts / 1000 * c.v) % (V.worldW + w * 2) - w, y = c.y; ctx.fillStyle = 'rgba(255,255,255,' + c.a.toFixed(3) + ')'; ctx.beginPath(); ctx.ellipse(x, y, w / 2, h / 2, 0, 0, Math.PI * 2); ctx.ellipse(x - w * 0.25, y + 3, w / 3.2, h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(x + w * 0.22, y + 2, w / 3.5, h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
     for (const c of V.clouds) { ctx.fillStyle = 'rgba(255,255,255,' + c.a + ')'; ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2); ctx.ellipse(c.x - c.w * 0.25, c.y + 2, c.w / 3.2, c.h / 2.4, 0, 0, Math.PI * 2); ctx.ellipse(c.x + c.w * 0.22, c.y + 1, c.w / 3.5, c.h / 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
     const cur = Bt.current(b);
     // гексы

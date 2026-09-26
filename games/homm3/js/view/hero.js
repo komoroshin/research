@@ -55,7 +55,7 @@
       + machinesHtml(h)
       + '<div class="small muted">Рюкзак</div><div class="artslots bpack" data-bp="1">' + (h.backpack.length ? h.backpack.map((id, i) => '<div class="artslot" data-bp-i="' + i + '">' + UI.icon('art_' + id, 2) + '</div>').join('') : '<span class="muted small">пусто</span>') + '</div>'
       + (exch || !h.spells.length ? '' : '<div class="small muted">Заклинания · тап — книга</div><div class="hrow" data-book>' + h.spells.map(id => '<span class="chip">' + UI.icon('sp_' + id, 1) + ' ' + UI.esc(SP.get(id).name) + '</span>').join('') + '</div>');
-    const dcv = col.querySelector('canvas.dollcv'); if (dcv) H3.VecDoll.paint(dcv, h);
+    const dcv = col.querySelector('canvas.dollcv'); if (dcv) H3.VecDoll.paintSoon(dcv, h);
     UI.bindArmy(col, h.army, (i, e) => onSlot(h.army, i, e.shiftKey));
     const bar = col.querySelector('.selbar');
     if (bar) {
@@ -63,7 +63,14 @@
       const bd = bar.querySelector('[data-disband]'); if (bd) bd.onclick = () => askDisband(h.army, render);
       bar.querySelector('[data-unsel]').onclick = () => { cur.sel = null; cur.split = 0; render(); };
     }
-    col.querySelectorAll('.artslot[data-slot]').forEach(s => UI.press(s, { tap: () => onArtSlot(h, s.dataset.slot), long: () => { const id = h.arts[s.dataset.slot]; UI.alert(id ? AR.get(id).name : AR.SLOT_NAMES[s.dataset.slot], id ? UI.esc(AR.get(id).desc) : 'Слот пуст. Артефакт из рюкзака надевается тапом по нему.', id ? 'art_' + id : null); } }));
+    const artInfo = slot => { const id = h.arts[slot]; UI.alert(id ? AR.get(id).name : AR.SLOT_NAMES[slot], id ? UI.esc(AR.get(id).desc) : 'Слот пуст. Артефакт из рюкзака надевается тапом по нему.', id ? 'art_' + id : null); };
+    col.querySelectorAll('.artslot[data-slot]').forEach(s => UI.press(s, { tap: () => onArtSlot(h, s.dataset.slot), long: () => artInfo(s.dataset.slot) }));
+    // тап и долгое нажатие по самой фигуре — то же, что по ячейке надетого там артефакта
+    const doll = col.querySelector('.doll');
+    if (doll) {
+      const slotAt = e => { if (!e || e.target.closest('.artslot')) return null; const r = doll.getBoundingClientRect(); return H3.VecDoll.hit(h, (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height); };
+      UI.press(doll, { tap: e => { const s = slotAt(e); if (s) onArtSlot(h, s); }, long: e => { const s = slotAt(e); if (s) artInfo(s); } });
+    }
     col.querySelectorAll('.artslot[data-bp-i]').forEach(s => UI.press(s, { tap: () => onBackpack(h, +s.dataset.bpI), long: () => { const a = AR.get(h.backpack[+s.dataset.bpI]); UI.alert(a.name, UI.esc(a.desc), 'art_' + a.id); } }));
     col.querySelectorAll('[data-skill]').forEach(b => { b.onclick = () => { const id = b.dataset.skill; UI.alert(SK.get(id).name + ' — ' + SK.levelName(h.skills[id]), UI.esc(SK.describe(id, h.skills[id])), 'sk_' + id); }; });
     const bm = col.querySelector('[data-mor]'); if (bm) bm.onclick = () => UI.alert('Мораль ' + sign(mor.value), partsText(mor.parts, 'Нет модификаторов.'), 'ic_morale');

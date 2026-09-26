@@ -28,6 +28,7 @@
   /* ---------- цвет ---------- */
   function rgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
   function mix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+  const sstep = (e0, e1, x) => { const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
   const css = (c, a) => a === undefined ? 'rgb(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ')' : 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + a + ')';
 
   /* ---------- палитры местностей ---------- */
@@ -49,6 +50,41 @@
     subter: { sky: ['#140f16', '#241a26', '#3a2c38'], far: '#2a2030', hill: '#2e2432', hill2: '#241c28', tree: '#1a141e', treeL: '#3a2e40',
               gFar: '#4a3c46', gNear: '#2c2230', gDark: '#1c1620', gLight: '#6a5a66', blade: ['#3a4a3a', '#4a5e48'], tuft: 0.1, crystals: ['#7fd9ea', '#c07ff0', '#7fe0a8'], stone: '#5a4e5a' },
   };
+
+  /* ---------- времена года (H3.Season): трава, лес и снег по дню партии ----------
+     Как на карте: осенью трава и лес золотые и рыжие, зимой снег ложится пятнами (доля — season.snow)
+     и лес стоит голый, весной больше цветов и розовые сады. Песок, лава, тундра, подземелье — вне сезонов. */
+  const LIVE = { grass: 1, dirt: 1, rough: 1, swamp: 1 };
+  const hexMix = (a, b, k) => '#' + mix(rgb(a), rgb(b), Math.max(0, Math.min(1, k))).map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+  function seasonal(P, t, day) {
+    const S = H3.Season && LIVE[t] && day ? H3.Season.of(day) : null;
+    if (!S || (!S.fall && !S.snow && S.id !== 'spring')) return P;
+    const Q = Object.assign({}, P), g = t === 'grass' ? 1 : 0.5;
+    const tint = (keys, to, k) => keys.forEach((key, i) => { Q[key] = hexMix(Q[key], to[i], k); });
+    if (S.fall) {
+      tint(['gFar', 'gNear', 'gDark', 'gLight'], S.dormant > 0.5 ? ['#a09470', '#6e6444', '#4a4230', '#c0b48a'] : ['#c4a260', '#8a6a2a', '#5a4418', '#e2c472'], S.fall * 0.75 * g);   // зимой трава бурая, не золотая
+      tint(['hill', 'hill2'], ['#9a8a4a', '#7a6a3a'], S.fall * 0.85);
+      Q.crown = [hexMix(P.tree, '#6a3414', S.fall * 0.85), hexMix(P.treeL, '#e8942a', S.fall * 0.85)];   // лиственные рыжеют, ели — нет
+      const BL = S.dormant > 0.5 ? ['#4e4a2a', '#6e6640', '#8e8456', '#aaa070'] : ['#6a5418', '#9a7a26', '#c49c3a', '#e2c464'];
+      Q.blade = Q.blade.map((c, i) => hexMix(c, BL[Math.min(3, i)], S.fall * 0.9 * g));
+      if (S.fall > 0.5) Q.flowers = null;
+    }
+    Q.bareK = S.bare || 0;   // доля голых лиственных на горизонте
+    if (S.id === 'spring') {
+      tint(['gLight', 'gFar'], ['#b8e070', '#a8cc6a'], 0.5 * S.fresh * g);
+      if (S.dormant) tint(['gFar', 'gNear', 'gDark', 'gLight'], ['#a09470', '#6e6444', '#4a4230', '#c0b48a'], S.dormant * 0.6 * g);   // только сошёл снег — трава прошлогодняя
+      Q.crown = [Q.tree, hexMix(Q.treeL, '#f2bcd0', 0.55 * S.bloom)];   // сады в цвету — розовые верхушки крон
+      Q.flowers = ['#f6e27a', '#ffffff', '#ee93b8', '#a8c8ff', '#f7a8cc', '#c8a0f0'];
+    }
+    if (S.snow) {
+      const W = PAL.snow;
+      Q.snowCov = S.snow; Q.snowCol = [W.gFar, W.gNear, W.gDark, W.gLight];
+      tint(['tree', 'treeL'], ['#26382e', '#8aa49a'], Math.min(1, S.snow * 1.2));   // ели темнее и холоднее
+      tint(['hill', 'hill2'], [W.hill, W.hill2], S.snow * 0.8);
+      if (S.snow > 0.5) { Q.flowers = null; Q.sparkle = 1; }
+    }
+    return Q;
+  }
 
   function layer(w, h, R) { const c = document.createElement('canvas'); c.width = Math.round(w * R); c.height = Math.round(h * R); const x = c.getContext('2d'); x.setTransform(R, 0, 0, R, 0, 0); return [c, x]; }
 
@@ -131,7 +167,21 @@
         const yy = y - s * (0.3 + k * 0.45), ww = s * (0.55 - k * 0.13);
         const g = ctx.createLinearGradient(x - ww, 0, x + ww, 0); g.addColorStop(0, css(mix(dark, lite, 0.55))); g.addColorStop(1, css(dark));
         ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - ww, yy + s * 0.25); ctx.lineTo(x, yy - s * 0.5); ctx.lineTo(x + ww, yy + s * 0.25); ctx.closePath(); ctx.fill();
+        if (P.snowCov > 0.3) { ctx.fillStyle = 'rgba(244,248,252,0.92)'; ctx.beginPath(); ctx.moveTo(x - ww * 0.45, yy - s * 0.12); ctx.lineTo(x, yy - s * 0.5); ctx.lineTo(x + ww * 0.3, yy - s * 0.16); ctx.quadraticCurveTo(x, yy - s * 0.1, x - ww * 0.45, yy - s * 0.12); ctx.fill(); }   // снег на лапах
       }
+      return;
+    }
+    if (kind === 'round' && P.bareK && rnd() < P.bareK) {
+      // голое дерево: дымка мелких веток, ствол и сучья веером; зимой — снег по верху сучьев
+      const hz = ctx.createRadialGradient(x, y - s * 0.75, 0, x, y - s * 0.75, s * 0.5); hz.addColorStop(0, 'rgba(96,74,62,0.35)'); hz.addColorStop(1, 'rgba(96,74,62,0)');
+      ctx.fillStyle = hz; ctx.fillRect(x - s * 0.5, y - s * 1.25, s, s);
+      ctx.strokeStyle = '#4a3a2e'; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(0.8, s * 0.07);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - s * 0.55); ctx.stroke();
+      ctx.lineWidth = Math.max(0.5, s * 0.035); ctx.beginPath();
+      const tips = [];
+      for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + (k - 2) * 0.45 + (rnd() - 0.5) * 0.2, L = s * (0.45 + rnd() * 0.15), bx = x, by = y - s * (0.4 + Math.abs(k - 2) * 0.04); ctx.moveTo(bx, by); ctx.lineTo(bx + Math.cos(a) * L, by + Math.sin(a) * L); tips.push([bx, by, bx + Math.cos(a) * L, by + Math.sin(a) * L]); }
+      ctx.stroke();
+      if (P.snowCov > 0.3) { ctx.strokeStyle = 'rgba(244,248,252,0.9)'; ctx.lineWidth = Math.max(0.5, s * 0.03); ctx.beginPath(); for (const [ax, ay, ex, ey] of tips) { ctx.moveTo((ax + ex) / 2, (ay + ey) / 2 - 0.6); ctx.lineTo(ex, ey - 0.6); } ctx.stroke(); }
       return;
     }
     if (kind === 'palm') {
@@ -142,10 +192,11 @@
     }
     // лиственное дерево: ствол и крона из шаров, свет слева-сверху
     ctx.fillStyle = css(mix(dark, rgb('#3a2a1a'), 0.6)); ctx.fillRect(x - s * 0.05, y - s * 0.45, s * 0.1, s * 0.45);
+    const cd = P.crown ? rgb(P.crown[0]) : dark, cl = P.crown ? rgb(P.crown[1]) : lite;
     const n = 4 + Math.floor(rnd() * 3);
     for (let k = 0; k < n; k++) {
       const bx = x + (rnd() - 0.5) * s * 0.6, by = y - s * (0.55 + rnd() * 0.45), r = s * (0.22 + rnd() * 0.16);
-      const g = ctx.createRadialGradient(bx - r * 0.4, by - r * 0.4, r * 0.1, bx, by, r); g.addColorStop(0, css(lite)); g.addColorStop(1, css(dark));
+      const g = ctx.createRadialGradient(bx - r * 0.4, by - r * 0.4, r * 0.1, bx, by, r); g.addColorStop(0, css(cl)); g.addColorStop(1, css(cd));
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
     }
   }
@@ -194,6 +245,13 @@
     const low = document.createElement('canvas'); low.width = lw; low.height = lh;
     const lc = low.getContext('2d'), img = lc.createImageData(lw, lh), d = img.data;
     const light = new Float32Array(lw * lh);
+    // снег: своё поле сугробов (вдаль сплющено, как всё на земле), порог — по квантилю, чтобы доля снега была season.snow
+    let SF = null, thr = -1;
+    if (P.snowCov) {
+      SF = new Float32Array(lw * lh);
+      for (let j = 0; j < lh; j++) for (let i = 0; i < lw; i++) SF[j * lw + i] = fbm(i * cs / 90, (top + j * cs) / 34, 21, 3);
+      const srt = Float32Array.from(SF).sort(); thr = P.snowCov >= 1 ? 2 : srt[Math.min(srt.length - 1, Math.floor(P.snowCov * srt.length))];
+    }
     for (let j = 0; j < lh; j++) {
       const y = top + j * cs, v = Math.max(0, Math.min(1, (y - top) / (h - top)));
       const base = mix(gFar, gNear, Math.pow(v, 0.7));
@@ -206,8 +264,12 @@
         const sun = Math.max(0, 1 - Math.hypot((x - w * 0.3) / (w * 0.7), (y - top) / (h * 0.9)));
         c = mix(c, gLight, sun * 0.18);
         c = mix(c, haze, Math.max(0, 0.35 - v) * 0.9);
+        if (P.snowCov) {   // снег пятнами по тому же шуму: доля ~ season.snow, по краю — голубая тень
+          const sk = sstep(thr + 0.03, thr - 0.03, SF[j * lw + i]);
+          if (sk > 0) { const SN = P.snowCol, sc = mix(mix(rgb(SN[0]), rgb(SN[1]), Math.pow(v, 0.7)), n < 0.5 ? rgb(SN[2]) : rgb(SN[3]), Math.abs(n - 0.5) * 1.1); c = mix(mix(c, sc, sk), rgb(SN[2]), sk * (1 - sk) * 1.4); }
+          light[j * lw + i] = sk > 0.5 ? -1 : n;   // -1: под снегом травы нет
+        } else light[j * lw + i] = n;
         const k = (j * lw + i) * 4; d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
-        light[j * lw + i] = n;
       }
     }
     lc.putImageData(img, 0, 0);
@@ -215,7 +277,7 @@
     const lightAt = (x, y) => { const i = Math.max(0, Math.min(lw - 1, Math.round(x / cs))), j = Math.max(0, Math.min(lh - 1, Math.round((y - top) / cs))); return light[j * lw + i]; };
     const depth = y => Math.max(0, Math.min(1, (y - top) / (h - top)));
     // проплешины и тропа
-    if (P.patch) for (let i = 0; i < 4 + w / 300; i++) {
+    if (P.patch && !(P.snowCov > 0.5)) for (let i = 0; i < 4 + w / 300; i++) {
       const x = rnd() * w, y = top + 30 + rnd() * (h - top - 40), s = (18 + rnd() * 30) * (0.5 + depth(y));
       const g = ctx.createRadialGradient(x, y, 0, x, y, s); g.addColorStop(0, css(rgb(P.patch), 0.55)); g.addColorStop(0.7, css(rgb(P.patch), 0.25)); g.addColorStop(1, css(rgb(P.patch), 0));
       ctx.save(); ctx.translate(x, y); ctx.scale(1.6, 1); ctx.translate(-x, -y); ctx.fillStyle = g; ctx.fillRect(x - s, y - s, s * 2, s * 2); ctx.restore();
@@ -255,6 +317,7 @@
       for (let i = 0; i < n; i++) {
         const x = rnd() * w, y = top + 8 + rnd() * (h - top), v = depth(y), sz = 0.55 + v * 0.8, L = lightAt(x, y);
         const blades = 3 + Math.floor(rnd() * 4);
+        if (L < 0) continue;   // под снегом травы нет
         for (let b = 0; b < blades; b++) {
           const bx = x + (rnd() - 0.5) * 5 * sz, H = (3 + rnd() * 4.5) * sz * (P.reeds && rnd() < 0.15 ? 2.6 : 1), lean = (rnd() - 0.5) * 0.9;
           let ci = Math.min(B.length - 1, Math.max(0, Math.floor(L * B.length * 1.25 + (rnd() - 0.5) * 1.6)));
@@ -289,7 +352,7 @@
 
   /** Слои задника: { sky, mid, ground, s } — s пикселей холста на единицу поля. */
   function make(terrain, w, h, day, hz) {
-    const P = PAL[terrain] || PAL.grass, t = PAL[terrain] ? terrain : 'grass';
+    const t = PAL[terrain] ? terrain : 'grass', P = seasonal(PAL[t], t, day);
     const R = Math.min(2, Math.max(1, root.devicePixelRatio || 1));
     const HZ = h * hz, seed = (terrain.length * 7919 + w) >>> 0;
     const T = H3.Terrain;
