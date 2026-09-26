@@ -492,7 +492,7 @@
           ctx.globalAlpha = 1; drawSprite(ctx, sprite(nm, s * sz), x, y, it.ang, s * sz); break;
         }
         case 'axe': case 'rock': case 'pebble': case 'bomb': case 'meteor': {
-          if (it.kind === 'meteor') { ctx.globalCompositeOperation = 'lighter'; ribbon(ctx, it.hist, 9 * s, '#ffb03a', '#c8401a', 0.6, 46 * s); G(ctx, '#ff7a2a', x, y, 13 * s, 0.8); ctx.globalCompositeOperation = 'source-over'; }
+          if (it.kind === 'meteor') { ctx.globalCompositeOperation = 'lighter'; ribbon(ctx, it.hist, 6 * s, '#ff8a2a', '#a02a0a', 0.45, 40 * s); G(ctx, '#ff7a2a', x, y, 13 * s, 0.8); ctx.globalCompositeOperation = 'source-over'; }
           else streak(ctx, it, '#ffffff', 2 * s, 0.12);
           const nm = { axe: 'orc.axe', rock: 'cyclops.rock', pebble: 'stone_golem.rock', bomb: 'halfling_grenadier.bomb', meteor: 'magma_elemental.rock' }[it.kind];
           const sz = { axe: 1.1, rock: 2, pebble: 0.5, bomb: 1, meteor: 2.2 }[it.kind];
@@ -630,7 +630,8 @@
   function death(sc, cid, R, o) {
     o = o || {};
     const w = sc.ws(), k = deathKind(cid), cx = R.x, cy = R.y - R.h * 0.45, gy = R.y, big = !!o.big, m = big ? 1.5 : 1, dust = dustCol(o.terrain);
-    const groundDust = (n, a) => sc.smoke(cx, gy - 2 * w, { n, col: dust, size: 7 * w * m, ttl: 1100, vy: -6 * w, out: 26, spread: R.w * 0.45, under: true, a: a || 0.7, grow: 1.5, jitter: 80 });
+    // пыль светлее земли, иначе на ней не видна; delay — пока тело оседает
+    const groundDust = (n, a, delay) => sc.smoke(cx, gy - 2 * w, { n, col: mix(dust, '#ffffff', 0.3), size: 7 * w * m, ttl: 1100, vy: -6 * w, out: 30, spread: R.w * 0.45, under: true, a: a || 0.75, grow: 1.6, jitter: 80, delay: delay || 0 });
     switch (k) {
       case 'bones':
         sc.debris(cx, cy, { names: ['skeleton.bone', 'skeleton.bone', 'skeleton.skull', 'skeleton.bone'], n: Math.round(6 * m), s: 0.93 * m, speed: 120, ground: gy, ttl: 1300, spin: 8 });
@@ -698,7 +699,7 @@
         return 200;
       }
       default: {   // живые: оседают и выцветают (сам рисунок), по земле — пыль
-        groundDust(big ? 6 : 4, 0.75);
+        groundDust(big ? 6 : 4, 0.85, 160);
         if (big) { sc.ring(cx, gy, { col: dust, r0: 8 * w, r1: R.w * 0.9, ttl: 450, a: 0.4, delay: 250 }); sc.shake(2.5, 180); }
         if (k === 'demon') { sc.smoke(cx, cy, { n: 4, col: '#6a5a2a', size: 7 * w, ttl: 1200, vy: -20 * w, a: 0.55, delay: 200 }); sc.embers(cx, cy, { n: 8, col: ['#ff6a1f', '#ffb04a'], ttl: 900, spread: 12, delay: 150, jitter: 200 }); }
         return 540;
@@ -743,8 +744,8 @@
     sc.ring(x, gy, { col: '#ffb060', r0: R * 0.3, r1: R * 1.8, ttl: 450, a: 0.6 });
     if (!lite) sc.ring(x, y, { col: '#fff0d0', r0: R * 0.25, r1: R * 1.4, sq: 0.85, ttl: 260, under: false, a: 0.55 });
     for (let i = 0; i < (lite ? 4 : 9); i++) { const a = rnd(0, TAU), sp = rnd(0.6, 1) * R * 2.4; sc.glow(x, y, { col: pick(['#ff9a3a', '#ff6a1f', '#ffc04a']), hard: true, r: R * rnd(0.3, 0.45), r1: R * 0.08, ttl: rnd(380, 580), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.6 - R * 1.4, drag: 2 }); }
-    sc.smoke(x, y - R * 0.2, { n: lite ? 3 : 7, col: '#2e2622', size: R * 0.5, grow: 1.5, ttl: 1500, vy: -R * 1.1, spread: R * 0.5, delay: 110, a: 0.72, out: R * 0.8 });
-    sc.sparks(x, y, { n: lite ? 6 : 14, col: ['#ffcf6a', '#ffa040'], speed: R * 7 / w, ttl: 520, grav: 380, len: 5 });
+    sc.smoke(x, y - R * 0.2, { n: lite ? 2 : 6, col: '#2e2622', size: Math.min(R * 0.5, 30 * w), grow: 1.4, ttl: 1500, vy: -R * 1.1, spread: R * 0.5, delay: 110, a: 0.72, out: R * 0.8 });
+    sc.sparks(x, y, { n: lite ? 5 : 14, col: ['#ffcf6a', '#ffa040'], speed: R * 7 / w, ttl: 520, grav: 380, len: 5 });
     sc.embers(x, y, { n: lite ? 3 : 7, col: ['#ffb04a', '#ff6a1f'], spread: R / w, ttl: 1400, jitter: 200 });
     if (!o.noDecal) sc.decal(x, gy, { kind: 'scorch', r: R * 1.2, ttl: 2600 });
   }
@@ -859,7 +860,7 @@
         await sc.projectile('fire', g.src[0], g.src[1], hx, hy, { ttl: 380, arc: 30, s: big ? 1.5 : 1.2, col: big ? 'big' : null, trailN: 11 });
         sc.flash('#ff9a3a', big ? 0.3 : 0.2, 220);
         explode(sc, hx, hy, hexG[1], (big ? 3.4 : 2.1) * g.size);
-        if (big) (g.hexes || []).forEach((h, i) => { if (i % 2) return; const gx = h[0] + rnd(-4, 4) * w, gyy = h[1] + g.size * 0.45; sc.projectile('fire', hx, hy, gx, gyy - g.size * 0.5, { ttl: 160, arc: 18, s: 0.7 }).then(() => explode(sc, gx, gyy - g.size * 0.5, gyy, g.size * 1.1, { lite: true })); });
+        if (big) (g.hexes || []).forEach((h, i) => { if (i % 3) return; const gx = h[0] + rnd(-4, 4) * w, gyy = h[1] + g.size * 0.45; sc.projectile('fire', hx, hy, gx, gyy - g.size * 0.5, { ttl: 160, arc: 18, s: 0.7 }).then(() => explode(sc, gx, gyy - g.size * 0.5, gyy, g.size * 1.1, { lite: true })); });
         for (const r of rects) sc.embers(r.x, r.y - r.h * 0.4, { n: 3, col: ['#ffb04a', '#ff6a1f'], ttl: 800, spread: 8 });
         sc.shake(big ? 7 : 5, 260);
         await wait(big ? 380 : 260); return;
@@ -872,7 +873,7 @@
           const x = h[0] + rnd(-5, 5) * w, gy = h[1] + rnd(-3, 3) * w;
           await sc.projectile('meteor', x + side * 170 * w, gy - 380 * w, x, gy - 4 * w, { ttl: 340, arc: 0, s: 1.2, spinRate: 6, trailN: 10 });
           sc.glow(x, gy - 6 * w, { col: '#ffb04a', hard: true, r: 10 * w, r1: 26 * w, ttl: 260 });
-          sc.ring(x, gy, { col: '#d8a060', r0: 5 * w, r1: g.size * 1.6, ttl: 420 });
+          sc.ring(x, gy, { col: '#d8a060', r0: 5 * w, r1: g.size * 1.6, ttl: 420, a: 0.5 });
           sc.decal(x, gy, { kind: 'crater', r: g.size * 0.95, ttl: 2800 });
           sc.debris(x, gy - 4 * w, { names: ['earth_elemental.rock', 'magma_elemental.rock', 'stone_golem.rock'], n: 4, s: 0.71, speed: 150, ground: gy + 4 * w, ttl: 900 });
           sc.smoke(x, gy - 4 * w, { n: 3, col: dustCol(g.terrain), size: 9 * w, ttl: 1300, vy: -14 * w, out: 40, a: 0.8, grow: 1.6 });
@@ -910,9 +911,9 @@
         const F = g.field;
         sc.tint('#3a0800', 0.38, 2300);
         sc.flash('#ff3a1f', 0.35, 400);
-        const N = 16, jobs = [];
+        const N = 14, jobs = [];
         for (let i = 0; i < N; i++) jobs.push((async () => {
-          await wait(120 + i * 95 + rnd(0, 40));
+          await wait(120 + i * 105 + rnd(0, 40));
           const x = F.x0 + rnd(0.04, 0.96) * F.w, gy = F.y0 + rnd(0.15, 0.95) * F.h;
           await sc.projectile('meteor', x - 150 * w, gy - 420 * w, x, gy - 4 * w, { ttl: 320, arc: 0, s: 1.1, spinRate: 6, trailN: 8 });
           explode(sc, x, gy - 8 * w, gy, g.size * 1.25, { lite: true });
