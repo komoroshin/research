@@ -354,7 +354,7 @@
        trail — след героя: пыль, брызги, следы на снегу, кильватер лодки;
        fog   — неразведанное как старая карта: пергамент (под землёй — тёмный камень).
      ========================================================================== */
-  const BK = 8;   // уровней прозрачности в пачке штрихов
+  const BK = 6;   // уровней прозрачности в пачке штрихов
   const buckets = () => { const a = []; for (let i = 0; i < BK; i++) a.push(null); return a; };
   const bk = (arr, a) => { const i = Math.max(0, Math.min(BK - 1, Math.round(a * (BK - 1)))); return arr[i] || (arr[i] = new Path2D()); };
   function strokeBuckets(ctx, arr, rgb, amul, lw) {
@@ -387,7 +387,8 @@
           const [, al] = surfAt(pb); if (al < 0.05) continue;
           // гребень — рваная пена; после наката она рассыпается «кружевом»
           const pf = pb < 0.66 ? bk(foam, al) : bk(lace, al), pbd = pb < 0.66 ? bk(body, al) : null;
-          for (let i = 0; i < c.n; i++) {
+          // через точку: после сглаживания они идут каждые 2 пикс., для волны хватает 4
+          for (let i = 0; i < c.n; i = i + 2 < c.n || i === c.n - 1 ? i + 2 : c.n - 1) {
             const k = i * 5, p = pb + (a[k + 4] - c.ph), d = surfAt(Math.max(0, Math.min(0.999, p)))[0];
             const x = a[k] + a[k + 2] * d, y = a[k + 1] + a[k + 3] * d;
             if (i) pf.lineTo(x, y); else pf.moveTo(x, y);
