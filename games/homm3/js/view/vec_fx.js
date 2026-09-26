@@ -210,11 +210,12 @@
   });
 
   /** Естественный размер детали (множитель к «10 единиц = 1 точка»): при s = 1 кость ≈ 10 точек, стрела ≈ 16. */
-  const SZ = { 'skeleton.bone': 1.4, 'skeleton.skull': 2, 'cyclops.rock': 1, 'stone_golem.rock': 1.4, 'earth_elemental.rock': 1.6, 'magma_elemental.rock': 1.6,
+  const SZ = { 'skeleton.bone': 2, 'skeleton.skull': 2.6, 'cyclops.rock': 1, 'stone_golem.rock': 1.8, 'earth_elemental.rock': 2, 'magma_elemental.rock': 1.6,
     'automaton.gear': 1.5, 'iron_golem.gear': 1.5, 'iron_golem.plate': 1.4, 'ballista.plank': 1.5, 'dendroid_guard.leaf': 1.8, 'ice_elemental.shard': 0.9, 'orc.axe': 1.3, 'halfling_grenadier.bomb': 1.4 };
   /** Рисунок-деталь в нужном масштабе (кэш по квантованной плотности). */
   function sprite(name, sc) {
-    const b = SZ[name] || 1, S = Math.max(0.5, Math.round(sc * b * Q() * 4) / 4), key = name + '|' + S;
+    // плотность — ступенями по √2 с запасом вверх: обломки разного размера берут одну картинку, а не рисуют каждый свою
+    const b = SZ[name] || 1, S = Math.max(0.5, Math.pow(2, Math.ceil(Math.log2(sc * b * Q()) * 2) / 2)), key = name + '|' + S;
     let r = SPR.get(key);
     if (!r) { const cv = V.render(name, S); r = cv ? { cv, S, b, ax: cv._anchor[0] * S, ay: cv._anchor[1] * S } : null; SPR.set(key, r); }
     return r;
@@ -377,7 +378,7 @@
           const pts = t >= 115 && it.alt ? it.alt : it.main;
           const line = (P, lw, col, al) => { ctx.globalAlpha = c01(al * a); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); P.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); };
           ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-          line(pts, it.wd * 7, it.col, 0.14); line(pts, it.wd * 3, it.col, 0.5);
+          line(pts, it.wd * 6, it.col, 0.14); line(pts, it.wd * 2.6, it.col, 0.5);
           if (t < 170) for (const b of it.br) { line(b, it.wd * 2.2, it.col, 0.4); line(b, it.wd * 0.7, '#ffffff', 0.9); }
           line(pts, it.wd, '#ffffff', 1);
         } });
@@ -479,7 +480,7 @@
       n = Math.min(n, h.length - 1);
       for (let i = n; i > 0; i--) { const f = 1 - (i - 1) / n; ctx.globalAlpha = c01(a * f * f); ctx.strokeStyle = f > 0.6 ? cHead : cTail; ctx.lineWidth = w0 * (0.2 + 0.8 * f); ctx.beginPath(); ctx.moveTo(h[i][0], h[i][1]); ctx.lineTo(h[i - 1][0], h[i - 1][1]); ctx.stroke(); }
     }
-    function streak(ctx, it, col, wd, a) { const h = it.hist; if (h.length < 2) return; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(h[h.length - 1][0], h[h.length - 1][1]); ctx.lineTo(it.x, it.y); ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
+    function streak(ctx, it, col, wd, a) { const h = it.hist; if (h.length < 2) return; const e = h[Math.min(h.length - 1, 3)]; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(e[0], e[1]); ctx.lineTo(it.x, it.y); ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
     const G = (ctx, col, x, y, r, a, hard) => { ctx.globalAlpha = c01(a); ctx.drawImage(glowTex(col, hard), x - r, y - r, r * 2, r * 2); };
     function drawProjectile(ctx, k, it) {
       const s = it.s, x = it.x, y = it.y;
@@ -496,6 +497,7 @@
           const nm = { axe: 'orc.axe', rock: 'cyclops.rock', pebble: 'stone_golem.rock', bomb: 'halfling_grenadier.bomb', meteor: 'magma_elemental.rock' }[it.kind];
           const sz = { axe: 1.1, rock: 2, pebble: 0.5, bomb: 1, meteor: 2.2 }[it.kind];
           ctx.globalAlpha = 1; drawSprite(ctx, sprite(nm, s * sz), x, y, it.spin, s * sz);
+          if (it.kind === 'meteor') { ctx.globalCompositeOperation = 'lighter'; G(ctx, '#ff8a2a', x + Math.cos(it.ang) * 3 * s, y + Math.sin(it.ang) * 3 * s, 9 * s, 0.55, true); ctx.globalCompositeOperation = 'source-over'; }
           if (it.kind === 'bomb') { const fx2 = x + Math.cos(it.spin - 1.9) * 5 * s, fy2 = y + Math.sin(it.spin - 1.9) * 5 * s; ctx.globalCompositeOperation = 'lighter'; G(ctx, '#ffb04a', fx2, fy2, 5 * s, 0.9, true); ctx.globalCompositeOperation = 'source-over'; }
           break;
         }
@@ -523,6 +525,12 @@
           if (it.kind === 'ice') { ctx.globalAlpha = 1; drawSprite(ctx, sprite('ice_elemental.shard', s * 1.6), x, y, it.ang, s * 1.6); }
           break;
         }
+        case 'ball': {
+          streak(ctx, it, '#ffffff', 2 * s, 0.12);
+          const r = 3.2 * s, g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.1, x, y, r);
+          g.addColorStop(0, '#c8ccd4'); g.addColorStop(0.45, '#5a5e68'); g.addColorStop(1, '#1e2026');
+          ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); break;
+        }
         case 'bullet': {
           ctx.globalCompositeOperation = 'lighter';
           const h = it.hist, t = h[Math.min(h.length - 1, 4)] || [x, y];
@@ -535,8 +543,8 @@
     }
     // шлейфы снарядов: что оставляют в полёте
     const TRAIL = {
-      fire: { every: 40, f: (sc2, it, w) => { sc2.smoke(it.x, it.y, { n: 1, col: '#3a2c24', size: 4 * w, ttl: 600, vy: -14 * w, a: 0.5, grow: 1.4 }); sc2.embers(it.x, it.y, { n: 1, col: ['#ffb04a', '#ff6a1f'], ttl: 450, spread: 3, vy: -20 }); } },
-      meteor: { every: 45, f: (sc2, it, w) => { sc2.smoke(it.x, it.y, { n: 1, col: '#3a2c24', size: 5 * w, ttl: 700, vy: -10 * w, a: 0.55, grow: 1.6 }); sc2.embers(it.x, it.y, { n: 1, col: ['#ffb04a', '#ff6a1f'], ttl: 450, spread: 4 }); } },
+      fire: { every: 55, f: (sc2, it, w) => { sc2.smoke(it.x, it.y, { n: 1, col: '#3a2c24', size: 4 * w, ttl: 600, vy: -14 * w, a: 0.5, grow: 1.4 }); sc2.embers(it.x, it.y, { n: 1, col: ['#ffb04a', '#ff6a1f'], ttl: 450, spread: 3, vy: -20 }); } },
+      meteor: { every: 65, f: (sc2, it, w) => { sc2.smoke(it.x, it.y, { n: 1, col: '#3a2c24', size: 5 * w, ttl: 700, vy: -10 * w, a: 0.55, grow: 1.6 }); sc2.embers(it.x, it.y, { n: 1, col: ['#ffb04a', '#ff6a1f'], ttl: 450, spread: 4 }); } },
       skull: { every: 50, f: (sc2, it, w) => sc2.smoke(it.x, it.y, { n: 1, col: '#2a6a34', size: 4 * w, ttl: 500, vy: -8 * w, a: 0.45 }) },
       acid: { every: 55, f: (sc2, it, w) => sc2.drops(it.x, it.y, { n: 1, col: '#8ac82a', speed: 20, ttl: 400, r: 1.1, ground: it.y + 30 * w }) },
       ice: { every: 35, f: (sc2, it, w) => sc2.embers(it.x, it.y, { n: 1, col: '#e8f8ff', ttl: 380, spread: 3, vy: 6, r: 1.5 }) },
@@ -552,9 +560,9 @@
 
   /* ======================= каталог: кто чем стреляет, как гибнет ======================= */
   const SHOT = [
-    ['bolt', /^marksman$/], ['ballista', /^ballista$/], ['spear', /^lizard(man|_warrior)$/], ['axe', /^orc/], ['rock', /^cyclops/],
+    ['bolt', /^marksman$/], ['ballista', /^ballista$/], ['spear', /^(ranger|master_ranger)$/], ['axe', /^orc/], ['rock', /^cyclops/],
     ['pebble', /^halfling$/], ['bomb', /^halfling_grenadier$/], ['bullet', /^(gunslinger|bounty_hunter|pirate|corsair)$/], ['fire', /^(gog|magog)$/],
-    ['orb', /^(mage|arch_mage)$/], ['holy', /^(monk|zealot)$/], ['wave', /^(sea_witch|sorceress)$/], ['spark', /gremlin/], ['skull', /lich/],
+    ['orb', /^(mage|arch_mage)$/], ['holy', /^(monk|zealot)$/], ['wave', /^(sea_witch|sorceress)$/], ['ball', /gremlin/], ['skull', /lich/],
     ['acid', /spitter/], ['ice', /^ice_elemental$/], ['zap', /^storm_elemental$/], ['lightning', /^titan$/], ['ray', /^(beholder|evil_eye)$/],
   ];
   function shotKind(cid) { for (const [k, re] of SHOT) if (re.test(cid)) return k; return 'arrow'; }
@@ -706,7 +714,7 @@
       case 'ballista': sc.star(x, y, { r: 13 }); sc.sparks(x, y, { n: 6, speed: 140, ttl: 300 }); break;
       case 'axe': sc.star(x, y, { r: 10 }); sc.sparks(x, y, { n: 4, col: '#ffe8c0', speed: 120, ttl: 260 }); break;
       case 'rock': sc.star(x, y, { r: 14, col: '#fff0d0' }); sc.debris(x, y, { names: ['stone_golem.rock', 'earth_elemental.rock'], n: 5, s: 0.71, speed: 110, ground: gy, ttl: 900 }); sc.smoke(x, gy - 3 * w, { n: 4, col: dustCol(o && o.terrain), size: 7 * w, ttl: 1000, out: 40, a: 0.7, under: true }); sc.shake(3, 160); break;
-      case 'pebble': sc.star(x, y, { r: 6 }); sc.debris(x, y, { names: 'stone_golem.rock', n: 2, s: 0.29, speed: 70, ground: gy, ttl: 600 }); break;
+      case 'pebble': case 'ball': sc.star(x, y, { r: 7 }); sc.debris(x, y, { names: 'stone_golem.rock', n: 2, s: 0.29, speed: 70, ground: gy, ttl: 600 }); break;
       case 'bomb': explode(sc, x, y, gy, 11 * w, { lite: true, noDecal: false }); sc.shake(2, 140); break;
       case 'bullet': sc.star(x, y, { r: 7, col: '#fff0c0', ttl: 120 }); sc.sparks(x, y, { n: 5, col: '#ffd070', speed: 130, ttl: 240, len: 3 }); sc.smoke(x, y, { n: 1, col: '#c8c0b8', size: 3 * w, ttl: 500, a: 0.5 }); break;
       case 'fire': explode(sc, x, y, gy, (o && o.big ? 16 : 10) * w, { lite: !(o && o.big) }); break;
@@ -965,7 +973,7 @@
     const x1 = A.x + dir * A.w * 0.3, y1 = A.y - A.h * 0.6, x2 = T.x - dir * T.w * 0.12, y2 = T.y - T.h * 0.5;
     const dist = Math.hypot(x2 - x1, y2 - y1) / w;
     if (kind === 'lightning' || kind === 'zap') {
-      sc.bolt(x1, y1 - 8 * w, x2, y2, { w: kind === 'zap' ? 1.5 : 2.4, branches: kind === 'zap' ? 1 : 3, ttl: 380, amp: 0.1 });
+      sc.bolt(x1, y1 - 8 * w, x2, y2, { w: kind === 'zap' ? 1 : 1.9, branches: kind === 'zap' ? 1 : 3, ttl: 380, amp: 0.1 });
       sc.glow(x1, y1 - 8 * w, { col: '#9fd8ff', hard: true, r: 6 * w, r1: 12 * w, ttl: 260 });
       await sc.after(90);
       sc.glow(x2, y2, { col: '#9fd8ff', hard: true, r: 10 * w, r1: 22 * w, ttl: 320 }); sc.sparks(x2, y2, { n: 10, col: ['#dff4ff', '#7fd9ea'], speed: 160, ttl: 340, grav: 150, len: 4 });
@@ -980,7 +988,7 @@
       impact(sc, 'dark', x2, y2, T.y); return;
     }
     const ms = Math.max(200, Math.min(520, dist * ({ rock: 1.1, axe: 0.9, bomb: 1, acid: 1, fire: 0.9, pebble: 0.85, bullet: 0.35 }[kind] || 0.65)));
-    const arc = { arrow: 0.12, bolt: 0.05, ballista: 0.04, spear: 0.14, axe: 0.12, rock: 0.25, pebble: 0.14, bomb: 0.24, bullet: 0, acid: 0.16, fire: 0.08 }[kind];
+    const arc = { ball: 0.14, arrow: 0.12, bolt: 0.05, ballista: 0.04, spear: 0.14, axe: 0.12, rock: 0.25, pebble: 0.14, bomb: 0.24, bullet: 0, acid: 0.16, fire: 0.08 }[kind];
     if (kind === 'bullet') { sc.glow(x1 + dir * 5 * w, y1, { col: '#ffc060', hard: true, r: 5 * w, r1: 10 * w, ttl: 140 }); sc.smoke(x1 + dir * 7 * w, y1, { n: 3, col: '#d0ccc4', size: 4 * w, ttl: 900, vy: -8 * w, vx: dir * 20 * w, a: 0.6 }); }
     if (kind === 'fire' || kind === 'orb' || kind === 'holy' || kind === 'wave' || kind === 'skull' || kind === 'spark') sc.glow(x1, y1, { col: { fire: '#ff7a2a', orb: '#6ab8ff', holy: '#ffd66a', wave: '#3ad0c8', skull: '#5ae070', spark: '#7fd9ff' }[kind], r: 5 * w, r1: 12 * w, ttl: 260 });
     await sc.projectile(kind, x1, y1, x2, y2, { ttl: ms, arc: arc === undefined ? 0.06 * dist : arc * dist, s: kind === 'fire' && /magog/.test(cid) ? 1.1 : kind === 'fire' ? 0.85 : 1, spinRate: kind === 'axe' ? 16 : kind === 'bomb' ? 8 : 5, trailN: kind === 'bullet' ? 6 : 9 });
@@ -1002,8 +1010,8 @@
   function warm(size) {
     const sc = size / 26;
     try {
-      for (const n of ['archer.arrow', 'marksman.bolt', 'lizardman.spear']) sprite(n, sc);
-      for (const [n, k] of [['orc.axe', 0.3], ['cyclops.rock', 0.55], ['stone_golem.rock', 0.2], ['earth_elemental.rock', 0.2], ['magma_elemental.rock', 0.45], ['skeleton.bone', 0.26], ['skeleton.skull', 0.26]]) sprite(n, sc * k);
+      for (const n of ['archer.arrow', 'marksman.bolt', 'lizardman.spear', 'orc.axe', 'skeleton.bone', 'skeleton.skull', 'stone_golem.rock', 'earth_elemental.rock', 'magma_elemental.rock', 'ice_elemental.shard', 'automaton.gear', 'iron_golem.gear', 'iron_golem.plate']) sprite(n, sc);
+      sprite('cyclops.rock', sc * 2); sprite('magma_elemental.rock', sc * 2.2);
       for (const c of ['#ff8a2a', '#ff6a1f', '#ffb04a', '#fff4d0', '#9fd8ff']) { glowTex(c); glowTex(c, true); }
       for (let v = 0; v < 3; v++) smokeTex('#2e2622', v);
       ringTex('#ffc070'); decalTex('scorch');
