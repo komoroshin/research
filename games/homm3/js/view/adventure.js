@@ -183,7 +183,7 @@
       const t = O.get(obj.type);
       if (obj.type === 'town') { const tw = st.towns[obj.townId]; parts.push('<b>' + UI.esc(tw.name) + '</b> — ' + UI.esc(F.get(tw.faction).name) + (tw.owner >= 0 ? ', ' + UI.esc(st.players[tw.owner].name) : ', нейтральный') + (tw.owner !== st.turn && vis === 2 ? '<br>гарнизон: ' + powerWord(R.armyPower(tw.garrison, null)) : '')); }
       else if (obj.type === 'mine') parts.push('<b>' + UI.esc(O.MINE_NAMES[obj.res]) + '</b>' + (obj.owner >= 0 ? ' — ' + UI.esc(st.players[obj.owner].name) : ' — ничья') + '<br>+' + O.MINE_INCOME[obj.res] + ' ' + UI.esc(O.RES_NAMES_GEN[obj.res]) + ' в день');
-      else if (obj.type === 'monster') { const c = C.get(obj.cid); const sel = H3.Game.selected(); let s = '<b>' + UI.esc(c.name) + '</b> — ' + (sel && R.skillLvl(sel, 'scouting') ? obj.n : UI.countWord(obj.n).toLowerCase()); if (sel) { const k = R.armyPower(sel.army, sel) / Math.max(1, H3.Adventure.monsterPower(obj)); s += '<br>' + (k >= 3 ? 'гораздо слабее вас' : k >= 1.5 ? 'слабее вас' : k >= 0.8 ? 'примерно равны' : k >= 0.4 ? 'сильнее вас' : 'гораздо сильнее вас'); } parts.push(s); }
+      else if (obj.type === 'monster') { const c = C.get(obj.cid); const sel = H3.Game.selected(); let s = (obj.boss ? '<b class="red">Хозяин земель:</b> ' : '') + '<b>' + UI.esc(c.name) + '</b> — ' + (sel && R.skillLvl(sel, 'scouting') ? obj.n : UI.countWord(obj.n).toLowerCase()); if (sel) { const k = R.armyPower(sel.army, sel) / Math.max(1, H3.Adventure.monsterPower(obj)); s += '<br>' + (k >= 3 ? 'гораздо слабее вас' : k >= 1.5 ? 'слабее вас' : k >= 0.8 ? 'примерно равны' : k >= 0.4 ? 'сильнее вас' : 'гораздо сильнее вас'); } parts.push(s); }
       else if (obj.type === 'resource') parts.push('<b>' + UI.esc(O.RES_NAMES[obj.res]) + '</b>');
       else if (obj.type === 'artifact') parts.push('<b>' + UI.esc(AR.get(obj.art).name) + '</b><br><span class="muted">' + UI.esc(AR.get(obj.art).desc) + '</span>');
       else if (obj.type === 'dwelling') { const c = C.get(obj.cid); parts.push('<b>Жилище: ' + UI.esc(c.name) + '</b>' + (obj.owner === st.turn ? ' — доступно ' + obj.avail : '')); }
@@ -540,6 +540,14 @@
     }
     if (o.type === 'mine') { drawMine(ctx, st, o, px, py, ts); return; }
     if (o.type === 'dwelling') { const dn = dwellSprite(o), DM = H3.Vec && H3.Vec.meta(dn); Sp.draw(ctx, dn, px, py, 1); if (o.owner >= 0) { const [fx_, fy] = DM && DM.m.flag ? metaAt(DM, px, py, DM.m.flag) : [px + 12, py - 19]; drawFlag(ctx, fx_, fy - 9, st.players[o.owner].color, true); } An.draw(ctx, o.cid, px - 10, py - 2, 0.5, false, creatureIdle(o.cid, o.id, ts)); return; }
+    if (o.type === 'monster' && o.boss) {   // хозяин земель из кампании: крупнее, в багровом ореоле
+      const k = 0.5 + 0.5 * Math.sin(ts / 520 + o.id);
+      ctx.save(); ctx.globalAlpha = 0.35 + 0.25 * k;
+      const gr = ctx.createRadialGradient(px, py - 3, 2, px, py - 3, 24);
+      gr.addColorStop(0, 'rgba(255,70,40,0.9)'); gr.addColorStop(1, 'rgba(120,0,0,0)');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.ellipse(px, py - 3, 24, 10, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      An.draw(ctx, o.cid, px, py - 2, 1.3, false, creatureIdle(o.cid, o.id, ts)); return;
+    }
     if (o.type === 'monster') { An.draw(ctx, o.cid, px, py - 2, 1, false, creatureIdle(o.cid, o.id, ts)); return; }
     if (o.type === 'resource') { Sp.draw(ctx, 'res_' + o.res, px, py - 8, 1); return; }
     if (o.type === 'artifact') { Sp.draw(ctx, 'artifact', px, py - 8, 1); return; }

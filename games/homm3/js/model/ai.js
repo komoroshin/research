@@ -427,6 +427,7 @@
         case 'quest_guard': if (H3.Quest.met(state, hero, o.quest)) consider(o.x, o.y, key, 3000, 'страж-квестор', 0); break;
         case 'seer_hut': if (H3.Quest.met(state, hero, o.quest) && !(o.visited && o.visited['p' + hero.owner])) consider(o.x, o.y, key, H3.Quest.rewardValue(o.reward), 'провидец', gv, undefined, garmy); break;
         case 'monster': {
+          if (o.boss) break;   // хозяин земель — цель игрока в кампании, ИИ его не трогает
           const mv = A.monsterPower(o); const ratio = my / Math.max(1, mv);
           const need = (role === 'main' ? 1.5 : 2.5) * (FLAGS.bold ? 0.8 : 1);
           if (ratio >= need) consider(o.x, o.y, 'm' + o.id, mv * 0.35 + 1500, 'стражи ' + C.get(o.cid).name, 0, undefined, armyOf([{ cid: o.cid, n: o.n }]));

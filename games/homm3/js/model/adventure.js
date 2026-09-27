@@ -727,15 +727,40 @@
       for (const id in state.objects) {
         const o = state.objects[id];
         const swarm = wk && wk.id === 'swarm';
-        if (o.type === 'monster') o.n = Math.max(o.n + (swarm ? 2 : 1), Math.ceil(o.n * (swarm ? 1.2 : 1.1)));
+        if (o.type === 'monster' && !o.boss) o.n = Math.max(o.n + (swarm ? 2 : 1), Math.ceil(o.n * (swarm ? 1.2 : 1.1)));
         if (o.type === 'dwelling') o.avail += C.get(o.cid).growth * ((wk && wk.id === 'creature' && wk.cid === o.cid) ? 2 : 1);
       }
       for (const id in state.towns) { const t = state.towns[id]; if (t.owner < 0) R.newTownWeek(t, wk); }
       S.addLog(state, S.dateStr(state.day) + '. ' + (wk ? wk.name + (wk.id === 'plain' ? '' : ' — ' + wk.desc) : 'Новая неделя') + ' Прирост существ, стражи усилились.', 'day');
       weeklySpecials(state);
     } else S.addLog(state, S.dateStr(state.day) + '.', 'day');
+    fireEvents(state);
     for (const p of state.players) if (p.alive) S.computeVisibility(state, p.id);
     checkPlayersAlive(state);
+  }
+  /* Сюжетные события сценария кампании: в свой день выдают подарок игроку, подкрепление
+     первому противнику и кладут текст в очередь state.storyQueue — её показывает вид
+     в начале хода человека. */
+  function fireEvents(state) {
+    for (const ev of state.events || []) {
+      if (ev.fired || !ev.day || state.day < ev.day) continue;
+      ev.fired = true;
+      const item = { who: ev.who || 'narrator', text: ev.text || '' };
+      const me = state.players[0];
+      if (ev.give && me && me.alive) {
+        S.applyBonus(state, 0, ev.give);
+        item.gift = H3.Campaign && H3.Campaign.rewardText ? H3.Campaign.rewardText(ev.give, me.faction) : H3.Quest.rewardText(ev.give);
+      }
+      const foe = state.players.find(p => p.id > 0 && p.alive);
+      if (ev.foe && foe && C.get(ev.foe.cid)) {
+        const hs = S.heroesOf(state, foe.id).sort((a, b) => R.armyPower(b.army, b) - R.armyPower(a.army, a));
+        const town = state.towns[foe.towns[0]];
+        const left = hs[0] ? R.addToArmy(hs[0].army, ev.foe.cid, ev.foe.n) : town ? R.addToArmy(town.garrison, ev.foe.cid, ev.foe.n) : ev.foe.n;
+        if (left < ev.foe.n) item.foe = (ev.foe.n - left) + ' × ' + C.get(ev.foe.cid).name + ' (' + foe.name + ')';
+      }
+      (state.storyQueue || (state.storyQueue = [])).push(item);
+      S.addLog(state, (item.text.length > 90 ? item.text.slice(0, 88) + '…' : item.text), 'good');
+    }
   }
   /** Понедельник: Мистический пруд приносит редкий ресурс, Портал призыва собирает внешние жилища. */
   function weeklySpecials(state) {
@@ -854,6 +879,10 @@
     find_artifact: (state, g) => 'Найти артефакт «' + ((AR.get(g.art) || {}).name || '?') + '»',
     survive: (state, g) => 'Продержаться ' + g.days + ' ' + U.plural(g.days, 'день', 'дня', 'дней'),
     build: (state, g) => 'Построить ' + ((H3.Buildings.BY_ID[g.building] || {}).name || g.building),
+    hero_level: (state, g) => 'Вырастить героя до ' + g.level + ' уровня',
+    flag_mines: (state, g) => 'Владеть ' + g.n + ' ' + U.plural(g.n, 'шахтой', 'шахтами', 'шахтами') + ' разом',
+    army: (state, g) => 'Собрать у одного героя ' + g.n + ' × ' + ((C.get(g.cid) || {}).name || g.cid),
+    defeat_monster: (state, g) => 'Одолеть хозяина земель: ' + ((C.get(g.cid) || {}).name || g.cid),
     lose_all: () => 'Потерять все города и героев',
     lose_town: (state, g) => 'Потерять город ' + ((state.towns[g.townId] || {}).name || '?'),
     lose_hero: (state, g) => 'Потерять героя ' + ((state.heroes[g.heroId] || {}).name || '?'),
@@ -871,6 +900,10 @@
       case 'find_artifact': return S.heroesOf(state, pid).some(h => Object.keys(h.arts).some(k => h.arts[k] === g.art) || h.backpack.includes(g.art));
       case 'survive': return state.day > g.days;
       case 'build': return S.townsOf(state, pid).some(t => !!t.buildings[g.building]);
+      case 'hero_level': return S.heroesOf(state, pid).some(h => h.level >= g.level);
+      case 'flag_mines': return Object.values(state.objects).filter(o => o.type === 'mine' && o.owner === pid).length >= g.n;
+      case 'army': return S.heroesOf(state, pid).some(h => h.army.reduce((a, x) => a + (x && x.cid === g.cid ? x.n : 0), 0) >= g.n);
+      case 'defeat_monster': return g.objId != null && !state.objects[g.objId];
       default: return false;
     }
   }
@@ -924,7 +957,7 @@
     }
   }
 
-  H3.Adventure = { townVisitGift, weeklySpecials, WEEK_EVENTS, rollWeek, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
+  H3.Adventure = { fireEvents, townVisitGift, weeklySpecials, WEEK_EVENTS, rollWeek, reachableCells, sanitizeGates, checkGoals, goalList, goalText, goalMet, goalFailed, DEFAULT_GOALS, board, disembark, waterSpotNear, gatePartner, week, moveHero, enterOwnTown, townOfHero, approachMonster, joinMonster, removeObject, visit, resolve, giveArtifact, recruitFromDwelling,
     startBattle, endBattle, killHero, captureTown, hireHero, dismissHero, moveStack, splitStack, disbandStack, castTownPortal, endPlayerTurn, newDay, playerPower, checkPlayersAlive, monsterPower };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Adventure;
 })(typeof window !== 'undefined' ? window : globalThis);
