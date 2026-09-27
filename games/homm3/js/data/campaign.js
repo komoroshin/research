@@ -784,9 +784,9 @@
       scenarios: [
         {
           id: 'x1', name: 'Ртутный ключ',
-          brief: 'Сопряжение держится на ртути — это кровь стихий, а черти Инферно пьют её вёдрами. Наберите тридцать мер, чтобы запечатать огненный разлом, или выгоните чертей.',
+          brief: 'Сопряжение держится на ртути — это кровь стихий, а черти Инферно пьют её вёдрами. Наберите шестьдесят мер, чтобы запечатать огненный разлом, или выгоните чертей.',
           size: 'S', seed: 1801, faction: 'conflux', hero: 'ignissa', foes: ['inferno'], opponents: 1, difficulty: 'easy', sea: 'none',
-          goals: { win: [{ type: 'gather', res: 'mercury', amount: 30 }, { type: 'kill_all' }], lose: [{ type: 'lose_all' }] },
+          goals: { win: [{ type: 'gather', res: 'mercury', amount: 60 }, { type: 'kill_all' }], lose: [{ type: 'lose_all' }] },
           story: {
             intro: [
               say('ignissa', 'Огонь — мой брат. Но этот огонь чужой: он не греет, он жрёт.'),
