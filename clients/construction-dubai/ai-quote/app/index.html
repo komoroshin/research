@@ -1,0 +1,690 @@
+<title>Aureum Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Marcellus&display=swap">
+<style>
+:root{
+  --bg:#F3F4F1; --surface:#FFFFFF; --sunken:#ECEEEA; --line:#D9DCD6; --ink:#1D1F1C; --muted:#646A63;
+  --gold:#8A6A2F; --gold-fill:#A9853F; --gold-soft:#F1E9D8; --on-gold:#FFFFFF;
+  --warn:#A8481A; --warn-soft:#FBEBE1; --ok:#2F7248; --ok-soft:#E3F1E8;
+  --paper:#FFFFFF; --paper-ink:#1D1F1C; --paper-line:#CFCFC9; --paper-head:#EDEDE8;
+  --display:"Marcellus","Cormorant Garamond",Georgia,serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121412; --surface:#1B1E1B; --sunken:#161816; --line:#2F332F; --ink:#E7E9E4; --muted:#9BA198;
+    --gold:#D2B274; --gold-fill:#B8944F; --gold-soft:#2C2619; --on-gold:#15130D;
+    --warn:#E6905C; --warn-soft:#2E1D14; --ok:#6CC08C; --ok-soft:#16261B;
+    --paper:#F7F7F4; --paper-ink:#1D1F1C; --paper-line:#CFCFC9; --paper-head:#EDEDE8;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121412; --surface:#1B1E1B; --sunken:#161816; --line:#2F332F; --ink:#E7E9E4; --muted:#9BA198;
+  --gold:#D2B274; --gold-fill:#B8944F; --gold-soft:#2C2619; --on-gold:#15130D;
+  --warn:#E6905C; --warn-soft:#2E1D14; --ok:#6CC08C; --ok-soft:#16261B;
+  --paper:#F7F7F4; --paper-ink:#1D1F1C; --paper-line:#CFCFC9; --paper-head:#EDEDE8;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);padding-inline:16px;padding-block:0 40px}
+h1,h2,h3{margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold-fill);outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:18px 14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand .word{font-family:var(--display);font-size:24px;letter-spacing:.18em;color:var(--gold)}
+.brand .sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.chip{font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.chip.gold{border-color:transparent;background:var(--gold-soft);color:var(--gold)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+@media (min-width:1180px){.grid{grid-template-columns:minmax(0,.95fr) minmax(0,1fr) minmax(0,1.25fr);align-items:start}}
+@media (min-width:760px) and (max-width:1179px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.col-quote{grid-column:1/-1}}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.step{display:flex;align-items:baseline;gap:10px}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--gold)}
+.step h2{font-size:16px;font-weight:600}
+.step .hint{margin-left:auto;font-size:12px;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+textarea{width:100%;min-height:200px;resize:vertical;border:1px solid var(--line);border-radius:8px;background:var(--sunken);padding:10px 12px;line-height:1.55}
+.example-tag{align-self:flex-start;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--gold-soft);color:var(--gold)}
+.drop{border:1px dashed var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--sunken)}
+.drop.over{border-color:var(--gold-fill)}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px}
+.thumbs figure{margin:0;position:relative;width:72px;height:72px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.thumbs button{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;line-height:1}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--gold-fill)}
+.btn.primary{background:var(--gold-fill);border-color:var(--gold-fill);color:var(--on-gold)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.small{padding:4px 10px;font-size:13px}
+.linkbtn{border:0;background:none;color:var(--gold);cursor:pointer;padding:0;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.status{font-size:13px;color:var(--muted);min-height:1.5em}
+.status.err{color:var(--warn)}
+.status.ok{color:var(--ok)}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+
+/* params */
+.sec{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.sec-head{display:flex;gap:8px;align-items:center}
+.sec-head input{flex:1;min-width:0;border:0;border-bottom:1px solid var(--line);background:transparent;padding:4px 0;font-weight:600}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 12px}
+.num{display:flex;flex-direction:column;gap:3px}
+.num span{font-size:12px;color:var(--muted)}
+.num input{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--sunken);font-family:var(--mono);font-variant-numeric:tabular-nums;width:100%}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
+.check input{margin-top:3px;accent-color:var(--gold-fill)}
+.list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.qbox{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:6px}
+.qbox h3{font-size:13px;color:var(--warn)}
+.abox{border-left:3px solid var(--line);padding:6px 12px;display:flex;flex-direction:column;gap:6px}
+.abox h3{font-size:13px;color:var(--muted);font-weight:500}
+
+/* quote */
+.paper-wrap{overflow-x:auto;border-radius:var(--r)}
+.paper{background:var(--paper);color:var(--paper-ink);border:1px solid var(--line);border-radius:var(--r);padding:26px 22px;min-width:480px;box-shadow:0 1px 0 rgba(0,0,0,.03),0 12px 30px -18px rgba(0,0,0,.25)}
+.p-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #A9853F}
+.p-logo .w{font-family:var(--display);font-size:30px;letter-spacing:.2em;color:#8A6A2F;line-height:1}
+.p-logo .s{font-size:10px;letter-spacing:.42em;color:#5d5d57;margin-top:6px}
+.p-co{font-size:11px;line-height:1.5;text-align:right;color:#3d3d38}
+.p-meta{display:flex;flex-wrap:wrap;gap:4px 24px;margin:16px 0 8px;font-size:13px}
+.p-meta b{font-weight:600}
+.p-meta input{border:0;border-bottom:1px dashed #b9b9b2;background:transparent;color:inherit;font-weight:600;min-width:220px;padding:0 2px}
+.p-intro{font-size:12.5px;margin:6px 0 14px;color:#3d3d38}
+.p-title{font-family:var(--display);text-align:center;letter-spacing:.24em;font-size:14px;margin:6px 0 10px}
+table.q{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+table.q th,table.q td{border:1px solid var(--paper-line);padding:5px 7px;vertical-align:top}
+table.q thead th{background:#E3E1D8;font-weight:600;text-align:center}
+table.q td.n,table.q td.c{text-align:right;white-space:nowrap;font-family:var(--mono);font-size:11.5px}
+table.q td.u{text-align:center;white-space:nowrap}
+table.q td.i{text-align:center;color:#6b6b64;width:28px}
+table.q tr.sect td{background:var(--paper-head);font-weight:600;text-align:center}
+table.q tr.sub td{background:#F3F2EE;font-weight:600}
+table.q tr.tot td{background:#E9E6DC;font-weight:600}
+table.q tr.grand td{background:#DCD4BF;font-weight:700}
+table.q tr.changed td{background:#FFF6DC}
+table.q .src{display:block;font-size:10px;color:#8a8a82;font-family:var(--sans);margin-top:2px}
+.p-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin-top:16px;font-size:12.5px}
+.p-foot b{display:block;font-weight:600}
+.draft{margin-top:16px;font-size:10.5px;color:#8a8a82;border-top:1px solid #e3e3de;padding-top:8px}
+
+.cmd{display:flex;gap:8px}
+.cmd input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--sunken)}
+.log{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.log .me{align-self:flex-end;background:var(--gold-soft);color:var(--ink);padding:5px 10px;border-radius:10px 10px 2px 10px;max-width:85%}
+.log .ai{align-self:flex-start;background:var(--sunken);padding:5px 10px;border-radius:10px 10px 10px 2px;max-width:85%}
+.suggest{display:flex;flex-wrap:wrap;gap:6px}
+.suggest button{font-size:12px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;cursor:pointer}
+.suggest button:hover{border-color:var(--gold-fill)}
+
+details.acc{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:10px 14px}
+details.acc summary{cursor:pointer;font-weight:600}
+.acc-table{overflow-x:auto;margin-top:10px}
+.acc-table table{border-collapse:collapse;font-size:12.5px;width:100%;font-variant-numeric:tabular-nums}
+.acc-table th,.acc-table td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.acc-table th:first-child,.acc-table td:first-child{text-align:left}
+.pill{font-family:var(--mono);font-size:11.5px;padding:1px 7px;border-radius:999px}
+.pill.g{background:var(--ok-soft);color:var(--ok)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--gold-fill);border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="word">AUREUM</span><span class="sub">Quote · кровли</span></div>
+    <div class="chips">
+      <span class="chip gold">Прототип</span>
+      <span class="chip">Прайс: 10 реальных КП, янв–май 2025</span>
+      <span class="chip">Цену считает таблица, ИИ только разбирает выезд</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- 1. Выезд -->
+    <section class="col">
+      <div class="step"><span class="n">1</span><h2>Данные с выезда</h2><span class="hint">заметки инженера + фото</span></div>
+      <div class="panel">
+        <span class="example-tag" id="exampleTag">Пример: расшифровка голосовой заметки инженера</span>
+        <label class="label" for="notes">Что инженер наговорил или записал на объекте</label>
+        <textarea id="notes"></textarea>
+        <div class="drop" id="drop">
+          <label class="label" for="photos">Фото кровли</label>
+          <input id="photos" type="file" accept="image/*" multiple>
+          <div class="thumbs" id="thumbs"></div>
+          <span class="small muted" id="photoNote">До 5 фото. ИИ смотрит на гравий, воронки, шахты кондиционеров, отслоения и дефекты.</span>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="parseBtn" type="button">Разобрать выезд</button>
+          <button class="btn" id="stopBtn" type="button" hidden>Стоп</button>
+          <button class="linkbtn" id="resetBtn" type="button">Вернуть пример</button>
+        </div>
+        <div class="status" id="parseStatus">Параметры справа уже заполнены по примеру. Нажмите «Разобрать выезд», чтобы ИИ заполнил их сам.</div>
+      </div>
+
+      <details class="acc">
+        <summary>Проверка на 10 реальных КП</summary>
+        <p class="small muted" style="margin:8px 0 0">Тот же состав работ и объёмы, что в реальных КП, цены — из прайса прототипа. Средняя ошибка 4,9%, 9 из 10 в пределах ±10%.</p>
+        <div class="acc-table"><table>
+          <thead><tr><th>Объект</th><th>Реально, AED</th><th>Прототип, AED</th><th>Разница</th></tr></thead>
+          <tbody id="backtest"></tbody>
+        </table></div>
+      </details>
+    </section>
+
+    <!-- 2. Параметры -->
+    <section class="col">
+      <div class="step"><span class="n">2</span><h2>Параметры объекта</h2><span class="hint">правятся вручную</span></div>
+      <div class="panel">
+        <div class="num"><span>Объект (Offer)</span><input id="offer" style="font-family:var(--sans)"></div>
+        <div id="sections" class="col"></div>
+        <div class="row">
+          <button class="btn small" type="button" id="addSec">+ Кровля</button>
+        </div>
+        <div class="fields">
+          <label class="num"><span>Вывоз мусора, рейсов (пусто = авто)</span><input id="debris" type="number" min="0" step="1"></label>
+          <label class="num"><span>Срок, рабочих дней (пусто = авто)</span><input id="duration" type="number" min="1" step="1"></label>
+          <label class="num"><span>Гарантия, лет</span><input id="warranty" type="number" min="1" step="1" value="15"></label>
+        </div>
+      </div>
+      <div class="qbox" id="qbox" hidden><h3>Уточнить у инженера</h3><ul class="list" id="questions"></ul></div>
+      <div class="abox" id="abox" hidden><h3>Что ИИ принял по умолчанию</h3><ul class="list small" id="assumptions"></ul></div>
+    </section>
+
+    <!-- 3. КП -->
+    <section class="col col-quote">
+      <div class="step"><span class="n">3</span><h2>Коммерческое предложение</h2><span class="hint" id="totalHint"></span></div>
+      <div class="paper-wrap"><div class="paper" id="paper"></div></div>
+      <div class="panel">
+        <label class="label" for="cmdInput">Поправить КП словами</label>
+        <div class="suggest" id="suggest">
+          <button type="button">Скидка 5%</button>
+          <button type="button">Жидкая резина по 120</button>
+          <button type="button">Добавь 3 рейса мусора</button>
+          <button type="button">Убери испытание водой</button>
+        </div>
+        <form class="cmd" id="cmdForm">
+          <input id="cmdInput" placeholder="Например: поставь воронки 1800 и скидку 7%" autocomplete="off">
+          <button class="btn" type="submit" id="cmdBtn">Применить</button>
+        </form>
+        <div class="log" id="log"></div>
+        <div class="row">
+          <button class="btn primary" type="button" id="pdfBtn">Скачать PDF</button>
+          <button class="btn" type="button" id="clearEdits">Сбросить правки</button>
+          <span class="status" id="pdfStatus"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+(() => {
+// ---------- Прайс (выведен из 10 КП, янв–май 2025) ----------
+const P = {
+  dismantle_ballast:{en:"Dismantling of slabs, crushed stone, geotextile and penoplex",ru:"Демонтаж плит, щебня, геотекстиля, пеноплекса",unit:"Sq.m",price:60,src:"медиана 60, в КП 40–70"},
+  dismantle_cbp:{en:"Dismantling of CBP boards around the perimeter",ru:"Демонтаж ЦСП по периметру",unit:"Sq.m",price:50,src:"1 КП"},
+  remove_old_wp:{en:"Complete dismantling of the old peeled off waterproofing",ru:"Снятие старой гидроизоляции",unit:"Sq.m",price:5,src:"1 КП"},
+  drain_leak_fix:{en:"Dismantling the drainage funnel, fixing the leakage and re-installing the funnel",ru:"Демонтаж воронки, устранение протечки",unit:"Set",price:1700,src:"1 КП"},
+  drains:{en:"Checking and cleaning the drainage funnels and drainage system in whole",ru:"Проверка и чистка воронок",unit:"Set",price:1500,extra:800,src:"медиана; основная 1200–1800, второстепенная 600–1000"},
+  ac_penetrations:{en:"Sealing the AC shafts, pipe connections and penetrations with a silicone sealant",ru:"Герметизация шахт кондиционеров и проходок",unit:"Set",price:1300,src:"медиана, в КП 800–2000"},
+  prep:{en:"Preparation of the base for a new waterproofing (removal of dirt and dust)",ru:"Подготовка основания",unit:"Set",price:500,src:"по площади: <90 м² — 300, до 300 м² — 500, больше — 2000; второстепенная 200–300"},
+  joints_lm:{en:"Sealing all shrinkage and expansion joints with a silicone sealant, repair of cracks",ru:"Герметизация швов, ремонт трещин",unit:"Lm",price:50,src:"2 КП"},
+  cracks_set:{en:"Repair of the cracks and sealing the expansion joints with a silicone sealant",ru:"Ремонт трещин и швов (комплект)",unit:"Set",price:1000,extra:650,src:"медиана, в КП 500–1300"},
+  primer:{en:"Applying PVA primer on the prepared and cleaned surface",ru:"Грунтовка ПВА",unit:"Sq.m",price:5,src:"1 КП"},
+  liquid_rubber:{en:"Installation of a new liquid rubber waterproofing in 2 coats with reinforcement mesh",ru:"Жидкая резина в 2 слоя с сеткой",unit:"Sq.m",price:100,src:"в 8 из 10 КП — 100, встречалось 120 и 130"},
+  install_cbp:{en:"Installation of new CBP boards around the perimeter",ru:"Монтаж новых ЦСП по периметру",unit:"Sq.m",price:100,src:"1 КП"},
+  tiles_replace:{en:"Replacement of damaged terracotta tiles (including materials)",ru:"Замена битой терракотовой плитки",unit:"Set",price:800,src:"1 КП"},
+  water_test:{en:"Testing of new waterproofing with water",ru:"Испытание водой",unit:"Set",price:0,src:"всегда 0"},
+  debris:{en:"Disposal of debris from the site",ru:"Вывоз мусора",unit:"Trip",price:500,src:"500 за рейс"}
+};
+const CODES = Object.keys(P);
+const VAT = 0.05;
+const KINDS = {main:"Main roof", garage:"Garage roof", small:"Small roof", balcony:"Balcony"};
+
+const BACKTEST = [
+  ["JVT, гравий",18165,17820],["Arabian Ranches, гравий",33140,30320],["Jumeirah Park D7, гравий",25080,25080],
+  ["Jumeirah Islands, гравий",49950,50250],["Jumeirah Park D8, гравий",24340,23090],["Al Khawaneej",56130,54630],
+  ["Dubai Hills Sidra",22900,23200],["Mira Oasis",15755,16705],["Tilal Al Ghaf",14300,11300],["Mudon",20900,21200]
+];
+
+const EXAMPLE_NOTES = `Jumeirah Park, District 7, вилла 37. Основная крыша, по рулетке примерно 105–110 квадратов. Сверху плиты, под ними щебень, геотекстиль и пеноплекс, всё это снимаем. Воронки две, одна забита, чистим всю систему. Кондиционеров на крыше четыре блока, проходки старые, герметик потрескался. Старая гидроизоляция под балластом в целом держится, отслоений не видел. Плюс маленькая крыша над входом, метров 20, тоже щебень с пеноплексом. Мусор вывозить. Клиент спрашивал про гарантию, сказал 15 лет.`;
+
+const EXAMPLE_STATE = {
+  offer:"Jumeirah Park, District 7, Villa 37",
+  sections:[
+    {kind:"main",name:"Main roof",area:110,gravel:true,old_wp:false,drains:true,drain_leak:false,ac:true,joints_lm:0,cracks:false,cbp_sqm:0,tiles:false},
+    {kind:"small",name:"Small roof",area:20,gravel:true,old_wp:false,drains:false,drain_leak:false,ac:false,joints_lm:0,cracks:false,cbp_sqm:0,tiles:false}
+  ],
+  debris:null,duration:null,warranty:15,
+  questions:["Сколько воронок на маленькой крыше и нужна ли их чистка?"],
+  assumptions:["Площадь основной крыши взята по верхней границе: 110 м²","Старую гидроизоляцию не снимаем: отслоений нет"]
+};
+
+// ---------- состояние ----------
+let S = structuredClone(EXAMPLE_STATE);
+let edits = {over:{}, added:[], discount:0};
+let photos = [];
+
+const $ = id => document.getElementById(id);
+const fmt = n => { const r = Math.round(n*100)/100; return r.toLocaleString("en-US",{maximumFractionDigits:2}).replace(/,/g," "); };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = v => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? n : 0; };
+
+// ---------- правила: параметры -> строки ----------
+function baseLines(){
+  const out = [];
+  let gravelArea = 0;
+  S.sections.forEach((s, si) => {
+    const main = s.kind === "main";
+    const a = num(s.area);
+    const L = [];
+    const add = (code, qty, price) => L.push({si, code, qty, price: price ?? P[code].price});
+    if (s.gravel){ add("dismantle_ballast", a); gravelArea += a; }
+    if (num(s.cbp_sqm) > 0) add("dismantle_cbp", num(s.cbp_sqm));
+    if (s.old_wp) add("remove_old_wp", a);
+    if (s.drain_leak) add("drain_leak_fix", 1);
+    else if (s.drains) add("drains", 1, main ? P.drains.price : P.drains.extra);
+    if (s.ac) add("ac_penetrations", 1);
+    add("prep", 1, main ? (a < 90 ? 300 : a > 300 ? 2000 : 500) : (a < 15 ? 200 : 300));
+    if (num(s.joints_lm) > 0) add("joints_lm", num(s.joints_lm));
+    else if (s.cracks) add("cracks_set", 1, main ? P.cracks_set.price : P.cracks_set.extra);
+    if (s.old_wp) add("primer", a);
+    if (a > 0) add("liquid_rubber", a);
+    if (num(s.cbp_sqm) > 0) add("install_cbp", num(s.cbp_sqm));
+    if (s.tiles) add("tiles_replace", 1);
+    add("water_test", 1);
+    out.push(...L);
+  });
+  const trips = S.debris != null ? num(S.debris) : (gravelArea > 0 ? (gravelArea <= 130 ? 2 : Math.ceil(gravelArea/60)) : 0);
+  if (trips > 0 && S.sections.length) out.push({si:0, code:"debris", qty:trips, price:P.debris.price});
+  return out;
+}
+function autoDuration(){
+  const total = S.sections.reduce((t,s)=>t+num(s.area),0);
+  const gravel = S.sections.some(s=>s.gravel);
+  return gravel || total > 200 ? 12 : 7;
+}
+const keyOf = l => l.si + ":" + l.code;
+
+function finalLines(){
+  const lines = baseLines().map(l => {
+    const o = edits.over[keyOf(l)];
+    if (!o) return {...l};
+    if (o.removed) return null;
+    return {...l, qty: o.qty ?? l.qty, price: o.price ?? l.price, changed:true};
+  }).filter(Boolean);
+  for (const a of edits.added){
+    if (a.si >= S.sections.length) continue;
+    const o = edits.over[a.si+":"+a.code];
+    if (o && o.removed) continue;
+    const exist = lines.find(l => keyOf(l) === a.si+":"+a.code);
+    if (exist){ exist.qty = a.qty; if (a.price != null) exist.price = a.price; exist.changed = true; }
+    else lines.push({si:a.si, code:a.code, qty:a.qty, price:a.price ?? P[a.code].price, changed:true});
+  }
+  return lines;
+}
+function totals(lines){
+  const bySec = S.sections.map((_,si) => lines.filter(l=>l.si===si).reduce((t,l)=>t+l.qty*l.price,0));
+  const subtotal = bySec.reduce((a,b)=>a+b,0);
+  const disc = Math.round(subtotal * edits.discount) / 100;
+  const net = subtotal - disc;
+  const vat = Math.round(net * VAT * 100) / 100;
+  return {bySec, subtotal, disc, net, vat, grand: net + vat};
+}
+
+// ---------- рендер параметров ----------
+function renderSections(){
+  const box = $("sections");
+  box.innerHTML = "";
+  S.sections.forEach((s, si) => {
+    const el = document.createElement("div");
+    el.className = "sec";
+    const id = f => `s${si}_${f}`;
+    el.innerHTML = `
+      <div class="sec-head">
+        <select id="${id("kind")}" aria-label="Тип кровли">${Object.entries(KINDS).map(([k,v])=>`<option value="${k}"${s.kind===k?" selected":""}>${v}</option>`).join("")}</select>
+        <input id="${id("name")}" value="${esc(s.name)}" aria-label="Название в КП">
+        ${S.sections.length>1?`<button class="linkbtn" type="button" data-del="${si}">убрать</button>`:""}
+      </div>
+      <div class="fields">
+        <label class="num"><span>Площадь, м²</span><input id="${id("area")}" type="number" min="0" step="0.1" value="${s.area}"></label>
+        <label class="num"><span>Швы, п.м. (0 = комплектом)</span><input id="${id("joints_lm")}" type="number" min="0" step="1" value="${s.joints_lm||0}"></label>
+        <label class="num"><span>ЦСП по периметру, м²</span><input id="${id("cbp_sqm")}" type="number" min="0" step="1" value="${s.cbp_sqm||0}"></label>
+      </div>
+      <div class="fields">
+        ${chk(id("gravel"),"Балласт: плиты / щебень / пеноплекс",s.gravel)}
+        ${chk(id("old_wp"),"Снять старую гидроизоляцию + грунт",s.old_wp)}
+        ${chk(id("drains"),"Чистка воронок",s.drains)}
+        ${chk(id("drain_leak"),"Протечка у воронки",s.drain_leak)}
+        ${chk(id("ac"),"Шахты кондиционеров, проходки",s.ac)}
+        ${chk(id("cracks"),"Трещины и швы (комплектом)",s.cracks)}
+        ${chk(id("tiles"),"Замена терракотовой плитки",s.tiles)}
+      </div>`;
+    box.append(el);
+    el.querySelectorAll("input,select").forEach(inp => inp.addEventListener("input", () => {
+      const f = inp.id.split("_").slice(1).join("_");
+      const sec = S.sections[si];
+      if (inp.type === "checkbox") sec[f] = inp.checked;
+      else if (inp.type === "number") sec[f] = inp.value === "" ? 0 : Number(inp.value);
+      else if (f === "kind"){ sec.kind = inp.value; sec.name = KINDS[inp.value]; el.querySelector(`#${id("name")}`).value = sec.name; }
+      else sec[f] = inp.value;
+      renderQuote();
+    }));
+  });
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    S.sections.splice(Number(b.dataset.del),1);
+    edits = {over:{}, added:[], discount:edits.discount};
+    renderAll();
+  });
+}
+const chk = (id,label,on) => `<label class="check"><input type="checkbox" id="${id}"${on?" checked":""}><span>${label}</span></label>`;
+
+function renderMeta(){
+  $("offer").value = S.offer || "";
+  $("debris").value = S.debris ?? "";
+  $("duration").value = S.duration ?? "";
+  $("warranty").value = S.warranty ?? 15;
+  const q = S.questions || [], a = S.assumptions || [];
+  $("qbox").hidden = !q.length; $("questions").innerHTML = q.map(x=>`<li>${esc(x)}</li>`).join("");
+  $("abox").hidden = !a.length; $("assumptions").innerHTML = a.map(x=>`<li>${esc(x)}</li>`).join("");
+}
+
+// ---------- рендер КП ----------
+const today = () => { const d = new Date(); return [d.getDate(),d.getMonth()+1,d.getFullYear()].map((x,i)=>i<2?String(x).padStart(2,"0"):x).join("."); };
+function renderQuote(){
+  const lines = finalLines();
+  const T = totals(lines);
+  let rows = "";
+  S.sections.forEach((s, si) => {
+    const L = lines.filter(l => l.si === si);
+    rows += `<tr class="sect"><td colspan="6">${si+1}. Roof repair and waterproofing works (${esc(s.name.toLowerCase())})</td></tr>`;
+    L.forEach((l, i) => {
+      rows += `<tr${l.changed?' class="changed"':""}><td class="i">${i+1}</td><td>${esc(P[l.code].en)}<span class="src">${esc(P[l.code].ru)} · ${esc(P[l.code].src)}</span></td><td class="n">${fmt(l.qty)}</td><td class="u">${P[l.code].unit}</td><td class="n">${fmt(l.price)}</td><td class="c">${fmt(l.qty*l.price)}</td></tr>`;
+    });
+    rows += `<tr class="sub"><td colspan="5" style="text-align:right">Subtotal</td><td class="c">${fmt(T.bySec[si])}</td></tr>`;
+  });
+  if (S.sections.length > 1 || T.disc) rows += `<tr class="tot"><td colspan="5" style="text-align:right">Total</td><td class="c">${fmt(T.subtotal)}</td></tr>`;
+  if (T.disc) rows += `<tr class="tot"><td colspan="5" style="text-align:right">Discount (${edits.discount}%)</td><td class="c">−${fmt(T.disc)}</td></tr>`;
+  rows += `<tr class="tot"><td colspan="5" style="text-align:right">VAT (5%)</td><td class="c">${fmt(T.vat)}</td></tr>`;
+  rows += `<tr class="grand"><td colspan="5" style="text-align:right">Grand total, AED</td><td class="c">${fmt(T.grand)}</td></tr>`;
+  const dur = S.duration ?? autoDuration();
+  $("paper").innerHTML = `
+    <div class="p-head">
+      <div class="p-logo"><div class="w">AUREUM</div><div class="s">CONSTRUCTION</div></div>
+      <div class="p-co">Aureum Construction<br>Business Bay, The Citadel Tower, Office 203<br>Dubai, United Arab Emirates<br>+971 58 584 3691 · info@aureumgroup.ae</div>
+    </div>
+    <div class="p-meta"><span><b>Offer:</b> ${esc(S.offer||"—")}</span><span><b>Date:</b> ${today()}</span></div>
+    <p class="p-intro">Aureum Construction invites you to get familiar with the quotation for roof repair and waterproofing works as follows:</p>
+    <div class="p-title">COST ESTIMATE</div>
+    <table class="q"><thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit</th><th>Price, AED</th><th>Cost, AED</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="p-foot">
+      <div><b>Payment schedule</b>60% within 2 days of signing the contract<br>40% after completion of 100% of works</div>
+      <div><b>Duration</b>${dur} working days${S.duration==null?' <span style="color:#8a8a82">(авто)</span>':""}<br><b style="margin-top:6px">Warranty</b>${num(S.warranty)||15} years</div>
+    </div>
+    <div class="draft">Черновик прототипа. Строки, изменённые вручную или командой, подсвечены. Серые подписи под позициями видны только в прототипе и не попадают в PDF.</div>`;
+  $("totalHint").textContent = `${fmt(T.grand)} AED с НДС`;
+}
+function renderBacktest(){
+  $("backtest").innerHTML = BACKTEST.map(([n,r,c]) => {
+    const d = (c-r)/r*100, cls = Math.abs(d) <= 10 ? "g" : "w";
+    return `<tr><td>${n}</td><td>${fmt(r)}</td><td>${fmt(c)}</td><td><span class="pill ${cls}">${d>0?"+":""}${d.toFixed(1)}%</span></td></tr>`;
+  }).join("");
+}
+function renderAll(){ renderSections(); renderMeta(); renderQuote(); }
+
+// ---------- поля объекта ----------
+$("offer").addEventListener("input", e => { S.offer = e.target.value; renderQuote(); });
+$("debris").addEventListener("input", e => { S.debris = e.target.value === "" ? null : Number(e.target.value); renderQuote(); });
+$("duration").addEventListener("input", e => { S.duration = e.target.value === "" ? null : Number(e.target.value); renderQuote(); });
+$("warranty").addEventListener("input", e => { S.warranty = Number(e.target.value)||15; renderQuote(); });
+$("addSec").onclick = () => { S.sections.push({kind:"garage",name:"Garage roof",area:40,gravel:false,old_wp:false,drains:true,drain_leak:false,ac:false,joints_lm:0,cracks:false,cbp_sqm:0,tiles:false}); renderAll(); };
+$("clearEdits").onclick = () => { edits = {over:{}, added:[], discount:0}; $("log").innerHTML = ""; renderQuote(); };
+
+// ---------- фото ----------
+function renderThumbs(){
+  $("thumbs").innerHTML = "";
+  photos.forEach((f, i) => {
+    const fig = document.createElement("figure");
+    const img = document.createElement("img"); img.alt = f.name; img.src = URL.createObjectURL(f);
+    const b = document.createElement("button"); b.type = "button"; b.textContent = "×"; b.setAttribute("aria-label","Убрать фото");
+    b.onclick = () => { photos.splice(i,1); renderThumbs(); };
+    fig.append(img, b); $("thumbs").append(fig);
+  });
+}
+function addFiles(list){ for (const f of list) if (f.type.startsWith("image/") && photos.length < 5) photos.push(f); renderThumbs(); }
+$("photos").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+const drop = $("drop");
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); });
+
+$("notes").value = EXAMPLE_NOTES;
+$("notes").addEventListener("input", () => { $("exampleTag").hidden = $("notes").value === EXAMPLE_NOTES ? false : true; });
+$("resetBtn").onclick = () => {
+  $("notes").value = EXAMPLE_NOTES; $("exampleTag").hidden = false; photos = []; renderThumbs();
+  S = structuredClone(EXAMPLE_STATE); edits = {over:{}, added:[], discount:0}; $("log").innerHTML = "";
+  setStatus("parseStatus","Пример восстановлен."); renderAll();
+};
+
+function setStatus(id, text, cls){ const el = $(id); el.className = "status" + (cls ? " " + cls : ""); el.innerHTML = text; }
+const ERR = {
+  not_granted:"Доступ к Claude для этой страницы не разрешён. Параметры можно заполнить вручную.",
+  sampling_disabled:"Claude недоступен для этого аккаунта. Параметры можно заполнить вручную.",
+  rate_limited:"Слишком много запросов подряд. Попробуйте через минуту.",
+  invalid_json:"ИИ ответил в неожиданном формате. Нажмите ещё раз.",
+  image_rejected:"Одно из фото не подошло (формат или размер). Уберите его и повторите.",
+  images_unavailable:"В этом окне фото отправить нельзя. Разберу только текст.",
+  refused:"Claude отказался обрабатывать этот текст. Переформулируйте заметки.",
+  session_expired:"Сессия истекла: войдите в Claude заново."
+};
+const errText = e => ERR[e?.code] || "Не получилось связаться с Claude. Попробуйте ещё раз.";
+
+// ---------- ИИ: разбор выезда ----------
+const PARSE_RULES = `Ты помогаешь инженеру компании Aureum Construction (Дубай) подготовить КП на гидроизоляцию кровли жидкой резиной.
+По заметкам инженера (часто это расшифровка голосового) и фото извлеки параметры объекта. Цены НЕ считай, их считает программа.
+
+Верни ТОЛЬКО JSON такого вида:
+{"offer": "район, улица, вилла — как в заголовке КП, латиницей",
+ "sections": [{"kind":"main|garage|small|balcony","name":"Main roof|Garage roof|Small roof|Balcony",
+   "area": число м², "gravel": bool, "old_wp": bool, "drains": bool, "drain_leak": bool, "ac": bool,
+   "joints_lm": число, "cracks": bool, "cbp_sqm": число, "tiles": bool}],
+ "debris": число рейсов или null, "duration": число рабочих дней или null, "warranty": число лет или null,
+ "questions": ["что уточнить у инженера, по-русски, коротко"],
+ "assumptions": ["что ты принял сам, по-русски, коротко"]}
+
+Правила:
+- Первая секция — основная кровля (kind "main"). Гараж, малая кровля над входом, балкон — отдельные секции.
+- Площадь названа диапазоном («120–130») — бери верхнюю границу и запиши это в assumptions.
+- gravel = на кровле балласт (плиты, щебень, геотекстиль, пеноплекс), который нужно снять.
+- old_wp = старая гидроизоляция отслоилась и её снимают целиком (тогда будет и грунтовка).
+- drains = проверка и чистка воронок; drain_leak = протечка у воронки, нужен её демонтаж и ремонт.
+- ac = есть шахты кондиционеров или проходки труб, которые надо герметизировать.
+- Обычные трещины входят в работу и отдельно не считаются. cracks = true, только если инженер отдельно говорит про деформационные швы или ремонт трещин; если назвал длину швов в метрах — joints_lm.
+- cbp_sqm = площадь ЦСП-плит по периметру под замену; tiles = битая терракотовая плитка под замену.
+- Нестандартные дефекты (плесень, грибок, мокрые стены, потолки после протечки) в расчёт не входят: добавь их в questions как отдельную работу для оценки.
+- Если площадь или ключевой признак неизвестны — поставь лучшую оценку и добавь вопрос в questions.
+- debris, duration, warranty — только если инженер их назвал, иначе null.
+- Фото используй, чтобы проверить заметки: гравий или нет, сколько воронок и кондиционеров, отслоения, дефекты.`;
+
+let parseCtl = null;
+$("stopBtn").onclick = () => parseCtl?.abort();
+$("parseBtn").onclick = async () => {
+  const sample = await window.claude?.use?.("sample");
+  if (!sample){ setStatus("parseStatus","Claude в этом окне недоступен. Параметры можно заполнить вручную.","err"); return; }
+  const notes = $("notes").value.trim();
+  if (!notes && !photos.length){ setStatus("parseStatus","Добавьте заметки или фото с выезда.","err"); return; }
+  parseCtl = new AbortController();
+  $("parseBtn").disabled = true; $("stopBtn").hidden = false;
+  setStatus("parseStatus",'<span class="spin"></span>Claude разбирает выезд… обычно 10–40 секунд.');
+  let imgs = photos.slice();
+  try {
+    if (imgs.length){
+      const lim = await sample.limits().catch(() => null);
+      if (!lim?.images) imgs = []; else imgs = imgs.slice(0, lim.images.maxCount);
+    }
+    const prompt = PARSE_RULES + "\n\nЗаметки инженера:\n" + notes.slice(0, 6000) + (imgs.length ? `\n\nПриложено фото кровли: ${imgs.length}.` : "");
+    const res = await sample.json(prompt, {signal: parseCtl.signal, ...(imgs.length ? {images: imgs} : {})});
+    applyParsed(res);
+    setStatus("parseStatus", `Готово${imgs.length ? `, учтено фото: ${imgs.length}` : ""}. Проверьте параметры и вопросы.`, "ok");
+  } catch (e){
+    if (e?.code === "cancelled") setStatus("parseStatus","Остановлено.");
+    else setStatus("parseStatus", errText(e), "err");
+  } finally {
+    $("parseBtn").disabled = false; $("stopBtn").hidden = true;
+  }
+};
+function applyParsed(r){
+  if (!r || !Array.isArray(r.sections) || !r.sections.length) throw {code:"invalid_json"};
+  const B = v => v === true || v === "true";
+  S = {
+    offer: String(r.offer || S.offer || ""),
+    sections: r.sections.slice(0,5).map((s,i) => {
+      const kind = KINDS[s.kind] ? s.kind : (i ? "garage" : "main");
+      return {kind, name: String(s.name || KINDS[kind]), area: num(s.area), gravel:B(s.gravel), old_wp:B(s.old_wp), drains:B(s.drains),
+        drain_leak:B(s.drain_leak), ac:B(s.ac), joints_lm:num(s.joints_lm), cracks:B(s.cracks), cbp_sqm:num(s.cbp_sqm), tiles:B(s.tiles)};
+    }),
+    debris: r.debris == null ? null : num(r.debris),
+    duration: r.duration == null ? null : (num(r.duration) || null),
+    warranty: num(r.warranty) || 15,
+    questions: (Array.isArray(r.questions) ? r.questions : []).map(String).slice(0,8),
+    assumptions: (Array.isArray(r.assumptions) ? r.assumptions : []).map(String).slice(0,8)
+  };
+  edits = {over:{}, added:[], discount:0};
+  $("log").innerHTML = "";
+  renderAll();
+}
+
+// ---------- ИИ: правки КП словами ----------
+function logMsg(cls, text){ const d = document.createElement("div"); d.className = cls; d.textContent = text; $("log").append(d); return d; }
+function applyOps(ops){
+  let n = 0;
+  for (const op of ops || []){
+    const si = Math.min(Math.max(0, Math.floor(num(op.section))), S.sections.length - 1);
+    const code = String(op.code || "");
+    const k = si + ":" + code;
+    if (op.op === "discount"){ edits.discount = Math.min(50, num(op.pct)); n++; continue; }
+    if (!P[code]) continue;
+    if (op.op === "set_price"){ edits.over[k] = {...(edits.over[k]||{}), price:num(op.price), removed:false}; n++; }
+    else if (op.op === "set_qty"){ edits.over[k] = {...(edits.over[k]||{}), qty:num(op.qty), removed:false}; n++; }
+    else if (op.op === "remove"){ edits.over[k] = {removed:true}; edits.added = edits.added.filter(a => a.si+":"+a.code !== k); n++; }
+    else if (op.op === "add"){ delete edits.over[k]; edits.added = edits.added.filter(a => a.si+":"+a.code !== k); edits.added.push({si, code, qty:num(op.qty)||1, price: op.price == null ? null : num(op.price)}); n++; }
+  }
+  return n;
+}
+async function runCommand(text){
+  const sample = await window.claude?.use?.("sample");
+  if (!sample){ logMsg("ai","Claude в этом окне недоступен."); return; }
+  const lines = finalLines();
+  const table = lines.map(l => `section=${l.si} (${S.sections[l.si].name}) code=${l.code} qty=${l.qty} price=${l.price}`).join("\n");
+  const prompt = `Ты правишь черновик КП на гидроизоляцию кровли. Переведи просьбу менеджера в список операций.
+Верни ТОЛЬКО JSON: {"ops":[...], "reply":"короткое подтверждение по-русски, что сделано"}.
+Операции:
+{"op":"set_price","section":N,"code":"...","price":число}
+{"op":"set_qty","section":N,"code":"...","qty":число}
+{"op":"add","section":N,"code":"...","qty":число,"price":число или null}
+{"op":"remove","section":N,"code":"..."}
+{"op":"discount","pct":число}  (скидка на весь КП в процентах; 0 — убрать скидку)
+Допустимые code: ${CODES.map(c => `${c} (${P[c].ru}, ${P[c].unit})`).join("; ")}.
+Если секция не указана, а позиция есть в нескольких секциях, меняй во всех. Если просьбу нельзя выразить операциями, верни пустой ops и объясни в reply.
+
+Текущие строки КП:
+${table}
+Текущая скидка: ${edits.discount}%
+
+Просьба менеджера: ${text}`;
+  const bubble = logMsg("ai","…");
+  $("cmdBtn").disabled = true;
+  try {
+    const r = await sample.json(prompt, {modelTier:"quick", cache:false});
+    const n = applyOps(r?.ops);
+    bubble.textContent = (r?.reply ? String(r.reply) : "") || (n ? "Готово." : "Не понял, что поменять.");
+    renderQuote();
+  } catch (e){ bubble.textContent = errText(e); }
+  finally { $("cmdBtn").disabled = false; }
+}
+$("cmdForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const t = $("cmdInput").value.trim(); if (!t) return;
+  logMsg("me", t); $("cmdInput").value = ""; runCommand(t);
+});
+$("suggest").querySelectorAll("button").forEach(b => b.onclick = () => { logMsg("me", b.textContent); runCommand(b.textContent); });
+
+// ---------- PDF ----------
+$("pdfBtn").onclick = async () => {
+  const dl = await window.claude?.use?.("downloads");
+  if (!window.jspdf || !dl){ setStatus("pdfStatus","Скачивание в этом окне недоступно.","err"); return; }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({unit:"pt", format:"a4"});
+  const W = doc.internal.pageSize.getWidth(), M = 42;
+  doc.setTextColor(138,106,47); doc.setFont("times","normal"); doc.setFontSize(26); doc.setCharSpace(6); doc.text("AUREUM", M, 62);
+  doc.setFontSize(8); doc.setCharSpace(4); doc.setTextColor(90,90,85); doc.text("CONSTRUCTION", M+2, 76); doc.setCharSpace(0);
+  doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(60,60,56);
+  ["Aureum Construction","Business Bay, The Citadel Tower, Office 203","Dubai, United Arab Emirates","+971 58 584 3691 · info@aureumgroup.ae"].forEach((t,i)=>doc.text(t, W-M, 50+i*11, {align:"right"}));
+  doc.setDrawColor(169,133,63); doc.setLineWidth(1.5); doc.line(M, 96, W-M, 96);
+  doc.setTextColor(29,31,28); doc.setFontSize(10.5); doc.setFont("helvetica","bold");
+  doc.text("Offer: " + (S.offer || "—"), M, 118); doc.text("Date: " + today(), M, 133);
+  doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+  doc.text(doc.splitTextToSize("Aureum Construction invites you to get familiar with the quotation for roof repair and waterproofing works as follows:", W-2*M), M, 154);
+  doc.setFont("times","bold"); doc.setFontSize(11); doc.text("COST ESTIMATE", W/2, 184, {align:"center"});
+  const lines = finalLines(), T = totals(lines), body = [];
+  const sh = {fillColor:[237,237,232], fontStyle:"bold", halign:"center"};
+  const tot = (label, val, fill) => [{content:label, colSpan:5, styles:{halign:"right", fontStyle:"bold", fillColor:fill}}, {content:val, styles:{halign:"right", fontStyle:"bold", fillColor:fill}}];
+  S.sections.forEach((s, si) => {
+    body.push([{content:`${si+1}. Roof repair and waterproofing works (${s.name.toLowerCase()})`, colSpan:6, styles:sh}]);
+    lines.filter(l=>l.si===si).forEach((l,i) => body.push([i+1, P[l.code].en, fmt(l.qty).replace(/ /g," "), P[l.code].unit, fmt(l.price).replace(/ /g," "), fmt(l.qty*l.price).replace(/ /g," ")]));
+    body.push(tot("Subtotal", fmt(T.bySec[si]).replace(/ /g," "), [243,242,238]));
+  });
+  const f = v => fmt(v).replace(/ /g," ");
+  if (S.sections.length > 1 || T.disc) body.push(tot("Total", f(T.subtotal), [233,230,220]));
+  if (T.disc) body.push(tot(`Discount (${edits.discount}%)`, "-" + f(T.disc), [233,230,220]));
+  body.push(tot("VAT (5%)", f(T.vat), [233,230,220]));
+  body.push(tot("Grand total, AED", f(T.grand), [220,212,191]));
+  doc.autoTable({
+    startY:196, margin:{left:M, right:M}, head:[["#","Description","Qty","Unit","Price, AED","Cost, AED"]], body,
+    theme:"grid", styles:{font:"helvetica", fontSize:8.5, cellPadding:4, lineColor:[207,207,201], lineWidth:0.5, textColor:[29,31,28]},
+    headStyles:{fillColor:[227,225,216], textColor:[29,31,28], fontStyle:"bold", halign:"center"},
+    columnStyles:{0:{halign:"center", cellWidth:22}, 2:{halign:"right", cellWidth:44}, 3:{halign:"center", cellWidth:38}, 4:{halign:"right", cellWidth:62}, 5:{halign:"right", cellWidth:68}}
+  });
+  let y = doc.lastAutoTable.finalY + 26;
+  if (y > 740){ doc.addPage(); y = 60; }
+  doc.setFont("helvetica","bold"); doc.setFontSize(9.5); doc.text("Payment schedule:", M, y);
+  doc.setFont("helvetica","normal"); doc.text("60% - within 2 days of signing the contract", M, y+14); doc.text("40% - after completion of 100% of works", M, y+27);
+  doc.setFont("helvetica","bold"); doc.text(`Duration: ${S.duration ?? autoDuration()} working days`, M, y+50); doc.text(`Warranty: ${num(S.warranty)||15} years`, M, y+64);
+  doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(140,140,132); doc.text("Draft generated by Aureum Quote prototype", M, 812);
+  const name = "Quotation_" + (S.offer || "roof").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"_").slice(0,60) + ".pdf";
+  setStatus("pdfStatus","");
+  try { await dl.save({filename:name, data:doc.output("blob")}); setStatus("pdfStatus","PDF сохранён.","ok"); }
+  catch (e){ setStatus("pdfStatus", e?.code === "declined" ? "" : "Не получилось сохранить PDF.", e?.code === "declined" ? "" : "err"); }
+};
+
+renderBacktest();
+renderAll();
+
+// скрываем то, что недоступно в этом окне
+(async () => {
+  const sample = await window.claude?.use?.("sample");
+  if (!sample){ $("parseBtn").disabled = true; $("cmdBtn").disabled = true; setStatus("parseStatus","Claude в этом окне недоступен: параметры и КП можно править вручную."); return; }
+  const lim = await sample.limits().catch(() => null);
+  if (!lim?.images){ $("photos").disabled = true; $("photoNote").textContent = "В этом окне фото отправить нельзя, ИИ разберёт только текст."; }
+  else $("photoNote").textContent = `До ${Math.min(5, lim.images.maxCount)} фото. ИИ смотрит на гравий, воронки, шахты кондиционеров, отслоения и дефекты.`;
+})();
+})();
+</script>
