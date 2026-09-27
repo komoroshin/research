@@ -691,3 +691,4 @@ button.edb img { width: 20px; height: 20px; }
 .cbrief.bonus .cbstage { justify-content: flex-start; }
 .cbrief .cbdots { margin-top: 0; }
 .cscard .green { color: #2e6a18; font-weight: 700; }
+.modal .parch h4 { color: #5a3a10; text-shadow: none; }
