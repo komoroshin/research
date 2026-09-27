@@ -847,6 +847,7 @@ test('кампании 4.4: хозяин земель, новые цели, бо
   assert.ok(S.lvl(st, 0).objAt[S.idx(st, boss.x, boss.y, 0)] === boss.id, 'стоит на своей клетке');
   const home = st.towns[st.players[0].towns[0]];
   assert.ok(Math.abs(boss.x - home.x) + Math.abs(boss.y - home.y) > 8, 'не у порога игрока');
+  assert.ok(S.visible(st, 0, boss.x, boss.y, 0) >= 1, 'логово хозяина открыто на карте с начала');
   A.checkGoals(st); assert.equal(st.winner, null, 'на старте цель не выполнена');
   for (let d = 0; d < 7; d++) A.newDay(st);
   assert.equal(st.objects[g.objId].n, 6, 'за неделю хозяин не вырос');

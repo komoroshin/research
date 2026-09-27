@@ -94,6 +94,8 @@
     state.events = (settings.events || []).map(e => Object.assign(U.clone(e), { fired: false }));
     state.storyQueue = [];
     for (const p of state.players) computeVisibility(state, p.id);
+    // логово хозяина земель игрок знает с начала — как место цели в оригинальных сценариях
+    for (const g of (state.goals && state.goals.win) || []) { const o = g.type === 'defeat_monster' && state.objects[g.objId]; if (o) reveal(state, 0, o.x, o.y, 3, 1, o.z || 0); }
     for (const p of state.players) p.income = playerIncome(state, p.id);
     addLog(state, 'Месяц 1, неделя 1, день 1. Партия началась.', 'day');
     syncRng(state);
