@@ -171,10 +171,11 @@
   }
   function saveCampProgress(pr) { try { localStorage.setItem(CAMP_KEY, JSON.stringify(pr)); } catch (e) { /* приватный режим */ } }
 
-  /* Экран кампаний в два уровня: сначала список кампаний, потом сценарии выбранной.
-     Одним списком подряд третья кампания уезжала на 2,5 экрана вниз и её просто не видели. */
-  function campaignForm(cid) {
-    const pr = campProgress();
+  /* Экран кампаний в два уровня: сначала список кампаний (карточки с нарисованными обложками),
+     потом карта выбранной кампании — дорога через сценарии, карточка выбранного и пролог.
+     Картины и карта — H3.CampView (view/campview.js). */
+  function campaignForm(cid, selIdx) {
+    const pr = campProgress(), CV = H3.CampView;
     const progressOf = (c) => {
       const st = pr[c.id] || { done: [], carry: null };
       const n = c.scenarios.length, d = c.scenarios.filter(sc => st.done.includes(sc.id)).length;
@@ -200,39 +201,42 @@
       let html = '<div class="camp">', foot = '';
       for (const camp of H3.Campaign.LIST) {
         const { st, n, d, next } = progressOf(camp);
-        const label = d >= n ? '✔ пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев';
-        html += '<div class="campsc ' + (d >= n ? 'done' : 'open') + '">'
-          + '<div class="row sp"><b>' + UI.esc(camp.name) + '</b><span class="small ' + (d >= n ? 'green' : 'muted') + '">' + label + '</span></div>'
-          + '<div class="small muted">' + UI.esc(camp.desc) + '</div>' + dotsOf(camp, st)
+        const label = d >= n ? '✔ пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' ' + U.plural(n, 'сценарий', 'сценария', 'сценариев');
+        html += '<div class="campsc ccard ' + (d >= n ? 'done' : 'open') + '">'
+          + (CV ? CV.coverHtml(camp, label, d >= n ? 'green' : '') : '<div class="row sp"><b>' + UI.esc(camp.name) + '</b><span class="small muted">' + label + '</span></div>')
+          + '<div class="ccbody"><div class="small muted">' + UI.esc(camp.desc) + '</div>' + dotsOf(camp, st)
           + '<button class="' + (next && d ? 'primary' : '') + '" data-camp="' + camp.id + '">'
-          + (d >= n ? 'Пройти заново' : d ? 'Продолжить' : 'Открыть') + '</button></div>';
+          + (d >= n ? 'Пройти заново' : d ? 'Продолжить' : 'Открыть') + '</button></div></div>';
         if (next && !foot) foot = '<button class="big primary" data-sc="' + camp.id + '|' + next.sc.id + '">'
           + (d ? 'Продолжить: ' : 'Начать: ') + UI.esc(camp.name) + ' — ' + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>';
       }
       html += '</div>';
       if (!foot) foot = '<button class="big" data-camp="' + H3.Campaign.LIST[0].id + '">Все кампании пройдены — начать заново</button>';
       sh.body.innerHTML = html; sh.setFoot(foot); wire();
+      sh.body.querySelectorAll('.ccover[data-cover]').forEach(el => { el.onclick = () => { H3.Audio.play('click'); campaignForm(el.dataset.cover); }; });
+      if (CV) CV.mountCovers(sh.body);
       return;
     }
-    const { st, n, d, next } = progressOf(c);            // уровень 2 — сценарии кампании
-    let html = '<div class="small muted">' + UI.esc(c.desc) + '</div>' + dotsOf(c, st)
-      + '<div class="small muted">' + (d >= n ? 'кампания пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' сценариев') + '</div><div class="camp">';
-    c.scenarios.forEach((sc, i) => {
-      const done = st.done.includes(sc.id);
-      const open = i === 0 || st.done.includes(c.scenarios[i - 1].id);
-      html += '<div class="campsc ' + (done ? 'done' : open ? 'open' : 'locked') + '">'
-        + '<div class="row sp"><b>' + (i + 1) + '. ' + UI.esc(sc.name) + '</b><span class="small ' + (done ? 'green' : 'muted') + '">' + (done ? '✔ пройден' : open ? '' : 'закрыт') + '</span></div>'
-        + '<div class="small muted">' + UI.esc(sc.brief) + '</div>'
-        + (i ? '<div class="small muted">Переходит из прошлого: ' + UI.esc(H3.Campaign.carryText(sc)) + '</div>' : '')
-        + (open ? '<button class="' + (done ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново' : 'Играть') + '</button>' : '')
-        + '</div>';
-    });
-    html += '</div>';
-    if (st.done.length) html += '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>';
-    sh.body.innerHTML = html;
-    sh.setFoot(next ? '<button class="big primary" data-sc="' + c.id + '|' + next.sc.id + '">' + (d ? 'Продолжить: ' : 'Начать: ') + (next.i + 1) + '. ' + UI.esc(next.sc.name) + '</button>'
-      : '<button class="big" data-sc="' + c.id + '|' + c.scenarios[0].id + '">Пройти заново с первого</button>');
-    wire();
+    const { st, n, d, next } = progressOf(c);            // уровень 2 — карта кампании
+    const allDone = d >= n;
+    let sel = selIdx !== undefined && c.scenarios[selIdx] ? selIdx : next ? next.i : 0;
+    const isOpen = i => i === 0 || st.done.includes(c.scenarios[i - 1].id);
+    sh.body.innerHTML = '<div class="cmap"></div><div class="cscwrap"></div>'
+      + (c.prologue ? '<div class="cprol parch"><div class="cepih">Пролог</div><p>' + UI.esc(c.prologue) + '</p></div>'
+        : '<div class="small muted cprol">' + UI.esc(c.desc) + '</div>')
+      + (allDone && c.epilogue ? '<div class="cprol parch"><div class="cepih">Эпилог</div><p>' + UI.esc(c.epilogue) + '</p></div>' : '')
+      + dotsOf(c, st) + '<div class="small muted">' + (allDone ? 'кампания пройдена' : d ? 'пройдено ' + d + ' из ' + n : n + ' ' + U.plural(n, 'сценарий', 'сценария', 'сценариев')) + '</div>'
+      + (st.done.length ? '<div class="center"><button class="sm danger" data-reset="' + c.id + '">Сбросить прогресс</button></div>' : '');
+    const showSel = () => {
+      const sc = c.scenarios[sel], done = st.done.includes(sc.id), open = isOpen(sel);
+      sh.body.querySelector('.cscwrap').innerHTML = CV ? CV.scenarioCardHtml(c, sel, pr) : '<div class="parch"><b>' + (sel + 1) + '. ' + UI.esc(sc.name) + '</b><p>' + UI.esc(sc.brief) + '</p></div>';
+      sh.setFoot(open ? '<button class="big ' + (done && next ? '' : 'primary') + '" data-sc="' + c.id + '|' + sc.id + '">' + (done ? 'Пройти заново: ' : 'Играть: ') + (sel + 1) + '. ' + UI.esc(sc.name) + '</button>'
+        : '<button class="big" disabled>Сценарий закрыт</button>');
+      wire();
+    };
+    if (CV) CV.mountMap(sh.body.querySelector('.cmap'), c, pr, { sel, color: F.PLAYER_COLORS[0], onPick: i => { sel = i; showSel(); } });
+    else sh.body.querySelector('.cmap').remove();
+    showSel();
   }
   function startScenario(cid, sid) {
     const c = H3.Campaign.get(cid); if (!c) return;
@@ -246,7 +250,17 @@
       carry: sc.carry || null,
       campaign: { id: cid, scenario: sid },
     });
-    newGame(opts);
+    delete opts.story; delete opts.bonus;
+    const hasBrief = H3.CampView && ((sc.story && sc.story.intro && sc.story.intro.length) || (sc.bonus && sc.bonus.length));
+    if (!hasBrief) { newGame(opts); return; }
+    // брифинг: реплики героев, затем выбор бонуса (как в оригинале) — и только потом карта
+    const tpl = sc.hero ? HE.get(sc.hero) : null;
+    const heroCls = (opts.carryHero && opts.carryHero.cls) || (tpl && tpl.cls) || null;
+    H3.CampView.briefing({ camp: c, sc, idx, heroCls, color: F.PLAYER_COLORS[0] }).then(res => {
+      if (!res) { if (G.screen !== 'menu') { showScreen('menu'); campaignForm(cid, idx); } return; }   // «назад» — к карте кампании
+      if (res.bonusPick) opts.bonusPick = res.bonusPick;
+      newGame(opts);
+    });
   }
   /** Победа в сценарии кампании: отметить пройденным и сохранить героя. */
   function finishScenario(state) {
@@ -369,11 +383,21 @@
     if (h) { selectHero(h.id); AV.centerOn(h.x, h.y); } else refresh(false);
     if (st.winner !== null) { gameOver(); return; }
     save('auto');
+    let intro = null;
     if (st.day === 1) {
       const special = st.goals && (st.goals.win.length !== 1 || st.goals.win[0].type !== 'kill_all');
-      if (special) UI.alert('Задание', '<div class="parch">' + (st.settings.brief ? '<p>' + UI.esc(st.settings.brief) + '</p>' : '') + goalsHtml() + '</div>');
+      if (special) intro = UI.alert('Задание', '<div class="parch">' + (st.settings.brief ? '<p>' + UI.esc(st.settings.brief) + '</p>' : '') + goalsHtml() + '</div>');
       else UI.toast('Партия началась. Удачи, ' + p.name + '!');
     }
+    // сюжетные письма, отложенные в очереди (первый день или сейв посреди хода), и уровни от бонуса-опыта
+    Promise.resolve(intro).then(() => { if (G.state === st) return storyTurn(); }).catch(e => console.error(e));
+  }
+  /** Сюжет кампании в начале хода человека: письма из state.storyQueue, затем несостоявшиеся уровни героев. */
+  async function storyTurn() {
+    const st = G.state; if (!st || st.winner !== null) return;
+    if (H3.CampView && st.storyQueue && st.storyQueue.length) { await H3.CampView.showQueue(st); refresh(false); }
+    const me = st.players.find(x => !x.isAI); if (!me || G.state !== st) return;
+    for (const h of S.heroesOf(st, me.id)) if (R.pendingLevels(h) > 0 && !h.dead) await levelUps(h);
   }
 
   /* ---------- движение и взаимодействие ---------- */
@@ -620,6 +644,7 @@
       const me = st.players.find(x => !x.isAI) || p, h = selected() || S.heroesOf(st, me.id)[0];
       try { await UI.weekCard({ day, week: st.week, faction: me.faction, heroCls: h ? h.cls : null, color: me.color }); } catch (e) { console.error(e); }
     }
+    try { await storyTurn(); } catch (e) { console.error(e); }   // сюжетные события дня — письмами после открытки недели
     checkEnd();
   }
   async function defendBattle(b) {
@@ -644,7 +669,10 @@
     const camp = won ? finishScenario(st) : null;
     let extra = html;
     if (camp) {
-      extra += '<div class="parch"><p><b>Сценарий пройден.</b>' + (camp.hero ? ' ' + UI.esc(camp.hero.name) + ' (' + camp.hero.level + ' ур.) переходит в следующий сценарий вместе с армией и артефактами.' : '') + '</p>'
+      // реплики героев после победы; после последнего сценария — эпилог кампании
+      const done = camp.camp.scenarios.find(x => x.id === st.settings.campaign.scenario);
+      if (H3.CampView) extra = H3.CampView.outroHtml(camp.camp, done, !camp.next) + extra;
+      extra += '<div class="parch"><p><b>Сценарий пройден.</b>' + (camp.hero && camp.next ? ' ' + UI.esc(camp.hero.name) + ' (' + camp.hero.level + ' ур.) переходит в следующий сценарий вместе с армией и артефактами.' : '') + '</p>'
         + (camp.next ? '<p>Дальше: <b>' + UI.esc(camp.next.name) + '</b> — ' + UI.esc(camp.next.brief) + '</p><p class="small">Переходит: ' + UI.esc(H3.Campaign.carryText(camp.next)) + '.</p>' : '<p>Кампания <b>«' + UI.esc(camp.camp.name) + '»</b> пройдена целиком. Поздравляем!</p>') + '</div>';
     }
     const buttons = camp && camp.next ? [{ value: 'next', label: 'Следующий сценарий', cls: 'primary' }, { value: 'menu', label: 'В меню' }]
