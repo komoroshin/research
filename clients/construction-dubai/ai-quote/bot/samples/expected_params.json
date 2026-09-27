@@ -1,0 +1,12 @@
+{
+  "offer": "Jumeirah Park, District 7, Villa 37",
+  "sections": [
+    {"kind": "main", "name": "Main roof", "area": 110, "gravel": true, "old_wp": false, "drains": true, "drain_leak": false,
+     "ac": true, "joints_lm": 0, "cracks": false, "cbp_sqm": 0, "tiles": false},
+    {"kind": "small", "name": "Small roof", "area": 20, "gravel": true, "old_wp": false, "drains": false, "drain_leak": false,
+     "ac": false, "joints_lm": 0, "cracks": false, "cbp_sqm": 0, "tiles": false}
+  ],
+  "debris": null, "duration": null, "warranty": 15,
+  "questions": ["Сколько воронок на маленькой крыше и нужна ли их чистка?"],
+  "assumptions": ["Площадь основной крыши взята по верхней границе: 110 м²"]
+}
