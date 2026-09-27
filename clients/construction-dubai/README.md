@@ -34,6 +34,7 @@
 | [05-project-register.md](05-project-register.md) + [.csv](05-project-register.csv) | Восстановление маржи по проектам |
 | [06-hypotheses-backlog.md](06-hypotheses-backlog.md) | Бэклог идей с оценкой и приоритетом |
 | [07-ai-quote.md](07-ai-quote.md) | Разбор ТЗ 2025 «Aureum AI Quote» и план собрать его дешевле |
+| [08-waterproofing-customers.md](08-waterproofing-customers.md) | Кто покупает гидроизоляцию в Дубае: спрос, B2B-сегменты, каналы для своего материала |
 | `notes/` | Транскрипты и заметки с интервью (`YYYY-MM-DD-кто.md`) |
 
 ## Статус
