@@ -89,7 +89,13 @@
     if (state.goals) resolveGoals(state);
     // герой, перенесённый из прошлого сценария кампании
     if (settings.carryHero) applyCarry(state, settings.carryHero, settings.carry);
+    // бонус, выбранный перед сценарием кампании, и сюжетные события по дням
+    if (settings.bonusPick) applyBonus(state, 0, settings.bonusPick);
+    state.events = (settings.events || []).map(e => Object.assign(U.clone(e), { fired: false }));
+    state.storyQueue = [];
     for (const p of state.players) computeVisibility(state, p.id);
+    // логово хозяина земель игрок знает с начала — как место цели в оригинальных сценариях
+    for (const g of (state.goals && state.goals.win) || []) { const o = g.type === 'defeat_monster' && state.objects[g.objId]; if (o) reveal(state, 0, o.x, o.y, 3, 1, o.z || 0); }
     for (const p of state.players) p.income = playerIncome(state, p.id);
     addLog(state, 'Месяц 1, неделя 1, день 1. Партия началась.', 'day');
     syncRng(state);
@@ -113,6 +119,7 @@
           if (target) target.art = g.art;
         }
       }
+      if (g.type === 'defeat_monster' && g.objId == null) placeBoss(state, g);
       if ((g.type === 'defeat_hero' || g.type === 'lose_hero') && g.of) {
         const list = Object.values(state.heroes).filter(h => g.of === 'enemy' ? h.owner > 0 : h.owner === 0);
         if (list.length) g.heroId = list[0].id;
@@ -120,6 +127,63 @@
     };
     (state.goals.win || []).forEach(pick);
     (state.goals.lose || []).forEach(pick);
+  }
+  /* Хозяин карты (цель defeat_monster): отряд, который не растёт, не присоединяется и не бежит.
+     Ставим на открытое место поверхности, куда можно дойти (сквозь стражей и заставы — их победят),
+     подальше от стартового города игрока: из самых дальних клеток — случайная. Вокруг всё свободно,
+     чтобы хозяин не перегородил проход. */
+  function placeBoss(state, g) {
+    const m = state.levels[0], w = m.w, h = m.h, N = w * h;
+    const home = state.towns[state.players[0].towns[0]];
+    const C = H3.Creatures;
+    if (!home || !C.get(g.cid)) return;
+    const dist = new Int32Array(N).fill(-1), q = [];
+    const passable = i => {
+      const o = m.objAt[i] >= 0 ? state.objects[m.objAt[i]] : null;
+      if (o) return o.type === 'monster' || o.type === 'border_guard' || o.type === 'quest_guard' || (H3.Objects.get(o.type) || {}).once === 'remove';
+      return !m.block[i];
+    };
+    const s0 = (home.y + 1) * w + home.x; dist[s0] = 0; q.push(s0);
+    for (let qi = 0; qi < q.length; qi++) {
+      const i = q[qi], x = i % w, y = (i / w) | 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const j = ny * w + nx; if (dist[j] >= 0 || !passable(j)) continue;
+        dist[j] = dist[i] + 1; q.push(j);
+      }
+    }
+    const open = i => { const x = i % w, y = (i / w) | 0; if (x < 2 || y < 2 || x >= w - 2 || y >= h - 2) return false;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const j = (y + dy) * w + x + dx; if (m.block[j] || m.objAt[j] >= 0 || dist[j] < 0) return false; }
+      return true; };
+    const nearTown = i => Object.values(state.towns).some(t => Math.abs(t.x - i % w) <= 4 && Math.abs(t.y - ((i / w) | 0)) <= 4 && (t.z || 0) === 0);
+    const cells = q.filter(i => open(i) && !nearTown(i)).sort((a, b) => dist[b] - dist[a]);
+    if (!cells.length) return;
+    const i = state._rng.map.pick(cells.slice(0, Math.max(1, Math.ceil(cells.length * 0.15))));
+    const o = { id: state.nextId++, type: 'monster', x: i % w, y: (i / w) | 0, z: 0, cid: g.cid, n: g.n || 10, mood: 10, character: 'savage', boss: true,
+      value: Math.round(C.aiValue(C.get(g.cid)) * (g.n || 10)), visited: {} };
+    state.objects[o.id] = o; m.objAt[i] = o.id; m.block[i] = 1;
+    g.objId = o.id;
+  }
+  /** Бонус кампании (выбор перед сценарием) — те же виды, что награды квестов, плюс бесплатная постройка. */
+  function applyBonus(state, pid, r) {
+    const hero = heroesOf(state, pid)[0], p = state.players[pid];
+    if (r.kind === 'building') {
+      const town = state.towns[p.towns[0]]; if (!town) return;
+      const B = H3.Buildings;
+      const grant = (bid, depth) => {
+        const b = B.get(town.faction, bid); if (!b || town.buildings[bid] || depth > 12) return;
+        for (const q of b.req || []) grant(q, depth + 1);
+        U.addRes(p.res, b.cost); town.builtToday = false;
+        const res = R.build(state, town, bid);
+        if (!res.ok) U.pay(p.res, b.cost);   // не встала (скажем, верфь не у воды) — деньги не дарим
+      };
+      grant(r.building, 0); town.builtToday = false;
+      return;
+    }
+    if (!hero) { if (r.kind === 'gold' || r.kind === 'res') H3.Quest.give(state, { owner: pid }, r); return; }
+    if (r.kind === 'spell') hero.hasBook = true;
+    H3.Quest.give(state, hero, r);
+    if (r.kind === 'primary' || r.kind === 'xp') { hero.mana = R.heroMaxMana(hero); }
   }
   /** Перенести героя из прошлого сценария кампании на место стартового. */
   /* Правила переноса задаёт сценарий (см. data/campaign.js). Что можно ограничить:
@@ -357,7 +421,7 @@
   }
 
   H3.State = {
-    lvl, resolveGoals, applyCarry, carryOf, carryRules, carriedArmy, DEFAULT_CARRY,
+    lvl, resolveGoals, placeBoss, applyBonus, applyCarry, carryOf, carryRules, carriedArmy, DEFAULT_CARRY,
     VERSION, DIFFICULTY, SIZES, START_KITS, startRes, newGame, attachRng, syncRng, learnTownSpells,
     idx, inMap, terrainAt, objAt, heroAt, townAt, isBlocked, player, heroesOf, townsOf, monstersNear, gatesNear, moveCost, isTerminal, pathfield,
     reveal, heroSight, computeVisibility, visible, playerIncome, addLog, dateStr, dayOfWeek, serialize, deserialize,

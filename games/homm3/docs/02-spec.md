@@ -828,6 +828,14 @@ carry: { hero: true, army: 'none' | 'part' | 'full', arts: true, levelCap: 0 }
 
 **Спрайты** — `js/view/sprites_conflux.js`, `sprites_cove.js`, `sprites_factory.js` (по 7 оригинальных рисунков и 7 перекрасок-улучшений), три `town_*` 56×48 в `sprites_towns.js`, двенадцать портретов в `sprites_heroes.js` как перекраски существующих. Сцена города и палитра стен/крыш для новых фракций — таблицы `SCENE` и `TINT` в `js/view/townscene.js`.
 
+## 41. Дополнение v4.4 «Хроники»
+
+**Данные** (`js/data/campaign.js`): кампания — `{ id, name, desc, faction, hero?, prologue, epilogue, scenarios }`; сценарий дополнительно несёт `story: { intro: [{who, text}], outro }` (who — id шаблона героя или `'narrator'`), `bonus: [reward ×2–3]`, `events: [{ day, who, text, give?, foe? }]`. reward — виды наград квестов (`gold|res|creatures|artifact|spell|primary|xp`) плюс `building`. `H3.Campaign.rewardText(r, faction)`.
+
+**Модель**: `settings.bonusPick` → `S.applyBonus` после переноса героя (постройка ставится бесплатно вместе с недостающими требованиями через `R.build`, `builtToday` сбрасывается; заклинание выдаёт книгу). `state.events` — копия событий с флагом `fired`; `A.fireEvents` в `newDay` выдаёт подарок игроку, подкрепление сильнейшему герою первого живого противника (или в гарнизон) и кладёт `{who, text, gift?, foe?}` в `state.storyQueue`. Новые цели: `hero_level {level}`, `flag_mines {n}`, `army {cid, n}`, `defeat_monster {cid, n}` — `S.placeBoss`: поиск в ширину от входа стартового города сквозь стражей и заставы, открытая клетка 3×3 не ближе 4 клеток к городам, случайная из 15% самых дальних; объект `monster` с `boss: true`, `character: 'savage'`, не растёт по неделям, ИИ его не выбирает целью; логово открыто в тумане с начала.
+
+**Вид** (`js/view/campview.js`, `H3.CampView`): обложки списка (полоса открытки недели + портрет героя, ленивая отрисовка), карта кампании (пергамент по `Scenes.LAND`, точки сценариев — DOM-кнопки 44 px, позиции от id кампании), брифинг (реплики по одной → выбор бонуса, «Пропустить» ведёт к бонусу), письма-вести (`storyTurn()` в `main.js` — после окна задания, после загрузки и после открытки недели; затем повышения уровня от подарков опыта), реплики развязки и эпилог в окне победы. Хозяин земель на карте — `adventure.js`: ореол и масштаб 1,3.
+
 ## 40. Дополнение v4.3 «Мир»
 
 **Жилища на карте** (`vec_dw_a..c.js`): `dwelling_<уровень>@<id базового существа>`, рамка — `dwelling_<уровень>`. `adventure.js` → `dwellSprite(o)` берёт своё, иначе общее по уровню; флажок и ночные огни — из `meta.flag` / `meta.lights`.

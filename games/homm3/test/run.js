@@ -836,6 +836,67 @@ test('кампании: каждый сценарий генерируется, 
   }
 });
 
+test('кампании 4.4: хозяин земель, новые цели, бонус на выбор, сюжетные события', () => {
+  const A = H3.Adventure;
+  const base = { size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' };
+  // хозяин земель: особый отряд стоит на карте, не растёт, дикий; цель — победить его
+  let st = S.newGame(Object.assign({}, base, { goals: { win: [{ type: 'defeat_monster', cid: 'black_dragon', n: 6 }], lose: [{ type: 'lose_all' }] } }));
+  const g = st.goals.win[0], boss = st.objects[g.objId];
+  assert.ok(boss && boss.type === 'monster' && boss.boss && boss.cid === 'black_dragon' && boss.n === 6, 'хозяин поставлен');
+  assert.equal(boss.character, 'savage', 'не присоединяется и не бежит');
+  assert.ok(S.lvl(st, 0).objAt[S.idx(st, boss.x, boss.y, 0)] === boss.id, 'стоит на своей клетке');
+  const home = st.towns[st.players[0].towns[0]];
+  assert.ok(Math.abs(boss.x - home.x) + Math.abs(boss.y - home.y) > 8, 'не у порога игрока');
+  assert.ok(S.visible(st, 0, boss.x, boss.y, 0) >= 1, 'логово хозяина открыто на карте с начала');
+  A.checkGoals(st); assert.equal(st.winner, null, 'на старте цель не выполнена');
+  for (let d = 0; d < 7; d++) A.newDay(st);
+  assert.equal(st.objects[g.objId].n, 6, 'за неделю хозяин не вырос');
+  A.removeObject(st, st.objects[g.objId]); A.checkGoals(st); assert.equal(st.winner, 0, 'хозяин побеждён — победа');
+  assert.ok(/хозяин/i.test(A.goalText(st, g)), 'цель читается текстом');
+  // уровень героя, шахты, войско
+  st = S.newGame(Object.assign({}, base, { goals: { win: [{ type: 'hero_level', level: 5 }], lose: [{ type: 'lose_all' }] } }));
+  A.checkGoals(st); assert.equal(st.winner, null);
+  S.heroesOf(st, 0)[0].level = 5; A.checkGoals(st); assert.equal(st.winner, 0, 'уровень достигнут');
+  st = S.newGame(Object.assign({}, base, { goals: { win: [{ type: 'flag_mines', n: 2 }], lose: [{ type: 'lose_all' }] } }));
+  const mines = Object.values(st.objects).filter(o => o.type === 'mine'); mines.forEach(o => { o.owner = -1; });
+  A.checkGoals(st); assert.equal(st.winner, null);
+  mines[0].owner = 0; mines[1].owner = 0; A.checkGoals(st); assert.equal(st.winner, 0, 'две шахты — победа');
+  st = S.newGame(Object.assign({}, base, { goals: { win: [{ type: 'army', cid: 'griffin', n: 20 }], lose: [{ type: 'lose_all' }] } }));
+  A.checkGoals(st); assert.equal(st.winner, null);
+  S.heroesOf(st, 0)[0].army[6] = { cid: 'griffin', n: 20 }; A.checkGoals(st); assert.equal(st.winner, 0, 'двадцать грифонов — победа');
+  // бонус на выбор перед сценарием
+  const hero0 = st0 => S.heroesOf(st0, 0)[0];
+  st = S.newGame(Object.assign({}, base, { bonusPick: { kind: 'creatures', cid: 'griffin', n: 7 } }));
+  assert.ok(hero0(st).army.some(x => x && x.cid === 'griffin' && x.n >= 7), 'бонус-отряд в армии');
+  st = S.newGame(Object.assign({}, base, { bonusPick: { kind: 'artifact', art: 'titan_gladius' } }));
+  assert.ok(Object.values(hero0(st).arts).includes('titan_gladius') || hero0(st).backpack.includes('titan_gladius'), 'бонус-артефакт у героя');
+  st = S.newGame(Object.assign({}, base, { bonusPick: { kind: 'spell', spell: 'fireball' } }));
+  assert.ok(hero0(st).spells.includes('fireball') && hero0(st).hasBook, 'заклинание и книга');
+  const gold0 = S.newGame(base).players[0].res.gold;
+  st = S.newGame(Object.assign({}, base, { bonusPick: { kind: 'building', building: 'dwell_4' } }));
+  const t0 = st.towns[st.players[0].towns[0]];
+  assert.ok(t0.buildings.dwell_4, 'постройка стоит');
+  assert.equal(st.players[0].res.gold, gold0, 'постройка подарена бесплатно, вместе с требованиями');
+  assert.equal(t0.builtToday, false, 'строить сегодня всё ещё можно');
+  // сюжетные события: в свой день — текст в очередь, подарок игроку, подкрепление врагу
+  st = S.newGame(Object.assign({}, base, { events: [
+    { day: 3, who: 'orrin', text: 'Из столицы пришёл обоз.', give: { kind: 'gold', amount: 1500 } },
+    { day: 4, who: 'narrator', text: 'К врагу подошли наёмники.', foe: { cid: 'orc', n: 12 } }] }));
+  const foe = st.players[1];
+  const foeArmy = () => S.heroesOf(st, 1).reduce((a, h) => a + h.army.reduce((b, x) => b + (x && x.cid === 'orc' ? x.n : 0), 0), 0) + foe.towns.reduce((a, id) => a + st.towns[id].garrison.reduce((b, x) => b + (x && x.cid === 'orc' ? x.n : 0), 0), 0);
+  const orc0 = foeArmy();
+  A.newDay(st); assert.equal(st.storyQueue.length, 0, 'второй день — тихо');
+  const g1 = st.players[0].res.gold; A.newDay(st);
+  assert.equal(st.storyQueue.length, 1, 'третий день — письмо');
+  assert.ok(st.players[0].res.gold >= g1 + 1500, 'обоз дошёл');
+  assert.ok(st.storyQueue[0].gift && st.storyQueue[0].who === 'orrin', 'в письме сказано, что получено');
+  st.storyQueue = [];
+  A.newDay(st); assert.equal(st.storyQueue.length, 1); assert.ok(foeArmy() >= orc0 + 12, 'подкрепление у врага'); assert.ok(st.storyQueue[0].foe, 'и игрок об этом знает');
+  A.newDay(st); assert.equal(st.storyQueue.length, 1, 'события срабатывают один раз');
+  const st2 = S.deserialize(S.serialize(st));
+  assert.ok(st2.events.every(e => e.fired) && st2.storyQueue.length === 1, 'события и очередь переживают сохранение');
+});
+
 test('море по заказу сценария: sea=none осушает карту, sea=wide гарантирует берег и лодки', () => {
   const R = H3.Rules, W = R.TERRAIN_INDEX.water;
   const waterOf = (st) => { const m = st.levels[0]; let n = 0; for (let i = 0; i < m.terrain.length; i++) if (m.terrain[i] === W) n++; return n / m.terrain.length; };
