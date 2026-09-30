@@ -1,0 +1,159 @@
+<title>Дебиторка на автопилоте</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#FFFFFF; --card:#F7F7F7; --ink:#141A22; --text:#333333; --muted:rgba(20,26,34,.62); --line:rgba(20,26,34,.10);
+  --blue:#0460F5; --lime:#D5F774; --lime-ink:#2C3A06; --orange:#E3592E; --orange-bg:#FFF1EC;
+  --sans:"Onest","Helvetica Neue",Arial,system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0E1116;--card:#171B22;--ink:#F2F4F7;--text:#D6DAE0;--muted:rgba(242,244,247,.62);--line:rgba(242,244,247,.12);--blue:#5B97FF;--orange:#FF8A65;--orange-bg:#2E1A14}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0E1116;--card:#171B22;--ink:#F2F4F7;--text:#D6DAE0;--muted:rgba(242,244,247,.62);--line:rgba(242,244,247,.12);--blue:#5B97FF;--orange:#FF8A65;--orange-bg:#2E1A14}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.55;padding-inline:20px;padding-block:0 64px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{color:var(--ink);font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,5.5vw,52px);line-height:1}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.15}
+h3{font-size:17px}
+p{margin:0}
+a{color:var(--blue)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{padding-block:44px 24px;display:grid;gap:14px;border-bottom:1px solid var(--line)}
+.lede{font-size:19px;max-width:60ch;color:var(--ink)}
+section{padding-block:36px 4px;display:grid;gap:16px}
+ol,ul{margin:0;padding-left:20px;display:grid;gap:8px}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;background:var(--card);border-radius:14px;padding:14px 16px}
+.steps li::before{content:counter(s);font-family:var(--mono);font-size:13px;color:var(--lime-ink);background:var(--lime);border-radius:8px;width:28px;height:28px;display:grid;place-items:center}
+.steps b{color:var(--ink)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.box{background:var(--card);border-radius:16px;padding:18px;display:grid;gap:10px;align-content:start}
+.box.no{background:var(--orange-bg)}
+.box.no h3{color:var(--orange)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+td:first-child{color:var(--ink);font-weight:500}
+.note{font-size:14px;color:var(--muted)}
+.q li{font-size:15.5px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="mono">Черновик продукта · для обсуждения · 30.09.2026</div>
+  <h1>Дебиторка на автопилоте</h1>
+  <p class="lede">Сервис подключается к 1С, каждый день видит неоплаченные счета и сам ведёт переписку с должниками: от вежливого напоминания до претензии, готовой к суду. Владелец раз в неделю получает отчёт, кто сколько вернул.</p>
+  <p class="note">По механике это аутрич: последовательность касаний, персонализация, разбор ответов и эскалация. Только адресат — свой клиент, который должен деньги.</p>
+</header>
+
+<section>
+  <div class="mono">Проблема</div>
+  <h2>Почему сейчас</h2>
+  <ul>
+    <li>Просроченная дебиторка в экономике впервые достигла 9 трлн ₽, это +16,9% с начала 2026 года. По опросу ПСБ, «Опоры России» и НАФИ, за полгода с неплатежами столкнулся каждый четвёртый МСП. <a href="https://ru.themoscowtimes.com/2026/07/30/neplatezhi-v-rossiiskoi-ekonomike-vpervie-dostigli-9-trillionov-rublei-a202265">The Moscow Times, 30.07.2026</a></li>
+    <li>В стройке долги по зарплате выросли в 2,13 раза из-за просрочек оплаты от заказчиков, банкротств строительных компаний стало на 41% больше. <a href="https://www.kommersant.ru/doc/8861912">Коммерсантъ, 04.08.2026</a></li>
+    <li>Юристы по взысканию пишут, что 68% должников платят ещё на досудебной стадии. Но эту стадию никто не продаёт как готовый процесс: её делают руками менеджеры и бухгалтерия, когда есть время.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="mono">Как работает</div>
+  <h2>Пять шагов</h2>
+  <ol class="steps">
+    <li><div><b>Подключение к 1С.</b> Каждый день забираем неоплаченные счета: клиент, сумма, срок, дни просрочки, история оплат, договор с условием о неустойке.</div></li>
+    <li><div><b>Последовательность касаний по каждому счёту.</b> Напоминание до срока → в день срока → через 3, 7 и 14 дней → акт сверки → претензия. Каналы: email, MAX, SMS, звонок менеджера по задаче.</div></li>
+    <li><div><b>Письма пишет AI.</b> Пишет по конкретным счетам и суммам, с тоном по стадии: от «дружеского напоминания» до претензии с расчётом неустойки. Жёсткие шаги уходят только после подтверждения менеджера.</div></li>
+    <li><div><b>AI разбирает ответы должников</b> по категориям: «обещал оплатить до…», «спорит», «просит акт или документ», «молчит». Обещания становятся задачами с датой, споры уходят менеджеру.</div></li>
+    <li><div><b>Эскалация и отчёт.</b> Сигнал о блокировке отгрузок, пакет претензии для юриста. Раз в неделю владельцу приходит отчёт: сколько вернули, сколько обещано и кто тянет.</div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="mono">Ценность</div>
+  <h2>Что получает клиент</h2>
+  <ul>
+    <li>Деньги приходят раньше, а просрочка в днях сокращается. Это основная метрика, её считаем до и после.</li>
+    <li>Претензия уходит вовремя и в правильном формате. Для денежных споров из договоров досудебная претензия обязательна, по общему правилу за 30 дней до иска (ст. 4 АПК РФ). Если дойдёт до суда, пакет уже готов.</li>
+    <li>Менеджеры и бухгалтерия больше не пишут напоминания руками.</li>
+    <li>Владелец видит всю картину по должникам без ручных отчётов.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="mono">Целевая аудитория</div>
+  <h2>Кому продаём</h2>
+  <div class="grid2">
+    <div class="box">
+      <h3>Основной сегмент</h3>
+      <ul>
+        <li>Оптовики и дистрибьюторы на 1С (УТ, КА, ERP), 20–250 сотрудников, выручка ~300 млн – 5 млрд ₽</li>
+        <li>Продают B2B с отсрочкой платежа, у них десятки и сотни клиентов-должников одновременно</li>
+        <li><b>Первая вертикаль — стройматериалы:</b> здесь сходятся падение продаж и неплатежи. Дальше FMCG, электротехника, автозапчасти</li>
+        <li>Второй круг — B2B-услуги с постоплатой: логистика, субподрядчики, аутсорс</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Кто решает и кто пользуется</h3>
+      <ul>
+        <li><b>Покупает:</b> собственник, финансовый или коммерческий директор. Цикл сделки — недели</li>
+        <li><b>Пользуются:</b> менеджеры по продажам, бухгалтерия, кредит-контролёр, если он есть</li>
+        <li><b>Как найти снаружи:</b> на сайте указана «отсрочка платежа», открыты вакансии «специалист по дебиторке», в картотеке арбитражных дел компания выступает истцом по взысканию долгов</li>
+      </ul>
+    </div>
+  </div>
+  <div class="box no">
+    <h3>Кому не подходит</h3>
+    <ul>
+      <li>Рознице и бизнесу без отсрочки платежа</li>
+      <li>Тем, у кого главные должники — крупные сети или генподрядчики, которым поставщик боится писать претензии</li>
+      <li>Enterprise со своим отделом кредитного контроля</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="mono">Рынок</div>
+  <h2>Чем отличаемся от того, что уже есть</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Что есть</th><th>Цена</th><th>Чего не хватает</th></tr></thead>
+      <tbody>
+        <tr><td>Модули 1С на Инфостарте</td><td>3–17 тыс. ₽ разово</td><td>Шаблонные рассылки. Нет разбора ответов и эскалации, покупок — десятки</td></tr>
+        <tr><td>Контур.Фокус, Saby</td><td>13–34 тыс. ₽/год</td><td>Проверяют должника, но ничего с ним не делают</td></tr>
+        <tr><td>Юристы по взысканию</td><td>претензия от 15 тыс. ₽, иск 35–75 тыс. ₽</td><td>Подключаются, когда долг уже проблемный</td></tr>
+        <tr><td>Факторинг</td><td>ключевая ставка + 2–5 п.п.</td><td>Только под надёжных крупных покупателей</td></tr>
+        <tr><td>ИИ-агент MBS Group</td><td>по запросу</td><td>Ближайший аналог, но нет публичной цены и кейсов</td></tr>
+        <tr><td>Chaser (UK) — западный образец</td><td>от £199/мес</td><td>Та же модель поверх учётных систем, но не для 1С и РФ</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Цены — с сайтов продавцов; подробности и ссылки — в <span class="mono" style="text-transform:none">offer-research/07-ru-solutions/receivables.md</span>.</p>
+</section>
+
+<section>
+  <div class="mono">Модель</div>
+  <h2>Как зарабатываем</h2>
+  <ul>
+    <li><b>Пилот:</b> 2–3 недели, 1–2 человека, 250–400 тыс. ₽. Подключение к 1С, настройка последовательностей и шаблонов, запуск на части должников, замер «до и после».</li>
+    <li><b>Дальше</b> подписка 15–30 тыс. ₽/мес или меньший фикс + 3–5% от возвращённого.</li>
+    <li><b>Допродажа тому же клиенту на том же движке:</b> реактивация уснувших клиентов, КП из заявок (фото, PDF, письмо → предложение из 1С), контроль отсрочек.</li>
+  </ul>
+  <p class="note">Цены — оценка по ценам конкурентов, рыночных данных по такому продукту нет.</p>
+</section>
+
+<section>
+  <div class="mono">Для обсуждения</div>
+  <h2>Открытые вопросы</h2>
+  <ul class="q">
+    <li>Готовы ли поставщики слать претензии крупным клиентам, или продукт нужен только для «мелких» должников?</li>
+    <li>Пилот фиксом или процент от возвращённого: что проще продать и что лучше для нас по кэшу?</li>
+    <li>Каналы: email + MAX + SMS достаточно, или нужен голосовой звонок-напоминание?</li>
+    <li>Первая вертикаль — стройматериалы или опт с более платёжеспособными клиентами?</li>
+    <li>Берём ли на себя юридическую часть через партнёра или останавливаемся на претензии?</li>
+  </ul>
+</section>
+</div>
