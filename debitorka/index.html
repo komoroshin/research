@@ -8,9 +8,12 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-70 -75 140 150'%3E%3Cg fill='%231c212b'%3E%3Crect x='-29' y='-65' width='26' height='26' rx='9'/%3E%3Crect x='3' y='-65' width='26' height='26' rx='9'/%3E%3Crect x='-45' y='-39' width='26' height='26' rx='9'/%3E%3Crect x='-13' y='-39' width='26' height='26' rx='9'/%3E%3Crect x='19' y='-39' width='26' height='26' rx='9'/%3E%3Crect x='-61' y='-13' width='26' height='26' rx='9'/%3E%3Crect x='-29' y='-13' width='26' height='26' rx='9'/%3E%3Crect x='3' y='-13' width='26' height='26' rx='9'/%3E%3Crect x='35' y='-13' width='26' height='26' rx='9'/%3E%3Crect x='-45' y='13' width='26' height='26' rx='9'/%3E%3Crect x='-13' y='13' width='26' height='26' rx='9'/%3E%3Crect x='19' y='13' width='26' height='26' rx='9'/%3E%3Crect x='-29' y='39' width='26' height='26' rx='9'/%3E%3Crect x='3' y='39' width='26' height='26' rx='9'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Брендовые Suisse Intl и PP Right Grotesk — коммерческие; до подключения файлов шрифтов используем близкие Inter / Inter Tight -->
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Inter+Tight:wght@500;600&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
+  @font-face { font-family: "Suisse Intl"; src: url("fonts/SuisseIntl-Light.woff2") format("woff2"); font-weight: 300; font-display: swap; }
+  @font-face { font-family: "Suisse Intl"; src: url("fonts/SuisseIntl-Regular.woff2") format("woff2"); font-weight: 400 500; font-display: swap; }
+  @font-face { font-family: "Suisse Intl"; src: url("fonts/SuisseIntl-Bold.woff2") format("woff2"); font-weight: 600 700; font-display: swap; }
+  @font-face { font-family: "PP Right Grotesk"; src: url("fonts/PPRightGrotesk-SpatialBlack.woff2") format("woff2"); font-weight: 900; font-display: swap; }
   :root {
     /* Океан Тех — design.md */
     --bg: #FFFFFF;
@@ -35,8 +38,8 @@
     --r-sm: 12px; --r-md: 16px; --r-lg: 24px; --r-pill: 68px;
     --gutter: 64px;
 
-    --f-display: "PP Right Grotesk", "Inter Tight", system-ui, sans-serif;
-    --f-ui: "Suisse Intl", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --f-display: "PP Right Grotesk", "Suisse Intl", system-ui, sans-serif;
+    --f-ui: "Suisse Intl", system-ui, -apple-system, "Segoe UI", sans-serif;
     --f-mono: "IBM Plex Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
@@ -51,7 +54,7 @@
   .wrap { max-width: 1312px; margin: 0 auto; padding: 0 var(--gutter); }
 
   /* Типографика */
-  .display { font: 500 83px/0.9 var(--f-display); letter-spacing: -0.02em; color: var(--ink); margin: 0; text-wrap: balance; }
+  .display { font: 900 83px/0.95 var(--f-display); letter-spacing: -0.02em; color: var(--ink); margin: 0; text-wrap: balance; }
   .h2 { font: 500 64px/0.9 var(--f-ui); letter-spacing: -0.02em; margin: 0; color: var(--ink); text-wrap: balance; }
   .h1num { font: 500 96px/0.9 var(--f-ui); letter-spacing: -0.03em; margin: 0; }
   .h4 { font: 500 40px/1 var(--f-ui); letter-spacing: -0.01em; margin: 0; }
@@ -200,7 +203,7 @@
   @media (max-width: 860px) {
     :root { --gutter: 16px; }
     body { font-size: 14px; }
-    .display { font-size: 40px; }
+    .display { font-size: clamp(30px, 10vw, 40px); }
     .h2 { font-size: 40px; }
     .h1num, .fact .h1num { font-size: 56px; }
     .h4 { font-size: 24px; }
