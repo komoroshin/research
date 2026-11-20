@@ -323,6 +323,7 @@
     drawFog(ctx, st, vis, x0, y0, x1, y1);
     // путь
     if (V.path && sel && !V.anim) drawPath(ctx, sel);
+    drawDeliveryMarkers(ctx, st, TILE, false);
     // наведение
     if (V.hover && !isTouch()) { ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1; ctx.strokeRect(V.hover[0] * TILE + 0.5, V.hover[1] * TILE + 0.5, TILE - 1, TILE - 1); }
     // погода и виньетка — поверх кадра, в экранных координатах
@@ -788,6 +789,42 @@
     }
     if (V.pending && isTouch()) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(V.pending[0] * TILE + 2, V.pending[1] * TILE + 2, TILE - 4, TILE - 4); }
   }
+  const entranceForCache = new WeakMap();
+  function deliveryMarkers(st) {
+    const goal = st.goals?.win?.find(g => g.type === 'deliver_artifact');
+    if (!goal) return [];
+    const cache = st.objects[goal.objId];
+    if (!cache) return [{ point: st.towns[goal.townId], label: 'Стартовый город' }];
+    const markers = [{ point: cache, label: 'Тайник с компасом' }];
+    if (cache.z) {
+      if (!entranceForCache.has(cache)) {
+        const gates = Object.values(st.objects).filter(o => o.type === 'subter_gate' && !o.z);
+        gates.sort((a, b) => Math.hypot(a.x - cache.x, a.y - cache.y) - Math.hypot(b.x - cache.x, b.y - cache.y));
+        entranceForCache.set(cache, gates[0]);
+      }
+      const gate = entranceForCache.get(cache);
+      if (gate) markers.push({ point: gate, label: 'Вход в подземелье' });
+    }
+    return markers;
+  }
+  function drawDeliveryMarkers(ctx, st, scale, mini) {
+    for (const { point, label } of deliveryMarkers(st)) {
+      if ((point.z || 0) !== V.layer) continue;
+      const x = (point.x + 0.5) * scale, y = (point.y + 0.5) * scale;
+      const r = mini ? 5 : TILE * 0.48;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath();
+      ctx.strokeStyle = '#281907'; ctx.lineWidth = mini ? 4 : 5; ctx.stroke();
+      ctx.strokeStyle = '#ffdf60'; ctx.lineWidth = mini ? 2 : 3; ctx.stroke();
+      if (!mini) {
+        ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 4;
+        ctx.strokeStyle = '#281907'; ctx.strokeText(label, x, y - r - 5);
+        ctx.fillStyle = '#fff2a5'; ctx.fillText(label, x, y - r - 5);
+      }
+      ctx.restore();
+    }
+  }
   function drawMini(st, me) {
     if (!V.miniOpen) return;
     if (!V.miniDirty && V.miniFrame === st.day + ':' + Object.keys(st.objects).length + ':' + me) { /* перерисовываем кадр вьюпорта */ }
@@ -805,6 +842,7 @@
     const z = V.cam.z;
     mctx.strokeStyle = '#fff'; mctx.lineWidth = 1;
     mctx.strokeRect(V.cam.x / TILE * scale, V.cam.y / TILE * scale, V.w / z / TILE * scale, V.h / z / TILE * scale);
+    drawDeliveryMarkers(mctx, st, scale, true);
   }
 
   /* ---------- боковая панель ---------- */
@@ -867,5 +905,5 @@
     V.dirty = true;
   }
 
-  H3.AdvView = { init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini, weatherOf };
+  H3.AdvView = { deliveryMarkers, init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini, weatherOf };
 })(typeof window !== 'undefined' ? window : globalThis);

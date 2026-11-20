@@ -739,12 +739,20 @@
   function openMenu() {
     const st = settings();
     const html = UI.el('div', 'col');
+    const markers = AV.deliveryMarkers(G.state);
     html.innerHTML = '<div class="row wrap"><button id="mSave">Сохранить</button><button id="mLoad">Загрузить</button><button id="mExp">Экспорт</button><button id="mImp">Импорт</button></div>'
       + '<h4>Настройки</h4>' + settingsHtml()
       + '<div class="row wrap" style="margin-top:8px"><button id="mHelp">Как играть</button><button id="mQuit" class="danger">Выйти в меню</button></div>'
       + goalsHtml()
+      + markers.map(({ point, label }, i) => '<button data-objective="' + i + '">' + UI.esc(label) + ' · ' + (point.z ? 'подземелье' : 'поверхность') + '</button>').join(' ')
       + '<div class="small muted">Сид карты: ' + (G.state ? G.state.seed : '') + '</div>';
     UI.modal({ title: 'Меню', html, buttons: [{ label: 'Закрыть', cls: 'primary' }], onOpen: (box, close) => {
+      box.querySelectorAll('[data-objective]').forEach(button => {
+        button.onclick = () => {
+          const { point } = markers[Number(button.dataset.objective)];
+          close(); AV.setLayer(point.z || 0); AV.centerOn(point.x, point.y); AV.renderSidebar();
+        };
+      });
       box.querySelector('#mSave').onclick = () => { close(); saveDialog(); };
       box.querySelector('#mLoad').onclick = () => { close(); loadDialog(); };
       box.querySelector('#mExp').onclick = () => { close(); exportDialog(); };
