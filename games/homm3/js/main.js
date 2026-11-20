@@ -125,7 +125,8 @@
       + btn('btnLoad', 'ic_save', 'Загрузить')
       + btn('btnSet', 'ic_sound', 'Настройки')
       + btn('btnHelp', 'ic_spellbook', 'Как играть')
-      + '<div class="mver small muted">Версия ' + VERSION + ' · 13 фракций · 182 существа · гексовые бои · три кампании · квесты · редактор карт</div>';
+      + '<div class="mver small muted">Версия ' + VERSION + ' · 13 фракций · 182 существа · гексовые бои · '
+      + H3.Campaign.LIST.length + ' ' + U.plural(H3.Campaign.LIST.length, 'кампания', 'кампании', 'кампаний') + ' · квесты · редактор карт</div>';
     const on = (id, fn) => { const b = sh.body.querySelector('#' + id); if (b) b.onclick = () => { H3.Audio.play('click'); fn(); }; };
     on('btnCont', () => { const st = load('auto'); if (st) start(st); else { UI.toast('Автосохранение не прочиталось', 'warn'); menu(); } });
     on('btnNew', newGameForm); on('btnCamp', () => campaignForm()); on('btnMaps', mapsForm); on('btnLoad', loadDialog); on('btnSet', settingsDialog); on('btnHelp', help);
@@ -269,11 +270,12 @@
     const pr = campProgress();
     const st = pr[camp.id] || { done: [], carry: null };
     if (!st.done.includes(camp.scenario)) st.done.push(camp.scenario);
-    const heroes = S.heroesOf(state, 0).sort((a, b) => R.armyPower(b.army, b) - R.armyPower(a.army, a));
-    if (heroes[0]) st.carry = S.carryOf(heroes[0]);
-    pr[camp.id] = st; saveCampProgress(pr);
     const idx = c.scenarios.findIndex(x => x.id === camp.scenario);
-    return { camp: c, next: c.scenarios[idx + 1] || null, hero: heroes[0] || null };
+    const heroes = S.heroesOf(state, 0).sort((a, b) => R.armyPower(b.army, b) - R.armyPower(a.army, a));
+    const hero = (c.carryProtagonist && heroes.find(h => h.tid === c.scenarios[idx]?.hero)) || heroes[0];
+    if (hero) st.carry = S.carryOf(hero);
+    pr[camp.id] = st; saveCampProgress(pr);
+    return { camp: c, next: c.scenarios[idx + 1] || null, hero: hero || null };
   }
 
   /* ---------- свои карты и редактор ---------- */
