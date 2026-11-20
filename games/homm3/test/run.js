@@ -836,6 +836,33 @@ test('кампании: каждый сценарий генерируется, 
   }
 });
 
+test('Чёрная вода: победа требует всей операции, а компас нужно вернуть домой', () => {
+  const A = H3.Adventure, camp = H3.Campaign.get('aqueduct-black-water');
+  assert.equal(camp.scenarios.length, 5);
+  assert.ok(H3.Campaign.get('last-aqueduct'), 'старое сохранение узнаёт свою кампанию');
+  const start = i => S.newGame(U.clone(camp.scenarios[i]));
+  let st = start(0);
+  const mines = Object.values(st.objects).filter(o => o.type === 'mine');
+  assert.ok(mines.length >= 6);
+  for (const o of mines.slice(0, 6)) o.owner = 0;
+  st.day = 2;
+  A.checkGoals(st); assert.equal(st.winner, null);
+  const boss = st.objects[st.goals.win[1].objId], home = st.towns[st.players[0].towns[0]];
+  assert.ok(Math.max(Math.abs(home.x - boss.x), Math.abs(home.y - boss.y)) >= 40);
+  A.removeObject(st, boss); A.checkGoals(st); assert.equal(st.winner, 0);
+
+  st = start(2);
+  const goal = st.goals.win[0], item = st.objects[goal.objId], courier = st.heroes[goal.courierId];
+  assert.equal(item.z, 1);
+  A.visit(st, S.heroesOf(st, 1)[0], item);
+  assert.ok(st.objects[item.id], 'противник не может унести компас');
+  courier.inTown = null;
+  A.visit(st, courier, item); A.checkGoals(st); assert.equal(st.winner, null);
+  st = S.deserialize(S.serialize(st));
+  A.enterOwnTown(st, st.heroes[courier.id], st.towns[goal.townId]);
+  assert.equal(st.winner, 0, 'возвращение сразу завершает миссию');
+});
+
 test('кампании 4.4: хозяин земель, новые цели, бонус на выбор, сюжетные события', () => {
   const A = H3.Adventure;
   const base = { size: 'S', seed: 7, opponents: 1, difficulty: 'normal', faction: 'castle' };

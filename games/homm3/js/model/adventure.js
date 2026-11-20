@@ -97,6 +97,7 @@
     if (R.guildLevel(town)) hero.mana = Math.max(hero.mana, R.heroMaxMana(hero));
     const gift = townVisitGift(state, hero, town);
     if (gift) state.lastGift = gift;   // интерфейс покажет и очистит
+    if (state.goals?.win.some(g => g.type === 'deliver_artifact' && g.townId === town.id)) checkGoals(state);
     return learned;
   }
   /** Герой стоит в городе (на его клетке). */
@@ -258,6 +259,8 @@
         return Object.assign(base, { text: 'В сундуке ' + gold + ' золота. Взять золото или раздать его на опыт (' + xp + ')?', choices: [{ id: 'gold', label: gold + ' золота' }, { id: 'xp', label: xp + ' опыта' }] });
       }
       case 'artifact': {
+        if (obj.courierId != null && hero.id !== obj.courierId)
+          return Object.assign(base, { text: 'Футляр опечатан для Уиноны.' });
         const art = AR.get(obj.art); giveArtifact(hero, art.id); removeObject(state, obj);
         S.addLog(state, hero.name + ' нашёл артефакт: ' + art.name + '.', 'good', hero.owner);
         return Object.assign(base, { text: art.name + ' (' + AR.CLASS_NAMES[art.cls] + '): ' + art.desc + '.', icon: 'art_' + art.id });
@@ -876,6 +879,7 @@
     capture_all_towns: () => 'Захватить все города на карте',
     defeat_hero: (state, g) => 'Победить героя ' + ((state.heroes[g.heroId] || {}).name || '?'),
     gather: (state, g) => 'Накопить ' + U.fmt(g.amount) + ' ' + (O.RES_NAMES_GEN[g.res] || g.res),
+    deliver_artifact: (state, g) => 'Доставить «' + AR.get(g.art).name + '» в стартовый город',
     find_artifact: (state, g) => 'Найти артефакт «' + ((AR.get(g.art) || {}).name || '?') + '»',
     survive: (state, g) => 'Продержаться ' + g.days + ' ' + U.plural(g.days, 'день', 'дня', 'дней'),
     build: (state, g) => 'Построить ' + ((H3.Buildings.BY_ID[g.building] || {}).name || g.building),
@@ -897,6 +901,8 @@
       case 'capture_all_towns': return Object.values(state.towns).every(t => t.owner === pid);
       case 'defeat_hero': { const h = state.heroes[g.heroId]; return !h || h.dead; }
       case 'gather': return (p.res[g.res] || 0) >= g.amount;
+      case 'deliver_artifact': return g.objId != null && !state.objects[g.objId] && S.heroesOf(state, pid).some(h =>
+        h.id === g.courierId && h.inTown === g.townId && (Object.values(h.arts).includes(g.art) || h.backpack.includes(g.art)));
       case 'find_artifact': return S.heroesOf(state, pid).some(h => Object.keys(h.arts).some(k => h.arts[k] === g.art) || h.backpack.includes(g.art));
       case 'survive': return state.day > g.days;
       case 'build': return S.townsOf(state, pid).some(t => !!t.buildings[g.building]);
@@ -935,6 +941,13 @@
         return;
       }
     }
+    if (goals.requireAll) {
+      if (goals.win.length && goals.win.every(g => goalMet(state, g, 0))) {
+        state.winner = 0;
+        state.endReason = 'Выполнены все задачи операции';
+      }
+      return;
+    }
     for (const g of goals.win) {
       if (goalMet(state, g, 0)) { state.winner = 0; state.endReason = goalText(state, g); return; }
     }
@@ -953,7 +966,7 @@
       const goals = state.goals || DEFAULT_GOALS;
       const killAllWins = goals.win.some(g => g.type === 'kill_all');
       if (!state.players[0].alive) state.winner = alive.length ? alive[0].id : -1;
-      else if (alive.length === 1 && killAllWins) { state.winner = 0; state.endReason = GOAL_TEXT.kill_all(); }
+      else if (alive.length === 1 && killAllWins && !goals.requireAll) { state.winner = 0; state.endReason = GOAL_TEXT.kill_all(); }
     }
   }
 

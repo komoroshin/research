@@ -733,7 +733,7 @@
     const st = G.state; if (!st) return '';
     const list = A.goalList(st, 0);
     if (!list.length) return '';
-    return '<h4>Цели</h4><div class="small">' + list.map(g =>
+    return '<h4>' + (st.goals?.requireAll ? 'Для победы нужны все цели' : 'Цели') + '</h4><div class="small">' + list.map(g =>
       '<div>' + (g.lose ? '☠ ' : g.done ? '✔ ' : '□ ') + '<span class="' + (g.done ? (g.lose ? 'red' : 'green') : 'muted') + '">' + UI.esc(g.text) + '</span></div>').join('') + '</div>';
   }
   function openMenu() {

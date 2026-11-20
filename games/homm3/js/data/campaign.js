@@ -985,7 +985,7 @@
       ],
     },
     {
-      id: 'last-aqueduct',
+      id: 'last-aqueduct', archived: true,
       name: 'Последний водовод',
       desc: 'Три сценария за Фабрику. Найдите припасы, удержите насосную станцию и верните долине доступ к воде.',
       faction: 'factory', hero: 'wynona',
@@ -1050,6 +1050,60 @@
         },
       ],
     },
+    {
+      id: 'aqueduct-black-water', name: 'Последний водовод — Чёрная вода',
+      faction: 'factory', hero: 'wynona', carryProtagonist: true,
+      desc: 'Пять эпизодов за Фабрику. По сухой трубе идут сигналы из города, который тридцать лет числится на дне водохранилища.',
+      prologue: 'Ночью Уинону будит стук в умывальнике. Три коротких, два длинных. Так её мать отсчитывала смены на старой станции. Утром из трубы выпадает молочный зуб, завёрнутый в свежую газету. Дата сегодняшняя.',
+      epilogue: 'На площади верхнего города ведут черту по кирпичу: досюда поднималась вода, когда открыли нижний шлюз. Год спустя рядом появляется вторая черта, пониже. Девочка из газеты приходит сюда мериться ростом.',
+      scenarios: [
+        {
+          id: 'knock', name: 'Стук в сухой трубе', size: 'L', seed: 67101, faction: 'factory', hero: 'wynona', foes: ['factory', 'stronghold'], opponents: 2, difficulty: 'hard', sea: 'none',
+          brief: 'Удерживайте шесть шахт одновременно и разбейте отряд из 24 автоматонов-стражей у дальнего оголовка. Их позиция отмечена на карте. Уинона должна выжить во всех пяти эпизодах.',
+          goals: { requireAll: true, win: [{ type: 'flag_mines', n: 6 }, { type: 'defeat_monster', cid: 'sentinel_automaton', n: 24 }], lose: [{ type: 'lose_hero', of: 'mine' }, { type: 'lose_all' }] },
+          story: { intro: [say('wynona', 'Мы ответили в трубу. Через минуту пришла поправка: «У вас часы спешат». Там внизу кто-то дежурит.'), say(N, 'На карте ремонтников шесть питающих линий. Последняя уходит к оголовку, где заводские стражи до сих пор исполняют приказ о консервации.')],
+            outro: [say(N, 'Под крышкой оголовка лежала свежая тетрадь. Последняя запись детской рукой: «Когда наверху пойдёт дождь, нас перестанут слышать».')] },
+          bonus: [{ kind: 'creatures', cid: 'engineer', n: 8 }, { kind: 'artifact', art: 'equestrian_gloves' }, { kind: 'building', building: 'hall_2' }],
+          events: [{ day: 5, who: N, text: 'Шахтёры пустили по сети пробный удар. Эхо вернулось дважды. Под долиной две магистрали.' }, { day: 12, who: N, text: 'С верхней плотины пришёл приказ опечатать оголовок. Частная охрана получила стрелков.', foe: { cid: 'gunslinger', n: 8 } }],
+        },
+        {
+          id: 'air', name: 'Воздух на двадцать восемь суток', size: 'L', seed: 67102, faction: 'factory', hero: 'wynona', foes: ['stronghold', 'factory'], opponents: 2, difficulty: 'hard', carry: { army: 'part' },
+          brief: 'Удержите стартовую насосную 28 дней и соберите 24 инженера в армии одного героя. Улучшенные мастерские и набор войск потребуют денег, пока враги давят на гарнизон.',
+          goals: { requireAll: true, win: [{ type: 'survive', days: 28 }, { type: 'army', cid: 'engineer', n: 24 }], lose: [{ type: 'lose_town', of: 'mine' }, { type: 'lose_hero', of: 'mine' }] },
+          story: { intro: [say(N, 'Нижний город нашёл способ отвечать голосом. Диспетчер просит воздух. Из детского отделения уже вынесли свечи: слишком быстро гаснут.'), say('wynona', 'Оставлю половину команды на линии. Остальных учим менять манжету вслепую: внизу фонаря не зажжёшь.')],
+            outro: [say(N, 'На двадцать девятое утро из трубы впервые потянуло хлебом. Следом пришла просьба прислать человека с компасом. План нижнего города нарисован до затопления.')] },
+          bonus: [{ kind: 'building', building: 'citadel' }, { kind: 'creatures', cid: 'engineer', n: 6 }, { kind: 'gold', amount: 4500 }],
+          events: [{ day: 8, who: N, text: 'Ночная смена прибыла прямо в рабочих фартуках.', give: { kind: 'creatures', cid: 'engineer', n: 4 } }, { day: 15, who: N, text: 'Вражеская колонна получила циклопов для осады компрессорной.', foe: { cid: 'cyclops', n: 10 } }, { day: 23, who: N, text: 'На дороге заметили второй обоз с боеприпасами и стрелками.', foe: { cid: 'gunslinger', n: 12 } }],
+        },
+        {
+          id: 'courier', name: 'Обратный билет', size: 'L', seed: 67103, faction: 'factory', hero: 'wynona', foes: ['dungeon', 'cove'], opponents: 2, difficulty: 'hard', carry: { army: 'none', arts: false },
+          brief: 'Новая команда проводников ждёт у входа. Найдите отмеченный на карте тайник и верните Уинону с компасом в стартовый город за 42 дня. Заранее оставьте силы для обратной дороги и обороны дома.',
+          goals: { win: [{ type: 'deliver_artifact', art: 'drowned_compass' }], lose: [{ type: 'lose_hero', of: 'mine' }, { type: 'lose_town', of: 'mine' }, { type: 'timeout', days: 42 }] },
+          story: { intro: [say('wynona', 'Снимайте ранцы. В кабину грузового лифта входят трое и одна сумка. Войско останется у насосов.'), say(N, 'В журнале водолаза сохранился рисунок компаса. Его стрелка помнит север таким, каким он был до сдвига породы.')],
+            outro: [say('wynona', 'Совместите стрелку с планом. Видите? Нижний город стоит прямо под аварийным сбросом. При следующем паводке диспетчер утопит его одним поворотом ключа.')] },
+          bonus: [{ kind: 'creatures', cid: 'gunslinger', n: 6 }, { kind: 'artifact', art: 'boots_speed' }, { kind: 'spell', spell: 'haste' }],
+          events: [{ day: 10, who: N, text: 'Проводники выстучали расписание патрулей. В штабе отметили безопасные часы.', give: { kind: 'xp', amount: 1200 } }, { day: 30, who: 'wynona', text: 'Двенадцать дней до конца пропуска. Компас нужен на поверхности, иначе план так и останется листом бумаги.' }],
+        },
+        {
+          id: 'counterweight', name: 'Цена противовеса', size: 'L', seed: 67104, faction: 'factory', hero: 'wynona', foes: ['castle', 'tower', 'factory'], opponents: 3, difficulty: 'hard', carry: { army: 'part' },
+          brief: 'До конца восьмой недели захватите указанный в целях город и накопите 65 руды для противовеса. Пока вы на штурме, соперники могут отбить добывающие шахты.',
+          goals: { requireAll: true, win: [{ type: 'capture_town', of: 'enemy' }, { type: 'gather', res: 'ore', amount: 65 }], lose: [{ type: 'lose_hero', of: 'mine' }, { type: 'timeout', days: 56 }] },
+          story: { intro: [say(N, 'Верхний город согласился отменить сброс, если Уинона повернёт старый шлюз вручную. Лебёдка стоит за стенами вражеской крепости. Противовес давно переплавили на монету.'), say('wynona', 'Кузнецы отольют груз прямо у лебёдки. Каждая повозка руды, которую мы пустим на укрепления, задержит отливку.')],
+            outro: [say(N, 'Лебёдка сделала первый оборот за тридцать лет. Из-под воды показалась крыша вокзала. И тут на всех трёх плотинах вспыхнул красный семафор.')] },
+          bonus: [{ kind: 'res', res: 'ore', amount: 12 }, { kind: 'creatures', cid: 'sentinel_automaton', n: 8 }, { kind: 'building', building: 'hall_2' }],
+          events: [{ day: 11, who: N, text: 'Монетный двор сдал старые формы. Кузнецам досталась первая партия металла.', give: { kind: 'res', res: 'ore', amount: 5 } }, { day: 25, who: N, text: 'Крепость лебёдки получила подкрепление из столицы.', foe: { cid: 'champion', n: 8 } }],
+        },
+        {
+          id: 'last-train', name: 'Поезд со дна', size: 'XXL', seed: 67105, faction: 'factory', hero: 'wynona', foes: ['factory', 'castle', 'dungeon'], opponents: 3, difficulty: 'hard', carry: { army: 'full' }, sea: 'none',
+          brief: 'На карте XXL возьмите под контроль все города и уничтожьте отмеченную стаю из 18 багровых коатлей. Поезд выйдет из тоннеля, когда все станции дадут зелёный свет и стая перестанет кружить над путями.',
+          goals: { requireAll: true, win: [{ type: 'capture_all_towns' }, { type: 'defeat_monster', cid: 'crimson_couatl', n: 18 }], lose: [{ type: 'lose_hero', of: 'mine' }, { type: 'lose_all' }] },
+          story: { intro: [say(N, 'В нижнем городе сохранился один состав. Путь проходит через территории трёх владельцев плотин. Над последним открытым перегоном вьются коатли: на звук локомотивного свистка они слетаются кормиться.'), say('wynona', 'Я пообещала машинисту один сигнал. Пока горит хоть один красный фонарь, он останется с пассажирами под водой.')],
+            outro: [say(N, 'Уинона трижды стукнула по рельсу. Из тоннеля вышел поезд с погашенными фарами. На последней платформе девочка держала пустую кружку. «Зуб дошёл?» — спросила она.')] },
+          bonus: [{ kind: 'creatures', cid: 'couatl', n: 3 }, { kind: 'artifact', art: 'armor_wonder' }, { kind: 'gold', amount: 8000 }],
+          events: [{ day: 10, who: N, text: 'Машинист просит мел для детей. В ответном вагоне ремонтники прислали механиков.', give: { kind: 'creatures', cid: 'engineer', n: 12 } }, { day: 22, who: N, text: 'Верхняя плотина расконсервировала боевых автоматонов.', foe: { cid: 'sentinel_automaton', n: 22 } }, { day: 36, who: N, text: 'Последняя запись в путевом журнале: все места заняты. Машинист ждёт сигнала.' }],
+        },
+      ],
+    },
   ];
   const BY_ID = Object.create(null);
   LIST.forEach(c => { BY_ID[c.id] = c; });
@@ -1076,6 +1130,6 @@
     return r.kind;
   }
 
-  H3.Campaign = { LIST, BY_ID, get: id => BY_ID[id], carryText, rewardText };
+  H3.Campaign = { LIST: LIST.filter(c => !c.archived), BY_ID, get: id => BY_ID[id], carryText, rewardText };
   if (typeof module !== 'undefined' && module.exports) module.exports = H3.Campaign;
 })(typeof window !== 'undefined' ? window : globalThis);

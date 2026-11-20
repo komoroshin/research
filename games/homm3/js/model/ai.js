@@ -395,7 +395,8 @@
         case 'resource': consider(o.x, o.y, key, o.amount * RES_VALUE[o.res], 'ресурсы', gv, undefined, garmy); break;
         case 'chest': consider(o.x, o.y, key, 1500, 'сундук', gv, undefined, garmy); break;
         case 'campfire': consider(o.x, o.y, key, 900, 'костёр', gv, undefined, garmy); break;
-        case 'artifact': consider(o.x, o.y, key, AR.CLASS_VALUE[AR.get(o.art).cls], 'артефакт', gv, undefined, garmy); break;
+        case 'artifact': if (o.courierId != null) break;
+          consider(o.x, o.y, key, AR.CLASS_VALUE[AR.get(o.art).cls], 'артефакт', gv, undefined, garmy); break;
         case 'mine': if (o.owner !== hero.owner) consider(o.x, o.y, key, MINE_VALUE[o.res] * (o.owner >= 0 ? 1.3 : 1), O.MINE_NAMES[o.res], gv, undefined, garmy); break;
         case 'dwelling': if (o.owner !== hero.owner || o.avail >= 3) consider(o.x, o.y, key, 1500 + (o.avail ? Math.min(3000, o.avail * C.aiValue(C.get(o.cid)) * 0.5) : 0), 'жилище', gv, undefined, garmy); break;
         case 'boat': {

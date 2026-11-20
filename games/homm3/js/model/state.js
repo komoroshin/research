@@ -96,7 +96,7 @@
     state.storyQueue = [];
     for (const p of state.players) computeVisibility(state, p.id);
     // логово хозяина земель игрок знает с начала — как место цели в оригинальных сценариях
-    for (const g of (state.goals && state.goals.win) || []) { const o = g.type === 'defeat_monster' && state.objects[g.objId]; if (o) reveal(state, 0, o.x, o.y, 3, 1, o.z || 0); }
+    for (const g of (state.goals && state.goals.win) || []) { const o = state.objects[g.objId]; if (o) reveal(state, 0, o.x, o.y, 3, 1, o.z || 0); }
     for (const p of state.players) p.income = playerIncome(state, p.id);
     addLog(state, 'Месяц 1, неделя 1, день 1. Партия началась.', 'day');
     syncRng(state);
@@ -111,6 +111,17 @@
         if (t) g.townId = t.id;
       }
       if (g.type === 'lose_town' && g.of === 'mine') { const t = Object.values(state.towns).find(x => x.owner === 0); if (t) g.townId = t.id; }
+      if (g.type === 'deliver_artifact') {
+        g.townId = state.players[0].towns[0];
+        g.courierId = state.players[0].heroes[0];
+        const artifacts = Object.values(state.objects).filter(o => o.type === 'artifact');
+        const cache = artifacts.find(o => o.z === 1) || artifacts[artifacts.length - 1];
+        if (cache) {
+          cache.art = g.art;
+          cache.courierId = g.courierId;
+          g.objId = cache.id;
+        }
+      }
       if (g.type === 'find_artifact' && g.art) {
         // цель-артефакт обязан лежать на карте: если генератор его не положил,
         // подменяем им уже стоящий артефакт (предпочитая охраняемый в подземелье)
