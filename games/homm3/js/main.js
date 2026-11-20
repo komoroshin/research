@@ -331,7 +331,7 @@
   function newGameForm() {
     const sh = shell('Новая игра', { back: menu, backId: 'btnBack' });
     const seg = (key, opts) => '<div class="seg full">' + opts.map(([v, l, t]) => '<button data-k="' + key + '" data-v="' + v + '" class="' + (String(NEW[key]) === String(v) ? 'on' : '') + '">' + l + (t ? '<small>' + UI.esc(t) + '</small>' : '') + '</button>').join('') + '</div>';
-    const SIZE_SUB = { S: '36×36 · 2 игрока', M: '54×54 · до 3', L: '72×72 · до 4' };
+    const SIZE_SUB = { S: '36×36 · 2 игрока', M: '54×54 · до 3', L: '72×72 · до 4', XXL: '144×144 · до 4' };
     const render = () => {
       const f = F.get(NEW.faction);
       const heroes = HE.heroesOfFaction(NEW.faction);
@@ -339,7 +339,7 @@
       const hero = heroes.find(h => h.id === NEW.hero);
       const maxOpp = S.SIZES[NEW.size].maxPlayers - 1; if (NEW.opponents > maxOpp) NEW.opponents = maxOpp;
       const top = sh.body.scrollTop; // перерисовка не должна прыгать к началу
-      sh.body.innerHTML = '<div class="opt"><label>Карта</label>' + seg('size', ['S', 'M', 'L'].map(k => [k, S.SIZES[k].name.replace(/\s*\(.*\)/, ''), SIZE_SUB[k]])) + '</div>'
+      sh.body.innerHTML = '<div class="opt"><label>Карта</label>' + seg('size', Object.keys(S.SIZES).map(k => [k, S.SIZES[k].name.replace(/\s*\(.*\)/, ''), SIZE_SUB[k]])) + '</div>'
         + '<div class="opt"><label>Противники</label>' + '<div class="seg full">' + [1, 2, 3].map(n => '<button data-k="opponents" data-v="' + n + '" class="' + (NEW.opponents === n ? 'on' : '') + '"' + (n > maxOpp ? ' disabled' : '') + '>' + n + (n > maxOpp ? '<small>' + (n === 2 ? 'средняя карта' : 'большая карта') + '</small>' : '') + '</button>').join('') + '</div></div>'
         + '<div class="opt"><label>Сложность</label>' + seg('difficulty', Object.keys(S.DIFFICULTY).map(k => [k, S.DIFFICULTY[k].name])) + '<div class="small muted note">' + UI.esc(S.DIFFICULTY[NEW.difficulty].desc) + '</div></div>'
         + '<div class="opt"><label>Тема карты</label>' + seg('theme', [['random', 'Случайная']].concat(Object.keys(H3.Mapgen.THEMES).map(k => [k, H3.Mapgen.THEMES[k].name]))) + '<div class="small muted note">' + UI.esc(NEW.theme === 'random' ? 'Тема выбирается при создании карты: меняет земли, щедрость и силу стражей.' : H3.Mapgen.THEMES[NEW.theme].desc) + '</div></div>'

@@ -81,7 +81,7 @@ test('стройка: требования и одна в день', () => {
 console.log('mapgen');
 test('все размеры × все числа противников: связность, объекты, время', () => {
   const t0 = Date.now(); let n = 0;
-  for (const size of ['S', 'M', 'L']) for (let opp = 1; opp <= S.SIZES[size].maxPlayers - 1; opp++) for (let seed = 1; seed <= 5; seed++) {
+  for (const size of Object.keys(S.SIZES)) for (let opp = 1; opp <= S.SIZES[size].maxPlayers - 1; opp++) for (let seed = 1; seed <= 5; seed++) {
     let st;
     try { st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'rampart' }); }
     catch (e) { throw new Error('карта не создалась: ' + size + ', противников ' + opp + ', сид ' + seed + ' — ' + e.message); }

@@ -18,7 +18,8 @@
     expert: { name: 'Экспертная', res: { gold: 10000, wood: 10, ore: 10, mercury: 4, sulfur: 4, crystal: 4, gems: 4 }, aiGold: 0.5, aiWood: 0.5, aiRare: 0.3, guards: 1.2, aiSmart: true, dip: 0,
       desc: 'Мало стартовых ресурсов, ИИ получает +50 % золота, дерева и руды, +30 % редких, стражи сильнее на 20 %.' },
   };
-  const SIZES = { S: { w: 36, h: 36, name: 'Маленькая (36×36)', maxPlayers: 2 }, M: { w: 54, h: 54, name: 'Средняя (54×54)', maxPlayers: 3 }, L: { w: 72, h: 72, name: 'Большая (72×72)', maxPlayers: 4 } };
+  const SIZES = { S: { w: 36, h: 36, name: 'Маленькая (36×36)', maxPlayers: 2 }, M: { w: 54, h: 54, name: 'Средняя (54×54)', maxPlayers: 3 }, L: { w: 72, h: 72, name: 'Большая (72×72)', maxPlayers: 4 },
+    XXL: { w: 144, h: 144, name: 'XXL (144×144)', maxPlayers: 4 } };
 
   /* ---------- RNG-потоки ---------- */
   function attachRng(state) {
