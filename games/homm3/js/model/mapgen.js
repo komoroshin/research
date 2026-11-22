@@ -62,6 +62,37 @@
   }
 
   /* ---------- шаблоны зон ---------- */
+  // Случайный XXL: столицы, провинциальные города и несколько богатых областей.
+  // Сначала назначаем владельцев зон, затем общий генератор проводит дороги и проходы.
+  function frontierZones(rng, players) {
+    const sites = [];
+    for (let row = 0; row < 5; row++) for (let col = 0; col < 5; col++) {
+      sites.push({ nx: (col + rng.int(35, 65) / 100) / 5, ny: (row + rng.int(35, 65) / 100) / 5 });
+    }
+    rng.shuffle(sites);
+    const capitals = [sites.pop()];
+    const distance = (a, b) => Math.hypot(a.nx - b.nx, a.ny - b.ny);
+    while (capitals.length < players) {
+      const clearance = site => Math.min(...capitals.map(c => distance(c, site)));
+      sites.sort((a, b) => clearance(b) - clearance(a));
+      const choices = sites.filter(s => clearance(s) >= clearance(sites[0]) * 0.84);
+      const chosen = rng.pick(choices);
+      capitals.push(sites.splice(sites.indexOf(chosen), 1)[0]);
+    }
+    const zones = capitals.map((c, player) => ({ ...c, player, kind: 'start', tier: 1, weight: 1 }));
+    for (let owner = 0; owner < players; owner++) {
+      sites.sort((a, b) => distance(a, capitals[owner]) - distance(b, capitals[owner]));
+      zones.push({ ...sites.shift(), outpost: owner, kind: 'mid', tier: 2, weight: 0.95 });
+    }
+    rng.shuffle(sites);
+    sites.forEach((site, i) => {
+      const rich = i < 3;
+      zones.push({ ...site, kind: rich ? 'treasure' : 'mid', tier: rich ? 3 : 2,
+        weight: rich ? 0.95 : 0.85, marketTown: i >= 3 && i < 6 });
+    });
+    zones.forEach((zone, i) => { zone.id = i; });
+    return zones;
+  }
   function template(sizeKey, nPlayers) {
     const starts = {
       S: [[0.2, 0.22], [0.8, 0.78]],
@@ -122,7 +153,8 @@
 
   function tryGenerate(ctx, nPlayers) {
     const { state, map, rng, w, h, size } = ctx;
-    const zones = template(state.settings.size in H3.State.SIZES ? state.settings.size : 'S', nPlayers);
+    const frontier = state.settings.size === 'XXL' && !state.settings.campaign && !state.goals;
+    const zones = frontier ? frontierZones(rng, nPlayers) : template(state.settings.size in H3.State.SIZES ? state.settings.size : 'S', nPlayers);
     ctx.zones = zones;
     const noise = makeNoise(rng, 64);
     for (const z of zones) {
@@ -250,7 +282,8 @@
     // 4. города
     for (const z of zones) {
       if (z.kind === 'start') { if (!placeTown(ctx, z, state.players[z.player].faction, z.player)) return false; }
-      else if (z.kind === 'treasure' && size.w >= 54) { if (!placeTown(ctx, z, rng.pick(F.LIST).id, -1)) return false; }
+      else if (z.outpost != null) { if (!placeTown(ctx, z, state.players[z.outpost].faction, z.outpost)) return false; }
+      else if (z.marketTown || (z.kind === 'treasure' && size.w >= 54)) { if (!placeTown(ctx, z, rng.pick(F.LIST).id, -1)) return false; }
     }
     // 5. обязательные объекты и сокровища
     for (const z of zones) if (!populateZone(ctx, z)) return false;
@@ -305,7 +338,8 @@
     } else {
       // нейтральный город с гарнизоном
       town.buildings.fort = true; town.buildings.dwell_1 = true; town.buildings.dwell_2 = true; town.buildings.dwell_3 = true; town.buildings.citadel = true;
-      const power = rng.int(15000, 30000) * ctx.guardMul;
+      const power = (z.marketTown ? rng.int(6000, 11000) : rng.int(15000, 30000)) * ctx.guardMul;
+      if (z.marketTown) town.buildings.market = true;
       let left = power;
       for (let t = 3; t >= 1 && left > 0; t--) { const c = F.creaturesOf(faction, t)[0]; const n = Math.max(3, Math.round(left * 0.4 / C.aiValue(c))); R.addToArmy(town.garrison, c.id, n); left -= n * C.aiValue(c); }
       const c4 = F.creaturesOf(faction, 4)[0]; R.addToArmy(town.garrison, c4.id, Math.max(2, Math.round(power * 0.25 / C.aiValue(c4))));

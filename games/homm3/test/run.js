@@ -197,6 +197,31 @@ test('море: связный водоём, лодка, плавание и в�
   assert.ok(left, 'лодка осталась у берега');
 });
 
+test('случайный XXL: провинции, рынки и оборона после потери столицы', () => {
+  const layouts = new Set();
+  for (const seed of [24, 62, 171]) {
+    const st = S.newGame({ size: 'XXL', seed, opponents: 3, difficulty: 'hard', faction: 'factory' });
+    const towns = Object.values(st.towns);
+    assert.equal(towns.length, 14);
+    assert.ok(st.players.every(p => p.towns.length === 2));
+    assert.equal(towns.filter(t => t.owner < 0 && t.buildings.market).length, 3);
+    layouts.add(st.players.map(p => {
+      const t = st.towns[p.towns[0]];
+      return Math.floor(t.x / 29) + ',' + Math.floor(t.y / 29);
+    }).join('|'));
+    const foe = st.players[1], capital = st.towns[foe.towns[0]];
+    H3.AI.recruitInTown(st, capital, []);
+    assert.ok(R.armyPower(capital.garrison) > 0);
+    H3.AI.recruitInTown(st, capital, []);
+    assert.ok(R.armyPower(capital.garrison) > 0, 'визит героя не снимает весь гарнизон');
+    capital.visiting = null;
+    H3.Adventure.captureTown(st, capital, 0, null);
+    for (let day = 0; day < 8; day++) H3.Adventure.newDay(st);
+    assert.ok(foe.alive && foe.daysWithoutTown === 0);
+  }
+  assert.equal(layouts.size, 3);
+});
+
 console.log('battle');
 test('детерминированный автобой, конец, осада ломает стены', () => {
   const run = seed => { const rng = new U.RNG(seed); const h1 = mkHero('orrin', 3), h2 = mkHero('crag_hack', 3);

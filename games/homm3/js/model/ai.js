@@ -39,6 +39,7 @@
     p._buildReserve = 0;
     // 1. города: стройка и найм героев
     for (const t of S.townsOf(state, pid)) {
+      recruitInTown(state, t, think);
       buildInTown(state, t, think, smart);
       hireIfNeeded(state, t, think);
     }
@@ -206,7 +207,7 @@
   function recruitInTown(state, town, think) {
     const p = state.players[town.owner];
     const hero = town.visiting ? state.heroes[town.visiting] : null;
-    const army = hero ? hero.army : town.garrison;
+    const reserve = Math.min(16000, 4500 + 1000 * A.week(state)) * (S.DIFFICULTY[state.settings.difficulty] || S.DIFFICULTY.normal).guards;
     for (let t = 7; t >= 1; t--) {
       const upg = !!town.buildings['dwell_up_' + t];
       let n = R.maxRecruit(state, town, t, upg);
@@ -217,12 +218,23 @@
       const c = C.get(cid); const floor = RESERVE + (FLAGS.econ ? (p._buildReserve || 0) : 0);
       const canPay = Math.floor(Math.max(0, p.res.gold - floor) / c.cost.gold); n = Math.min(n, canPay);
       if (n <= 0) continue;
+      const army = hero && R.armyPower(town.garrison, null) >= reserve ? hero.army : town.garrison;
       if (!R.canAddToArmy(army, cid)) continue;
       const r = R.recruit(state, town, t, c.upg, n, army);
       if (r.ok) think.push('Нанял ' + c.name + ' ×' + r.n);
     }
-    // гарнизон отдаёт армию герою в городе
-    if (hero) { for (let i = 0; i < 7; i++) { const g = town.garrison[i]; if (g && g.n > 0) { const left = R.addToArmy(hero.army, g.cid, g.n); town.garrison[i] = left ? { cid: g.cid, n: left } : null; } } }
+    if (!hero) return;
+    // Оставляем оплаченный гарнизон; всё сверх резерва может уйти в поход.
+    let power = R.armyPower(town.garrison, null);
+    for (const stack of town.garrison) {
+      if (!stack || power <= reserve) continue;
+      const value = C.aiValue(C.get(stack.cid));
+      const n = Math.min(stack.n, Math.floor((power - reserve) / value));
+      const moved = n - R.addToArmy(hero.army, stack.cid, n);
+      stack.n -= moved;
+      power -= moved * value;
+    }
+    R.cleanArmy(town.garrison);
   }
 
   /* ---------- герои ---------- */
@@ -230,6 +242,14 @@
     const p = state.players[hero.owner];
     const blacklist = new Set();
     for (let iter = 0; iter < 14 && !hero.dead && hero.move > 60; iter++) {
+      const home = A.townOfHero(state, hero);
+      if (home && enemyHeroesOf(state, hero.owner).some(enemy =>
+        (enemy.z || 0) === (home.z || 0) && S.visible(state, hero.owner, enemy.x, enemy.y, enemy.z) === 2 &&
+        Math.max(Math.abs(enemy.x - home.x), Math.abs(enemy.y - home.y)) <= 9 &&
+        heroPower(enemy) > R.armyPower(home.garrison, null))) {
+        think.push(hero.name + ' прикрывает ' + home.name);
+        break;
+      }
       const pf = S.pathfield(state, hero);
       const target = chooseTarget(state, hero, pf, blacklist, smart);
       if (!target) { think.push(hero.name + ': целей нет'); break; }
@@ -456,12 +476,13 @@
             if (v) consider(o.x, o.y, 't' + tw.id, v, 'город ' + tw.name, 0);
           } else {
             const dh = tw.visiting ? state.heroes[tw.visiting] : null;
-            const gp = dh ? heroPower(dh) : R.armyPower(tw.garrison, null);
+            const gp = (dh ? heroPower(dh) : 0) + R.armyPower(tw.garrison, null);
             const towers = R.fortLevel(tw) * 1500;
             // штурм считаем настоящим боем — вместе со стенами, рвом и башнями
             const defArmy = dh ? U.clone(dh.army) : U.clone(tw.garrison);
+            if (dh) for (const stack of tw.garrison) if (stack) R.addToArmy(defArmy, stack.cid, stack.n);
             extraSiege = R.fortLevel(tw) ? tw : null;
-            consider(o.x, o.y, 't' + tw.id, 30000 + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
+            consider(o.x, o.y, 't' + tw.id, (p.towns.length ? 30000 : 120000) + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
             extraSiege = null;
           }
           break;
@@ -564,7 +585,7 @@
   }
   async function attackTown(state, hero, town, hooks, smart, think) {
     const dh = town.visiting ? state.heroes[town.visiting] : null;
-    const gp = (dh ? heroPower(dh) : R.armyPower(town.garrison, null)) + R.fortLevel(town) * 1500;
+    const gp = ((dh ? heroPower(dh) : 0) + R.armyPower(town.garrison, null)) + R.fortLevel(town) * 1500;
     if (R.armyEmpty(dh ? dh.army : town.garrison) && !dh) { A.captureTown(state, town, hero.owner, hero); think.push(hero.name + ' занял пустой ' + town.name); return true; }
     if (heroPower(hero) / Math.max(1, gp) < 1.2) return false;
     await runBattle(state, hero, { town }, hooks, smart, think);
