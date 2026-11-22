@@ -18,11 +18,25 @@
 
   // A single compact atlas is shared by both layers and all cached terrain chunks.
   const atlas = typeof Image !== 'undefined' ? new Image() : null;
+  const materials = {};
   if (atlas) {
-    atlas.onload = () => {
+    function refreshArt() {
       const view = H3.AdvView;
       if (view && view.V.state) { view.V.painter = [null, null]; view.invalidate(); }
+    }
+    atlas.onload = refreshArt;
+    const ground = new Image();
+    ground.onload = () => {
+      const side = ground.width / 2;
+      ['sand', 'grass', 'snow', 'rough'].forEach((name, n) => {
+        const tile = document.createElement('canvas');
+        tile.width = tile.height = side;
+        tile.getContext('2d').drawImage(ground, n % 2 * side, (n >> 1) * side, side, side, 0, 0, side, side);
+        materials[name] = tile;
+      });
+      refreshArt();
     };
+    ground.src = 'art/ground.webp';
     atlas.src = 'art/adventure-atlas.webp?v=1';
   }
   function illustration(ctx, frame, x, y, size) {
@@ -198,6 +212,7 @@
       const ST = 2, N = CPX / ST + 1;
       const low = document.createElement('canvas'); low.width = N; low.height = N;
       const lc = low.getContext('2d'), img = lc.createImageData(N, N), d = img.data;
+      const masks = {};
       const W = map.w * TILE, H = map.h * TILE;
       // клетки, у которых все восемь соседей той же местности: для их точек поиск кромки не нужен
       // (точка сдвинута шумом не дальше 20 пикс., поэтому хватает поля в клетку вокруг куска)
@@ -250,10 +265,30 @@
           const crest = Math.sin(x / 29 + y / 11 + v * 8 + n1 / 28);
           relief = (Math.max(0, crest) ** 4 * 13 - Math.max(0, -crest) * 8 + (s - 0.5) * 10) * Math.min(1, dOther / 7);
         }
+        const material = t === 'dirt' ? 'rough' : t;
+        if (materials[material]) {
+          const mask = masks[material] || (masks[material] = lc.createImageData(N, N));
+          const seasonFade = t === 'grass' || t === 'dirt' || t === 'rough' ? 1 - Math.max(SE.snow, SE.fall * 0.65) : 1;
+          mask.data[k + 3] = 228 * seasonFade * Math.min(1, dOther / 9);
+        }
         d[k] = c[0] + relief; d[k + 1] = c[1] + relief; d[k + 2] = c[2] + relief * 0.8; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
       ctx.save(); ctx.setTransform(RS * ST, 0, 0, RS * ST, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, -0.5, -0.5); ctx.restore();
+      // Sample in world coordinates so scrolling and chunk boundaries do not shift the texture.
+      for (const [name, mask] of Object.entries(masks)) {
+        const layer = document.createElement('canvas');
+        layer.width = layer.height = CPX * RS;
+        const c = layer.getContext('2d'), scale = 0.82;
+        c.setTransform(RS * scale, 0, 0, RS * scale, -X0 * RS, -Y0 * RS);
+        c.fillStyle = c.createPattern(materials[name], 'repeat');
+        c.fillRect(X0 / scale, Y0 / scale, CPX / scale, CPX / scale);
+        lc.putImageData(mask, 0, 0);
+        c.globalCompositeOperation = 'destination-in';
+        c.setTransform(RS * ST, 0, 0, RS * ST, 0, 0);
+        c.drawImage(low, -0.5, -0.5);
+        ctx.drawImage(layer, 0, 0);
+      }
     }
 
     /** Лужа: болотная (тёмная), талая (в ней небо) или замёрзшая (лёд с бликом). */
