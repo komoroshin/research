@@ -478,6 +478,14 @@
       placeArtifact(ctx, z, 'minor');
       placeResources(ctx, z, rng.int(3, 5), 2);
       placeTreasure(ctx, z, 2, 9000);
+      if (['XL', 'XXL'].includes(state.settings.size) && !state.settings.campaign && !state.goals) {
+        const sites = [
+          ['observatory', 'bank_griffin'],
+          ['oasis', 'bank_dwarven'],
+          ['magic_well', 'arena'],
+        ];
+        for (const type of sites[z.id % sites.length]) placeSimple(ctx, z, type, 1);
+      }
     } else {
       placeMine(ctx, z, 'gold', rng.int(6000, 10000));
       placeMine(ctx, z, 'gold', rng.int(6000, 10000));

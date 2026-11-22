@@ -38,9 +38,26 @@
     state._ai[pid] = { threat: smart && FLAGS.threat ? buildThreat(state, pid) : null };
     p._buildReserve = 0;
     // 1. города: стройка и найм героев
-    for (const t of S.townsOf(state, pid)) {
-      recruitInTown(state, t, think);
-      buildInTown(state, t, think, smart);
+    const towns = S.townsOf(state, pid);
+    const capital = smart && !FLAGS.econ && towns.find(t => !t.buildings.dwell_7);
+    let budget;
+    if (capital) {
+      const next = () => B.AI_ORDER.map(id => B.get(capital.faction, id)).find(b =>
+        b && !capital.buildings[b.id] && b.req.every(id => capital.buildings[id]) &&
+        (b.id !== 'hall_4' || !towns.some(t => t.buildings.hall_4)));
+      const target = next();
+      if (target && !capital.builtToday) {
+        if (!U.canAfford(p.res, target.cost)) tradeForBuilding(p, target.cost, towns);
+        if (R.build(state, capital, target.id).ok) think.push('Строю ' + target.name + ' в ' + capital.name);
+      }
+      budget = capital.buildings.dwell_7 ? null : next()?.cost;
+      p._buildReserve = budget?.gold || 0;
+    }
+    for (const t of towns) {
+      if (!capital) recruitInTown(state, t, think);
+      if (capital && t !== capital) buildByOrder(state, t, think, budget);
+      else if (!capital) buildInTown(state, t, think, smart);
+      if (capital) recruitInTown(state, t, think);
       hireIfNeeded(state, t, think);
     }
     // 1б. найм ДО выхода героев: иначе прирост остаётся в гарнизоне до следующего визита
@@ -150,13 +167,39 @@
         return 500;
     }
   }
+  // Рассчитываем весь обмен заранее, чтобы не продать запасы впустую.
+  function tradeForBuilding(player, cost, towns) {
+    const markets = towns.filter(t => t.buildings.market).length;
+    if (!markets || player.res.gold < (cost.gold || 0)) return;
+    const stock = { ...player.res };
+    for (const to of U.RES) {
+      if (to === 'gold') continue;
+      let need = (cost[to] || 0) - stock[to];
+      if (need <= 0) continue;
+      const donors = U.RES.filter(r => r !== to && r !== 'gold')
+        .sort((a, b) => (stock[b] - (cost[b] || 0)) - (stock[a] - (cost[a] || 0)));
+      for (const from of [...donors, 'gold']) {
+        const rate = R.marketRate(from, to, markets);
+        const spare = stock[from] - (cost[from] || 0) - (from === 'gold' ? RESERVE : 0);
+        const count = Math.min(need, Math.floor(spare / rate.give));
+        if (count <= 0) continue;
+        stock[from] -= count * rate.give;
+        stock[to] += count;
+        need -= count;
+        if (!need) break;
+      }
+      if (need) return;
+    }
+    Object.assign(player.res, stock);
+  }
   /** Стройка v1.6: жёсткий порядок AI_ORDER, копим на первое недоступное. */
-  function buildByOrder(state, town, think) {
+  function buildByOrder(state, town, think, budget) {
     const p = state.players[town.owner];
     const list = B.forFaction(town.faction);
     for (const bid of B.AI_ORDER) {
       const b = list.find(x => x.id === bid); if (!b || town.buildings[bid]) continue;
       const chk = R.canBuild(state, town, bid);
+      if (budget && !U.RES.every(r => !b.cost[r] || p.res[r] >= b.cost[r] + (budget[r] || 0))) continue;
       if (chk.ok) { R.build(state, town, bid); think.push('Строю ' + b.name + ' в ' + town.name); return; }
       if (chk.reason === 'Не хватает ресурсов' && b.cost.gold && p.res.gold >= b.cost.gold * 0.6 && U.RES.every(r => r === 'gold' || (p.res[r] || 0) >= (b.cost[r] || 0))) { think.push('Коплю на ' + b.name); return; }
     }
@@ -199,15 +242,18 @@
     const p = state.players[town.owner];
     const n = p.heroes.length;
     const want = n === 0 || (n === 1 && p.res.gold >= R.HERO_COST + 1000) || (n === 2 && p.res.gold >= R.HERO_COST + 6000 && S.dayOfWeek(state.day) <= 3);
-    if (!want || town.visiting) return;
+    if (!want || town.visiting || (n && p.res.gold - R.HERO_COST < p._buildReserve)) return;
     if (!town.tavern.length) town.tavern = R.tavernCandidates(state, town, 2);
     const r = A.hireHero(state, town, town.tavern[0]);
     if (r.ok) { think.push('Нанял героя ' + r.hero.name); r.hero._fresh = true; }
   }
+  function garrisonReserve(state) {
+    return Math.min(16000, 4500 + 1000 * A.week(state)) * (S.DIFFICULTY[state.settings.difficulty] || S.DIFFICULTY.normal).guards;
+  }
   function recruitInTown(state, town, think) {
     const p = state.players[town.owner];
     const hero = town.visiting ? state.heroes[town.visiting] : null;
-    const reserve = Math.min(16000, 4500 + 1000 * A.week(state)) * (S.DIFFICULTY[state.settings.difficulty] || S.DIFFICULTY.normal).guards;
+    const reserve = garrisonReserve(state);
     for (let t = 7; t >= 1; t--) {
       const upg = !!town.buildings['dwell_up_' + t];
       let n = R.maxRecruit(state, town, t, upg);
@@ -215,7 +261,7 @@
       if (!n) continue;
       const cid = F.creaturesOf(town.faction, t)[upg && town.buildings['dwell_up_' + t] && R.maxRecruit(state, town, t, true) > 0 ? 1 : 0].id;
       // резерв золота
-      const c = C.get(cid); const floor = RESERVE + (FLAGS.econ ? (p._buildReserve || 0) : 0);
+      const c = C.get(cid); const floor = Math.max(RESERVE, p._buildReserve || 0);
       const canPay = Math.floor(Math.max(0, p.res.gold - floor) / c.cost.gold); n = Math.min(n, canPay);
       if (n <= 0) continue;
       const army = hero && R.armyPower(town.garrison, null) >= reserve ? hero.army : town.garrison;
@@ -460,6 +506,9 @@
             const avail = tw.avail.reduce((a, n, i) => a + n * (tw.buildings['dwell_' + (i + 1)] ? C.aiValue(F.creaturesOf(tw.faction, i + 1)[0]) : 0), 0);
             let v = 0;
             if (role === 'main' && S.dayOfWeek(state.day) <= 2 && avail > my * 0.15) v = 6000;
+            const surplus = R.armyPower(tw.garrison, null) - garrisonReserve(state);
+            if (role === 'main' && surplus > Math.max(2000, my * 0.2) && !tw.visiting)
+              v = Math.max(v, 6000 + Math.min(18000, surplus));
             if (!FLAGS.defend) {
               const near = enemyHeroesOf(state, hero.owner).some(e => Math.max(Math.abs(e.x - tw.x), Math.abs(e.y - tw.y)) <= 8 && heroPower(e) > R.armyPower(tw.garrison, null) * 1.2);
               if (near && role === 'main') v = 20000;
@@ -482,7 +531,7 @@
             const defArmy = dh ? U.clone(dh.army) : U.clone(tw.garrison);
             if (dh) for (const stack of tw.garrison) if (stack) R.addToArmy(defArmy, stack.cid, stack.n);
             extraSiege = R.fortLevel(tw) ? tw : null;
-            consider(o.x, o.y, 't' + tw.id, (p.towns.length ? 30000 : 120000) + (tw.pass ? 14000 : 0) + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
+            consider(o.x, o.y, 't' + tw.id, (p.towns.length ? 30000 : 120000) + (tw.owner >= 0 && role === 'main' ? (state.players[tw.owner].towns.length === 1 ? 50000 : 25000) : 0) + (tw.pass ? 14000 : 0) + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
             extraSiege = null;
           }
           break;
