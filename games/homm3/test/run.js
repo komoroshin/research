@@ -103,6 +103,11 @@ test('все размеры × все числа противников: свя�
     assert.ok(zonesReached.size >= zonesWithObj.size - 1, 'отрезано зон: ' + (zonesWithObj.size - zonesReached.size) + ' в ' + tag);
     const mines = Object.values(st.objects).filter(o => o.type === 'mine' && !o.z);
     assert.ok(mines.filter(o => o.res === 'wood').length >= st.players.length, 'лесопилки ' + tag);
+    if (size === 'XL' || size === 'XXL') {
+      const roadZones = new Set();
+      map.road.forEach((road, i) => { if (road) roadZones.add(map.zone[i]); });
+      assert.ok(roadZones.size >= new Set(map.zone).size - 1, 'дороги вне столиц ' + tag);
+    }
     const zone0 = map.zone[t.y * map.w + t.x];
     const near = mines.filter(o => map.zone[o.y * map.w + o.x] === zone0 && ['wood', 'ore'].includes(o.res));
     assert.ok(near.length >= 2, 'стартовые шахты ' + tag);

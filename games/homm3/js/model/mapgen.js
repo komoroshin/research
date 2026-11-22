@@ -301,7 +301,10 @@
     // 7. дороги, проверка связности
     rebuildBlock(ctx);
     if (!ensureConnectivity(ctx, passages)) return false;
-    buildRoads(ctx, passages);
+    if ((compact || frontier) && !state.settings.campaign && !state.goals) {
+      buildRegionalRoads(ctx, passages);
+      populateRoadsides(ctx);
+    } else buildRoads(ctx, passages);
     rebuildBlock(ctx);
     populateSea(ctx);
     rebuildBlock(ctx);
@@ -648,6 +651,89 @@
         const path = H3.Pathfind.pathTo(res, tx, ty); if (!path) continue;
         for (const [x, y] of path) if (map.objAt[y * w + x] < 0) map.road[y * w + x] = 1;
         map.road[(town.y + 1) * w + town.x] = 1;
+      }
+    }
+  }
+
+  // Дорога продолжается с обеих сторон прохода. Внутри области остаются
+  // отдельные ответвления к шахтам, жилищам и местам с наградой за бой.
+  function buildRegionalRoads(ctx, passages) {
+    const { w, h, state, map } = ctx;
+    const sites = Object.values(state.objects);
+    for (const z of ctx.zones) {
+      const local = sites.filter(o => map.zone[o.y * w + o.x] === z.id);
+      const town = local.find(o => o.type === 'town');
+      let start = town && [town.x, town.y + 1];
+      if (!start) {
+        let best = Infinity;
+        for (let i = 0; i < w * h; i++) {
+          if (map.block[i] || map.zone[i] !== z.id) continue;
+          const x = i % w, y = Math.floor(i / w), d = Math.abs(x - z.cx) + Math.abs(y - z.cy);
+          if (d < best) { start = [x, y]; best = d; }
+        }
+      }
+      if (!start) continue;
+      const exits = passages.filter(p => p.link.a === z.id || p.link.b === z.id);
+      const ends = new Set(exits.map(p => p.y * w + p.x));
+      const paths = H3.Pathfind.dijkstra({ w, h, start, cost(x, y) {
+        const i = y * w + x;
+        if (ends.has(i)) return 100;
+        if (map.zone[i] !== z.id && !ctx.corridor[i]) return Infinity;
+        if (map.block[i] && map.objAt[i] < 0) return Infinity;
+        return R.TERRAIN_COST[map.terrain[i]] || 100;
+      }, terminal: (x, y) => map.objAt[y * w + x] >= 0 });
+      const mines = local.filter(o => o.type === 'mine');
+      const targets = [...exits, ...(town && z.kind === 'start' ? mines : mines.slice(0, 1))];
+      for (const group of [local.filter(o => O.get(o.type).bank), local.filter(o => o.type === 'dwelling')]) {
+        // Дальняя цель даёт дорогу и той части области, где нет города.
+        group.sort((a, b) => Math.hypot(b.x - start[0], b.y - start[1]) - Math.hypot(a.x - start[0], a.y - start[1]));
+        if (group.length) targets.push(group[0]);
+      }
+      for (const goal of targets) {
+        const path = H3.Pathfind.pathTo(paths, goal.x, goal.y);
+        if (!path) continue;
+        map.road[start[1] * w + start[0]] = 1;
+        for (const [x, y] of path) if (!map.block[y * w + x]) map.road[y * w + x] = 1;
+      }
+    }
+  }
+
+  function populateRoadsides(ctx) {
+    const { w, h, map, rng } = ctx;
+    const stops = [
+      ['windmill', 'trading_post'], ['mercenary_camp', 'hill_fort'],
+      ['shrine_2', 'magic_well'], ['learning_stone', 'observatory'],
+    ];
+    // В первую очередь заполняем длинные пустые отрезки. Сама дорога
+    // и свободные подходы к существующим объектам остаются проходимыми.
+    const clearance = new Uint8Array(w * h).fill(12);
+    function mark(x, y) {
+      for (let ny = Math.max(0, y - 11); ny <= Math.min(h - 1,y + 11); ny++)
+        for (let nx = Math.max(0, x - 11); nx <= Math.min(w - 1,x + 11); nx++) {
+          const i = ny * w + nx;
+          clearance[i] = Math.min(clearance[i], Math.max(Math.abs(nx - x), Math.abs(ny - y)));
+        }
+    }
+    for (const o of Object.values(ctx.state.objects)) mark(o.x,o.y);
+    const candidates = ctx.zones.map(() => []);
+    const ring = [-w - 1, -w, -w + 1, -1, 1, w - 1, w, w + 1];
+    for (let y = 2; y < h - 2; y++) for (let x = 2; x < w - 2; x++) {
+      const i = y * w + x;
+      if (!free(ctx, x, y) || map.road[i] || clearance[i] < 3) continue;
+      if (ring.every(d => !map.block[i + d]) && ring.some(d => map.road[i + d]))
+        candidates[map.zone[i]].push(i);
+    }
+    for (const z of ctx.zones) {
+      const pair = stops[z.id % stops.length];
+      const cells = candidates[z.id];
+      rng.shuffle(cells);
+      for (const type of pair) {
+        let i = -1;
+        for (const cell of cells) if (i < 0 || clearance[cell] > clearance[i]) i = cell;
+        if (i < 0 || clearance[i] < 3) break;
+        const x = i % w, y = Math.floor(i / w);
+        initObject(ctx, addObject(ctx, { type, x, y }), z);
+        mark(x, y);
       }
     }
   }
