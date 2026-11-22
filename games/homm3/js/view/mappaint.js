@@ -16,46 +16,6 @@
   const H3 = root.H3 || (root.H3 = {});
   const TILE = 32, CH = 8, CPX = CH * TILE;
 
-  // A single compact atlas is shared by both layers and all cached terrain chunks.
-  const atlas = typeof Image !== 'undefined' ? new Image() : null;
-  const materials = {};
-  if (atlas) {
-    function refreshArt() {
-      const view = H3.AdvView;
-      if (view && view.V.state) { view.V.painter = [null, null]; view.invalidate(); }
-    }
-    atlas.onload = refreshArt;
-    const ground = new Image();
-    ground.onload = () => {
-      const side = ground.width / 2;
-      const tile = document.createElement('canvas');
-      tile.width = tile.height = side;
-      const c = tile.getContext('2d', { willReadFrequently: true });
-      if (!c) return;
-      try {
-        ['sand', 'grass', 'snow', 'rough'].forEach((name, n) => {
-          c.drawImage(ground, n % 2 * side, (n >> 1) * side, side, side, 0, 0, side, side);
-          materials[name] = { pixels: c.getImageData(0, 0, side, side).data, side };
-        });
-      } catch (error) {
-        // Local file previews may disallow image readback; the procedural terrain remains playable.
-        if (error.name !== 'SecurityError') throw error;
-      } finally {
-        tile.width = tile.height = 0;
-      }
-      refreshArt();
-    };
-    ground.src = 'art/ground.webp';
-    atlas.src = 'art/adventure-atlas.webp?v=1';
-  }
-  function illustration(ctx, frame, x, y, size) {
-    if (!atlas || !atlas.complete || !atlas.naturalWidth || frame < 0) return false;
-    ctx.save(); ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(atlas, frame % 5 * 196, Math.floor(frame / 5) * 196, 196, 196,
-      x - size / 2, y - size, size, size);
-    ctx.restore(); return true;
-  }
-
   /* ---------- шум ---------- */
   function hash(x, y, s) { let h = (x * 374761393 + y * 668265263 + s * 144665) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
   function vnoise(x, y, s) {
@@ -268,27 +228,10 @@
         // на самой границе обе стороны сходятся к середине: у воды шов ±2.5 точки, между сушей — шире, как мазок
         const BW = t === 'water' || tOther === 'water' ? 2.5 : 7;
         if (dOther < BW) c = mix(c, tone(tOther, true, v, s, dLand, dWater, f, aN), 0.5 * sstep(BW, 0, dOther));
-        let relief = 0;
-        if (t === 'sand') {
-          const crest = Math.sin(x / 29 + y / 11 + v * 8 + n1 / 28);
-          relief = (Math.max(0, crest) ** 4 * 13 - Math.max(0, -crest) * 8 + (s - 0.5) * 10) * Math.min(1, dOther / 7);
-        }
-        const material = materials[t === 'dirt' ? 'rough' : t];
-        if (material) {
-          const { side, pixels } = material;
-          const source = 4 * ((Math.floor(y / 0.82) % side) * side + Math.floor(x / 0.82) % side);
-          const seasonal = t === 'grass' || t === 'dirt' || t === 'rough';
-          const fade = seasonal ? 1 - Math.max(SE.snow, SE.fall * 0.65) : 1;
-          const alpha = 228 / 255 * fade * Math.min(1, dOther / 9);
-          for (let channel = 0; channel < 3; channel++) {
-            c[channel] += (pixels[source + channel] - c[channel]) * alpha;
-          }
-        }
-        d[k] = c[0] + relief; d[k + 1] = c[1] + relief; d[k + 2] = c[2] + relief * 0.8; d[k + 3] = 255;
+        d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
       ctx.save(); ctx.setTransform(RS * ST, 0, 0, RS * ST, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, -0.5, -0.5); ctx.restore();
-      low.width = low.height = 0;
     }
 
     /** Лужа: болотная (тёмная), талая (в ней небо) или замёрзшая (лёд с бликом). */
@@ -359,7 +302,7 @@
           ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(x + s * 0.5, y + s * 0.4, s * 1.3, s * 0.6, 0, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = 'rgb(' + mix(base, [255, 255, 255], 0.15).map(v => v | 0).join(',') + ')'; ctx.beginPath(); ctx.ellipse(x, y - s * 0.2, s * 1.2, s * 0.8, 0, 0, Math.PI * 2); ctx.fill();
         }
-        if (P.ripple && rnd() < 0.22) { const p = path('rgba(160,120,70,0.35)'); for (let i = 0; i < 3; i++) { const x = bx + rnd() * TILE, y = by + rnd() * TILE, L = 4 + rnd() * 6; p.moveTo(x - L, y); p.quadraticCurveTo(x, y - 1.5, x + L, y + 0.5); } }
+        if (P.ripple) { const p = path('rgba(160,120,70,0.35)'); for (let i = 0; i < 3; i++) { const x = bx + rnd() * TILE, y = by + rnd() * TILE, L = 4 + rnd() * 6; p.moveTo(x - L, y); p.quadraticCurveTo(x, y - 1.5, x + L, y + 0.5); } }
         if (P.cracks && rnd() < 0.3 * P.cracks) { const p = path('rgba(30,20,12,0.4)'); let x = bx + rnd() * TILE, y = by + rnd() * TILE; p.moveTo(x, y); for (let k = 0; k < 4; k++) { x += (rnd() - 0.5) * 9; y += (rnd() - 0.3) * 4; p.lineTo(x, y); } }
         if (P.sparkle) { ctx.fillStyle = 'rgba(255,255,255,0.95)'; for (let i = 0; i < 4; i++) ctx.fillRect(bx + rnd() * TILE, by + rnd() * TILE, 0.6, 0.6); }
         if (P.puddles && rnd() < 0.35) {
@@ -381,7 +324,7 @@
     function paintRoads(ctx, cx, cy) {
       const x0 = cx * CH - 1, y0 = cy * CH - 1, x1 = cx * CH + CH, y1 = cy * CH + CH;
       const roadAt = (x, y) => x >= 0 && y >= 0 && x < map.w && y < map.h && map.road[y * map.w + x];
-      const P = new Path2D(), stones = new Path2D(); let any = false;
+      const P = new Path2D(); let any = false;
       const DIRS = [[1, 0], [0, 1], [1, 1], [1, -1]];
       for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
         if (!roadAt(x, y)) continue; any = true;
@@ -391,24 +334,12 @@
           if (!roadAt(x + d[0], y + d[1])) continue;
           if (d[0] && d[1] && (roadAt(x + d[0], y) || roadAt(x, y + d[1]))) continue;
           P.moveTo(cxp, cyp); P.lineTo(cxp + d[0] * TILE, cyp + d[1] * TILE);
-          const len = Math.hypot(...d), nx = -d[1] / len, ny = d[0] / len;
-          const count = Math.round(TILE * len / 5);
-          for (let row = 0; row < count; row++) {
-            const t = (row + 0.5) / count, ax = cxp + d[0] * TILE * t, ay = cyp + d[1] * TILE * t;
-            for (const side of [-1, 1]) {
-              const grain = hash(x + row, y + side, seed);
-              const j = side * (1 + grain * 3);
-              stones.moveTo(ax + nx * j, ay + ny * j);
-              stones.lineTo(ax + nx * (j + 1.8) + d[0], ay + ny * (j + 1.8) + d[1]);
-            }
-          }
         }
         if (!links) { P.moveTo(cxp, cyp); P.lineTo(cxp + 0.1, cyp); }
       }
       if (!any) return;
       ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       for (const [c, w] of [['rgba(60,44,28,0.35)', 16], ['#7a6040', 12], ['#b49a70', 9], ['rgba(230,210,170,0.35)', 3]]) { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.stroke(P); }
-      ctx.strokeStyle = 'rgba(255,228,173,0.29)'; ctx.lineWidth = 1.25; ctx.stroke(stones);
       // зимой дорогу заметает, посередине — накатанная колея; весной она раскисает
       if (SE.snow > 0) { ctx.strokeStyle = 'rgba(238,244,250,' + (0.6 * SE.snow).toFixed(2) + ')'; ctx.lineWidth = 13; ctx.stroke(P); ctx.strokeStyle = 'rgba(150,128,96,' + (0.55 * SE.snow).toFixed(2) + ')'; ctx.lineWidth = 4; ctx.stroke(P); }
       if (SE.wet > 0) { ctx.strokeStyle = 'rgba(80,58,36,' + (0.35 * SE.wet).toFixed(2) + ')'; ctx.lineWidth = 8; ctx.stroke(P); }
@@ -432,20 +363,7 @@
         g.addColorStop(0, 'rgba(10,14,20,0.35)'); g.addColorStop(1, 'rgba(10,14,20,0)');
         ctx.fillStyle = g; ctx.fillRect(px - 24, py - 20, 48, 30);
         ctx.imageSmoothingEnabled = true;
-        const terrain = T[map.terrain[y * map.w + x]];
-        let frame = -1;
-        if (obs === 2 && !z) {
-          if (terrain === 'snow' || snowAt(px, py) > 0.65) frame = 5;
-          else if (terrain === 'lava') frame = 6;
-          else frame = terrain === 'sand' ? 9 : 4;
-        } else if (sp === 'tree_palm') frame = hash(x, y, seed + 33) < 0.62 ? 10 : 11;
-        else if (sp === 'tree_swamp') frame = 12;
-        else if (sp === 'tree_snow' || sp === 'tree_pine#winter') frame = 13;
-        else if (sp === 'tree_pine') frame = 7;
-        else if (/^tree_[123]$/.test(sp)) frame = 8;
-        const variation = hash(x, y, seed + 301);
-        const size = obs === 2 ? 45 + 15 * variation : 36 + 16 * variation;
-        if (!illustration(ctx, frame, px, py, size)) Sp.draw(ctx, sp, px, py, 1, (x + y) % 2 === 0);
+        Sp.draw(ctx, sp, px, py, 1, (x + y) % 2 === 0);
       }
     }
 
@@ -1123,5 +1041,5 @@
     return cv;
   }
 
-  H3.MapPaint = { illustration, atlasReady: () => !!atlas && !!atlas.naturalWidth, create, PAL, CH, warp, Live: { drawSurf, drawWater, follow, drawGround, drawAir, fogLayer, texture, TR, SEA, reset } };
+  H3.MapPaint = { create, PAL, CH, warp, Live: { drawSurf, drawWater, follow, drawGround, drawAir, fogLayer, texture, TR, SEA, reset } };
 })(typeof window !== 'undefined' ? window : globalThis);

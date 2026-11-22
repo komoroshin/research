@@ -30,29 +30,6 @@
       wrap.appendChild(below);
       cur.pic = pic; cur.right = right; cur.armies = armies;
       cur.scene = H3.TownScene.create(pic, town);
-      if (town.faction === 'factory') {
-        const city = UI.el('div', 'factoryCity');
-        const picture = document.createElement('img');
-        picture.alt = 'Панорама Фабрики над каньоном';
-        city.appendChild(picture);
-        picWrap.prepend(city);
-        const toggle = UI.el('button', 'cityToggle');
-        wrap.insertBefore(toggle, below);
-        const setPanorama = on => {
-          city.hidden = !on; pic.style.display = on ? 'none' : '';
-          toggle.textContent = on ? 'Показать постройки' : 'Вернуться к панораме';
-          picWrap.scrollLeft = (picWrap.scrollWidth - picWrap.clientWidth) / 2;
-        };
-        toggle.onclick = () => setPanorama(city.hidden);
-        for (const [tab, label, x, y] of [['build','Ратуша',54,28], ['recruit','Найм',36,55], ['tavern','Таверна',15,64], ['smith','Кузница',89,56]]) {
-          const pin = UI.el('button', 'cityPin'); pin.textContent = label;
-          pin.style.left = x + '%'; pin.style.top = y + '%';
-          pin.onclick = () => { cur.tab = tab; renderRight(); right.scrollIntoView({ block: 'nearest' }); };
-          city.appendChild(pin);
-        }
-        picture.onerror = () => { setPanorama(false); toggle.hidden = true; };
-        setPanorama(true); picture.src = 'art/factory-city.webp';
-      }
       const TS = H3.TownScene;
       const at = e => { const r = pic.getBoundingClientRect(); return [(e.clientX - r.left) * TS.W / r.width, (e.clientY - r.top) * TS.H / r.height]; };
       let lastTouch = false, pressTimer = null, pressed = null;
@@ -74,7 +51,7 @@
         buttons: [{ label: 'Закрыть', cls: 'primary', value: true }], closable: true }).then(() => { UI.hideTip(); if (cur && cur.scene) cur.scene.destroy(); cur = null; resolve(); });
       render();
       // на узком экране сцена шире окна — подсказываем один раз, что её можно двигать
-      const loop = ts => { if (!cur || cur.pic !== pic) return; if (pic.style.display !== 'none') cur.scene.draw(ts); requestAnimationFrame(loop); };
+      const loop = ts => { if (!cur || cur.pic !== pic) return; cur.scene.draw(ts); requestAnimationFrame(loop); };
       requestAnimationFrame(loop);
     });
   }
