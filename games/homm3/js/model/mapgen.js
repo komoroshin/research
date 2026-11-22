@@ -64,10 +64,10 @@
   /* ---------- шаблоны зон ---------- */
   // Случайный XXL: столицы, провинциальные города и несколько богатых областей.
   // Сначала назначаем владельцев зон, затем общий генератор проводит дороги и проходы.
-  function frontierZones(rng, players) {
+  function frontierZones(rng, players, gridSize) {
     const sites = [];
-    for (let row = 0; row < 5; row++) for (let col = 0; col < 5; col++) {
-      sites.push({ nx: (col + rng.int(35, 65) / 100) / 5, ny: (row + rng.int(35, 65) / 100) / 5 });
+    for (let row = 0; row < gridSize; row++) for (let col = 0; col < gridSize; col++) {
+      sites.push({ nx: (col + rng.int(35, 65) / 100) / gridSize, ny: (row + rng.int(35, 65) / 100) / gridSize });
     }
     rng.shuffle(sites);
     const capitals = [sites.pop()];
@@ -85,10 +85,11 @@
       zones.push({ ...sites.shift(), outpost: owner, kind: 'mid', tier: 2, weight: 0.95 });
     }
     rng.shuffle(sites);
+    const richCount = gridSize - 2;
     sites.forEach((site, i) => {
-      const rich = i < 3;
+      const rich = i < richCount;
       zones.push({ ...site, kind: rich ? 'treasure' : 'mid', tier: rich ? 3 : 2,
-        weight: rich ? 0.95 : 0.85, marketTown: i >= 3 && i < 6 });
+        weight: rich ? 0.95 : 0.85, marketTown: i >= richCount && i < richCount * 2 });
     });
     zones.forEach((zone, i) => { zone.id = i; });
     return zones;
@@ -155,7 +156,9 @@
   function tryGenerate(ctx, nPlayers) {
     const { state, map, rng, w, h, size } = ctx;
     const frontier = state.settings.size === 'XXL' && !state.settings.campaign && !state.goals;
-    const zones = frontier ? frontierZones(rng, nPlayers) : template(state.settings.size in H3.State.SIZES ? state.settings.size : 'S', nPlayers);
+    const compact = state.settings.size === 'XL';
+    const zones = compact || frontier ? frontierZones(rng, nPlayers, compact ? 4 : 5)
+      : template(state.settings.size in H3.State.SIZES ? state.settings.size : 'S', nPlayers);
     ctx.zones = zones;
     const noise = makeNoise(rng, 64);
     for (const z of zones) {
@@ -227,7 +230,7 @@
     }
     // пара дополнительных проходов, чтобы карта не была цепочкой
     const extras = [...pairs.values()].filter(pr => !chosen.includes(pr))
-      .sort((p, q) => q.cells.length - p.cells.length).slice(0, zones.length >= 6 ? 2 : 1);
+      .sort((p, q) => q.cells.length - p.cells.length).slice(0, compact ? 5 : zones.length >= 6 ? 2 : 1);
     chosen.push(...extras);
 
     const corridor = new Uint8Array(w * h);

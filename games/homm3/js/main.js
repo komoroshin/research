@@ -331,7 +331,7 @@
   function newGameForm() {
     const sh = shell('Новая игра', { back: menu, backId: 'btnBack' });
     const seg = (key, opts) => '<div class="seg full">' + opts.map(([v, l, t]) => '<button data-k="' + key + '" data-v="' + v + '" class="' + (String(NEW[key]) === String(v) ? 'on' : '') + '">' + l + (t ? '<small>' + UI.esc(t) + '</small>' : '') + '</button>').join('') + '</div>';
-    const SIZE_SUB = { S: '36×36 · 2 игрока', M: '54×54 · до 3', L: '72×72 · до 4', XXL: '144×144 · до 4' };
+    const SIZE_SUB = { S: '36×36 · 2 игрока', M: '54×54 · до 3', L: '72×72 · до 4', XL: '96×96 · до 4', XXL: '144×144 · до 4' };
     const render = () => {
       const f = F.get(NEW.faction);
       const heroes = HE.heroesOfFaction(NEW.faction);

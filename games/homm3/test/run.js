@@ -86,6 +86,12 @@ test('все размеры × все числа противников: свя�
     try { st = S.newGame({ size, seed, opponents: opp, difficulty: 'normal', faction: 'rampart' }); }
     catch (e) { throw new Error('карта не создалась: ' + size + ', противников ' + opp + ', сид ' + seed + ' — ' + e.message); }
     const map = st.levels[0]; n++;
+    if (size === 'XL') {
+      assert.deepEqual([map.w, map.h], [96, 96]);
+      assert.equal(new Set(map.zone).size, 16);
+      assert.equal(Object.values(st.towns).length, 2 * st.players.length + 4);
+      assert.ok(!map.passForts);
+    }
     assert.equal(st.players.length, opp + 1, 'число игроков ' + size + opp);
     const t = st.towns[st.players[0].towns[0]];
     const seen = PF.reachable(map.w, map.h, t.x, t.y + 1, (x, y) => { const i = y * map.w + x; return map.objAt[i] >= 0 || !map.block[i]; });
