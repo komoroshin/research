@@ -28,12 +28,21 @@
     const ground = new Image();
     ground.onload = () => {
       const side = ground.width / 2;
-      ['sand', 'grass', 'snow', 'rough'].forEach((name, n) => {
-        const tile = document.createElement('canvas');
-        tile.width = tile.height = side;
-        tile.getContext('2d').drawImage(ground, n % 2 * side, (n >> 1) * side, side, side, 0, 0, side, side);
-        materials[name] = tile;
-      });
+      const tile = document.createElement('canvas');
+      tile.width = tile.height = side;
+      const c = tile.getContext('2d', { willReadFrequently: true });
+      if (!c) return;
+      try {
+        ['sand', 'grass', 'snow', 'rough'].forEach((name, n) => {
+          c.drawImage(ground, n % 2 * side, (n >> 1) * side, side, side, 0, 0, side, side);
+          materials[name] = { pixels: c.getImageData(0, 0, side, side).data, side };
+        });
+      } catch (error) {
+        // Local file previews may disallow image readback; the procedural terrain remains playable.
+        if (error.name !== 'SecurityError') throw error;
+      } finally {
+        tile.width = tile.height = 0;
+      }
       refreshArt();
     };
     ground.src = 'art/ground.webp';
@@ -212,7 +221,6 @@
       const ST = 2, N = CPX / ST + 1;
       const low = document.createElement('canvas'); low.width = N; low.height = N;
       const lc = low.getContext('2d'), img = lc.createImageData(N, N), d = img.data;
-      const masks = {};
       const W = map.w * TILE, H = map.h * TILE;
       // клетки, у которых все восемь соседей той же местности: для их точек поиск кромки не нужен
       // (точка сдвинута шумом не дальше 20 пикс., поэтому хватает поля в клетку вокруг куска)
@@ -265,30 +273,22 @@
           const crest = Math.sin(x / 29 + y / 11 + v * 8 + n1 / 28);
           relief = (Math.max(0, crest) ** 4 * 13 - Math.max(0, -crest) * 8 + (s - 0.5) * 10) * Math.min(1, dOther / 7);
         }
-        const material = t === 'dirt' ? 'rough' : t;
-        if (materials[material]) {
-          const mask = masks[material] || (masks[material] = lc.createImageData(N, N));
-          const seasonFade = t === 'grass' || t === 'dirt' || t === 'rough' ? 1 - Math.max(SE.snow, SE.fall * 0.65) : 1;
-          mask.data[k + 3] = 228 * seasonFade * Math.min(1, dOther / 9);
+        const material = materials[t === 'dirt' ? 'rough' : t];
+        if (material) {
+          const { side, pixels } = material;
+          const source = 4 * ((Math.floor(y / 0.82) % side) * side + Math.floor(x / 0.82) % side);
+          const seasonal = t === 'grass' || t === 'dirt' || t === 'rough';
+          const fade = seasonal ? 1 - Math.max(SE.snow, SE.fall * 0.65) : 1;
+          const alpha = 228 / 255 * fade * Math.min(1, dOther / 9);
+          for (let channel = 0; channel < 3; channel++) {
+            c[channel] += (pixels[source + channel] - c[channel]) * alpha;
+          }
         }
         d[k] = c[0] + relief; d[k + 1] = c[1] + relief; d[k + 2] = c[2] + relief * 0.8; d[k + 3] = 255;
       }
       lc.putImageData(img, 0, 0);
       ctx.save(); ctx.setTransform(RS * ST, 0, 0, RS * ST, 0, 0); ctx.imageSmoothingEnabled = true; ctx.drawImage(low, -0.5, -0.5); ctx.restore();
-      // Sample in world coordinates so scrolling and chunk boundaries do not shift the texture.
-      for (const [name, mask] of Object.entries(masks)) {
-        const layer = document.createElement('canvas');
-        layer.width = layer.height = CPX * RS;
-        const c = layer.getContext('2d'), scale = 0.82;
-        c.setTransform(RS * scale, 0, 0, RS * scale, -X0 * RS, -Y0 * RS);
-        c.fillStyle = c.createPattern(materials[name], 'repeat');
-        c.fillRect(X0 / scale, Y0 / scale, CPX / scale, CPX / scale);
-        lc.putImageData(mask, 0, 0);
-        c.globalCompositeOperation = 'destination-in';
-        c.setTransform(RS * ST, 0, 0, RS * ST, 0, 0);
-        c.drawImage(low, -0.5, -0.5);
-        ctx.drawImage(layer, 0, 0);
-      }
+      low.width = low.height = 0;
     }
 
     /** Лужа: болотная (тёмная), талая (в ней небо) или замёрзшая (лёд с бликом). */
