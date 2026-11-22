@@ -740,13 +740,20 @@
     const st = settings();
     const html = UI.el('div', 'col');
     const markers = AV.deliveryMarkers(G.state);
+    const castles = AV.castleTargets(G.state);
     html.innerHTML = '<div class="row wrap"><button id="mSave">Сохранить</button><button id="mLoad">Загрузить</button><button id="mExp">Экспорт</button><button id="mImp">Импорт</button></div>'
+      + (castles.length === 1 ? '<button data-castle="0">Показать последний замок · ' + UI.esc(castles[0].name) + '</button>'
+        : castles.length ? '<details><summary>Найти замок (' + castles.length + ')</summary><div class="row wrap">' + castles.map((t, i) =>
+          '<button data-castle="' + i + '">' + UI.esc(AV.castleLabel(t)) + '</button>').join('') + '</div></details>' : '')
       + '<h4>Настройки</h4>' + settingsHtml()
       + '<div class="row wrap" style="margin-top:8px"><button id="mHelp">Как играть</button><button id="mQuit" class="danger">Выйти в меню</button></div>'
       + goalsHtml()
       + markers.map(({ point, label }, i) => '<button data-objective="' + i + '">' + UI.esc(label) + ' · ' + (point.z ? 'подземелье' : 'поверхность') + '</button>').join(' ')
       + '<div class="small muted">Сид карты: ' + (G.state ? G.state.seed : '') + '</div>';
     UI.modal({ title: 'Меню', html, buttons: [{ label: 'Закрыть', cls: 'primary' }], onOpen: (box, close) => {
+      box.querySelectorAll('[data-castle]').forEach(button => {
+        button.onclick = () => { close(); AV.focusCastle(castles[Number(button.dataset.castle)]); };
+      });
       box.querySelectorAll('[data-objective]').forEach(button => {
         button.onclick = () => {
           const { point } = markers[Number(button.dataset.objective)];

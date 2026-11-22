@@ -53,7 +53,7 @@
     clampCam(); V.dirty = true;
   }
   function setState(state) {
-    V.state = state; V.layer = 0; V.mapCanvas = [null, null]; V.painter = [null, null]; V.miniCanvas = document.createElement('canvas');
+    V.trackedCastle = null; V.state = state; V.layer = 0; V.mapCanvas = [null, null]; V.painter = [null, null]; V.miniCanvas = document.createElement('canvas');
     if (V.miniOpen === undefined) toggleMini(window.innerWidth >= 900);
     V.pf = null; V.pfHero = null; V.path = null; V.pending = null; V.anim = null;
     V.fx = H3.Fx.scene(); V.water = [null, null];
@@ -817,8 +817,28 @@
     }
     return markers;
   }
+  function castleTargets(st) {
+    const remaining = Object.values(st.towns).filter(t => t.owner !== st.turn);
+    const enemies = remaining.filter(t => t.owner >= 0);
+    return enemies.length ? enemies : remaining;
+  }
+  function castleLabel(town) {
+    return (town.owner < 0 ? 'Нейтральный замок' : 'Вражеский замок') + ' · ' + town.name;
+  }
+  function focusCastle(town) {
+    V.trackedCastle = town.id;
+    if (V.miniOpen && window.innerWidth < 900) toggleMini(false);
+    setLayer(town.z || 0);
+    centerOn(town.x, town.y);
+    V.dirty = true;
+  }
   function drawDeliveryMarkers(ctx, st, scale, mini) {
     const points = deliveryMarkers(st);
+    if (!st.players[st.turn].isAI) {
+      const targets = castleTargets(st);
+      const town = targets.length === 1 ? targets[0] : targets.find(t => t.id === V.trackedCastle);
+      if (town) points.push({ point: town, label: castleLabel(town) });
+    }
     if (!V.layer && st.levels[0].passForts) for (const t of Object.values(st.towns)) {
       if (t.pass && S.visible(st, st.turn, t.pass.x, t.pass.y, 0)) points.push({ point: t.pass, label: 'Перевал' });
     }
@@ -919,5 +939,5 @@
     V.dirty = true;
   }
 
-  H3.AdvView = { deliveryMarkers, init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini, weatherOf };
+  H3.AdvView = { castleTargets, castleLabel, focusCastle, deliveryMarkers, init, setState, invalidate, resize, centerOn, setLayer, layerCanvas, animateMove, renderSidebar, previewPath, V, describe, drawFlag, drawObject, toggleMini, weatherOf };
 })(typeof window !== 'undefined' ? window : globalThis);
