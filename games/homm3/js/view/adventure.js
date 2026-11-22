@@ -538,12 +538,28 @@
 
   /** Рисунок города по отстройке: поселение / форт / цитадель / замок (+ Капитолий); без рисованной графики — прежний спрайт. */
   function townSprite(tw) { return H3.TownGrow ? H3.TownGrow.sprite(tw) : 'town_' + tw.faction; }
+  function factoryArt(town) {
+    return town.faction === 'factory' && painted() && H3.MapPaint.atlasReady() && H3.TownGrow;
+  }
+  function townMeta(town) {
+    if (!factoryArt(town)) return H3.Vec && H3.Vec.meta(townSprite(town));
+    const stage = H3.TownGrow.level(town), size = 90 + stage * 11;
+    // Normalized anchors on each illustration: banner, chimney and furnace.
+    const chimney = [[0.68, 0.48], [0.69, 0.18], [0.72, 0.25], [0.78, 0.07]][stage];
+    return { ax: 0.5, ay: 1, U: 1 / size, m: {
+      flag: [0.5, 0.46], smoke: [{ at: chimney, c: '155,151,142', rate: 3 }],
+      lights: [[0.5, 0.84], [0.54, 0.57]]
+    } };
+  }
   function drawObject(ctx, st, o, vis, ts) {
     const px = o.x * TILE + 16, py = o.y * TILE + 32;
     const t = O.get(o.type);
     if (o.type === 'town') {
-      const tw = st.towns[o.townId], name = townSprite(tw), M = H3.Vec && H3.Vec.meta(name);
-      Sp.draw(ctx, name, px, py - 2, 1);
+      const tw = st.towns[o.townId], M = townMeta(tw);
+      if (factoryArt(tw)) {
+        H3.MapPaint.illustration(ctx, H3.TownGrow.level(tw), px, py - 2, 1 / M.U);
+        if (tw.buildings.hall_4) drawFlag(ctx, px + 13, py - 46, '#f5ca54', true);
+      } else Sp.draw(ctx, townSprite(tw), px, py - 2, 1);
       // флажок владельца — на макушке главного здания ступени (древко 12 точек вниз от верха)
       const [fx, fy] = M && M.m.flag ? metaAt(M, px, py - 2, M.m.flag) : [px, py - 36];
       drawFlag(ctx, fx, fy - 12, tw.owner >= 0 ? st.players[tw.owner].color : '#999');
@@ -716,7 +732,7 @@
       if (o.x < view.x0 || o.x > view.x1 || o.y < view.y0 || o.y > view.y1 || !vis[o.y * m.w + o.x]) continue;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
       if (o.type === 'town') {   // рисованный город: дым из труб своей ступени отстройки (meta.smoke; у улья и подземелья его нет)
-        const TM = H3.Vec && H3.Vec.meta(townSprite(st.towns[o.townId]));
+        const TM = townMeta(st.towns[o.townId]);
         if (TM && TM.m.smoke) {
           for (const sm of TM.m.smoke) { if (!chance(sm.rate || 6)) continue; const [sx, sy] = metaAt(TM, px, py - 2, sm.at); fx.add({ x: sx + rnd(-1, 1), y: sy, vx: rnd(3, 8), vy: -rnd(6, 12), ax: 0, ay: 0, ttl: 2600, life: 0, size: rnd(2, 3.5), color: 'rgba(' + sm.c + ',0.32)', shape: 'puff', grow: 1.6 }); }
           continue;
@@ -747,7 +763,7 @@
       const o = it.o; if (!o) continue;
       let spots = null;
       const px = o.x * TILE + 16, py = o.y * TILE + 32;
-      if (o.type === 'town') { const TM = H3.Vec && H3.Vec.meta(townSprite(st.towns[o.townId])); spots = TM && TM.m.lights ? TM.m.lights.map(p => metaAt(TM, px, py - 2, p)) : [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]]; }
+      if (o.type === 'town') { const TM = townMeta(st.towns[o.townId]); spots = TM && TM.m.lights ? TM.m.lights.map(p => metaAt(TM, px, py - 2, p)) : [[px - 12, py - 26], [px + 10, py - 30], [px - 2, py - 18], [px + 16, py - 14]]; }
       else if (o.type === 'dwelling') { const DM = H3.Vec && H3.Vec.meta(dwellSprite(o)); spots = DM && DM.m.lights ? DM.m.lights.map(p => metaAt(DM, px, py, p)) : [[px - 4, py - 12], [px + 5, py - 10]]; }
       else if (o.type === 'tavern' || o.type === 'witch_hut' || o.type === 'seer_hut') spots = [[px - 4, py - 12], [px + 5, py - 10]];
       else if (o.type === 'mine') { const M = H3.Vec && H3.Vec.meta(mineSprite(st, o)); spots = M ? (M.m.lights || []).map(p => metaAt(M, px, py, p)) : [[px + 1, py - 8]]; }
