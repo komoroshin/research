@@ -222,6 +222,34 @@ test('случайный XXL: провинции, рынки и оборона �
   assert.equal(layouts.size, 3);
 });
 
+test('перевалы XXL: обход, захват, гарнизон и смена владельца после загрузки', () => {
+  for (const seed of [3, 81, 207]) {
+    const st = S.newGame({ size: 'XXL', seed, opponents: 2, faction: 'castle' });
+    const map = st.levels[0], forts = Object.values(st.towns).filter(t => t.pass);
+    assert.ok(forts.length >= 2 && forts.length <= 3);
+    for (const fort of forts) {
+      const { x, y, saving } = fort.pass;
+      assert.ok(saving >= 1500 && fort.owner < 0 && R.armyPower(fort.garrison) > 0);
+      const cells = Object.keys(map.passForts).map(Number).filter(i => map.passForts[i] === fort.id).sort((a, b) => a - b);
+      const step = cells[1] - cells[0], start = cells[0] - step, end = cells[cells.length - 1] + step;
+      const bypass = PF.reachable(map.w, map.h, start % map.w, Math.floor(start / map.w),
+        (x, y) => !map.block[y * map.w + x] && !map.passForts[y * map.w + x]);
+      assert.ok(bypass[end], 'пеший обход при всех закрытых перевалах');
+      const ai = st.heroes[st.players[1].heroes[0]];
+      ai.army = army([['archer', 24]]);
+      assert.equal(S.moveCost(st, ai, x, y), Infinity);
+      H3.Adventure.captureTown(st, fort, 1, ai);
+      assert.equal(S.moveCost(st, ai, x, y), R.ROAD_COST);
+      assert.equal(fort.garrison[0].n + ai.army[0].n, 24);
+      assert.ok(fort.garrison[0].n > 0);
+      const loaded = S.deserialize(S.serialize(st));
+      H3.Adventure.captureTown(loaded, loaded.towns[fort.id], 0, null);
+      assert.equal(S.moveCost(loaded, ai, x, y), Infinity);
+      assert.equal(S.moveCost(loaded, loaded.heroes[loaded.players[0].heroes[0]], x, y), R.ROAD_COST);
+    }
+  }
+});
+
 console.log('battle');
 test('детерминированный автобой, конец, осада ломает стены', () => {
   const run = seed => { const rng = new U.RNG(seed); const h1 = mkHero('orrin', 3), h2 = mkHero('crag_hack', 3);

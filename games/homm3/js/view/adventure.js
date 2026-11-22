@@ -151,6 +151,8 @@
     // второй клик по той же цели — идти
     if (V.pending && V.pending[0] === x && V.pending[1] === y && V.path) { G.moveAlong(sel, V.path); V.pending = null; return; }
     previewPath(x, y);
+    const map = S.lvl(st, V.layer);
+    if (!V.path && map.passForts?.[y * map.w + x] && S.visible(st, me, x, y, V.layer)) { showInfo(x, y); return; }
     if (!V.path) { if (!touch) UI.toast('Туда не пройти', 'warn'); V.dirty = true; return; }
     V.pending = [x, y]; V.dirty = true;
     if (!touch) { G.moveAlong(sel, V.path); V.pending = null; }
@@ -189,6 +191,14 @@
       else if (obj.type === 'dwelling') { const c = C.get(obj.cid); parts.push('<b>Жилище: ' + UI.esc(c.name) + '</b>' + (obj.owner === st.turn ? ' — доступно ' + obj.avail : '')); }
       else if (!t.obstacle) { let s = '<b>' + UI.esc(t.name) + '</b>'; const qd = H3.Quest.describe(obj); if (qd) s += '<br><span class="muted">' + UI.esc(qd) + '</span>'; else if (t.desc) s += '<br><span class="muted">' + UI.esc(t.desc) + '</span>'; const sel = H3.Game.selected(); if (sel && obj.visited && obj.visited['h' + sel.id]) s += '<br><i>уже посещали</i>'; parts.push(s); }
       else parts.push('<b>' + UI.esc(t.name) + '</b>');
+    }
+    const m = S.lvl(st, V.layer);
+    const fortId = m.passForts && m.passForts[y * m.w + x];
+    const fort = fortId ? st.towns[fortId] : obj && obj.type === 'town' && st.towns[obj.townId];
+    if (fort && fort.pass) {
+      const days = (fort.pass.saving / (H3.Game.selected() ? R.heroMaxMove(H3.Game.selected()) : 1500)).toFixed(1);
+      parts.push(fort.owner === st.turn ? '<b>Перевал открыт для ваших героев</b>' : '<b>Чтобы пройти, захватите форт</b>');
+      parts.push('Перевал (' + (fort.pass.x + 1) + ', ' + (fort.pass.y + 1) + '). Дорогу охраняет ' + UI.esc(fort.name) + ' (' + (fort.x + 1) + ', ' + (fort.y + 1) + '). Пеший обход между входами дольше примерно на ' + days + ' дн.');
     }
     if (!parts.length) parts.push('<b>' + UI.esc(R.TERRAIN_NAMES[S.terrainAt(st, x, y, V.layer)]) + '</b>' + (S.lvl(st, V.layer).road[S.idx(st, x, y, V.layer)] ? ' (дорога)' : ''));
     if (V.path && V.path.length) { const last = V.path[V.path.length - 1]; parts.push('<span class="small muted">Путь: ' + (last.turn === 0 ? 'сегодня' : 'через ' + last.turn + ' ' + U.plural(last.turn, 'ход', 'хода', 'ходов')) + '</span>'); }
@@ -808,7 +818,11 @@
     return markers;
   }
   function drawDeliveryMarkers(ctx, st, scale, mini) {
-    for (const { point, label } of deliveryMarkers(st)) {
+    const points = deliveryMarkers(st);
+    if (!V.layer && st.levels[0].passForts) for (const t of Object.values(st.towns)) {
+      if (t.pass && S.visible(st, st.turn, t.pass.x, t.pass.y, 0)) points.push({ point: t.pass, label: 'Перевал' });
+    }
+    for (const { point, label } of points) {
       if ((point.z || 0) !== V.layer) continue;
       const x = (point.x + 0.5) * scale, y = (point.y + 0.5) * scale;
       const r = mini ? 5 : TILE * 0.48;

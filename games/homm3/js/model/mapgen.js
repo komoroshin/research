@@ -139,6 +139,7 @@
       const uctx = { state, map: under, z: 1, rng, w, h, size, guardMul, guardMulBase: guardMul, theme, occupied: new Uint8Array(N) };
       if (!generateUnder(uctx)) continue;
       if (!placeGates(ctx, uctx)) continue;
+      if (ctx.frontier && !placeMountainPasses(ctx)) continue;
       // застава, до ключника которой человеку не дойти (проход в промежуточную зону
       // лежит через сокровищницу), — тупик: такие сразу становятся стражами
       if (H3.Adventure) H3.Adventure.sanitizeGates(state, true);
@@ -301,6 +302,7 @@
     rebuildBlock(ctx);
     populateSea(ctx);
     rebuildBlock(ctx);
+    ctx.frontier = frontier;
     return true;
   }
 
@@ -637,6 +639,65 @@
         map.road[(town.y + 1) * w + town.x] = 1;
       }
     }
+  }
+
+  // Ищем новые поперечные дороги через хребет. Старую сеть проходов не перекрываем.
+  function placeMountainPasses(ctx) {
+    const { map, w, h, state } = ctx;
+    map.passForts = {};
+    const towns = Object.values(state.towns).filter(t => t.owner < 0);
+    const candidates = [];
+    for (const town of towns) {
+      const local = [];
+      for (let y = Math.max(2, town.y - 18); y <= Math.min(h - 3, town.y + 18); y++) {
+        for (let x = Math.max(2, town.x - 18); x <= Math.min(w - 3, town.x + 18); x++) {
+          const start = y * w + x;
+          if (map.block[start] || ctx.occupied[start] || map.zone[start] !== map.zone[town.y * w + town.x]) continue;
+          for (const step of [1, -1, w, -w]) {
+            let end = start + step;
+            const cells = [];
+            while (map.obs[end] === 2 && !ctx.occupied[end] && cells.length < 6 && end % w > 0 && end % w < w - 1 && end >= w && end < (h - 1) * w) {
+              cells.push(end); end += step;
+            }
+            if (cells.length < 2 || map.block[end] || ctx.occupied[end] || map.zone[end] === map.zone[start]) continue;
+            local.push({ town, start, end, cells, distance: Math.hypot(x - town.x, y - town.y) });
+          }
+        }
+      }
+      local.sort((a, b) => a.distance - b.distance);
+      // Несколько разнесённых вариантов на каждую крепость.
+      const sampled = [];
+      for (const c of local) {
+        if (sampled.some(k => Math.hypot(k.start % w - c.start % w, Math.floor(k.start / w) - Math.floor(c.start / w)) < 5)) continue;
+        sampled.push(c);
+        if (sampled.length === 4) break;
+      }
+      candidates.push(...sampled);
+    }
+    const used = new Set();
+    // Базовая стоимость пешком по свободной суше, без навыков и боёв.
+    const groundCost = (x, y) => {
+      const i = y * w + x;
+      if (map.block[i] || map.passForts[i]) return Infinity;
+      return map.road[i] ? R.ROAD_COST : R.TERRAIN_COST[map.terrain[i]];
+    };
+    for (const c of candidates) {
+      if (used.has(c.town.id) || c.cells.some(i => map.passForts[i])) continue;
+      const path = H3.Pathfind.dijkstra({ w, h, start: [c.start % w, Math.floor(c.start / w)], cost: groundCost });
+      const saving = path.dist[c.end] - (c.cells.length + 1) * R.ROAD_COST;
+      if (!Number.isFinite(saving) || saving < 1500) continue;
+      c.town.name = 'Форт «' + c.town.name + '»';
+      c.town.pass = { x: c.cells[0] % w, y: Math.floor(c.cells[0] / w), saving: Math.round(saving) };
+      for (const i of c.cells) {
+        map.obs[i] = 0; map.block[i] = 0; map.terrain[i] = R.TERRAIN_INDEX.rough;
+        map.road[i] = 1; map.passForts[i] = c.town.id; ctx.occupied[i] = 1;
+      }
+      map.road[c.start] = map.road[c.end] = 1;
+      ctx.occupied[c.start] = ctx.occupied[c.end] = 1;
+      used.add(c.town.id);
+      if (used.size === 3) break;
+    }
+    return used.size >= 2;
   }
 
   /* ---------- море ----------

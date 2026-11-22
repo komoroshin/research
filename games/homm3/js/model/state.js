@@ -309,6 +309,8 @@
     if (!inMap(state, x, y, z)) return Infinity;
     const m = lvl(state, z), i = idx(state, x, y, z);
     const o = objAt(state, x, y, z);
+    const fort = m.passForts && m.passForts[i];
+    if (fort && state.towns[fort].owner !== hero.owner && m.passForts[hero.y * m.w + hero.x] !== fort) return Infinity;
     if (o && H3.Objects.get(o.type).obstacle) return Infinity;
     const water = m.terrain[i] === R.TERRAIN_INDEX.water;
     // под парусом: море проходимо, суша — только чтобы сойти на берег

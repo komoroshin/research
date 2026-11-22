@@ -594,6 +594,15 @@
     if (town.buildings.hall_4 && state.players[newOwner].towns.some(id => id !== town.id && state.towns[id].buildings.hall_4)) { delete town.buildings.hall_4; town.buildings.hall_3 = true; }
     town.tavern = R.tavernCandidates(state, town, 2);
     if (hero) { hero.x = town.x; hero.y = town.y; enterOwnTown(state, hero, town); }
+    if (town.pass && hero && state.players[newOwner].isAI) {
+      // Отряд из победившей армии держит перевал до следующего прироста.
+      const stack = hero.army.filter(s => s && s.n > 1).sort((a, b) => b.n - a.n)[0];
+      if (stack) {
+        const n = Math.max(1, Math.floor(stack.n / 4));
+        R.addToArmy(town.garrison, stack.cid, n);
+        stack.n -= n;
+      }
+    }
     const obj = state.objects[town.objId]; if (obj) obj.owner = newOwner;
     S.computeVisibility(state, newOwner);
     S.addLog(state, (hero ? hero.name : 'Армия') + ' захватил город ' + town.name + '!', 'good');

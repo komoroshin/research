@@ -473,7 +473,7 @@
               }
             }
             if (!hero.hasBook && R.guildLevel(tw) && p.res.gold > 3000) v = Math.max(v, 1500);
-            if (v) consider(o.x, o.y, 't' + tw.id, v, 'город ' + tw.name, 0);
+            if (v) consider(o.x, o.y, 't' + tw.id, tw.pass ? v * 1.35 : v, 'город ' + tw.name, 0);
           } else {
             const dh = tw.visiting ? state.heroes[tw.visiting] : null;
             const gp = (dh ? heroPower(dh) : 0) + R.armyPower(tw.garrison, null);
@@ -482,7 +482,7 @@
             const defArmy = dh ? U.clone(dh.army) : U.clone(tw.garrison);
             if (dh) for (const stack of tw.garrison) if (stack) R.addToArmy(defArmy, stack.cid, stack.n);
             extraSiege = R.fortLevel(tw) ? tw : null;
-            consider(o.x, o.y, 't' + tw.id, (p.towns.length ? 30000 : 120000) + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
+            consider(o.x, o.y, 't' + tw.id, (p.towns.length ? 30000 : 120000) + (tw.pass ? 14000 : 0) + Object.keys(tw.buildings).length * 1000, 'город ' + tw.name, gp + towers + 500, undefined, defArmy, dh);
             extraSiege = null;
           }
           break;
